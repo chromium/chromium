@@ -37,11 +37,6 @@ namespace blink {
 namespace {
 
 #if BUILDFLAG(IS_WIN)
-// Enables AV1 encode acceleration for Windows.
-BASE_FEATURE(kMediaFoundationAV1Encoding,
-             "MediaFoundationAV1Encoding",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables H.264 CBP encode acceleration for Windows.
 BASE_FEATURE(kMediaFoundationH264CbpEncoding,
              "MediaFoundationH264CbpEncoding",
@@ -398,13 +393,11 @@ RTCVideoEncoderFactory::RTCVideoEncoderFactory(
       encoder_metrics_provider_factory_(
           std::move(encoder_metrics_provider_factory)),
       gpu_codec_support_waiter_(gpu_factories) {
-#if BUILDFLAG(IS_WIN)
-  if (!base::FeatureList::IsEnabled(kMediaFoundationAV1Encoding)) {
+  if (!base::FeatureList::IsEnabled(::features::kWebRtcAV1HWEncode)) {
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_MAIN);
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_HIGH);
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_PRO);
   }
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(RTC_USE_H265)
   // We may not need to add check for media::kPlatformHEVCEncoderSupport here

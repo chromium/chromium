@@ -655,9 +655,6 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case PASSPORT_ISSUING_COUNTRY:
     case PASSPORT_EXPIRATION_DATE:
     case PASSPORT_ISSUE_DATE:
-    case LOYALTY_MEMBERSHIP_PROGRAM:
-    case LOYALTY_MEMBERSHIP_PROVIDER:
-    case LOYALTY_MEMBERSHIP_ID:
     case VEHICLE_OWNER_TAG:
     case VEHICLE_LICENSE_PLATE:
     case VEHICLE_VIN:
@@ -690,6 +687,9 @@ FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case EMPTY_TYPE:
     case AMBIGUOUS_TYPE:
     case FIELD_WITH_DEFAULT_VALUE:
+    case LOYALTY_MEMBERSHIP_PROGRAM:
+    case LOYALTY_MEMBERSHIP_PROVIDER:
+    case LOYALTY_MEMBERSHIP_ID:
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case ONE_TIME_CODE:

@@ -817,9 +817,8 @@ void ThemeService::DoSetTheme(const extensions::Extension* extension,
                               bool suppress_infobar) {
   DCHECK(extension->is_theme());
   DCHECK(!UsingPolicyTheme());
-  DCHECK(extensions::ExtensionSystem::Get(profile_)
-             ->extension_service()
-             ->IsExtensionEnabled(extension->id()));
+  DCHECK(extensions::ExtensionRegistrar::Get(profile_)->IsExtensionEnabled(
+      extension->id()));
   BuildFromExtension(extension, suppress_infobar);
 }
 

@@ -265,12 +265,6 @@ bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
   if (!quad.IntersectsRect(rect_))
     return false;
 
-  if (!HasSimpleRoundedCurvature()) {
-    Path path;
-    path.AddRoundedRect(*this);
-    return path.Intersects(quad);
-  }
-
   const auto [quad_min, quad_max] = quad.Extents();
 
   // For each corner, first check the remaining (two) separating axes of the
@@ -375,23 +369,14 @@ String FloatRoundedRect::Radii::ToString() const {
       BottomRight().ToString().c_str());
 }
 
-String FloatRoundedRect::CornerCurvature::ToString() const {
-  return String::Format("tl:%.2f; tr:%.2f; bl:%.2f; br:%.2f", TopLeft(),
-                        TopRight(), BottomLeft(), BottomRight());
-}
-
 String FloatRoundedRect::ToString() const {
   if (Rect() == gfx::RectF(InfiniteIntRect())) {
     return "InfiniteIntRect";
   }
   if (GetRadii().IsZero())
     return String(Rect().ToString());
-  if (HasSimpleRoundedCurvature()) {
-    return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() + ")";
-  }
 
-  return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() +
-         ") curvature:(" + GetCornerCurvature().ToString() + ")";
+  return String(Rect().ToString()) + " radii:(" + GetRadii().ToString() + ")";
 }
 
 }  // namespace blink

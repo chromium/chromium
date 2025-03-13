@@ -152,7 +152,7 @@ constexpr CheckPseudoHasResult kCheckPseudoHasResultSomeChildrenChecked = 1
 // :has(<argument-selector>) checking result on each element.
 // - hashmap[<element>] = <result>
 using ElementCheckPseudoHasResultMap =
-    HeapHashMap<Member<const Element>, CheckPseudoHasResult>;
+    GCedHeapHashMap<Member<const Element>, CheckPseudoHasResult>;
 using CheckPseudoHasResultCache =
     HeapHashMap<String, Member<ElementCheckPseudoHasResultMap>>;
 
@@ -176,8 +176,8 @@ using CheckPseudoHasResultCache =
 // filter for each element.
 // - hashmap[<element>] = <filter>
 using ElementCheckPseudoHasFastRejectFilterMap =
-    HeapHashMap<Member<const Element>,
-                std::unique_ptr<CheckPseudoHasFastRejectFilter>>;
+    GCedHeapHashMap<Member<const Element>,
+                    std::unique_ptr<CheckPseudoHasFastRejectFilter>>;
 using CheckPseudoHasFastRejectFilterCache =
     HeapHashMap<CheckPseudoHasArgumentTraversalType,
                 Member<ElementCheckPseudoHasFastRejectFilterMap>>;

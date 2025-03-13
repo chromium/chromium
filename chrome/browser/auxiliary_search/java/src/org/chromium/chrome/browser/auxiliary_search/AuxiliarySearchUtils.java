@@ -27,8 +27,6 @@ public class AuxiliarySearchUtils {
     @VisibleForTesting static final String TAB_DONATE_FILE_NAME = "tabs_donate";
     @VisibleForTesting static final int MODULE_SHOWN_MAX_IMPRESSIONS = 3;
 
-    @VisibleForTesting static final int DEFAULT_TTL_HOURS = 168;
-
     @VisibleForTesting
     static final BooleanCachedFeatureParam SKIP_DEVICE_CHECK =
             ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipDeviceCheck;

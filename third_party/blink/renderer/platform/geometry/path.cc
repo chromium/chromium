@@ -33,6 +33,8 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
+#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/skia_geometry_utils.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -124,7 +126,7 @@ void AddCornerShape(SkPath& path,
       target_point = corner_rect.origin();
       break;
   }
-  if (curvature == FloatRoundedRect::CornerCurvature::kBevel) {
+  if (curvature == ContouredRect::CornerCurvature::kBevel) {
     path.lineTo(gfx::PointFToSkPoint(target_point));
   } else if (curvature <= 0.001) {
     // Notch or very close to it, draw two lines.
@@ -646,31 +648,34 @@ void Path::AddRoundedRect(const FloatRoundedRect& rect, bool clockwise) {
     return;
   }
 
-  if (rect.HasSimpleRoundedCurvature()) {
-    path_.addRRect(SkRRect(rect),
-                   clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
-                   /* start at upper-left after corner radius */ 0);
+  path_.addRRect(SkRRect(rect),
+                 clockwise ? SkPathDirection::kCW : SkPathDirection::kCCW,
+                 /* start at upper-left after corner radius */ 0);
+}
+
+void Path::AddContouredRect(const ContouredRect& contoured_rect) {
+  const FloatRoundedRect& rect = contoured_rect.AsRoundedRect();
+  if (contoured_rect.HasRoundCurvature()) {
+    AddRoundedRect(rect);
     return;
   }
 
-  // Counterclockwise rounded rects are only available in canvas, and there is
-  // no canvas API (at this moment) to change corner curvature.
-  DCHECK(clockwise);
-
+  const ContouredRect::CornerCurvature& curvature =
+      contoured_rect.GetCornerCurvature();
   path_.moveTo(gfx::PointFToSkPoint(rect.TopLeftCorner().top_right()));
 
   path_.lineTo(gfx::PointFToSkPoint((rect.TopRightCorner().origin())));
   AddCornerShape(path_, rect.TopRightCorner(), Corner::kTopRight,
-                 rect.GetCornerCurvature().TopRight());
+                 curvature.TopRight());
   path_.lineTo(gfx::PointFToSkPoint((rect.BottomRightCorner().top_right())));
   AddCornerShape(path_, rect.BottomRightCorner(), Corner::kBottomRight,
-                 rect.GetCornerCurvature().BottomRight());
+                 curvature.BottomRight());
   path_.lineTo(gfx::PointFToSkPoint(rect.BottomLeftCorner().bottom_right()));
   AddCornerShape(path_, rect.BottomLeftCorner(), Corner::kBottomLeft,
-                 rect.GetCornerCurvature().BottomLeft());
+                 curvature.BottomLeft());
   path_.lineTo(gfx::PointFToSkPoint(rect.TopLeftCorner().bottom_left()));
   AddCornerShape(path_, rect.TopLeftCorner(), Corner::kTopLeft,
-                 rect.GetCornerCurvature().TopLeft());
+                 curvature.TopLeft());
 }
 
 void Path::AddPath(const Path& src, const AffineTransform& transform) {

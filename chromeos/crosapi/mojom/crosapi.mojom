@@ -30,14 +30,12 @@ import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
-import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
-import "chromeos/crosapi/mojom/login_screen_storage.mojom";
 import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
@@ -50,7 +48,6 @@ import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/print_preview_cros.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
-import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
@@ -247,12 +244,7 @@ interface Crosapi {
   BindFileSystemProviderService@81(
       pending_receiver<FileSystemProviderService> receiver);
 
-  // Binds the ForceInstalledTracker interface for track the status of
-  // force-installed extensions.
-  // Added in M96.
-  [MinVersion=53]
-  BindForceInstalledTracker@57(
-    pending_receiver<ForceInstalledTracker> receiver);
+  // BindForceInstalledTracker@57 was removed.
 
   // Binds the full restore interface for getting session restore data needed
   // to display the pine dialog.
@@ -300,9 +292,7 @@ interface Crosapi {
   // Added in M99.
   [MinVersion=63] BindLogin@67(pending_receiver<Login> receiver);
 
-  // Binds the login screen storage service.
-  [MinVersion=64] BindLoginScreenStorage@68(
-      pending_receiver<LoginScreenStorage> receiver);
+  // BindLoginScreenStorage@68 was removed.
 
   // Binds the login state service.
   [MinVersion=57] BindLoginState@61(pending_receiver<LoginState> receiver);

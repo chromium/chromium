@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -142,6 +143,8 @@ public class DiscountsIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/402808581")
+    // TODO(402808581): Fix test and add integration tests for price tracking and price insights.
     public void testDiscountsContextualPageActionOnClickOpenBottomSheet() {
         mActivityTestRule.loadUrl(mTestPageWithDiscounts);
         ViewUtils.waitForVisibleView(

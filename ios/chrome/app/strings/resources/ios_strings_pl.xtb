@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Klucz dostępu</translation>
 <translation id="1030376737535466765">Otwórz Menedżera haseł</translation>
 <translation id="1035980983510608210">Zamknięcie wszystkich kart spowoduje też zamknięcie przypiętych kart.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
 <translation id="1041322626941363065">Ostrzegaj, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
 <translation id="1044891598689252897">Strony będą działać normalnie</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Pliki cookie i dane stron</translation>
 <translation id="1312721752506309252">Włączona jest silniejsza ochrona</translation>
 <translation id="1317821187353201763">Zamknij kartę</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Śledź tę przesyłkę}few{Śledź wszystkie przesyłki}many{Śledź wszystkie przesyłki}other{Śledź wszystkie przesyłki}}</translation>
 <translation id="1321993286294231467">Błąd podczas zapisywania obrazu.</translation>
 <translation id="1322735045095424339">Twoja organizacja wymaga trybu incognito</translation>
 <translation id="1323735185997015385">Usuń</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Wybrane: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Usuwanie klucza</translation>
 <translation id="1712341189152602203">Obecne dane przeglądania zostaną powiązane z kontem <ph name="USER_EMAIL" />. Te dane mogą być widoczne dla Twojej organizacji.</translation>
-<translation id="1713777106376424209">Firma kurierska:</translation>
 <translation id="1715515772563243997">Jeśli ufasz stronie <ph name="SITE" />, możesz użyć zapisanego hasła, aby się zalogować.</translation>
 <translation id="1718835860248848330">Ostatnia godzina</translation>
 <translation id="1728549374069268714">Wklej i otwórz</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Śledzenie cen i statystyki</translation>
 <translation id="1820195936249950412">Zaloguj się na prawidłowe konto</translation>
 <translation id="1820259098641718022">Dodano do listy Do przeczytania</translation>
-<translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">Alerty o otrzymywaniu kart z innych urządzeń.</translation>
 <translation id="1827529786398596735">Naciśnij i przytrzymaj ekran główny</translation>
 <translation id="1832848789136765277">Aby zapewnić sobie stały dostęp do zsynchronizowanych danych, potwierdź swoją tożsamość</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Selektor jednostek</translation>
 <translation id="2330607597130465898">Brak ochrony</translation>
 <translation id="233375395665273385">Usuń i wyloguj się</translation>
-<translation id="2348630484974447747">Przesyłka</translation>
 <translation id="2351097562818989364">Ustawienia tłumaczenia zostały zresetowane.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Hasło do usługi {DOMAIN_ONE} możesz zapisać na swoim koncie Google {EMAIL}.}=2{Hasła do usług {DOMAIN_ONE} i {DOMAIN_TWO} możesz zapisać na koncie Google {EMAIL}.}=3{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innej możesz zapisać na koncie Google {EMAIL}.}few{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innych możesz zapisać na koncie Google {EMAIL}.}many{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innych możesz zapisać na koncie Google {EMAIL}.}other{Hasła do usług {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} innej możesz zapisać na koncie Google {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Domyślny widok witryny</translation>
@@ -797,7 +792,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="446314443268698477">Kupuj, tłumacz i rozpoznawaj to, co widzisz na obrazie z aparatu lub na zdjęciach.</translation>
 <translation id="4469324811108161144">Limit znaków w notatce wynosi <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Numer przesyłki</translation>
 <translation id="4471472356135655769">Nie można wyeksportować haseł</translation>
 <translation id="4473608001744970767">Ukryj opcję Śledzenie cen</translation>
 <translation id="4474142134969976028">Brak pasujących wyników</translation>
@@ -1289,7 +1283,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="647867789226964031">Zmień hasła</translation>
 <translation id="6494931198667773526">Zakończenie</translation>
 <translation id="6495521251906266731">Wybierz, co chcesz zrobić z dotychczasowymi danymi przeglądania na tym urządzeniu, np. z hasłami czy historią.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Wyłącz śledzenie tej przesyłki}few{Wyłącz śledzenie wszystkich przesyłek}many{Wyłącz śledzenie wszystkich przesyłek}other{Wyłącz śledzenie wszystkich przesyłek}}</translation>
 <translation id="6503077044568424649">Najczęstsze</translation>
 <translation id="6503763061813913607">Powiadomienia o kontroli zabezpieczeń</translation>
 <translation id="6505334220040167806">Zwiń grupę kart.</translation>
@@ -1761,7 +1754,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8481184073299279701">Kliknij przycisk „Uruchom rejestrowanie”, aby rejestrować przyszłe dzienniki i błędy konsoli JavaScriptu ze wszystkich kart. Dzienniki będą gromadzone (i przechowywane tylko w pamięci) do czasu zamknięcia tej strony lub kliknięcia „Zatrzymaj rejestrowanie”.</translation>
 <translation id="8487667956631253959">Włączono</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Nie udało się utworzyć linku</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8505361906966222822">Zapisz w…</translation>

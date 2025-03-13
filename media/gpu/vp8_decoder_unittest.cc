@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "media/base/test_data_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +74,7 @@ void VP8DecoderTest::SetUp() {
 
   // Sets default behaviors for mock methods for convenience.
   ON_CALL(*accelerator_, CreateVP8Picture())
-      .WillByDefault(Return(new VP8Picture()));
+      .WillByDefault(Return(base::MakeRefCounted<VP8Picture>()));
   ON_CALL(*accelerator_, SubmitDecode(_, _)).WillByDefault(Return(true));
   ON_CALL(*accelerator_, OutputPicture(_)).WillByDefault(Return(true));
 

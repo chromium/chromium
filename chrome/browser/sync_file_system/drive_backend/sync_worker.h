@@ -28,8 +28,8 @@ class DriveUploaderInterface;
 }
 
 namespace extensions {
+class ExtensionRegistrar;
 class ExtensionRegistry;
-class ExtensionServiceInterface;
 }
 
 namespace storage {
@@ -57,11 +57,11 @@ class SyncEngineInitializer;
 class SyncWorker : public SyncWorkerInterface,
                    public SyncTaskManager::Client {
  public:
-  SyncWorker(const base::FilePath& base_dir,
-             const base::WeakPtr<extensions::ExtensionServiceInterface>&
-                 extension_service,
-             extensions::ExtensionRegistry* extension_registry,
-             leveldb::Env* env_override);
+  SyncWorker(
+      const base::FilePath& base_dir,
+      const base::WeakPtr<extensions::ExtensionRegistrar> extension_registrar,
+      const base::WeakPtr<extensions::ExtensionRegistry>& extension_registry,
+      leveldb::Env* env_override);
 
   SyncWorker(const SyncWorker&) = delete;
   SyncWorker& operator=(const SyncWorker&) = delete;
@@ -120,9 +120,8 @@ class SyncWorker : public SyncWorkerInterface,
                      SyncStatusCode status);
   void UpdateRegisteredApps();
   static void QueryAppStatusOnUIThread(
-      const base::WeakPtr<extensions::ExtensionServiceInterface>&
-          extension_service_ptr,
-      extensions::ExtensionRegistry* extension_registry,
+      const base::WeakPtr<extensions::ExtensionRegistrar>& extension_registrar,
+      const base::WeakPtr<extensions::ExtensionRegistry>& extension_registry,
       const std::vector<std::string>* app_ids,
       AppStatusMap* status,
       base::OnceClosure callback);
@@ -167,9 +166,8 @@ class SyncWorker : public SyncWorkerInterface,
 
   std::unique_ptr<SyncTaskManager> task_manager_;
 
-  base::WeakPtr<extensions::ExtensionServiceInterface> extension_service_;
-  // Only guaranteed to be valid if |extension_service_| is not null.
-  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  base::WeakPtr<extensions::ExtensionRegistrar> extension_registrar_;
+  base::WeakPtr<extensions::ExtensionRegistry> extension_registry_;
 
   std::unique_ptr<SyncEngineContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;

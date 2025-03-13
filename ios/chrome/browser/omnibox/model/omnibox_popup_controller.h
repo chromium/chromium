@@ -7,18 +7,24 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
 #import "ui/base/window_open_disposition.h"
 
 struct AutocompleteMatch;
 class AutocompleteResult;
+@class AutocompleteResultWrapper;
 @class OmniboxAutocompleteController;
 @protocol OmniboxPopupControllerDelegate;
 
 /// Controller for the omnibox popup.
-@interface OmniboxPopupController : NSObject
+@interface OmniboxPopupController : NSObject <AutocompleteResultWrapperDelegate>
 
 /// Delegate of the omnibox popup controller.
 @property(nonatomic, weak) id<OmniboxPopupControllerDelegate> delegate;
+
+/// Autcomplete result wrapper.
+@property(nonatomic, strong)
+    AutocompleteResultWrapper* autocompleteResultWrapper;
 
 /// Controller of autocomplete.
 @property(nonatomic, weak)
@@ -26,6 +32,9 @@ class AutocompleteResult;
 
 /// Whether the popup currently has suggestions.
 @property(nonatomic, assign, readonly) BOOL hasSuggestions;
+
+// Disconnects the popup controller.
+- (void)disconnect;
 
 #pragma mark - OmniboxAutocomplete event
 

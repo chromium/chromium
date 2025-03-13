@@ -4350,11 +4350,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "explicit-browser-signin-ui-on-desktop",
-    "owners": [ "droger@chromium.org", "rsult@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "extension-disable-unsupported-developer-mode-extensions",
     "owners": [ "richche@google.com" ],
     "expiry_milestone": 143
@@ -7635,7 +7630,7 @@
   {
       "name": "replace-sync-promos-with-sign-in-promos",
       "owners": [ "myuu@google.com", "bsazonov@chromium.org", "chrome-signin-team@google.com" ],
-      "expiry_milestone": 136
+      "expiry_milestone": 137
   },
   {
     "name": "reset-audio-selection-improvement-pref",
@@ -8352,6 +8347,14 @@
       "chrome-kids-eng@google.com"
     ],
     "expiry_milestone": 134
+  },
+  {
+    "name": "supervised-user-block-interstitial-v3",
+    "owners": [
+      "ddac@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 140
   },
   {
     "name": "supervised-user-local-web-approvals",
@@ -9245,21 +9248,6 @@
     "name": "wayland-ui-scaling",
     "owners": [ "nickdiego@igalia.com", "fangzhoug@chromium.org", "thomasanderson@chromium.org"],
     "expiry_milestone": 141
-  },
-  {
-    "name": "web-app-sync-generated-icon-background-fix",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "web-app-sync-generated-icon-retroactive-fix",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "web-app-sync-generated-icon-update-fix",
-    "owners": [ "alancutter@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 130
   },
   {
     "name": "web-app-user-display-mode-sync-browser-mitigation",

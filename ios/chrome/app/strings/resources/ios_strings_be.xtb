@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030376737535466765">Адкрыць Менеджар пароляў</translation>
 <translation id="1035980983510608210">Пры закрыцці ўсіх укладак закрыюцца і замацаваныя ўкладкі.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1041322626941363065">Папярэджваць мяне ў выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="1044891598689252897">Сайты будуць працаваць нармальна</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Файлы cookie, даныя сайтаў</translation>
 <translation id="1312721752506309252">Палепшаная абарона ўключана</translation>
 <translation id="1317821187353201763">Закрыць укладку</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Адсочваць гэту пасылку}one{Адсочваць усе пасылкі}few{Адсочваць усе пасылкі}many{Адсочваць усе пасылкі}other{Адсочваць усе пасылкі}}</translation>
 <translation id="1321993286294231467">Памылка пры захаванні фота.</translation>
 <translation id="1322735045095424339">Ваша арганізацыя патрабуе выкарыстання рэжыму інкогніта</translation>
 <translation id="1323735185997015385">Выдаліць</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Выбрана: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Выдаленне ключа доступу</translation>
 <translation id="1712341189152602203">Існуючыя даныя пра работу ў браўзеры будуць прывязаны да <ph name="USER_EMAIL" />. Гэтыя даныя можа праглядаць ваша арганізацыя.</translation>
-<translation id="1713777106376424209">Служба дастаўкі</translation>
 <translation id="1715515772563243997">Калі вы давяраеце сайту <ph name="SITE" />, можаце выкарыстаць для ўваходу захаваны пароль.</translation>
 <translation id="1718835860248848330">За апошнюю гадзіну</translation>
 <translation id="1728549374069268714">Уставіць і перайсці</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Адсочвайце цэны і праглядайце іх статыстыку</translation>
 <translation id="1820195936249950412">Увайдзіце ў сапраўдны ўліковы запіс</translation>
 <translation id="1820259098641718022">Дададзена ў Спіс чытання</translation>
-<translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">Абвесткі аб атрыманні ўкладак з іншых прылад.</translation>
 <translation id="1827529786398596735">Націсніце на галоўны экран і ўтрымлівайце</translation>
 <translation id="1832848789136765277">Каб не страціць доступ да сваіх сінхранізаваных даных, пацвердзіце сваю асобу</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Інструмент выбару адзінак</translation>
 <translation id="2330607597130465898">Без абароны</translation>
 <translation id="233375395665273385">Выдаліць і выйсці</translation>
-<translation id="2348630484974447747">Пасылка</translation>
 <translation id="2351097562818989364">Налады перакладу скінуты.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Вы можаце захаваць пароль для {DOMAIN_ONE} ва Уліковым запісе Google {EMAIL}.}=2{Вы можаце захаваць паролі для {DOMAIN_ONE} і {DOMAIN_TWO} ва Уліковым запісе Google {EMAIL}.}=3{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}one{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}few{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}many{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} даменаў ва Уліковым запісе Google {EMAIL}.}other{Вы можаце захаваць паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і яшчэ {OTHER_DOMAINS_COUNT} дамена ва Уліковым запісе Google {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Стандартны рэжым паказу сайтаў</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Разгрупаваць</translation>
 <translation id="446314443268698477">Знаходзьце тавары, перакладайце тэксты і распазнавайце навакольныя аб’екты з дапамогай камеры ці фота.</translation>
 <translation id="4469324811108161144">Максімальная колькасць сімвалаў, якія можа змяшчаць нататка, – <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Нумар пасылкі</translation>
 <translation id="4471472356135655769">Не ўдалося экспартаваць паролі</translation>
 <translation id="4473608001744970767">Схаваць пункт "Адсочванне цэн"</translation>
 <translation id="4474142134969976028">Адпаведных вынікаў няма</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">Змяніце паролі</translation>
 <translation id="6494931198667773526">Заканчэнне</translation>
 <translation id="6495521251906266731">Выберыце, што зрабіць з захаванымі на гэтай прыладзе данымі пра работу ў браўзеры, у прыватнасці паролямі, запісамі ў гісторыі і іншымі.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Перастаць адсочваць гэту пасылку}one{Перастаць адсочваць усе пасылкі}few{Перастаць адсочваць усе пасылкі}many{Перастаць адсочваць усе пасылкі}other{Перастаць адсочваць усе пасылкі}}</translation>
 <translation id="6503077044568424649">Часцей за ўсё наведваліся</translation>
 <translation id="6503763061813913607">Апавяшчэнні праверкі бяспекі</translation>
 <translation id="6505334220040167806">Згарнуць групу ўкладак.</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">Каб пачаць збор журналаў кансолі JavaScript і памылак з усіх укладак, націсніце кнопку "Пачаць вядзенне журнала". Журналы будуць збірацца (і захоўвацца толькі ў памяці), пакуль гэта старонка не будзе закрыта або пакуль вы не націснеце "Спыніць вядзенне журнала".</translation>
 <translation id="8487667956631253959">Уключаны</translation>
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Не ўдалося стварыць спасылку</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8505361906966222822">Куды захаваць…</translation>

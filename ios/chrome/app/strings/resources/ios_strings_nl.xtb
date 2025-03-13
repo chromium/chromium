@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1030376737535466765">Wachtwoordmanager openen</translation>
 <translation id="1035980983510608210">Als je alle tabbladen sluit, worden ook vastgezette tabbladen gesloten.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
 <translation id="1041322626941363065">Waarschuwen als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies en sitegegevens</translation>
 <translation id="1312721752506309252">Geoptimaliseerde beveiliging staat aan</translation>
 <translation id="1317821187353201763">Tabblad sluiten</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Dit pakket volgen}other{Alle pakketten volgen}}</translation>
 <translation id="1321993286294231467">Fout bij opslaan van afbeelding.</translation>
 <translation id="1322735045095424339">Je organisatie vereist de incognitomodus</translation>
 <translation id="1323735185997015385">Verwijderen</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> geselecteerd</translation>
 <translation id="1709916727352927457">Toegangscode verwijderen</translation>
 <translation id="1712341189152602203">Bestaande browsegegevens worden gekoppeld aan <ph name="USER_EMAIL" />. Deze gegevens kunnen zichtbaar zijn voor je organisatie.</translation>
-<translation id="1713777106376424209">Bezorgd door</translation>
 <translation id="1715515772563243997">Als je <ph name="SITE" /> vertrouwt, kun je een opgeslagen wachtwoord gebruiken om in te loggen.</translation>
 <translation id="1718835860248848330">Afgelopen uur</translation>
 <translation id="1728549374069268714">Plakken en zoeken</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Prijzen volgen en inzichten</translation>
 <translation id="1820195936249950412">Log in met een geldig account</translation>
 <translation id="1820259098641718022">Toegevoegd aan leeslijst</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Meldingen als je tabbladen van je andere apparaten krijgt.</translation>
 <translation id="1827529786398596735">Houd je vinger op het startscherm</translation>
 <translation id="1832848789136765277">Bevestig dat jij het bent zodat je altijd toegang hebt tot je synchronisatiegegevens</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Eenheidskiezer</translation>
 <translation id="2330607597130465898">Geen beveiliging</translation>
 <translation id="233375395665273385">Verwijderen en uitloggen</translation>
-<translation id="2348630484974447747">Pakket</translation>
 <translation id="2351097562818989364">Je vertaalinstellingen zijn opnieuw ingesteld.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Je kunt je wachtwoord voor {DOMAIN_ONE} opslaan in je Google-account, {EMAIL}.}=2{Je kunt je wachtwoorden voor {DOMAIN_ONE} en {DOMAIN_TWO} opslaan in je Google-account, {EMAIL}.}=3{Je kunt je wachtwoorden voor {DOMAIN_ONE}, {DOMAIN_TWO} en nog {OTHER_DOMAINS_COUNT} domein opslaan in je Google-account, {EMAIL}.}other{Je kunt je wachtwoorden voor {DOMAIN_ONE}, {DOMAIN_TWO} en nog {OTHER_DOMAINS_COUNT} domeinen opslaan in je Google-account, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Standaard siteweergave</translation>
@@ -797,7 +792,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4460014764210899310">Groeperen ongedaan maken</translation>
 <translation id="446314443268698477">Winkel, vertaal en identificeer wat je ziet met je camera of foto's.</translation>
 <translation id="4469324811108161144">Notities mogen maximaal <ph name="CHARACTER_LIMIT" /> tekens bevatten.</translation>
-<translation id="4469834037720363704">Pakketnummer</translation>
 <translation id="4471472356135655769">Kan wachtwoorden niet exporteren</translation>
 <translation id="4473608001744970767">Prijs volgen verbergen</translation>
 <translation id="4474142134969976028">Geen overeenkomende resultaten</translation>
@@ -1289,7 +1283,6 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="647867789226964031">Je wachtwoorden wijzigen</translation>
 <translation id="6494931198667773526">Eindigt</translation>
 <translation id="6495521251906266731">Kies wat je wilt doen met de bestaande browsegegevens op dit apparaat, zoals wachtwoorden en geschiedenis.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Dit pakket niet meer volgen}other{Geen pakketten meer volgen}}</translation>
 <translation id="6503077044568424649">Meest bezocht</translation>
 <translation id="6503763061813913607">Meldingen van Veiligheidscheck</translation>
 <translation id="6505334220040167806">Tabbladgroep samenvouwen.</translation>
@@ -1761,7 +1754,6 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8481184073299279701">Tik op de knop Logboekregistratie starten om toekomstige logboeken van JavaScript-console en fouten van alle tabbladen te verzamelen. Er worden logboeken verzameld (en alleen opgeslagen in het geheugen) totdat de pagina wordt gesloten of op Logboekregistratie stoppen wordt getikt.</translation>
 <translation id="8487667956631253959">Aan</translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Kan link niet maken</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8505361906966222822">Opslaan in…</translation>

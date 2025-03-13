@@ -393,7 +393,15 @@ external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/pr
 external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-focused-nested-containers.html
 external/wpt/css/css-scroll-snap/snap-fling-in-large-area.html
 external/wpt/css/css-shadow-parts/interaction-with-nested-pseudo-class.html
-external/wpt/css/css-shapes/shape-outside/values/shape-*
+external/wpt/css/css-shapes/shape-outside/values/shape-margin-001.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-004.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-circle-005.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-computed-shape-000.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-ellipse-004.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-ellipse-005.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-inset-003.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-polygon-004.html
+external/wpt/css/css-shapes/shape-outside/values/shape-outside-shape-arguments-000.html
 # Known to be very flaky: https://crbug.com/375344326
 external/wpt/css/css-sizing/*
 external/wpt/css/css-tables/tentative/baseline-table.html
@@ -1011,16 +1019,21 @@ external/wpt/css/css-page/monolithic-overflow-023-print.html
 external/wpt/css/css-page/monolithic-overflow-028-print.html
 external/wpt/css/css-page/monolithic-overflow-030-print.html
 external/wpt/css/css-page/page-background-001-print.html
+external/wpt/css/css-page/page-rule-specificity-001-print.html
+external/wpt/css/css-page/page-rule-specificity-002-print.html
 external/wpt/css/css-page/page-box-002-print.html
 external/wpt/css/css-page/page-box-003-print.html
 external/wpt/css/css-page/page-box-006-print.html
 external/wpt/css/css-page/page-box-007-print.html
 external/wpt/css/css-page/page-box-008-print.html
 external/wpt/css/css-page/page-box-009-print.html
+external/wpt/css/css-page/page-box-010-print.html
 external/wpt/css/css-page/page-box-011-print.html
 external/wpt/css/css-page/page-margin-006-print.html
 external/wpt/css/css-page/page-margin-007-print.html
+external/wpt/css/css-page/page-size-006-print.html
 external/wpt/css/css-page/page-size-010-print.html
+external/wpt/css/css-page/page-size-012-print.html
 external/wpt/css/css-page/page-size-013-print.html
 external/wpt/css/css-page/page-size-014-print.html
 external/wpt/css/css-page/page-size-016-print.tentative.html
@@ -1117,6 +1130,7 @@ virtual/fedcm-multi-idp/external/wpt/fedcm/fedcm-multi-idp/fedcm-multi-idp-media
 virtual/fedcm-register/external/wpt/fedcm/fedcm-register/fedcm-no-registered-idps.https.html
 virtual/fenced-frame-mparch/external/wpt/fetch/private-network-access/fenced-frame.tentative.https.window.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-fenced-navigations-replace-do-not-contribute-to-joint.https.html
+virtual/fenced-frame-mparch/external/wpt/fenced-frame/history-length-outer-page-navigation-not-reflected-in-fenced.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/key-scrolling.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/notification.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.https.html

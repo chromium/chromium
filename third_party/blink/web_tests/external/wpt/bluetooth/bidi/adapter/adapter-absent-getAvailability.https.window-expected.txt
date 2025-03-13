@@ -1,2 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] getAvailability() resolves with false if the system does not have an adapter.

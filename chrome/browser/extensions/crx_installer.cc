@@ -109,11 +109,12 @@ CrxInstaller::CrxInstaller(ExtensionService* service,
                            std::unique_ptr<ExtensionInstallPrompt> client,
                            const InstallApproval* approval)
     : profile_(service->profile()),
-      install_directory_(service->install_directory()),
+      registrar_(ExtensionRegistrar::Get(profile_)),
+      install_directory_(registrar_->install_directory()),
       install_source_(mojom::ManifestLocation::kInternal),
       approved_(false),
       fail_install_if_unexpected_version_(false),
-      extensions_enabled_(service->extensions_enabled()),
+      extensions_enabled_(registrar_->extensions_enabled()),
       delete_source_(false),
       service_(service),
       // See header file comment on |client_| for why we use a raw pointer here.
@@ -612,6 +613,7 @@ void CrxInstaller::OnProfileWillBeDestroyed(Profile* profile) {
   profile_ = nullptr;
   // The service will be deleted shortly.
   service_ = nullptr;
+  registrar_ = nullptr;
 }
 
 void CrxInstaller::CheckInstall() {
@@ -831,8 +833,7 @@ void CrxInstaller::OnInstallPromptDone(
         DCHECK_NE(
             payload.result,
             ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
-        ExtensionRegistrar::Get(profile_)->GrantPermissionsAndEnableExtension(
-            *extension());
+        registrar_->GrantPermissionsAndEnableExtension(*extension());
       } else {
         WithholdingBehavior withholding_behavior =
             payload.result == ExtensionInstallPrompt::Result::

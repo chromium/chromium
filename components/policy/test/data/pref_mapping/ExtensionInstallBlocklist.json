@@ -8,21 +8,17 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionInstallBlocklist": [
-            "*"
-          ]
-        },
-        "prefs": {
-          "extensions.install.denylist": {
-            "value": [
-              "*"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.install.denylist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "*"
+        ],
+        [
+          "lcncmkcnkcdbbanbjakcencbaoegdjlp"
+        ]
+      ]
+    }
   }
 ]

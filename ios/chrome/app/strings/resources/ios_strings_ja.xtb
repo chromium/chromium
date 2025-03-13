@@ -10,7 +10,6 @@
 <translation id="102916930470544692">パスキー</translation>
 <translation id="1030376737535466765">パスワード マネージャーを開く</translation>
 <translation id="1035980983510608210">すべてのタブを閉じると、固定されたタブも閉じます。</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1041322626941363065">データ侵害によりパスワードが漏洩した場合に警告する</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookie、サイトデータ</translation>
 <translation id="1312721752506309252">保護強化機能がオンになっています</translation>
 <translation id="1317821187353201763">タブを閉じる</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{この荷物を追跡}other{すべての荷物を追跡}}</translation>
 <translation id="1321993286294231467">画像の保存中にエラーが発生しました。</translation>
 <translation id="1322735045095424339">組織がシークレット モードを使用するよう求めています</translation>
 <translation id="1323735185997015385">削除</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />件選択しました</translation>
 <translation id="1709916727352927457">パスキーの削除</translation>
 <translation id="1712341189152602203">既存の閲覧データは <ph name="USER_EMAIL" /> にリンクされます。このデータは組織によって閲覧される可能性があります。</translation>
-<translation id="1713777106376424209">配送会社:</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> を信頼できる場合は、保存済みのパスワードを使用してログインできます。</translation>
 <translation id="1718835860248848330">過去 1 時間</translation>
 <translation id="1728549374069268714">貼り付けて移動</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">価格のトラッキングと分析情報</translation>
 <translation id="1820195936249950412">有効なアカウントでログインしてください</translation>
 <translation id="1820259098641718022">リーディング リストに追加しました</translation>
-<translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">他のデバイスからタブを受け取ったときに通知します。</translation>
 <translation id="1827529786398596735">ホーム画面を長押し</translation>
 <translation id="1832848789136765277">同期データに常にアクセスできるようにするには、本人確認を行ってください</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">単位セレクタ</translation>
 <translation id="2330607597130465898">保護なし</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
-<translation id="2348630484974447747">荷物</translation>
 <translation id="2351097562818989364">翻訳設定をリセットしました。</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} のパスワードを Google アカウント（{EMAIL}）に保存できます。}=2{{DOMAIN_ONE} と {DOMAIN_TWO} のパスワードを Google アカウント（{EMAIL}）に保存できます。}=3{{DOMAIN_ONE}、{DOMAIN_TWO}、他 {OTHER_DOMAINS_COUNT} 件のパスワードを Google アカウント（{EMAIL}）に保存できます。}other{{DOMAIN_ONE}、{DOMAIN_TWO}、他 {OTHER_DOMAINS_COUNT} 件のパスワードを Google アカウント（{EMAIL}）に保存できます。}}</translation>
 <translation id="2353953000228441783">デフォルトのサイトビュー</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">グループを解除</translation>
 <translation id="446314443268698477">カメラで撮影したアイテムや写真のアイテムを購入、翻訳、特定できます。</translation>
 <translation id="4469324811108161144">メモは <ph name="CHARACTER_LIMIT" /> 文字以下で入力してください。</translation>
-<translation id="4469834037720363704">荷物番号</translation>
 <translation id="4471472356135655769">パスワードをエクスポートできません</translation>
 <translation id="4473608001744970767">[価格を追跡] を非表示</translation>
 <translation id="4474142134969976028">一致する結果がありません</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">パスワードを変更してください</translation>
 <translation id="6494931198667773526">終了</translation>
 <translation id="6495521251906266731">このデバイスの既存の閲覧データ（パスワードや履歴など）の処理方法を選択してください。</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{この荷物の追跡を停止}other{すべての荷物の追跡を停止}}</translation>
 <translation id="6503077044568424649">よくアクセスするページ</translation>
 <translation id="6503763061813913607">安全チェックの通知</translation>
 <translation id="6505334220040167806">タブグループを閉じる。</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">[ログ記録を開始] をタップすると、今後 JavaScript コンソールに表示されるすべてのタブのログやエラーが収集されます。ログは、このページを閉じるか [ログ記録を停止] をタップするまで収集（およびメモリにのみ保存）されます。</translation>
 <translation id="8487667956631253959">オン</translation>
 <translation id="8487700953926739672">オフラインでの利用</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">リンクを作成できません</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8505361906966222822">保存先を選択…</translation>

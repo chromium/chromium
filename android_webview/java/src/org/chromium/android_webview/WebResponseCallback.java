@@ -7,6 +7,8 @@ package org.chromium.android_webview;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
+import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 /**
@@ -15,15 +17,13 @@ import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
  * same callback object multiple times is not permitted and the implementation should always
  * eventually call the callback.
  */
-// TODO(crbug.com/395117566): Add a way to detect that the callback object has been "abandoned" (the
-// app didn't call intercept and didn't keep a reference to it either) and then do something to
-// clean it up; The handling should probably throw an exception when this happens.
 @JNINamespace("android_webview")
 public final class WebResponseCallback {
     private static final String TAG = "WebRspnsCllbck";
     private final int mRequestId;
     private AwContentsClient mAwContentsClient;
     private final AwWebResourceRequest mRequest;
+    private boolean mInterceptCalled;
 
     public WebResponseCallback(int requestId, AwWebResourceRequest request) {
         mRequestId = requestId;
@@ -55,6 +55,7 @@ public final class WebResponseCallback {
                                 response, /* raisedException= */ false))) {
             throw new IllegalStateException("Request has already been responded to.");
         }
+        mInterceptCalled = true;
     }
 
     public void setAwContentsClient(AwContentsClient client) {
@@ -66,5 +67,25 @@ public final class WebResponseCallback {
                 .finishShouldInterceptRequest(
                         mRequestId,
                         new AwWebResourceInterceptResponse(null, /* raisedException= */ true));
+    }
+
+    // Performs cleanup in the possible event where the callback object goes unused.
+    @SuppressWarnings("Finalize")
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            if (!mInterceptCalled) {
+                String errMsg =
+                        "Client's shouldInterceptRequestAsync implementation did not respond for "
+                                + mRequest.url;
+                Log.e(TAG, errMsg);
+                clientRaisedException();
+            }
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.ShouldInterceptRequest.Async.CallbackLeakedWithoutResponse",
+                    !mInterceptCalled);
+        } finally {
+            super.finalize(); // Call superclass finalize() to ensure proper cleanup.
+        }
     }
 }

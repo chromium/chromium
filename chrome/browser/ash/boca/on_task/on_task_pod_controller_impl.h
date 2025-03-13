@@ -18,6 +18,7 @@
 #include "ui/views/widget/widget.h"
 
 class Browser;
+class ImmersiveRevealedLock;
 
 namespace ash {
 
@@ -35,10 +36,12 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
   void MaybeNavigateToPreviousPage() override;
   void MaybeNavigateToNextPage() override;
   void ReloadCurrentPage() override;
+  void ToggleTabStripVisibility(bool show) override;
   void SetSnapLocation(OnTaskPodSnapLocation snap_location) override;
   void OnPageNavigationContextChanged() override;
   bool CanNavigateToPreviousPage() override;
   bool CanNavigateToNextPage() override;
+  bool CanToggleTabStripVisibility() override;
 
   // aura::WindowObserver:
   void OnWindowBoundsChanged(aura::Window* window,
@@ -48,6 +51,7 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
 
   // Component accessors used for testing purposes.
   views::Widget* GetPodWidgetForTesting();
+  ImmersiveRevealedLock* GetTabStripRevealLockForTesting();
   OnTaskPodSnapLocation GetSnapLocationForTesting() const;
 
  private:
@@ -60,6 +64,12 @@ class OnTaskPodControllerImpl : public OnTaskPodController,
 
   // Pod widget that contains the `OnTaskPodView`.
   std::unique_ptr<views::Widget> pod_widget_;
+
+  // Prevents the tab strip from hiding while in immersive fullscreen.
+  std::unique_ptr<ImmersiveRevealedLock> tab_strip_reveal_lock_;
+
+  // Whether the window is pinned or not.
+  bool is_window_pinned_;
 
   // Snap location for the OnTask pod. Top left by default.
   OnTaskPodSnapLocation pod_snap_location_ = OnTaskPodSnapLocation::kTopLeft;

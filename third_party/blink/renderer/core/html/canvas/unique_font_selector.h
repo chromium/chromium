@@ -7,8 +7,10 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/vector_backed_linked_list.h"
 
 namespace blink {
 
@@ -35,6 +37,26 @@ class CORE_EXPORT UniqueFontSelector
 
  private:
   Member<FontSelector> base_selector_;
+
+  struct CacheValue {
+    DISALLOW_NEW();
+
+   public:
+    Member<const Font> font;
+    wtf_size_t list_index;
+    void Trace(Visitor* visitor) const;
+  };
+  // The main storage of the cache.
+  HeapHashMap<FontDescription, CacheValue> font_cache_;
+
+  struct LruListKey {
+    FontDescription description;
+    uint32_t generation = -1;
+  };
+  // The LRU part of the cache.  front() points to the most recently used item,
+  // and back() points to the least recently used item.
+  VectorBackedLinkedList<LruListKey> lru_list_;
+  uint32_t frame_generation_ = 0;
 };
 
 }  // namespace blink

@@ -6,7 +6,6 @@
 
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -214,10 +213,9 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   std::unique_ptr<SigninMetricsService> signin_metrics_service_;
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
   base::HistogramTester histogram_tester;
 
@@ -247,7 +245,6 @@ TEST_F(SigninMetricsServiceTest, SigninPendingResolutionReauth) {
               base::HistogramTester::CountsMap());
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, SigninPendingResolutionSignout) {
   base::HistogramTester histogram_tester;
 
@@ -526,7 +523,6 @@ TEST_F(SigninMetricsServiceTest, WebSigninToSignout) {
   EXPECT_EQ(
       0., histogram_tester.GetTotalCountsForPrefix("Signin.WebSignin.").size());
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
   base::HistogramTester histogram_tester;
@@ -545,7 +541,6 @@ TEST_F(SigninMetricsServiceTest, WebSigninForSigninPendingResolution) {
       signin_metrics::AccessPoint::kWebSignin, 1);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 TEST_F(SigninMetricsServiceTest, ExplicitSigninMigration) {
   {
     base::HistogramTester histogram_tester;

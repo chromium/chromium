@@ -4,13 +4,16 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_api.h"
 
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/strcat.h"
-#include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 #include "chrome/common/extensions/api/login_screen_storage.h"
-#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
+#include "chromeos/ash/components/dbus/login_manager/login_screen_storage.pb.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 
 namespace login_screen_storage = extensions::api::login_screen_storage;
 
@@ -18,12 +21,6 @@ namespace {
 
 const char kPersistentDataKeyPrefix[] = "persistent_data_";
 const char kCredentialsKeyPrefix[] = "credentials_";
-
-crosapi::mojom::LoginScreenStorage* GetLoginScreenStorageApi() {
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->login_screen_storage_ash();
-}
 
 }  // namespace
 
@@ -34,22 +31,61 @@ LoginScreenStorageExtensionFunction::LoginScreenStorageExtensionFunction() =
 LoginScreenStorageExtensionFunction::~LoginScreenStorageExtensionFunction() =
     default;
 
-void LoginScreenStorageExtensionFunction::OnDataStored(
-    const std::optional<std::string>& error_message) {
-  Respond(error_message.has_value() ? Error(*error_message) : NoArguments());
+void LoginScreenStorageExtensionFunction::StoreAndRespond(
+    std::vector<std::string> keys,
+    const login_manager::LoginScreenStorageMetadata& metadata,
+    const std::string& data) {
+  if (keys.empty()) {
+    Respond(NoArguments());
+    return;
+  }
+
+  const std::string key = keys.back();
+  keys.pop_back();
+
+  auto dbus_callback =
+      base::BindOnce(&LoginScreenStorageExtensionFunction::OnStored, this,
+                     std::move(keys), metadata, data);
+  ash::SessionManagerClient::Get()->LoginScreenStorageStore(
+      key, metadata, data, std::move(dbus_callback));
 }
 
-void LoginScreenStorageExtensionFunction::OnDataRetrieved(
-    crosapi::mojom::LoginScreenStorageRetrieveResultPtr result) {
-  using Result = crosapi::mojom::LoginScreenStorageRetrieveResult;
-  switch (result->which()) {
-    case Result::Tag::kErrorMessage:
-      Respond(Error(result->get_error_message()));
-      return;
-    case Result::Tag::kData:
-      Respond(WithArguments(result->get_data()));
-      return;
+void LoginScreenStorageExtensionFunction::OnStored(
+    std::vector<std::string> remaining_keys,
+    const login_manager::LoginScreenStorageMetadata& metadata,
+    const std::string& data,
+    std::optional<std::string> error) {
+  if (error) {
+    Respond(Error(*std::move(error)));
+    return;
   }
+
+  if (remaining_keys.empty()) {
+    Respond(NoArguments());
+    return;
+  }
+
+  StoreAndRespond(std::move(remaining_keys), metadata, data);
+}
+
+void LoginScreenStorageExtensionFunction::RetrieveAndRespond(
+    const std::string& key) {
+  auto dbus_callback =
+      base::BindOnce(&LoginScreenStorageExtensionFunction::OnRetrieved, this);
+  ash::SessionManagerClient::Get()->LoginScreenStorageRetrieve(
+      key, std::move(dbus_callback));
+}
+
+void LoginScreenStorageExtensionFunction::OnRetrieved(
+    std::optional<std::string> data,
+    std::optional<std::string> error) {
+  if (error) {
+    Respond(Error(*std::move(error)));
+    return;
+  }
+
+  CHECK(data);
+  Respond(WithArguments(*std::move(data)));
 }
 
 LoginScreenStorageStorePersistentDataFunction::
@@ -72,15 +108,10 @@ LoginScreenStorageStorePersistentDataFunction::Run() {
     keys.push_back(key);
   }
 
-  auto callback = base::BindOnce(
-      &LoginScreenStorageStorePersistentDataFunction::OnDataStored, this);
+  login_manager::LoginScreenStorageMetadata metadata;
+  metadata.set_clear_on_session_exit(false);
 
-  crosapi::mojom::LoginScreenStorageMetadataPtr metadata =
-      crosapi::mojom::LoginScreenStorageMetadata::New();
-  metadata->clear_on_session_exit = false;
-
-  GetLoginScreenStorageApi()->Store(std::move(keys), std::move(metadata),
-                                    params->data, std::move(callback));
+  StoreAndRespond(std::move(keys), std::move(metadata), params->data);
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
@@ -98,10 +129,7 @@ LoginScreenStorageRetrievePersistentDataFunction::Run() {
   const std::string key = base::StrCat(
       {kPersistentDataKeyPrefix, params->owner_id, "_", extension_id()});
 
-  auto callback = base::BindOnce(
-      &LoginScreenStorageRetrievePersistentDataFunction::OnDataRetrieved, this);
-
-  GetLoginScreenStorageApi()->Retrieve(key, std::move(callback));
+  RetrieveAndRespond(key);
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
@@ -120,15 +148,10 @@ LoginScreenStorageStoreCredentialsFunction::Run() {
   std::string key = base::StrCat({kCredentialsKeyPrefix, params->extension_id});
   keys.push_back(key);
 
-  auto callback = base::BindOnce(
-      &LoginScreenStorageStoreCredentialsFunction::OnDataStored, this);
+  login_manager::LoginScreenStorageMetadata metadata;
+  metadata.set_clear_on_session_exit(true);
 
-  crosapi::mojom::LoginScreenStorageMetadataPtr metadata =
-      crosapi::mojom::LoginScreenStorageMetadata::New();
-  metadata->clear_on_session_exit = true;
-
-  GetLoginScreenStorageApi()->Store(std::move(keys), std::move(metadata),
-                                    params->credentials, std::move(callback));
+  StoreAndRespond(std::move(keys), std::move(metadata), params->credentials);
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
@@ -141,10 +164,7 @@ ExtensionFunction::ResponseAction
 LoginScreenStorageRetrieveCredentialsFunction::Run() {
   std::string key = base::StrCat({kCredentialsKeyPrefix, extension_id()});
 
-  auto callback = base::BindOnce(
-      &LoginScreenStorageRetrieveCredentialsFunction::OnDataRetrieved, this);
-
-  GetLoginScreenStorageApi()->Retrieve(key, std::move(callback));
+  RetrieveAndRespond(key);
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 

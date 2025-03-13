@@ -107,10 +107,6 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
   }
 }
 
-void ChromeBrowserMainExtraPartsViews::PostCreateMainMessageLoop() {
-  views_delegate_->InitializeViewsAXManager();
-}
-
 void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   // The Screen instance may already be set in tests.

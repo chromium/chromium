@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
@@ -36,7 +37,7 @@ class V4L2H265Picture : public H265Picture {
   scoped_refptr<V4L2DecodeSurface> dec_surface() { return dec_surface_; }
 
  private:
-  ~V4L2H265Picture() override {}
+  ~V4L2H265Picture() override = default;
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
 };
@@ -57,7 +58,7 @@ scoped_refptr<H265Picture> V4L2VideoDecoderDelegateH265::CreateH265Picture() {
     return nullptr;
   }
 
-  return new V4L2H265Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H265Picture>(dec_surface);
 }
 
 scoped_refptr<H265Picture>
@@ -68,7 +69,7 @@ V4L2VideoDecoderDelegateH265::CreateH265PictureSecure(uint64_t secure_handle) {
     return nullptr;
   }
 
-  return new V4L2H265Picture(dec_surface);
+  return base::MakeRefCounted<V4L2H265Picture>(dec_surface);
 }
 
 std::vector<scoped_refptr<V4L2DecodeSurface>>

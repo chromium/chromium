@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -108,6 +109,9 @@ class ScreenAIServiceRouter : public KeyedService,
   // Called when ScreenAI service factory is disconnected.
   void OnScreenAIServiceDisconnected();
 
+  // Records memory metrics when service shutsdown or crashes.
+  void RecordMemoryMetrics(bool crashed);
+
   // Returns the list of services that have a pending status request.
   std::set<Service> GetAllPendingStatusServices();
 
@@ -123,6 +127,15 @@ class ScreenAIServiceRouter : public KeyedService,
     bool suspended = false;
     int crash_count = 0;
   } shutdown_handler_data_;
+
+  struct MemoryStatsBeforeLaunch {
+    int total_memory;      // in MB.
+    int available_memory;  // in MB.
+    bool pressure_available;
+    base::MemoryPressureListener::MemoryPressureLevel pressure_level;
+  } memory_stats_before_launch_;
+
+  bool ocr_initialized_ = false;
 
   mojo::Receiver<screen_ai::mojom::ScreenAIServiceShutdownHandler>
       screen_ai_service_shutdown_handler_;

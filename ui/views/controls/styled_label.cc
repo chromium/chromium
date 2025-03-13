@@ -561,6 +561,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     LinkFragment** previous_link_fragment) const {
   std::unique_ptr<Label> result;
   if (style_info.text_style == style::STYLE_LINK ||
+      style_info.text_style == style::STYLE_LINK_2 ||
       style_info.text_style == style::STYLE_LINK_3 ||
       style_info.text_style == style::STYLE_LINK_4 ||
       style_info.text_style == style::STYLE_LINK_5) {

@@ -54,6 +54,24 @@ int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent) {
   }
 }
 
+int GetInterstitialMessageID(FilteringBehaviorReason reason) {
+  if (supervised_user::IsBlockInterstitialV3Enabled()) {
+    // For the V3 interstitial, the filtering reason is included in the
+    // interstitial message.
+    switch (reason) {
+      case FilteringBehaviorReason::DEFAULT:
+        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_BLOCK_ALL;
+      case FilteringBehaviorReason::ASYNC_CHECKER:
+        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES;
+      case FilteringBehaviorReason::MANUAL:
+        return IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL;
+      default:
+        NOTREACHED();
+    }
+  }
+  return IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2;
+}
+
 std::string BuildErrorPageHtml(bool allow_access_requests,
                                std::optional<Custodian> custodian,
                                std::optional<Custodian> second_custodian,
@@ -98,32 +116,44 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
 
   strings.Set("alreadySentRemoteRequest", already_sent_remote_request);
   strings.Set("isMainFrame", is_main_frame);
+
   bool local_web_approvals_enabled =
       (is_main_frame && supervised_user::IsLocalWebApprovalsEnabled()) ||
       (!is_main_frame &&
        supervised_user::IsLocalWebApprovalsEnabledForSubframes());
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
 
-  std::string block_header;
-  std::string block_message;
+  std::string block_page_header;
+  std::string block_page_message;
   if (allow_access_requests) {
-    block_header =
+    block_page_header =
         l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
-    block_message =
-        l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2);
+    block_page_message =
+        l10n_util::GetStringUTF8(GetInterstitialMessageID(reason));
   } else {
-    block_header = l10n_util::GetStringUTF8(
+    block_page_header = l10n_util::GetStringUTF8(
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);
   }
-  strings.Set("blockPageHeader", block_header);
-  strings.Set("blockPageMessage", block_message);
-  strings.Set("blockReasonMessage",
-              l10n_util::GetStringUTF8(GetBlockMessageID(
-                  reason, /*single_parent=*/!second_custodian.has_value())));
-  strings.Set("blockReasonHeader",
-              l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
-  strings.Set("siteBlockHeader",
-              l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
+
+  strings.Set("blockPageHeader", block_page_header);
+  strings.Set("blockPageMessage", block_page_message);
+
+  if (!supervised_user::IsBlockInterstitialV3Enabled()) {
+    // For the V2 interstitial, the filtering reason is displayed in a
+    // separate UI component.
+    strings.Set("blockReasonMessage",
+                l10n_util::GetStringUTF8(GetBlockMessageID(
+                    reason, /*single_parent=*/!second_custodian.has_value())));
+    strings.Set("blockReasonHeader",
+                l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
+    strings.Set("siteBlockHeader",
+                l10n_util::GetStringUTF8(IDS_GENERIC_SITE_BLOCK_HEADER));
+    strings.Set("showDetailsLink",
+                l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
+    strings.Set("hideDetailsLink",
+                l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
+  }
+
   strings.Set(
       "remoteApprovalsButton",
       l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_ASK_IN_A_MESSAGE_BUTTON));
@@ -135,10 +165,7 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   strings.Set("localApprovalsRemoteRequestSentButton",
               l10n_util::GetStringUTF8(
                   IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_INSTEAD_BUTTON));
-  strings.Set("showDetailsLink",
-              l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
-  strings.Set("hideDetailsLink",
-              l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
+
   std::string request_sent_message;
   std::string request_failed_message;
   std::string request_sent_description;
@@ -159,7 +186,9 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML);
+          supervised_user::IsBlockInterstitialV3Enabled()
+              ? IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V3_HTML
+              : IDR_SUPERVISED_USER_BLOCK_INTERSTITIAL_V2_HTML);
   webui::AppendWebUiCssTextDefaults(&html);
   std::string error_html = webui::GetI18nTemplateHtml(html, strings);
   return error_html;

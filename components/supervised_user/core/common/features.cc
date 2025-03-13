@@ -49,12 +49,20 @@ BASE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload,
              "PacpWidgetSupportsUrlPayload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSupervisedUserBlockInterstitialV3,
+             "SupervisedUserBlockInterstitialV3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;
 #else
   return false;
 #endif
+}
+
+bool IsBlockInterstitialV3Enabled() {
+  return base::FeatureList::IsEnabled(kSupervisedUserBlockInterstitialV3);
 }
 
 bool IsLocalWebApprovalsEnabled() {

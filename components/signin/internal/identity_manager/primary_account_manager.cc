@@ -39,11 +39,13 @@ BASE_FEATURE(kRestorePrimaryAccountInfo,
              base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Kill switch needed to control the migration of sync profiles to also be
 // explicit sign-in.
 BASE_FEATURE(kMigrateSyncToExplicitSignin,
              "kMigrateSyncToExplicitSignin",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Registers that the sign in occurred with an explicit user action.
 // Affected by all signin sources except when signing in to Chrome caused by a
@@ -269,8 +271,8 @@ PrimaryAccountManager::PrimaryAccountManager(
   CHECK(primary_account_.has_value());
 
   bool migrated_sync_user_to_explicit_sign_in = false;
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-      base::FeatureList::IsEnabled(kMigrateSyncToExplicitSignin) &&
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (base::FeatureList::IsEnabled(kMigrateSyncToExplicitSignin) &&
       !prefs->GetBoolean(prefs::kExplicitBrowserSignin) &&
       HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // A profile that is opted in to sync can be migrated to explicit browser
@@ -279,6 +281,8 @@ PrimaryAccountManager::PrimaryAccountManager(
     scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
     migrated_sync_user_to_explicit_sign_in = true;
   }
+#endif
+
   base::UmaHistogramBoolean("Signin.ExplicitSigninMigration.FromSync",
                             migrated_sync_user_to_explicit_sign_in);
 

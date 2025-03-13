@@ -97,8 +97,7 @@ bool IsWithinFixTimeWindow(const WebApp& app) {
   const std::optional<proto::GeneratedIconFix>& generated_icon_fix =
       app.generated_icon_fix();
   if (!generated_icon_fix.has_value()) {
-    return base::FeatureList::IsEnabled(
-        features::kWebAppSyncGeneratedIconRetroactiveFix);
+    return true;
   }
 
   base::TimeDelta duration_since_window_started =

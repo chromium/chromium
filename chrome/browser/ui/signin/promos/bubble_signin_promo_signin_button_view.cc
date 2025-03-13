@@ -76,7 +76,10 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                       : views::BoxLayout::Orientation::kHorizontal;
 
   std::unique_ptr<views::BoxLayout> button_layout =
-      std::make_unique<views::BoxLayout>(orientation, gfx::Insets(), 16);
+      std::make_unique<views::BoxLayout>(
+          orientation, gfx::Insets(),
+          views::LayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_RELATED_CONTROL_VERTICAL));
 
   // Don't show a sync badge if this promo is only for a signin.
   std::unique_ptr<HoverButton> hover_button = std::make_unique<HoverButton>(
@@ -96,16 +99,8 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   if (orientation == views::BoxLayout::Orientation::kVertical) {
     hover_button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
                                        views::style::STYLE_SECONDARY);
-    const int hover_button_width =
-        views::LayoutProvider::Get()->GetDistanceMetric(
-            is_autofill_promo ? views::DISTANCE_BUBBLE_PREFERRED_WIDTH
-                              : views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-    // Set the view to take the whole width of the bubble.
-    hover_button->SetPreferredSize(
-        gfx::Size(hover_button_width,
-                  hover_button->GetHeightForWidth(hover_button_width)));
-    // This will place the sign in button at
-    // the horizontal end of the bubble.
+
+    // This will place the sign in button at the horizontal end of the bubble.
     alignment = views::BoxLayout::CrossAxisAlignment::kEnd;
   }
   button_layout->set_cross_axis_alignment(alignment);

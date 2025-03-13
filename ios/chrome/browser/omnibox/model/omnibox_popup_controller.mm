@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
 
 #import "components/omnibox/browser/autocomplete_result.h"
+#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
 
 @interface OmniboxPopupController ()
 // Redefine as readwrite.
@@ -14,6 +16,10 @@
 @end
 
 @implementation OmniboxPopupController
+
+- (void)disconnect {
+  [self.autocompleteResultWrapper disconnect];
+}
 
 #pragma mark - OmniboxAutocomplete event
 
@@ -27,7 +33,10 @@
 }
 
 - (void)updateWithSortedResults:(const AutocompleteResult&)results {
-  [self.delegate popupController:self didSortResults:results];
+  NSArray<id<AutocompleteSuggestionGroup>>* suggestionGroups =
+      [self.autocompleteResultWrapper wrapAutocompleteResultInGroups:results];
+  [self.delegate popupController:self
+      didUpdateSuggestionsGroups:suggestionGroups];
 }
 
 #pragma mark - OmniboxPopup event
@@ -36,10 +45,6 @@
     (NSUInteger)visibleSuggestionCount {
   [self.omniboxAutocompleteController
       requestResultsWithVisibleSuggestionCount:visibleSuggestionCount];
-}
-
-- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
-  return [self.omniboxAutocompleteController isStarredMatch:match];
 }
 
 - (void)selectMatchForOpening:(const AutocompleteMatch&)match
@@ -80,6 +85,22 @@
 
 - (void)setHasThumbnail:(BOOL)hasThumbnail {
   [self.delegate popupController:self didUpdateHasThumbnail:hasThumbnail];
+  self.autocompleteResultWrapper.hasThumbnail = hasThumbnail;
+}
+
+#pragma mark - AutocompleteResultWrapperDelegate
+
+// TODO(crbug.com/400626674): Move isStarredMatch logic to the wrapper so it
+// doesn't rely on its delegate.
+- (BOOL)isStarredMatch:(const AutocompleteMatch&)match {
+  return [self.omniboxAutocompleteController isStarredMatch:match];
+}
+
+- (void)autocompleteResultWrapper:(AutocompleteResultWrapper*)wrapper
+              didInvalidatePedals:(NSArray<id<AutocompleteSuggestionGroup>>*)
+                                      nonPedalSuggestionsGroups {
+  [self.delegate popupController:self
+             didInvalidatePedals:nonPedalSuggestionsGroups];
 }
 
 @end

@@ -76,7 +76,7 @@ class MODULES_EXPORT AIPageContentAgent final
     void Trace(Visitor* visitor) const;
 
    private:
-    using ContentNodeIdMap = HeapHashMap<Member<Node>, int32_t>;
+    using ContentNodeIdMap = GCedHeapHashMap<Member<Node>, int32_t>;
 
     // Returns true if any descendant of `object` has a computed value of
     // visible for `visibility`.

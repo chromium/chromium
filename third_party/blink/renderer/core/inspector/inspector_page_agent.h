@@ -322,7 +322,7 @@ class CORE_EXPORT InspectorPageAgent final
 
   HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
       pending_isolated_worlds_;
-  using FrameIsolatedWorlds = HeapHashMap<String, Member<DOMWrapperWorld>>;
+  using FrameIsolatedWorlds = GCedHeapHashMap<String, Member<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, Member<FrameIsolatedWorlds>>
       isolated_worlds_;
   HashMap<String, std::unique_ptr<blink::AdScriptIdentifier>>

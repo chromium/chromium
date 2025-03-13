@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
+<translation id="1122068467107743258">Darbas</translation>
 <translation id="1275718070701477396">Pasirinkta</translation>
 <translation id="138513070655895675">Pakeiskite į kitą mokėjimo metodą naudodami šį meniu elementą.</translation>
 <translation id="2129442648318919291">Tvarkykite adresus.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Siuntimo adresas</translation>
 <translation id="8873105120914375071">Atsiskaityti greičiau?</translation>
 <translation id="9032876013752408138">Automatinis informacijos pildymas</translation>
+<translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="984275831282074731">Mokėjimo metodai</translation>
 </translationbundle>

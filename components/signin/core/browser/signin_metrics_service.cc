@@ -321,11 +321,11 @@ void SigninMetricsService::OnErrorStateOfRefreshTokenUpdatedForAccount(
   }
 
   // Signin errors only exists with Explicit browser sign in -- SigninPending.
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    return;
-  }
-
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   HandleSigninErrors(error, token_operation_source);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  return;
 }
 
 void SigninMetricsService::HandleSyncErrors(
@@ -399,8 +399,7 @@ void SigninMetricsService::HandleSigninErrors(
 void SigninMetricsService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-      info.access_point == signin_metrics::AccessPoint::kWebSignin &&
+  if (info.access_point == signin_metrics::AccessPoint::kWebSignin &&
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     ScopedDictPrefUpdate update(&pref_service_.get(),
                                 kWebSigninAccountStartTimesPref);

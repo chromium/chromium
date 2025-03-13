@@ -4,6 +4,7 @@
 
 #include "services/screen_ai/screen_ai_service_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "components/crash/core/common/crash_key.h"
@@ -118,6 +120,19 @@ void SetCPUInstructionSetCrashKey() {
 #endif
 }
 #endif
+
+// Return a maximum 11 character string with the signature of available and
+// total memory, both in MB and capped to 99999.
+std::string GetMemoryStatusForCrashKey() {
+  int total_memory = base::SysInfo::AmountOfPhysicalMemoryMB();
+  int available_memory = static_cast<int>(
+      base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024));
+
+  // Cap the number of digits for crash report.
+  total_memory = std::min(total_memory, 99999);
+  available_memory = std::min(available_memory, 99999);
+  return base::StringPrintf("%i,%i", available_memory, total_memory);
+}
 
 }  // namespace
 
@@ -284,6 +299,9 @@ void ScreenAIService::InitializeOCR(
     base::flat_map<base::FilePath, base::File> model_files,
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
     InitializeOCRCallback callback) {
+  static crash_reporter::CrashKeyString<12> memory_ocr_init(
+      "screen_ai_mem_ocr_init");
+  memory_ocr_init.Set(GetMemoryStatusForCrashKey());
   if (!library_) {
     LoadLibrary(library_path);
   }
@@ -334,6 +352,10 @@ void ScreenAIService::BindMainContentExtractor(
 
 std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAIService::PerformOcrAndRecordMetrics(const SkBitmap& image) {
+  static crash_reporter::CrashKeyString<12> memory_perform_ocr(
+      "screen_ai_mem_ocr_perform");
+  memory_perform_ocr.Set(GetMemoryStatusForCrashKey());
+
   CHECK(base::Contains(ocr_client_types_,
                        screen_ai_annotators_.current_receiver()));
   OcrClientTypeForMetrics client_type = GetClientType(

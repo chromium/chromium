@@ -20,7 +20,9 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentCoordinator;
+import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentProvider;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.coupons.DiscountsBottomSheetContentCoordinator;
 import org.chromium.chrome.browser.commerce.coupons.DiscountsButtonController;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,6 +56,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -309,18 +312,28 @@ public class AdaptiveToolbarUiCoordinator {
                 new PriceInsightsDelegateImpl(mContext, mCurrentTabPriceTrackingStateSupplier));
     }
 
+    private DiscountsBottomSheetContentCoordinator createDiscountsContentProvider() {
+        return new DiscountsBottomSheetContentCoordinator(mContext, mActivityTabProvider);
+    }
+
     @Nullable
     private CommerceBottomSheetContentController getCommerceBottomSheetContentController() {
+        // This flag is for discounts and commerce bottom sheet as a feature together.
         if (mCommerceBottomSheetContentCoordinator == null
-                // This flag is for discounts and commerce bottom sheet as a feature together.
                 && CommerceFeatureUtils.isDiscountInfoApiEnabled(
                         ShoppingServiceFactory.getForProfile(mProfileSupplier.get()))) {
+
+            List<Supplier<CommerceBottomSheetContentProvider>> contentProviderSuppliers =
+                    new ArrayList<>();
+            contentProviderSuppliers.add(this::createPriceTrackingContentProvider);
+            contentProviderSuppliers.add(this::createDiscountsContentProvider);
+
             mCommerceBottomSheetContentCoordinator =
                     new CommerceBottomSheetContentCoordinator(
                             mContext,
                             mBottomSheetController,
                             mScrimSupplier,
-                            this::createPriceTrackingContentProvider);
+                            contentProviderSuppliers);
         }
 
         return mCommerceBottomSheetContentCoordinator;

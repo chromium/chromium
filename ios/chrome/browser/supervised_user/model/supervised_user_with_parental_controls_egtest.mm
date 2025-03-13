@@ -71,6 +71,8 @@ static const char* kInterstitialDetails = "Details";
               )]) {
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals, {}});
+    config.features_enabled_and_params.push_back(
+        {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
   } else if ([self isRunningTest:@selector
                    (testSupervisedUserLocalWebApprovalDismissedAfterTimeout)]) {
     // Sets the local web approval (LWA) load timeout to 0 to simulate a LWA
@@ -78,6 +80,8 @@ static const char* kInterstitialDetails = "Details";
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals,
          {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "0"}}}});
+    config.features_enabled_and_params.push_back(
+        {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
   }
 
   // Makes sure the MVT is the top ranking magic stack module.

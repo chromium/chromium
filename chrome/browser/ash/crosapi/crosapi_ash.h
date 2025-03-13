@@ -61,7 +61,6 @@ class EmbeddedAccessibilityHelperClientAsh;
 class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
-class ForceInstalledTrackerAsh;
 class FullRestoreAsh;
 class FullscreenControllerAsh;
 class IdentityManagerAsh;
@@ -69,7 +68,6 @@ class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
 class LoginAsh;
-class LoginScreenStorageAsh;
 class LoginStateAsh;
 class MediaUIAsh;
 class MultiCaptureServiceAsh;
@@ -148,8 +146,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindFileSystemProviderService(
       mojo::PendingReceiver<mojom::FileSystemProviderService> receiver)
       override;
-  void BindForceInstalledTracker(
-      mojo::PendingReceiver<mojom::ForceInstalledTracker> receiver) override;
   void BindFullRestore(
       mojo::PendingReceiver<mojom::FullRestore> receiver) override;
   void BindFullscreenController(
@@ -168,8 +164,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
-  void BindLoginScreenStorage(
-      mojo::PendingReceiver<mojom::LoginScreenStorage> receiver) override;
   void BindLoginState(
       mojo::PendingReceiver<mojom::LoginState> receiver) override;
   void BindMachineLearningService(
@@ -274,10 +268,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return file_system_provider_service_ash_.get();
   }
 
-  ForceInstalledTrackerAsh* force_installed_tracker_ash() {
-    return force_installed_tracker_ash_.get();
-  }
-
   FullRestoreAsh* full_restore_ash() { return full_restore_ash_.get(); }
 
   FullscreenControllerAsh* fullscreen_controller_ash() {
@@ -295,10 +285,6 @@ class CrosapiAsh : public mojom::Crosapi {
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
   LoginAsh* login_ash() { return login_ash_.get(); }
-
-  LoginScreenStorageAsh* login_screen_storage_ash() {
-    return login_screen_storage_ash_.get();
-  }
 
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
@@ -366,7 +352,6 @@ class CrosapiAsh : public mojom::Crosapi {
       file_system_access_cloud_identifier_provider_ash_;
   std::unique_ptr<FileSystemProviderServiceAsh>
       file_system_provider_service_ash_;
-  std::unique_ptr<ForceInstalledTrackerAsh> force_installed_tracker_ash_;
   std::unique_ptr<FullRestoreAsh> full_restore_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
@@ -374,7 +359,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
-  std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;

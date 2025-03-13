@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Avainkoodi</translation>
 <translation id="1030376737535466765">Avaa Salasanat</translation>
 <translation id="1035980983510608210">Jos suljet kaikki välilehdet, myös kiinnitetyt välilehdet suljetaan.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1041322626941363065">Varoitus, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="1044891598689252897">Sivustot toimivat normaalisti</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Evästeet, sivuston tiedot</translation>
 <translation id="1312721752506309252">Parannettu suojaus on päällä</translation>
 <translation id="1317821187353201763">Sulje välilehti</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Seuraa tätä pakettia}other{Seuraa kaikkia paketteja}}</translation>
 <translation id="1321993286294231467">Virhe tallennettaessa kuvaa</translation>
 <translation id="1322735045095424339">Organisaatiosi edellyttää incognito-tilaa</translation>
 <translation id="1323735185997015385">Poista</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valittu</translation>
 <translation id="1709916727352927457">Avainkoodin poistaminen</translation>
 <translation id="1712341189152602203">Aiempi selausdata yhdistetään tähän profiiliin: <ph name="USER_EMAIL" />. Organisaatiosi voi nähdä tämän datan.</translation>
-<translation id="1713777106376424209">Toimitetaan viimeistään</translation>
 <translation id="1715515772563243997">Jos <ph name="SITE" /> on luotettava, voit kirjautua sisään tallennetulla salasanalla.</translation>
 <translation id="1718835860248848330">Viimeinen tunti</translation>
 <translation id="1728549374069268714">Liitä ja siirry</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Hintaseuranta ja vinkit</translation>
 <translation id="1820195936249950412">Kirjaudu sisään oikealla tilillä</translation>
 <translation id="1820259098641718022">Lisättiin lukulistalle</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Ilmoittaa, kun saat välilehtiä muilta laitteiltasi.</translation>
 <translation id="1827529786398596735">Kosketa aloitusnäyttöä pitkään</translation>
 <translation id="1832848789136765277">Todenna henkilöllisyytesi varmistaaksesi, että sinulla on aina pääsy synkronoituun dataasi</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Yksikön valitsin</translation>
 <translation id="2330607597130465898">Ei suojausta</translation>
 <translation id="233375395665273385">Poista ja kirjaudu ulos</translation>
-<translation id="2348630484974447747">Paketti</translation>
 <translation id="2351097562818989364">Käännösasetukset on nollattu.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Voit tallentaa salasanan ({DOMAIN_ONE}) Google-tilillesi: {EMAIL}.}=2{Voit tallentaa salasanat ({DOMAIN_ONE} ja {DOMAIN_TWO}) Google-tilillesi: {EMAIL}.}=3{Voit tallentaa salasanat ({DOMAIN_ONE}, {DOMAIN_TWO} ja {OTHER_DOMAINS_COUNT} muu) Google-tilillesi: {EMAIL}.}other{Voit tallentaa salasanat ({DOMAIN_ONE}, {DOMAIN_TWO} ja {OTHER_DOMAINS_COUNT} muuta) Google-tilillesi: {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Sivuston oletusnäkymä</translation>
@@ -797,7 +792,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4460014764210899310">Poista ryhmittely</translation>
 <translation id="446314443268698477">Tee ostoksia, käännä ja tunnista näkemiäsi asioita kameran tai kuvien avulla.</translation>
 <translation id="4469324811108161144">Muistiinpanoissa voi olla enintään <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
-<translation id="4469834037720363704">Paketin numero</translation>
 <translation id="4471472356135655769">Salasanojen vienti epäonnistui</translation>
 <translation id="4473608001744970767">Piilota "Hintaseuranta"</translation>
 <translation id="4474142134969976028">Ei tuloksia</translation>
@@ -1289,7 +1283,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="647867789226964031">Vaihda salasanasi</translation>
 <translation id="6494931198667773526">Päättyy</translation>
 <translation id="6495521251906266731">Valitse, mitä tällä laitteella olevalle selausdatalle (esim. salasanoille ja historialle) tehdään.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Lopeta tämän paketin seuraaminen}other{Lopeta kaikkien pakettien seuraaminen}}</translation>
 <translation id="6503077044568424649">Käydyimmät</translation>
 <translation id="6503763061813913607">Turvatarkistusilmoitukset</translation>
 <translation id="6505334220040167806">Tiivistä välilehtiryhmä.</translation>
@@ -1761,7 +1754,6 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8481184073299279701">Aloita JavaScript-konsolilokien ja kaikilla välilehdillä havaittujen virheiden kerääminen valitsemalla Aloita kirjaus. Lokeja kerätään (niitä säilytetään vain muistissa), kunnes suljet tämän sivun tai valitset Lopeta kirjaus.</translation>
 <translation id="8487667956631253959">Päällä</translation>
 <translation id="8487700953926739672">Käytettävissä offline-tilassa</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Linkkiä ei voi luoda</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8505361906966222822">Tallenna…</translation>

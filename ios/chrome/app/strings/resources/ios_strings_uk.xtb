@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Ключ доступу</translation>
 <translation id="1030376737535466765">Відкрити Менеджер паролів</translation>
 <translation id="1035980983510608210">Буде закрито всі вкладки, зокрема закріплені.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1041322626941363065">Попереджати, якщо паролі розкрито через порушення безпеки даних</translation>
 <translation id="1044891598689252897">Сайти працюватимуть у звичному режимі</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Файли cookie, дані сайтів</translation>
 <translation id="1312721752506309252">Покращений захист увімкнено</translation>
 <translation id="1317821187353201763">Закрити вкладку</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Відстежувати це відправлення}one{Відстежувати всі відправлення}few{Відстежувати всі відправлення}many{Відстежувати всі відправлення}other{Відстежувати всі відправлення}}</translation>
 <translation id="1321993286294231467">Не вдалося зберегти зображення.</translation>
 <translation id="1322735045095424339">Адміністратор організації вимагає використовувати режим анонімного перегляду</translation>
 <translation id="1323735185997015385">Видалити</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Вибрано <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Видалити ключ доступу</translation>
 <translation id="1712341189152602203">Наявні дані вебперегляду буде зв’язано з обліковим записом <ph name="USER_EMAIL" />, і адміністратор вашої організації зможе переглядати їх.</translation>
-<translation id="1713777106376424209">Перевізник:</translation>
 <translation id="1715515772563243997">Якщо ви довіряєте сайту <ph name="SITE" />, то можете входити за допомогою збереженого пароля.</translation>
 <translation id="1718835860248848330">Остання година</translation>
 <translation id="1728549374069268714">Вставити й перейти</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Відстеження й статистика цін</translation>
 <translation id="1820195936249950412">Увійдіть у дійсний обліковий запис</translation>
 <translation id="1820259098641718022">Додано в список читання</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Сповіщати, коли ви отримуєте вкладки з інших пристроїв.</translation>
 <translation id="1827529786398596735">Натисніть і утримуйте головний екран</translation>
 <translation id="1832848789136765277">Щоб не втратити доступ до своїх даних синхронізації, підтвердьте свою особу</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Засіб вибору одиниць</translation>
 <translation id="2330607597130465898">Захист вимкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
-<translation id="2348630484974447747">Відправлення</translation>
 <translation id="2351097562818989364">Налаштування перекладу скинуто.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Ви можете зберегти пароль для веб-сайту {DOMAIN_ONE} у своєму обліковому записі Google ({EMAIL}).}=2{Ви можете зберегти паролі для веб-сайтів {DOMAIN_ONE} і {DOMAIN_TWO} у своєму обліковому записі Google ({EMAIL}).}=3{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}one{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}few{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}many{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL}).}other{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Режим перегляду сайту за умовчанням</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Розгрупувати</translation>
 <translation id="446314443268698477">Здійснюйте покупки, перекладайте тексти й визначайте об’єкти, які бачите у видошукачі камери або на фотографіях.</translation>
 <translation id="4469324811108161144">Нотатки можуть містити щонайбільше стільки символів: <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Номер відправлення</translation>
 <translation id="4471472356135655769">Не вдається експортувати паролі</translation>
 <translation id="4473608001744970767">Сховати опцію "Відстежувати ціну"</translation>
 <translation id="4474142134969976028">Немає результатів</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">Змініть паролі</translation>
 <translation id="6494931198667773526">Завершення</translation>
 <translation id="6495521251906266731">Укажіть, що робити з наявними даними вебперегляду на цьому пристрої, зокрема паролями, історією тощо.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Скасувати відстеження цього відправлення}one{Скасувати відстеження всіх відправлень}few{Скасувати відстеження всіх відправлень}many{Скасувати відстеження всіх відправлень}other{Скасувати відстеження всіх відправлень}}</translation>
 <translation id="6503077044568424649">Часто відвідувані</translation>
 <translation id="6503763061813913607">Сповіщення про перевірку безпеки</translation>
 <translation id="6505334220040167806">Згорнути групу вкладок.</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">Натисніть кнопку "Почати запис у журналі", щоб у майбутньому збирати журнали консолі JavaScript і дані про помилки з усіх вкладок. Журнали збиратимуться (і зберігатимуться лише в пам’яті), доки ви не закриєте цю сторінку або не виберете опцію "Припинити запис у журналі".</translation>
 <translation id="8487667956631253959">Увімкнено</translation>
 <translation id="8487700953926739672">Доступ у режимі офлайн</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Не вдалося створити посилання</translation>
 <translation id="8503813439785031346">Ім’я користувача</translation>
 <translation id="8505361906966222822">Зберегти…</translation>

@@ -223,7 +223,8 @@ CachedStorageArea::CachedStorageArea(
       storage_key_(storage_key),
       storage_namespace_(storage_namespace),
       is_session_storage_for_prerendering_(is_session_storage_for_prerendering),
-      areas_(MakeGarbageCollected<HeapHashMap<WeakMember<Source>, String>>()) {
+      areas_(
+          MakeGarbageCollected<GCedHeapHashMap<WeakMember<Source>, String>>()) {
   BindStorageArea(std::move(storage_area), local_dom_window);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "DOMStorage",

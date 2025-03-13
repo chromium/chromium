@@ -461,6 +461,101 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, ReloadCurrentTab) {
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       PinTabStripButtonDisabledWhenUnlocked) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn a new tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(window_id, tab_url,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       PinTabStripButtonEnabledWhenLocked) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn a new tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(window_id, tab_url,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  EXPECT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
+                       ShowAndHideTabStripWhenTogglePinTabStripButton) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Set up window tracker to track the app window. This is when the OnTask pod
+  // is set up.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  ASSERT_THAT(on_task_pod_controller(), NotNull());
+
+  // Spawn a new tab for testing purposes.
+  auto* const tab_strip_model = boca_app_browser->tab_strip_model();
+  const GURL tab_url = embedded_test_server()->GetURL("/title1.html");
+  CreateBackgroundTabAndWait(window_id, tab_url,
+                             ::boca::LockedNavigationOptions::OPEN_NAVIGATION);
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  ASSERT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());
+
+  on_task_pod_controller()->ToggleTabStripVisibility(true);
+  EXPECT_THAT(on_task_pod_controller()->GetTabStripRevealLockForTesting(),
+              NotNull());
+  on_task_pod_controller()->ToggleTabStripVisibility(false);
+  EXPECT_THAT(on_task_pod_controller()->GetTabStripRevealLockForTesting(),
+              IsNull());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                        RepositionPodOnWindowBoundsChanged) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;

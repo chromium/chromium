@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/user_education/user_education_types.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "url/gurl.h"
@@ -50,7 +51,7 @@ class Browser;
 //    params.callback = base::BindOnce(&::MaybeLogEnhancedSecurityPromoShown);
 //
 //    // Shows the page and the bubble. Because we did not specify
-//    // |params.overwrite_active_tab|, the settings page will be opened in a
+//    // |params.page_open_mode|, the settings page will be opened in a
 //    // new tab in |browser_| rather than the current tab.
 //    ShowPromoInPage::Start(browser_, std::move(params));
 //
@@ -61,7 +62,6 @@ class ShowPromoInPage {
   using Callback =
       base::OnceCallback<void(ShowPromoInPage* source, bool success)>;
 
-  // Specifies how a page should be open to show a help bubble.
   struct Params {
     Params();
     Params(Params&& other) noexcept;
@@ -71,16 +71,11 @@ class ShowPromoInPage {
     // The page to open. If not specified, the current page will be used.
     std::optional<GURL> target_url = std::nullopt;
 
-    // Whether the page should open in the current active tab. Default is false
-    // and should not be set to true unless this action is triggered from the
-    // active tab (lest the user lose whatever page they had open).
-    //
-    // For example, clicking on a dialog offering to take the user to a settings
-    // page should not overwrite the current active tab (which could be e.g.
-    // their email!) But a button on one settings page that will take the user
-    // to a different settings page could set this to true so the navigation
-    // happens in the settings page itself.
-    bool overwrite_active_tab = false;
+    // How the page should be opened. Default is kNewForegroundTab as most
+    // promos are expected to be opened in new tabs to avoid disrupting the
+    // user's flow in the current tab and potentially lose what they had open.
+    user_education::PageOpenMode page_open_mode =
+        user_education::PageOpenMode::kNewForegroundTab;
 
     // The element to anchor to. See //components/user_education/webui/README.md
     // for an explanation on how to instrument a WebUI page for Help Bubbles and

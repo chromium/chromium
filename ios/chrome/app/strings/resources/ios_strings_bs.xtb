@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Pristupni ključ</translation>
 <translation id="1030376737535466765">Otvori Upravitelj lozinki</translation>
 <translation id="1035980983510608210">Zatvaranjem svih kartica će se zatvoriti i zakačene kartice.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1041322626941363065">Upozori ako su lozinke izložene prilikom narušavanja podataka</translation>
 <translation id="1044891598689252897">Web lokacije će normalno funkcionirati</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Kolačići, podaci web-lokacije</translation>
 <translation id="1312721752506309252">Poboljšana zaštita je uključena</translation>
 <translation id="1317821187353201763">Zatvaranje kartice</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Prati ovaj paket}one{Prati sve pakete}few{Prati sve pakete}other{Prati sve pakete}}</translation>
 <translation id="1321993286294231467">Greška prilikom pohranjivanja slike.</translation>
 <translation id="1322735045095424339">Vaša organizacija zahtijeva anonimni način rada</translation>
 <translation id="1323735185997015385">Izbriši</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Odabrano je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Izbrišite pristupni ključ</translation>
 <translation id="1712341189152602203">Postojeći podaci o pregledanju će se povezati sa <ph name="USER_EMAIL" />. Ovi podaci mogu biti vidljivi vašoj organizaciji.</translation>
-<translation id="1713777106376424209">Isporučuje</translation>
 <translation id="1715515772563243997">Ako web lokaciju <ph name="SITE" /> smatrate pouzdanom, možete koristiti sačuvanu lozinku za prijavu.</translation>
 <translation id="1718835860248848330">Posljednji sat</translation>
 <translation id="1728549374069268714">Zalijepi i idi</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Praćenje cijena i uvidi</translation>
 <translation id="1820195936249950412">Prijavite se pomoću važećeg računa</translation>
 <translation id="1820259098641718022">Dodano u listu za čitanje</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Obavještenja kada dobijete kartice s vaših drugih uređaja.</translation>
 <translation id="1827529786398596735">Dodirnite i zadržite bilo gdje na početnom ekranu</translation>
 <translation id="1832848789136765277">Potvrdite svoj identitet da uvijek možete pristupati sinhroniziranim podacima</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Birač jedinice</translation>
 <translation id="2330607597130465898">Bez zaštite</translation>
 <translation id="233375395665273385">Izbriši i odjavi</translation>
-<translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Vaše postavke prevođenja su poništene.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Možete sačuvati lozinku za domenu {DOMAIN_ONE} na Google račun {EMAIL}.}=2{Možete sačuvati lozinke za domene {DOMAIN_ONE} i {DOMAIN_TWO} na Google račun {EMAIL}.}=3{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domenu na Google račun {EMAIL}.}one{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domenu na Google račun {EMAIL}.}few{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domene na Google račun {EMAIL}.}other{Možete sačuvati lozinke za domene {DOMAIN_ONE}, {DOMAIN_TWO} i još {OTHER_DOMAINS_COUNT} domena na Google račun {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Zadani prikaz web lokacije</translation>
@@ -797,7 +792,6 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4460014764210899310">Razgrupiši</translation>
 <translation id="446314443268698477">Kupite, prevedite i prepoznajte ono što vidite putem kamere ili fotografija.</translation>
 <translation id="4469324811108161144">Broj znakova koji možete uštedjeti u napomenama je <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Broj paketa</translation>
 <translation id="4471472356135655769">Nije moguće izvesti lozinke</translation>
 <translation id="4473608001744970767">Sakrij praćenje cijena</translation>
 <translation id="4474142134969976028">Nema podudarnih rezultata</translation>
@@ -1289,7 +1283,6 @@ Web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na
 <translation id="647867789226964031">Promijenite lozinke</translation>
 <translation id="6494931198667773526">Završava se</translation>
 <translation id="6495521251906266731">Odaberite radnju koju treba poduzeti s postojećim podacima pregledanja na uređaju, kao što su lozinke, historija i drugi podaci.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Prestani pratiti ovaj paket}one{Prestani pratiti sve pakete}few{Prestani pratiti sve pakete}other{Prestani pratiti sve pakete}}</translation>
 <translation id="6503077044568424649">Najposjećenija</translation>
 <translation id="6503763061813913607">Obavještenja o sigurnosnoj provjeri</translation>
 <translation id="6505334220040167806">Sužavanje grupe kartica.</translation>
@@ -1761,7 +1754,6 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8481184073299279701">Dodirnite dugme "Pokreni zapisivanje" da prikupljate buduće zapisnike i greške Konzole za JavaScript sa svih kartica. Zapisnici će se prikupljati (i čuvati samo u memoriji) dok se ova stranica ne zatvori ili dok ne dodirnete "Zaustavi zapisivanje".</translation>
 <translation id="8487667956631253959">Uključeno</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Nije moguće kreirati link</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8505361906966222822">Pohranjivanje na lokaciju…</translation>

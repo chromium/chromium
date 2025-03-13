@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_simulate_preconnected_peripheral
-  webdriver.bidi.error.UnknownErrorException: unknown error (Invalid parameters)
-Harness: the test ran to completion.
-

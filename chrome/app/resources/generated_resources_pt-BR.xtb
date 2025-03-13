@@ -2302,6 +2302,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="256517381556987641">A sincronização encontrou <ph name="ITEMS_FOUND" /> arquivos até agora e ainda está verificando o espaço de armazenamento. Tente ativar a sincronização de arquivos de novo em alguns minutos.</translation>
 <translation id="2565214867520763227">Ativar o leitor de tela</translation>
 <translation id="2566146433999774844">Participe do grupo de guias com <ph name="OWNER_FIRST_NAME" /> e mais <ph name="NUM_OTHER_MEMBERS" /> pessoas</translation>
+<translation id="256726287944589768">Mostrar rodapé na página "Nova guia"</translation>
 <translation id="2568694057933302218">Na navegação anônima, os sites não podem usar cookies para conferir sua atividade de navegação. Essa atividade não é usada para ações como a personalização de anúncios. Os recursos de alguns sites podem não funcionar.</translation>
 <translation id="2568774940984945469">Recipiente da barra de informações</translation>
 <translation id="2569972178052279830">Nome do varejista</translation>
@@ -2809,6 +2810,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2921081876747860777">Crie uma senha para proteger seus dados locais.</translation>
 <translation id="2923006468155067296">Seu <ph name="DEVICE_TYPE" /> será bloqueado agora.
 <ph name="DOMAIN" /> requer que você mantenha o cartão inteligente inserido.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Mais <ph name="OTHER_TASK_NUM" /> tarefa no mesmo grupo: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Mais <ph name="OTHER_TASK_NUM" /> tarefas no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Remover esta conta</translation>
 <translation id="2923644930701689793">Acessar o rolo da câmera do smartphone</translation>
 <translation id="292371311537977079">Configurações do Chrome</translation>

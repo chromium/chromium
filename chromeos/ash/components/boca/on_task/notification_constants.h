@@ -14,7 +14,7 @@ namespace ash::boca {
 
 // Duration for countdown notifications.
 inline constexpr base::TimeDelta kOnTaskNotificationCountdownDuration =
-    base::Seconds(1);
+    base::Seconds(5);
 
 // Interval for countdown notifications.
 inline constexpr base::TimeDelta kOnTaskNotificationCountdownInterval =

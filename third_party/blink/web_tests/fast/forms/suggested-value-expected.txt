@@ -110,8 +110,6 @@ instead of "initial value".
 |       aria-hidden="true"
 |       "initial value"
 |     <slot>
-|       id="select-options"
-|     <slot>
 |       id="select-button"
 |     <div>
 |       popover="auto"

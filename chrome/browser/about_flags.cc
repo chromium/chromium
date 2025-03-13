@@ -5345,21 +5345,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRecordWebAppDebugInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRecordWebAppDebugInfo)},
 #if !BUILDFLAG(IS_ANDROID)
-    {"web-app-sync-generated-icon-background-fix",
-     flag_descriptions::kWebAppSyncGeneratedIconBackgroundFixName,
-     flag_descriptions::kWebAppSyncGeneratedIconBackgroundFixDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebAppSyncGeneratedIconBackgroundFix)},
-    {"web-app-sync-generated-icon-retroactive-fix",
-     flag_descriptions::kWebAppSyncGeneratedIconRetroactiveFixName,
-     flag_descriptions::kWebAppSyncGeneratedIconRetroactiveFixDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebAppSyncGeneratedIconRetroactiveFix)},
-    {"web-app-sync-generated-icon-update-fix",
-     flag_descriptions::kWebAppSyncGeneratedIconUpdateFixName,
-     flag_descriptions::kWebAppSyncGeneratedIconUpdateFixDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kWebAppSyncGeneratedIconUpdateFix)},
     {"enable-desktop-pwas-sync-changes",
      flag_descriptions::kDesktopPWAsSyncChangesName,
      flag_descriptions::kDesktopPWAsSyncChangesDescription, kOsDesktop,
@@ -9997,12 +9982,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          profile_management::features::kOidcAuthProfileManagement)},
 
-    {"explicit-browser-signin-ui-on-desktop",
-     flag_descriptions::kExplicitBrowserSigninUIOnDesktopName,
-     flag_descriptions::kExplicitBrowserSigninUIOnDesktopDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(switches::kExplicitBrowserSigninUIOnDesktop)},
-
     {"enable-generic-oidc-auth-profile-management",
      flag_descriptions::kEnableGenericOidcAuthProfileManagementName,
      flag_descriptions::kEnableGenericOidcAuthProfileManagementDescription,
@@ -11778,6 +11757,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnablePrintingMarginsAndScaleDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(extensions_features::kApiPrintingMarginsAndScale)},
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
+
+    {"supervised-user-block-interstitial-v3",
+     flag_descriptions::kSupervisedUserBlockInterstitialV3Name,
+     flag_descriptions::kSupervisedUserBlockInterstitialV3Description, kOsAll,
+     FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserBlockInterstitialV3)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -147,7 +147,7 @@ public final class AuxiliarySearchDonorTest {
                             assertEquals(
                                     mLastAccessTimestamps[i], webPage.getCreationTimestampMillis());
                             assertEquals(
-                                    mAuxiliarySearchDonor.getDocumentTtlMs(),
+                                    mAuxiliarySearchDonor.getTabDocumentTtlMs(),
                                     webPage.getDocumentTtlMillis());
                             assertTrue(
                                     Arrays.equals(

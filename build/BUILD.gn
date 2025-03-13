@@ -94,6 +94,28 @@ buildflag_header("ios_buildflags") {
   flags = [ "IS_IOS_APP_EXTENSION=$_is_ios_app_extension" ]
 }
 
+#
+# NOTE: IS_DESKTOP_ANDROID should be used sparingly.
+#
+# General Recommendation:
+#   Avoid using this build time flag whenever possible. Rely on runtime
+#   detection of features such as:
+#     - Large screen availability
+#     - Input modalities (e.g., touch, keyboard, mouse)
+#     - Relevant Android system flags.
+#
+# DO:
+#   - Use this flag ONLY for features with substantial binary size impact,
+#     such as DevTools or Extensions, which contain significant code and
+#     resource sizes.
+#
+# DON'T:
+#   - Use this flag to enable feature flags or experiments.
+#   - Use this flag in code shared with Android WebView.
+#     Restrict its usage to the //chrome code directory whenever possible.
+#
+# If you're unsure please reach out to is-android-desktop-help@google.com
+#
 buildflag_header("android_buildflags") {
   header = "android_buildflags.h"
   flags = [ "IS_DESKTOP_ANDROID=$is_desktop_android" ]

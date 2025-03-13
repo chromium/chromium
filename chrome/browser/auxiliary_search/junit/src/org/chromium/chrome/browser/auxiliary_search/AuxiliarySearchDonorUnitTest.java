@@ -60,12 +60,16 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for AuxiliarySearchDonor. */
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // Mock ListenableFuture.
 public class AuxiliarySearchDonorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private static final int DEFAULT_TAB_TTL_HOURS = 168;
+    private static final int DEFAULT_HISTORY_TTL_HOURS = 24;
 
     @Mock private MigrationFailure mMigrationFailure;
     @Mock private AuxiliarySearchHooks mHooks;
@@ -115,20 +119,24 @@ public class AuxiliarySearchDonorUnitTest {
     @Test
     @SmallTest
     public void testDefaultTtlIsNotZero() {
-        assertNotEquals(0L, mAuxiliarySearchDonor.getDocumentTtlMs());
+        assertNotEquals(0L, mAuxiliarySearchDonor.getTabDocumentTtlMs());
         assertEquals(
-                ((long) AuxiliarySearchUtils.DEFAULT_TTL_HOURS) * 60 * 60 * 1000,
-                mAuxiliarySearchDonor.getDocumentTtlMs());
+                DEFAULT_TAB_TTL_HOURS * 60 * 60 * 1000,
+                mAuxiliarySearchDonor.getTabDocumentTtlMs());
+
+        assertEquals(
+                DEFAULT_HISTORY_TTL_HOURS * 60 * 60 * 1000,
+                mAuxiliarySearchDonor.getHistoryDocumentTtlMs());
     }
 
     @Test
     @SmallTest
     @EnableFeatures("AndroidAppIntegration:content_ttl_hours/0")
     public void testConfiguredTtlCannotBeZero() {
-        assertNotEquals(0L, mAuxiliarySearchDonor.getDocumentTtlMs());
+        assertNotEquals(0L, mAuxiliarySearchDonor.getTabDocumentTtlMs());
         assertEquals(
-                ((long) AuxiliarySearchUtils.DEFAULT_TTL_HOURS) * 60 * 60 * 1000,
-                mAuxiliarySearchDonor.getDocumentTtlMs());
+                DEFAULT_TAB_TTL_HOURS * 60 * 60 * 1000,
+                mAuxiliarySearchDonor.getTabDocumentTtlMs());
     }
 
     @Test
@@ -139,6 +147,7 @@ public class AuxiliarySearchDonorUnitTest {
         GURL url = JUnitTestGURLs.URL_1;
         String title = "Title";
         long lastAccessTimeStamp = 100;
+        long documentTtl = TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS);
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
 
         Tab tab = mock(Tab.class);
@@ -148,7 +157,7 @@ public class AuxiliarySearchDonorUnitTest {
         when(tab.getId()).thenReturn(id);
 
         testBuildDocumentImplAndVerify(
-                tab, type, url.getSpec(), title, lastAccessTimeStamp, id, counts);
+                tab, type, url.getSpec(), title, lastAccessTimeStamp, id, documentTtl, counts);
         assertEquals(1, counts[type]);
     }
 
@@ -160,6 +169,7 @@ public class AuxiliarySearchDonorUnitTest {
         String url = "Url";
         String title = "Title";
         long lastAccessTimeStamp = 100;
+        long documentTtl = TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS);
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
 
         var builder =
@@ -170,7 +180,8 @@ public class AuxiliarySearchDonorUnitTest {
                         .setLastAccessTimestamp(lastAccessTimeStamp);
         AuxiliarySearchEntry entry = builder.build();
 
-        testBuildDocumentImplAndVerify(entry, type, url, title, lastAccessTimeStamp, id, counts);
+        testBuildDocumentImplAndVerify(
+                entry, type, url, title, lastAccessTimeStamp, id, documentTtl, counts);
         assertEquals(1, counts[type]);
     }
 
@@ -181,6 +192,8 @@ public class AuxiliarySearchDonorUnitTest {
         GURL url = JUnitTestGURLs.URL_1;
         String title = "Title";
         long lastAccessTimeStamp = 100;
+        long tabDocumentTtl = TimeUnit.HOURS.toMillis(DEFAULT_TAB_TTL_HOURS);
+        long historyDocumentTtl = TimeUnit.HOURS.toMillis(DEFAULT_HISTORY_TTL_HOURS);
         int[] counts = new int[AuxiliarySearchEntryType.MAX_VALUE + 1];
 
         int type = AuxiliarySearchEntryType.TAB;
@@ -207,9 +220,16 @@ public class AuxiliarySearchDonorUnitTest {
                         visitId);
 
         testBuildDocumentImplAndVerify(
-                entry, type, url.getSpec(), title, lastAccessTimeStamp, id, counts);
+                entry, type, url.getSpec(), title, lastAccessTimeStamp, id, tabDocumentTtl, counts);
         testBuildDocumentImplAndVerify(
-                entry2, type2, url.getSpec(), title, lastAccessTimeStamp, visitId, counts);
+                entry2,
+                type2,
+                url.getSpec(),
+                title,
+                lastAccessTimeStamp,
+                visitId,
+                historyDocumentTtl,
+                counts);
         assertEquals(1, counts[type]);
         assertEquals(1, counts[type2]);
     }
@@ -221,6 +241,7 @@ public class AuxiliarySearchDonorUnitTest {
             String title,
             long lastAccessTimeStamp,
             int id,
+            long documentTtlMs,
             int[] counts) {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Config.RGB_565);
         String documentId = AuxiliarySearchDonor.getDocumentId(type, id);
@@ -231,7 +252,7 @@ public class AuxiliarySearchDonorUnitTest {
         assertEquals(url, webPage.getUrl());
         assertEquals(title, webPage.getName());
         assertEquals(lastAccessTimeStamp, webPage.getCreationTimestampMillis());
-        assertEquals(mAuxiliarySearchDonor.getDocumentTtlMs(), webPage.getDocumentTtlMillis());
+        assertEquals(documentTtlMs, webPage.getDocumentTtlMillis());
         assertTrue(
                 Arrays.equals(
                         AuxiliarySearchUtils.bitmapToBytes(bitmap),

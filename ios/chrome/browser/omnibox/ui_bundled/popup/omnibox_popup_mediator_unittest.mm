@@ -27,13 +27,16 @@
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_popup_controller.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_result_consumer.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/pedal_suggestion_wrapper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_swift.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/suggest_action.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -47,6 +50,27 @@
 #import "url/gurl.h"
 
 namespace {
+
+// Returns an autocomplete suggestion with a reviews action attached to it.
+id<AutocompleteSuggestion> SuggestionWithReviewsAction() {
+  AutocompleteMatch actionMatch = CreateActionInSuggestMatch(
+      u"Action", {omnibox::ActionInfo_ActionType_REVIEWS});
+
+  AutocompleteMatchFormatter* suggestion =
+      [[AutocompleteMatchFormatter alloc] initWithMatch:actionMatch];
+
+  NSMutableArray* actions = [[NSMutableArray alloc] init];
+
+  for (auto& action : actionMatch.actions) {
+    SuggestAction* suggestAction =
+        [SuggestAction actionWithOmniboxAction:action.get()];
+    [actions addObject:suggestAction];
+  }
+
+  suggestion.actionsInSuggest = actions;
+
+  return suggestion;
+}
 
 // Mock of ImageDataFetcher class.
 class MockImageDataFetcher : public image_fetcher::ImageDataFetcher {
@@ -81,9 +105,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
         remoteSuggestionsService:nil
                          tracker:&tracker];
     mediator_.consumer = mockResultConsumer_;
-
-    autocomplete_result_wrapper_ = [[AutocompleteResultWrapper alloc] init];
-    mediator_.autocompleteResultWrapper = autocomplete_result_wrapper_;
   }
 
   void TearDown() override { [mediator_ disconnect]; }
@@ -94,7 +115,6 @@ class OmniboxPopupMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   OmniboxPopupMediator* mediator_;
-  AutocompleteResultWrapper* autocomplete_result_wrapper_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
   id mockResultConsumer_;
 };
@@ -141,14 +161,22 @@ TEST_F(OmniboxPopupMediatorTest, SelectManagePasswordSuggestionMetricLogged) {
 // Tests action in suggestion shown logged when selecting a non-action
 // suggestion.
 TEST_F(OmniboxPopupMediatorTest, ActionInSuggestMetricLogged) {
-  ACMatches matches = {CreateActionInSuggestMatch(
-                           u"Action", {omnibox::ActionInfo_ActionType_REVIEWS}),
-                       CreateSearchMatch(u"Clear History"),
-                       CreateSearchMatch(u"search 1"),
-                       CreateSearchMatch(u"search 2")};
-  AutocompleteResult result = AutocompleteResult();
-  result.AppendMatches(matches);
-  [mediator_ popupController:nil didSortResults:result];
+  id<AutocompleteSuggestion> match1 = SuggestionWithReviewsAction();
+  id<AutocompleteSuggestion> match2 = [[AutocompleteMatchFormatter alloc]
+      initWithMatch:CreateSearchMatch(u"search 1")];
+
+  NSArray<id<AutocompleteSuggestion>>* mockedSuggestions =
+      [[NSArray alloc] initWithObjects:match1, match2, nil];
+
+  id<AutocompleteSuggestionGroup> group = [AutocompleteSuggestionGroupImpl
+      groupWithTitle:@""
+         suggestions:mockedSuggestions
+                type:SuggestionGroupType::kUnspecifiedSuggestionGroup];
+
+  NSArray<id<AutocompleteSuggestionGroup>>* groups =
+      [[NSArray alloc] initWithObjects:group, nil];
+
+  [mediator_ popupController:nil didUpdateSuggestionsGroups:groups];
 
   id<AutocompleteSuggestion> actionSuggestion =
       mediator_.suggestionGroups[0].suggestions[0];

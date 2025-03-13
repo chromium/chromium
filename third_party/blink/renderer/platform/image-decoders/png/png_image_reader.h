@@ -84,8 +84,6 @@ class PLATFORM_EXPORT PNGImageReader final {
   // Number of complete frames parsed so far; includes frame 0 even if partial.
   wtf_size_t FrameCount() const { return frame_info_.size(); }
 
-  bool IsAnimated() const { return is_animated_; }
-
   bool ParseCompleted() const { return parse_completed_; }
 
   bool FrameIsReceivedAtIndex(wtf_size_t index) const {

@@ -120,7 +120,7 @@ class CORE_EXPORT KeyframeEffectModelBase : public EffectModel {
   }
 
   using KeyframeGroupMap =
-      HeapHashMap<PropertyHandle, Member<PropertySpecificKeyframeGroup>>;
+      GCedHeapHashMap<PropertyHandle, Member<PropertySpecificKeyframeGroup>>;
   const KeyframeGroupMap& GetPropertySpecificKeyframeGroups() const {
     EnsureKeyframeGroups();
     return *keyframe_groups_;

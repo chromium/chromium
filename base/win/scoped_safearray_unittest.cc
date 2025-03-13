@@ -154,6 +154,13 @@ TEST(ScopedSafearrayTest, InitiallyEmpty) {
   EXPECT_DCHECK_DEATH(empty_safe_array.GetCount());
 }
 
+TEST(ScopedSafearrayTest, NonNullOneDimensionalEmptySafearray) {
+  SAFEARRAY* empty_array = SafeArrayCreateVector(VT_I4, 0, 0);
+  ScopedSafearray empty_safe_array(empty_array);
+  EXPECT_NE(empty_safe_array.Get(), nullptr);
+  EXPECT_EQ(empty_safe_array.GetCount(), 0);
+}
+
 TEST(ScopedSafearrayTest, ScopedSafearrayGetCount) {
   // TODO(crbug.com/40691652): Create a safer alternative to SAFEARRAY methods.
   ScopedSafearray scoped_safe_array(SafeArrayCreateVector(

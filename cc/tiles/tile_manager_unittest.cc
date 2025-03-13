@@ -2395,7 +2395,7 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
 
   auto backing = std::make_unique<ResourcePool::Backing>(
       resource.size(), resource.format(), resource.color_space());
-  backing->set_shared_image(gpu::ClientSharedImage::CreateForTesting(
+  backing->SetSharedImageForTesting(gpu::ClientSharedImage::CreateForTesting(
       resource.format(), GL_TEXTURE_2D));
   backing->mailbox_sync_token.Set(gpu::GPU_IO,
                                   gpu::CommandBufferId::FromUnsafeValue(1), 1);
@@ -2658,8 +2658,9 @@ class MockReadyToDrawRasterBufferProviderImpl
     if (!resource.backing()) {
       auto backing = std::make_unique<ResourcePool::Backing>(
           resource.size(), resource.format(), resource.color_space());
-      backing->set_shared_image(gpu::ClientSharedImage::CreateForTesting(
-          resource.format(), GL_TEXTURE_2D));
+      backing->SetSharedImageForTesting(
+          gpu::ClientSharedImage::CreateForTesting(resource.format(),
+                                                   GL_TEXTURE_2D));
       backing->mailbox_sync_token.Set(
           gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
       resource.set_backing(std::move(backing));

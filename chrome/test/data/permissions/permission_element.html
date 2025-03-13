@@ -26,6 +26,12 @@
     document.getElementById('parent').addEventListener('dismiss', (event) => {
       console.log(event.target.id + '-dismiss');
     });
+    document.getElementById('parent').addEventListener('promptaction', (event) => {
+      console.log(event.target.id + '-promptaction');
+    });
+    document.getElementById('parent').addEventListener('promptdismiss', (event) => {
+      console.log(event.target.id + '-promptdismiss');
+    });
 
     function clickById(element_id) {
       click(document.getElementById(element_id));

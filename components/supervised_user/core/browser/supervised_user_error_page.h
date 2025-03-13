@@ -14,6 +14,8 @@ class Custodian;
 
 int GetBlockMessageID(FilteringBehaviorReason reason, bool single_parent);
 
+int GetInterstitialMessageID(FilteringBehaviorReason reason);
+
 std::string BuildErrorPageHtml(bool allow_access_requests,
                                std::optional<Custodian> custodian,
                                std::optional<Custodian> second_custodian,

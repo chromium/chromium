@@ -73,7 +73,7 @@ class CORE_EXPORT InspectorDOMSnapshotAgent final
       const LayoutObject* layout_object,
       const LayoutText::TextBoxInfo& text_box);
 
-  using PaintOrderMap = HeapHashMap<Member<PaintLayer>, int>;
+  using PaintOrderMap = GCedHeapHashMap<Member<PaintLayer>, int>;
   static PaintOrderMap* BuildPaintLayerTree(Document*);
 
  private:

@@ -91,7 +91,8 @@ std::optional<std::u16string> InteractionTypeToIdentityPillAccessibilityLabel(
     WebSigninInterceptor::SigninInterceptionType interception_type) {
   switch (interception_type) {
     case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
-      if (switches::kInterceptBubblesDismissibleByAvatarButton.Get()) {
+      if (base::FeatureList::IsEnabled(
+              switches::kInterceptBubblesDismissibleByAvatarButton)) {
         return l10n_util::GetStringUTF16(
             IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL);
       } else {
@@ -436,7 +437,8 @@ void DiceWebSigninInterceptionBubbleView::ApplyAvatarButtonEffects() {
           bubble_parameters_.interception_type));
 
   // Avatar Button action behavior
-  if (switches::kInterceptBubblesDismissibleByAvatarButton.Get()) {
+  if (base::FeatureList::IsEnabled(
+          switches::kInterceptBubblesDismissibleByAvatarButton)) {
     reset_avatar_button_action_callback_ =
         button->SetExplicitButtonAction(base::BindRepeating(
             &DiceWebSigninInterceptionBubbleView::Dismiss,

@@ -169,8 +169,7 @@
   `}'>
   </cr-lazy-render-lit>
   <highlight-menu
-    id="highlightMenu" .settingsPrefs="${this.settingsPrefs}"
-    @highlight-change="${this.onHighlightChange_}">
+    id="highlightMenu" @highlight-change="${this.onHighlightChange_}">
   </highlight-menu>
   <cr-lazy-render-lit id="fontSizeMenu" .template='${() => html`
     <cr-action-menu @keydown="${this.onFontSizeMenuKeyDown_}"

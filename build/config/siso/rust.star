@@ -43,9 +43,10 @@ def __filegroups(ctx):
         "third_party/llvm-build/Release+Asserts:rustlink": {
             "type": "glob",
             "includes": [
+                "bin/*lld*",
                 "bin/clang",
                 "bin/clang++",
-                "bin/*lld*",
+                "lib/clang/*/share/cfi_ignorelist.txt",
                 "libclang*.a",
             ],
         },

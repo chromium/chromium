@@ -105,7 +105,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
 
   using UpgradeCandidateSet = GCedHeapHashSet<WeakMember<Element>>;
   using UpgradeCandidateMap =
-      HeapHashMap<AtomicString, Member<UpgradeCandidateSet>>;
+      GCedHeapHashMap<AtomicString, Member<UpgradeCandidateSet>>;
 
   // Candidate elements that can be upgraded with this registry later.
   // To make implementation simpler, we maintain a superset here, and remove

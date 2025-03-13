@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Prístupový kľúč</translation>
 <translation id="1030376737535466765">Otvoriť Správcu hesiel</translation>
 <translation id="1035980983510608210">Zavretím všetkých kariet zavriete aj pripnuté karty.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1041322626941363065">Upozorňovať pri prezradení hesiel v rámci porušenia ochrany údajov</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Súbory cookie, údaje stránok</translation>
 <translation id="1312721752506309252">Je zapnutá rozšírená ochrana</translation>
 <translation id="1317821187353201763">Zavretie karty</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Sledovať túto zásielku}few{Sledovať všetky zásielky}many{Track all packages}other{Sledovať všetky zásielky}}</translation>
 <translation id="1321993286294231467">Chyba pri ukladaní obrázka.</translation>
 <translation id="1322735045095424339">Vaša organizácia vyžaduje režim inkognito</translation>
 <translation id="1323735185997015385">Odstrániť</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Počet vybraných záložiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Odstránenie prístupového kľúča</translation>
 <translation id="1712341189152602203">Existujúce dáta prehliadania budú prepojené s účtom <ph name="USER_EMAIL" />. Tieto dáta si bude môcť zobraziť vaša organizácia.</translation>
-<translation id="1713777106376424209">Doručila služba</translation>
 <translation id="1715515772563243997">Ak doméne <ph name="SITE" /> dôverujete, môžete sa prihlásiť uloženým heslom.</translation>
 <translation id="1718835860248848330">Posledná hodina</translation>
 <translation id="1728549374069268714">Prilepiť a prejsť</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Sledovanie cien a štatistiky</translation>
 <translation id="1820195936249950412">Prihláste sa platným účtom</translation>
 <translation id="1820259098641718022">Pridané do čitateľského zoznamu</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Upozornenia, keď dostanete karty z iných zariadení.</translation>
 <translation id="1827529786398596735">Pridržte plochu</translation>
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Výber jednotky</translation>
 <translation id="2330607597130465898">Žiadna ochrana</translation>
 <translation id="233375395665273385">Odstrániť a odhlásiť</translation>
-<translation id="2348630484974447747">Zásielka</translation>
 <translation id="2351097562818989364">Nastavenia prekladov boli resetované.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Heslo domény {DOMAIN_ONE} si môžete uložiť do účtu Google {EMAIL}.}=2{Heslá domén {DOMAIN_ONE} a {DOMAIN_TWO} ďalších si môžete uložiť do účtu Google {EMAIL}.}=3{Heslá domén {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} ďalšej si môžete uložiť do účtu Google {EMAIL}.}few{Heslá domén {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} ďalších si môžete uložiť do účtu Google {EMAIL}.}many{You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}other{Heslá domén {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} ďalších si môžete uložiť do účtu Google {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Predvolené zobrazenie webu</translation>
@@ -797,7 +792,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4460014764210899310">Zrušiť zoskupenie</translation>
 <translation id="446314443268698477">Nakupujte, prekladajte a identifikujte, čo vidíte, pomocou kamery alebo fotiek.</translation>
 <translation id="4469324811108161144">Poznámky môžu uložiť maximálne tento počet znakov: <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Číslo zásielky</translation>
 <translation id="4471472356135655769">Heslá sa nedajú exportovať</translation>
 <translation id="4473608001744970767">Skryť položku Sledovať cenu</translation>
 <translation id="4474142134969976028">Žiadne zodpovedajúce výsledky</translation>
@@ -1289,7 +1283,6 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="647867789226964031">Zmeňte si heslá</translation>
 <translation id="6494931198667773526">Končí sa</translation>
 <translation id="6495521251906266731">Vyberte, čo chcete urobiť s existujúcimi dátami prehliadania v tomto zariadení, napríklad s heslami, históriou a ďalšími.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Zastaviť sledovanie tejto zásielky}few{Zastaviť sledovanie týchto zásielok}many{Untrack all packages}other{Zastaviť sledovanie týchto zásielok}}</translation>
 <translation id="6503077044568424649">Najnavštevovanejšie</translation>
 <translation id="6503763061813913607">Upozornenia kontroly bezpečnosti</translation>
 <translation id="6505334220040167806">Zbaliť skupinu kariet</translation>
@@ -1761,7 +1754,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8481184073299279701">Ak chcete zhromažďovať budúce denníky a chyby konzoly JavaScript zo všetkých kariet, klepnite na Spustiť zapisovanie do denníka. Denníky sa budú zhromažďovať (a ukladať iba v pamäti), kým túto stránku nezavriete alebo neklepnete na Zastaviť zapisovanie do denníka.</translation>
 <translation id="8487667956631253959">Zapnúť</translation>
 <translation id="8487700953926739672">K dispozícii offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Odkaz sa nepodarilo vytvoriť</translation>
 <translation id="8503813439785031346">Meno používateľa</translation>
 <translation id="8505361906966222822">Uložiť do umiestnenia…</translation>

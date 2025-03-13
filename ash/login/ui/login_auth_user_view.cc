@@ -47,7 +47,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -1126,12 +1125,7 @@ void LoginAuthUserView::OnAuthSubmit(std::u16string_view password) {
   password_view_->SetReadOnly(true);
   pin_input_view_->SetReadOnly(true);
 
-  // Checking if the password is only formed of numbers with base::StringToInt
-  // will easily fail due to numeric limits. ContainsOnlyChars is used instead.
-  const bool authenticated_by_pin =
-      ShouldAuthenticateWithPin() &&
-      base::ContainsOnlyChars(base::UTF16ToUTF8(password), "0123456789");
-
+  const bool authenticated_by_pin = ShouldAuthenticateWithPin();
   Shell::Get()->login_screen_controller()->AuthenticateUserWithPasswordOrPin(
       current_user().basic_user_info.account_id, base::UTF16ToUTF8(password),
       authenticated_by_pin,

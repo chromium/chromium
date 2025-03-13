@@ -208,7 +208,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   void RemoveFromPastNamesMap(HTMLElement&);
   bool PastNamesEmpty() const;
 
-  typedef HeapHashMap<AtomicString, Member<Element>> PastNamesMap;
+  using PastNamesMap = GCedHeapHashMap<AtomicString, Member<Element>>;
 
   FormSubmission::Attributes attributes_;
   Member<PastNamesMap> past_names_map_;

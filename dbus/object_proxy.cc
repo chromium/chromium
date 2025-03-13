@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/leak_annotations.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -594,6 +595,10 @@ void ObjectProxy::OnCallMethod(const std::string& interface_name,
                                ResponseCallback response_callback,
                                Response* response,
                                ErrorResponse* error_response) {
+  // Add crash keys to debug crbug.com/397080280
+  SCOPED_CRASH_KEY_STRING32("ObjectProxy", "interface_name", interface_name);
+  SCOPED_CRASH_KEY_STRING32("ObjectProxy", "method_name", method_name);
+
   if (response) {
     // Method call was successful.
     std::move(response_callback).Run(response);

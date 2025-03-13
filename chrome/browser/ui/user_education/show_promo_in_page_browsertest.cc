@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -152,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSameTab) {
   auto params = GetDefaultParams();
   params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
   params.callback = bubble_shown.Get();
-  params.overwrite_active_tab = true;
+  params.page_open_mode = user_education::PageOpenMode::kOverwriteActiveTab;
 
   base::WeakPtr<ShowPromoInPage> handle;
 
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
                        HelpBubbleParamsCanConfigureCloseButtonAltText) {
   auto params = GetDefaultParams();
   params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
-  params.overwrite_active_tab = true;
+  params.page_open_mode = user_education::PageOpenMode::kOverwriteActiveTab;
   // Set the alt text here and then check that aria-label matches.
   params.close_button_alt_text_id = IDS_CLOSE_PROMO;
 
@@ -313,4 +314,53 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
                   CheckJsResultAt(kTabId, kPathToHelpBubbleCloseButton,
                                   "(el) => el.getAttribute('aria-label')",
                                   l10n_util::GetStringUTF8(IDS_CLOSE_PROMO)));
+}
+
+IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest, ShowPromoInSingletonTab) {
+  // Open 2 tabs.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUIUserEducationInternalsURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUISettingsURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Open a promo in a singleton tab.
+  base::MockCallback<ShowPromoInPage::Callback> bubble_shown;
+
+  auto params = GetDefaultParams();
+  params.target_url = GURL(chrome::kChromeUIUserEducationInternalsURL);
+  params.callback = bubble_shown.Get();
+  params.page_open_mode = user_education::PageOpenMode::kSingletonTab;
+
+  base::WeakPtr<ShowPromoInPage> handle;
+
+  base::RunLoop run_loop;
+  auto quit_closure = run_loop.QuitClosure();
+
+  EXPECT_CALL(bubble_shown, Run)
+      .WillOnce([&](ShowPromoInPage* source, bool success) {
+        EXPECT_TRUE(success);
+        quit_closure.Run();
+      });
+
+  handle = ShowPromoInPage::Start(browser(), std::move(params));
+
+  ASSERT_NE(nullptr, handle);
+
+  run_loop.Run();
+
+  // No new tabs should have been opened.
+  EXPECT_EQ(3, browser()->tab_strip_model()->count());
+  // The promo should have opened in the already-open tab.
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  ASSERT_NE(nullptr, handle->GetHelpBubbleForTesting());
+  ASSERT_TRUE(handle->GetHelpBubbleForTesting()->is_open());
+
+  // Closing the help bubble should destroy the object.
+  handle->GetHelpBubbleForTesting()->Close();
+  ASSERT_FALSE(handle);
 }

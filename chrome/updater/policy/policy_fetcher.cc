@@ -30,9 +30,11 @@
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
+#include "chrome/updater/policy/manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/update_client/timed_callback.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/isolated_connection.h"
@@ -254,7 +256,6 @@ class OutOfProcessPolicyFetcher : public PolicyFetcher {
       std::unique_ptr<mojo::IsolatedConnection> connection,
       mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote);
   void OnPoliciesFetched(enterprise_companion::mojom::StatusPtr status);
-  void OnRPCDropped();
 
   SEQUENCE_CHECKER(sequence_checker_);
   mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote_;
@@ -281,7 +282,11 @@ void OutOfProcessPolicyFetcher::FetchPolicies(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
   CHECK(!fetch_complete_callback_);
-  fetch_complete_callback_ = std::move(callback);
+  fetch_complete_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      update_client::MakeTimedCallback(std::move(callback), connection_timeout_,
+                                       kErrorIpcDisconnect,
+                                       scoped_refptr<PolicyManagerInterface>()),
+      kErrorIpcDisconnect, nullptr);
 
   enterprise_companion::ConnectAndLaunchServer(
       base::DefaultClock::GetInstance(), connection_timeout_,
@@ -308,15 +313,17 @@ void OutOfProcessPolicyFetcher::OnConnected(
   connection_ = std::move(connection);
   remote_ = std::move(remote);
   remote_->FetchPolicies(
-      reason, mojo::WrapCallbackWithDropHandler(
-                  base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
-                                 base::WrapRefCounted(this)),
-                  base::BindOnce(&OutOfProcessPolicyFetcher::OnRPCDropped,
-                                 base::WrapRefCounted(this))));
+      reason, base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
+                             base::WrapRefCounted(this)));
 }
 
 void OutOfProcessPolicyFetcher::OnPoliciesFetched(
     enterprise_companion::mojom::StatusPtr mojom_status) {
+  if (!mojom_status) {
+    VLOG(1) << "Received null status from out-of-process fetcher.";
+    std::move(fetch_complete_callback_).Run(kErrorIpcDisconnect, nullptr);
+    return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Policy fetch status: " << mojom_status->code
           << ", space: " << mojom_status->space
@@ -349,12 +356,6 @@ void OutOfProcessPolicyFetcher::OnPoliciesFetched(
     }
     std::move(fetch_complete_callback_).Run(result, nullptr);
   }
-}
-
-void OutOfProcessPolicyFetcher::OnRPCDropped() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "RPC connection dropped during policy fetch.";
-  std::move(fetch_complete_callback_).Run(kErrorIpcDisconnect, nullptr);
 }
 
 scoped_refptr<PolicyFetcher> CreateInProcessPolicyFetcher(

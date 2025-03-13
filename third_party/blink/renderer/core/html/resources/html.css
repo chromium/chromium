@@ -1759,11 +1759,9 @@ dialog:where(:modal) {
   select:not(:-internal-list-box):not([multiple]):enabled:active {
     background-color: -internal-auto-base(Field, color-mix(in lab, currentColor 20%, transparent));
   }
-
-  /* Without this rule, we would be changing the styles for disabled
-   * appearance:auto selects. */
   select:not(:-internal-list-box):not([multiple]):disabled {
-    color: -internal-auto-base(light-dark(GrayText, #aaa), inherit);
+    opacity: -internal-auto-base(0.7, unset);
+    color: -internal-auto-base(light-dark(GrayText, #aaa), color-mix(in srgb, currentColor 50%, transparent));
     border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), inherit);
   }
 

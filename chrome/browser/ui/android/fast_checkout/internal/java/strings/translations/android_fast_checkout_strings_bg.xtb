@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1122068467107743258">Служебен</translation>
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="138513070655895675">Промяна на начина на плащане под този елемент от менюто.</translation>
 <translation id="2129442648318919291">Управление на адресите.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Адрес за доставка</translation>
 <translation id="8873105120914375071">Искате ли да плащате по-бързо?</translation>
 <translation id="9032876013752408138">Автоматично попълване на информацията ми</translation>
+<translation id="932327136139879170">Начална страница</translation>
 <translation id="984275831282074731">Начини на плащане</translation>
 </translationbundle>

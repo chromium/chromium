@@ -84,9 +84,16 @@ class AutofillWebDataService : public WebDataServiceBase {
       base::OnceCallback<void(const AutofillProfileChange&)> on_success);
 
   // Schedules a task to remove an Autofill profile from the web database.
-  // |guid| is the identifier of the profile to remove.
+  // `guid` is the identifier of the profile to remove.
+  // In practice `change_type` will either be `REMOVE` or `HIDE_IN_AUTOFILL`. It
+  // will be used to determine what type of change (permanent remove or update)
+  // should happen on the server. Both of them result in the entry being removed
+  // from the local database.
+  // Important: `HIDE_IN_AUTOFILL` should only be used
+  // for calls from the deduplication logic for account profiles.
   void RemoveAutofillProfile(
       const std::string& guid,
+      AutofillProfileChange::Type change_type,
       base::OnceCallback<void(const AutofillProfileChange&)> on_success);
 
   // Initiates the request for Autofill profiles. The profiles are passed to the

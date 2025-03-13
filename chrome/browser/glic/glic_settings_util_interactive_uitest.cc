@@ -19,6 +19,8 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kThirdTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kOsToggleIsVisible);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kKeyboardShortcutIsVisible);
@@ -61,8 +63,8 @@ class GlicSettingsUtilUiTest
   }
 
   // Navigates the initial tab to the glic settings page using
-  // chrome::ShowSettingsSubPage, then calls f and verifies that a second tab is
-  // opened, also to the glic settings page.
+  // chrome::ShowSettingsSubPage, opens 2 more tabs, then calls f and verifies
+  // that only 3 tabs are open.
   auto VerifyOpensGlicSettings(auto f) {
     return Steps(
         InstrumentTab(kFirstTab), Do([this] {
@@ -70,11 +72,13 @@ class GlicSettingsUtilUiTest
         }),
         WaitForWebContentsNavigation(
             kFirstTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
+        AddInstrumentedTab(kSecondTab , GURL(chrome::kChromeUICreditsURL)),
+        AddInstrumentedTab(kThirdTab, GURL(chrome::kChromeUIAboutURL)),
         Do([this, f] { f(browser()->profile()); }), InstrumentTab(kSettingsTab),
         WaitForWebContentsReady(
             kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
         CheckResult(
-            [this] { return browser()->tab_strip_model()->GetTabCount(); }, 2,
+            [this] { return browser()->tab_strip_model()->GetTabCount(); }, 3,
             "CheckTabCount"));
   }
 
@@ -111,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, OpenOsToggleSetting) {
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicOsToggleSetting),
       WaitForStateChange(
-          kSettingsTab, ElementIsVisibleStateChange(kBubbleIsVisible,
+          kFirstTab, ElementIsVisibleStateChange(kBubbleIsVisible,
                                                     kOsToggleHelpBubbleQuery)));
 }
 
@@ -125,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest,
                        MAYBE_OpenKeyboardShortcutSetting) {
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicKeyboardShortcutSetting),
-      WaitForStateChange(kSettingsTab, ElementIsVisibleStateChange(
+      WaitForStateChange(kFirstTab, ElementIsVisibleStateChange(
                                            kBubbleIsVisible,
                                            kKeyboardShortcutHelpBubbleQuery)));
 }
@@ -139,12 +143,12 @@ IN_PROC_BROWSER_TEST_F(GlicSettingsUtilUiTest, ThrottleOpenOsToggleSetting) {
   RunTestSequence(
       VerifyOpensGlicSettings(glic::OpenGlicOsToggleSetting),
       WaitForStateChange(
-          kSettingsTab,
+          kFirstTab,
           ElementIsVisibleStateChange(
               kOsToggleIsVisible,
               {"settings-ui", "settings-main", "settings-basic-page",
                "settings-glic-page", "#launcherToggle"})),
-      WaitForStateChange(kSettingsTab,
+      WaitForStateChange(kFirstTab,
                          ElementIsHiddenStateChange(kBubbleIsHidden,
                                                     kOsToggleHelpBubbleQuery)));
 }

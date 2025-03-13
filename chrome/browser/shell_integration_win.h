@@ -19,9 +19,6 @@ enum class ShortcutOperation;
 
 namespace shell_integration::win {
 
-struct ShortcutProperties;
-enum class ShortcutOperation;
-
 // Initiates the interaction with the system settings for the default browser.
 // The function takes care of making sure |on_finished_callback| will get called
 // exactly once when the interaction is finished.
