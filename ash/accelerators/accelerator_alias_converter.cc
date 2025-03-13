@@ -867,6 +867,13 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       continue;
     }
 
+    if (accelerator.key_code() == ui::VKEY_CAMERA_ACCESS_TOGGLE) {
+      if (keyboard_capability->HasCameraAccessKeyOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
     // Otherwise, always copy the accelerator.
     filtered_accelerators.push_back(accelerator);
   }

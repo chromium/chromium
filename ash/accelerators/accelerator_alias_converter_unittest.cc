@@ -480,6 +480,34 @@ TEST_F(AcceleratorAliasConverterTest, CheckSettingsKeyAlias) {
   EXPECT_EQ(accelerator, accelerator_aliases[0]);
 }
 
+TEST_F(AcceleratorAliasConverterTest, CheckCameraAccessToggleKeyAlias) {
+  std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
+      std::make_unique<FakeDeviceManager>();
+  ui::KeyboardDevice fake_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/kKbdTopRowLayout1Tag);
+  fake_keyboard.sys_path = base::FilePath("path");
+  fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout1Tag);
+
+  AcceleratorAliasConverter accelerator_alias_converter_;
+
+  const ui::Accelerator accelerator{ui::VKEY_CAMERA_ACCESS_TOGGLE, ui::EF_NONE};
+  std::vector<ui::Accelerator> accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(0u, accelerator_aliases.size());
+
+  ui::KeyboardDevice wilco_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/kKbdTopRowLayoutWilcoTag);
+  wilco_keyboard.sys_path = base::FilePath("path2");
+  fake_keyboard_manager_->AddFakeKeyboard(wilco_keyboard,
+                                          kKbdTopRowLayoutWilcoTag);
+  accelerator_aliases =
+      accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
+  EXPECT_EQ(1u, accelerator_aliases.size());
+  EXPECT_EQ(accelerator, accelerator_aliases[0]);
+}
+
 TEST_F(AcceleratorAliasConverterTest, SplitModifierKeyboardCapsLockAlias) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
