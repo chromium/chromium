@@ -28,15 +28,19 @@ using bookmarks::BookmarkNode;
 using bookmarks::ManagedBookmarkService;
 using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
 
-BookmarkParentFolder GetBookmarkParentFolderFromPermanentType(
-    BookmarkNode::Type type) {
-  switch (type) {
+BookmarkParentFolder GetBookmarkParentFolderFromPermanentNode(
+    const BookmarkNode* node) {
+  CHECK(node);
+  CHECK(node->is_permanent_node());
+  switch (node->type()) {
     case bookmarks::BookmarkNode::URL:
       NOTREACHED();
     case bookmarks::BookmarkNode::FOLDER:
       // TODO(crbug.com/381252292): Consider extending type with a value
       // `MANAGED_NODE`.
       // Only other possible permanent node is the managed one.
+      CHECK_EQ(node->uuid(),
+               base::Uuid::ParseLowercase(bookmarks::kManagedNodeUuid));
       return BookmarkParentFolder::ManagedFolder();
     case bookmarks::BookmarkNode::BOOKMARK_BAR:
       return BookmarkParentFolder::BookmarkBarFolder();
@@ -53,25 +57,7 @@ std::optional<PermanentFolderType> GetIfPermanentFolderType(
   if (!node->is_permanent_node()) {
     return std::nullopt;
   }
-
-  // `node` is a permanent node.
-  switch (node->type()) {
-    case BookmarkNode::Type::BOOKMARK_BAR:
-      return PermanentFolderType::kBookmarkBarNode;
-    case BookmarkNode::Type::OTHER_NODE:
-      return PermanentFolderType::kOtherNode;
-    case BookmarkNode::Type::MOBILE:
-      return PermanentFolderType::kMobileNode;
-    case BookmarkNode::Type::FOLDER:
-      // Only other possible permanent node is the managed one.
-      CHECK_EQ(node->uuid(),
-               base::Uuid::ParseLowercase(bookmarks::kManagedNodeUuid));
-      return PermanentFolderType::kManagedNode;
-
-    case BookmarkNode::Type::URL:
-      NOTREACHED();
-  }
-  NOTREACHED();
+  return BookmarkParentFolder::FromFolderNode(node).as_permanent_folder();
 }
 
 base::flat_map<BookmarkParentFolder::PermanentFolderType,
@@ -122,12 +108,11 @@ BookmarkParentFolder BookmarkParentFolder::ManagedFolder() {
 BookmarkParentFolder BookmarkParentFolder::FromFolderNode(
     const bookmarks::BookmarkNode* node) {
   CHECK(node);
-  CHECK(!node->is_root());
   CHECK(node->is_folder());
-  if (!node->is_permanent_node()) {
-    return BookmarkParentFolder(node);
+  if (node->is_permanent_node()) {
+    return GetBookmarkParentFolderFromPermanentNode(node);
   }
-  return GetBookmarkParentFolderFromPermanentType(node->type());
+  return BookmarkParentFolder(node);
 }
 
 BookmarkParentFolder::BookmarkParentFolder(
@@ -574,7 +559,7 @@ void BookmarkMergedSurfaceService::BookmarkNodeRemoved(
       return;
     }
     BookmarkParentFolder parent_folder =
-        GetBookmarkParentFolderFromPermanentType(node->type());
+        BookmarkParentFolder::FromFolderNode(node);
     base::flat_set<const BookmarkNode*> removed_nodes =
         base::MakeFlatSet<const BookmarkNode*>(base::ToVector(
             node->children(),
