@@ -193,8 +193,6 @@ TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
   std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
   ASSERT_TRUE(!saved_pdf_data.empty());
 
-  // TODO(crbug.com/402043701): The cropped image is incorrect since the
-  // stroke shows up at (37,35) instead of at (92,35).
   base::FilePath expectation_path = GetInkTestDataFilePath(
       GetTestDataPathWithPlatformSuffix("ink_writer_cropped.png"));
   CheckPdfRendering(saved_pdf_data, /*page_index=*/0, gfx::Size(145, 97),
@@ -226,12 +224,13 @@ TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
   bool get_bounds = FPDFPageObj_GetBounds(saved_results[0].page_object, &left,
                                           &bottom, &right, &top);
   ASSERT_TRUE(get_bounds);
-  // TODO(crbug.com/402043701): The object's position in the PDF page is
-  // relative to the MediaBox, not the CropBox.  So its bounding box should be
-  // 55 pixels to the right of 92.3787, at 147.3787.
+  // While the cropped image shows the stroke on the visible page at an X coord
+  // of 92, that object's position in the PDF page is relative to the MediaBox,
+  // not the CropBox.  So its bounding box should be 55 points to the right of
+  // that.
   EXPECT_RECTF_NEAR(gfx::RectF(gfx::PointF(left, bottom),
                                gfx::SizeF(right - left, top - bottom)),
-                    gfx::RectF(gfx::PointF(92.3787f, 49.5206f),
+                    gfx::RectF(gfx::PointF(147.3787f, 49.5206f),
                                gfx::SizeF(12.5402f, 11.6486f)),
                     /*abs_error=*/0.0001f);
 }
