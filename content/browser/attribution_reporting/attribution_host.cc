@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -25,6 +26,8 @@
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/metrics/dwa/dwa_builders.h"
+#include "components/metrics/dwa/dwa_recorder.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -110,6 +113,17 @@ void ClientBounceHistogram(std::string_view user_interaction_type,
 }
 
 }  // namespace
+
+AttributionHost::PrimaryMainFrameData::PrimaryMainFrameData() = default;
+
+AttributionHost::PrimaryMainFrameData::PrimaryMainFrameData(
+    PrimaryMainFrameData&&) = default;
+
+AttributionHost::PrimaryMainFrameData&
+AttributionHost::PrimaryMainFrameData::operator=(PrimaryMainFrameData&&) =
+    default;
+
+AttributionHost::PrimaryMainFrameData::~PrimaryMainFrameData() = default;
 
 AttributionHost::AttributionHost(WebContents* web_contents)
     : WebContentsObserver(web_contents),
@@ -228,6 +242,8 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     if (primary_main_frame_data_.has_value()) {
       // Resets for further client redirects.
       primary_main_frame_data_->num_data_hosts_registered = 0;
+      primary_main_frame_data_->num_data_hosts_registered_by_reporting_origin
+          .clear();
     }
 
     // Sets current time to detect further client redirects.
@@ -346,7 +362,8 @@ void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<attribution_reporting::mojom::DataHost> data_host,
     attribution_reporting::mojom::RegistrationEligibility
         registration_eligibility,
-    bool is_for_background_requests) {
+    bool is_for_background_requests,
+    const std::vector<url::Origin>& reporting_origins) {
   auto suitable_context = AttributionSuitableContext::Create(
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame()));
   if (!suitable_context.has_value()) {
@@ -355,6 +372,13 @@ void AttributionHost::RegisterDataHost(
 
   if (primary_main_frame_data_.has_value()) {
     primary_main_frame_data_->num_data_hosts_registered++;
+    for (const url::Origin& reporting_origin : reporting_origins) {
+      auto [it, _] =
+          primary_main_frame_data_
+              ->num_data_hosts_registered_by_reporting_origin.try_emplace(
+                  reporting_origin, 0);
+      it->second++;
+    }
   }
 
   AttributionDataHostManager* manager = suitable_context->data_host_manager();
@@ -480,6 +504,50 @@ void AttributionHost::MaybeLogClientBounce(
   }
 
   ukm_builder.Record(ukm::UkmRecorder::Get());
+
+  for (const auto& [reporting_origin,
+                    num_data_hosts_registered_for_reporting_origin] :
+       primary_main_frame_data_
+           ->num_data_hosts_registered_by_reporting_origin) {
+    const int64_t num_data_hosts_registered_for_reporting_origin_bucket =
+        ukm::GetExponentialBucketMinForCounts1000(
+            num_data_hosts_registered_for_reporting_origin);
+
+    dwa::builders::AttributionConversionsClientBounce dwa_builder;
+
+    if (!primary_main_frame_data_->has_user_activation) {
+      if (time_since_last_navigation < base::Seconds(1)) {
+        dwa_builder.SetUserActivation_1s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(5)) {
+        dwa_builder.SetUserActivation_5s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(10)) {
+        dwa_builder.SetUserActivation_10s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+    }
+
+    if (!primary_main_frame_data_->has_user_interaction) {
+      if (time_since_last_navigation < base::Seconds(1)) {
+        dwa_builder.SetUserInteraction_1s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(5)) {
+        dwa_builder.SetUserInteraction_5s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+      if (time_since_last_navigation < base::Seconds(10)) {
+        dwa_builder.SetUserInteraction_10s(
+            num_data_hosts_registered_for_reporting_origin_bucket);
+      }
+    }
+
+    dwa_builder.SetContent(reporting_origin.Serialize())
+        .Record(metrics::dwa::DwaRecorder::Get());
+  }
 }
 
 // static

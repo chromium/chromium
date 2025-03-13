@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
@@ -245,7 +246,9 @@ class MockAttributionHost : public mojom::blink::AttributionHost {
       mojo::PendingReceiver<attribution_reporting::mojom::blink::DataHost>
           data_host,
       attribution_reporting::mojom::RegistrationEligibility eligibility,
-      bool is_for_background_requests) override {
+      bool is_for_background_requests,
+      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+          reporting_origins) override {
     mock_data_host_ = std::make_unique<MockDataHost>(std::move(data_host));
   }
 
