@@ -24376,6 +24376,26 @@
             ]
         }
     ],
+    "UnoDesktopM0Followup": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillRemovePaymentsButterDropdown",
+                        "ImprovedSettingsUIOnDesktop",
+                        "ImprovedSigninUIOnDesktop",
+                        "OutlineSilhouetteIcon"
+                    ]
+                }
+            ]
+        }
+    ],
     "UnoPhase2FastFollowsAndroid": [
         {
             "platforms": [
