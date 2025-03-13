@@ -923,6 +923,14 @@ void GlicWindowController::SetDraggableAreas(
   glic_view->SetDraggableAreas(draggable_areas);
 }
 
+void GlicWindowController::SetMinimumWidgetSize(const gfx::Size& size) {
+  if (!GetGlicWidget()) {
+    return;
+  }
+
+  glic_widget_->SetMinimumSize(size);
+}
+
 void GlicWindowController::Close() {
   GlicWindowController::CloseInternal(std::nullopt);
 }

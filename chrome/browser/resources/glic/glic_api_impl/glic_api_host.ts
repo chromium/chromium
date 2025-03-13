@@ -345,6 +345,12 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     return this.handler.setPanelDraggableAreas(request.areas);
   }
 
+  glicBrowserSetMinimumWidgetSize(request: {
+    size: {width: number, height: number},
+  }) {
+    return this.handler.setMinimumPanelSize(request.size);
+  }
+
   glicBrowserSetMicrophonePermissionState(request: {enabled: boolean}) {
     return this.handler.setMicrophonePermissionState(request.enabled);
   }

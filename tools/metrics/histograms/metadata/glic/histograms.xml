@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SetContextAccessIndicator"/>
     <variant name="SetLocationPermissionState"/>
     <variant name="SetMicrophonePermissionState"/>
+    <variant name="SetMinimumWidgetSize"/>
     <variant name="SetSyntheticExperimentState"/>
     <variant name="SetTabContextPermissionState"/>
     <variant name="SetWindowDraggableAreas"/>

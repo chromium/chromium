@@ -344,6 +344,10 @@ interface WebClientHandler {
   // like <h1> should have style 'user-select: none'.
   SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas) => ();
 
+  // Sets the minimum possible size that a user can manually resize to for the
+  // widget hosting the WebUI.
+  SetMinimumPanelSize(gfx.mojom.Size size);
+
   // Set the state of the Microphone permission pref:
   // prefs::kGlicMicrophoneEnabled. Returns when the browser has stored the new
   // pref value.

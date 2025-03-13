@@ -160,6 +160,16 @@ export declare interface GlicBrowserHost {
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void>;
 
   /**
+   * Sets the minimum possible size a user can resize to for the glic window.
+   *
+   * All provided values will go through sanity checks (e.g. checking min
+   * values for height and width) and may be adjusted. The web client should
+   * expect that the provided values may not be applied verbatim. Note: This
+   * will not affect the current glic window size.
+   */
+  setMinimumWidgetSize?(width: number, height: number): Promise<void>;
+
+  /**
    * Fetches page context for the currently focused tab, optionally including
    * more expensive-to-generate data.
    *

@@ -97,6 +97,14 @@ export declare interface HostRequestTypes {
       areas: DraggableArea[],
     },
   };
+  glicBrowserSetMinimumWidgetSize: {
+    request: {
+      size: {
+        width: number,
+        height: number,
+      },
+    },
+  };
   glicBrowserSetMicrophonePermissionState: {
     request: {
       enabled: boolean,
@@ -238,6 +246,7 @@ type HostRequestEnumNamesType = {
     CaptureScreenshot: 0,
     ResizeWindow: 0,
     SetWindowDraggableAreas: 0,
+    SetMinimumWidgetSize: 0,
     SetMicrophonePermissionState: 0,
     SetLocationPermissionState: 0,
     SetTabContextPermissionState: 0,

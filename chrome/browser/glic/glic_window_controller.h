@@ -113,6 +113,10 @@ class GlicWindowController : public views::WidgetObserver,
   // Sets the areas of the view from which it should be draggable.
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
 
+  // Sets the minimum widget size that the widget will allow the user to resize
+  // to.
+  void SetMinimumWidgetSize(const gfx::Size& size);
+
   // Close the panel but keep the glic WebContents alive in the background.
   void Close();
 

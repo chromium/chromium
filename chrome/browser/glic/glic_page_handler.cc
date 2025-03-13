@@ -338,6 +338,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     std::move(callback).Run();
   }
 
+  void SetMinimumPanelSize(const gfx::Size& size) override {
+    glic_service_->window_controller().SetMinimumWidgetSize(size);
+  }
+
   void SetMicrophonePermissionState(
       bool enabled,
       SetMicrophonePermissionStateCallback callback) override {

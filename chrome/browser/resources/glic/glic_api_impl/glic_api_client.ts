@@ -313,6 +313,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
         'glicBrowserSetWindowDraggableAreas', {areas});
   }
 
+  setMinimumWidgetSize(width: number, height: number): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicBrowserSetMinimumWidgetSize', {size: {width, height}});
+  }
+
   getPanelState(): ObservableValueImpl<PanelState> {
     return this.panelState;
   }
