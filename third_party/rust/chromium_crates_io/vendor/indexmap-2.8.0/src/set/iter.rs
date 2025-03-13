@@ -610,7 +610,7 @@ impl<I: Iterator> Iterator for UnitValue<I> {
     }
 }
 
-impl<'a, I, T, S> fmt::Debug for Splice<'a, I, T, S>
+impl<I, T, S> fmt::Debug for Splice<'_, I, T, S>
 where
     I: fmt::Debug + Iterator<Item = T>,
     T: fmt::Debug + Hash + Eq,

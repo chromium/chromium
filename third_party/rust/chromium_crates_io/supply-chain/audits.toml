@@ -2215,6 +2215,17 @@ There is a little bit of `unsafe` Rust code - the audit can be found at
 https://chromium-review.googlesource.com/c/chromium/src/+/6187726/2
 '''
 
+[[audits.indexmap]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.7.1 -> 2.8.0"
+notes = """
+No `unsafe` introduced or affected in:
+* `indexmap_with_default!` and `indexset_with_default!` macros
+* New `PartialEq` implementations
+* `fn slice_eq` in `util.rs`
+"""
+
 [[audits.itertools]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

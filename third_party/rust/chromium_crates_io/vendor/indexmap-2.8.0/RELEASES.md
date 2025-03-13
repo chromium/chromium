@@ -1,5 +1,12 @@
 # Releases
 
+## 2.8.0 (2025-03-10)
+
+- Added `indexmap_with_default!` and `indexset_with_default!` to be used with
+  alternative hashers, especially when using the crate without `std`.
+- Implemented `PartialEq` between each `Slice` and `[]`/arrays.
+- Removed the internal `rustc-rayon` feature and dependency.
+
 ## 2.7.1 (2025-01-19)
 
 - Added `#[track_caller]` to functions that may panic.

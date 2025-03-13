@@ -272,7 +272,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."icu_time_data:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."indexmap:2.7.1"]
+[policy."indexmap:2.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."itertools:0.11.0"]

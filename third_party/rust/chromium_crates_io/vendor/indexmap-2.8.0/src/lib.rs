@@ -98,7 +98,8 @@
 //!   [`with_capacity_and_hasher`][IndexMap::with_capacity_and_hasher] instead.
 //!   A no-std compatible hasher will be needed as well, for example
 //!   from the crate `twox-hash`.
-//! - Macros [`indexmap!`] and [`indexset!`] are unavailable without `std`.
+//! - Macros [`indexmap!`] and [`indexset!`] are unavailable without `std`. Use
+//!   the macros [`indexmap_with_default!`] and [`indexset_with_default!`] instead.
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -126,9 +127,6 @@ pub mod set;
 // are documented after the "normal" methods.
 #[cfg(feature = "rayon")]
 mod rayon;
-
-#[cfg(feature = "rustc-rayon")]
-mod rustc;
 
 pub use crate::map::IndexMap;
 pub use crate::set::IndexSet;

@@ -1,6 +1,6 @@
 # indexmap
 
-[![build status](https://github.com/indexmap-rs/indexmap/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/indexmap-rs/indexmap/actions)
+[![build status](https://github.com/indexmap-rs/indexmap/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/indexmap-rs/indexmap/actions)
 [![crates.io](https://img.shields.io/crates/v/indexmap.svg)](https://crates.io/crates/indexmap)
 [![docs](https://docs.rs/indexmap/badge.svg)](https://docs.rs/indexmap)
 [![rustc](https://img.shields.io/badge/rust-1.63%2B-orange.svg)](https://img.shields.io/badge/rust-1.63%2B-orange.svg)
@@ -56,4 +56,4 @@ which is roughly:
 
 # Recent Changes
 
-See [RELEASES.md](https://github.com/indexmap-rs/indexmap/blob/master/RELEASES.md).
+See [RELEASES.md](https://github.com/indexmap-rs/indexmap/blob/main/RELEASES.md).
