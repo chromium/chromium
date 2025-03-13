@@ -385,7 +385,10 @@ void DesktopSessionProxy::DisconnectSession(protocol::ErrorCode error) {
 
   // Disconnect the client session if it hasn't been disconnected yet.
   if (client_session_control_.get()) {
-    client_session_control_->DisconnectSession(error);
+    // TODO: crbug.com/382334458 - serialize `error_details` and
+    // `error_location` over mojo.
+    client_session_control_->DisconnectSession(
+        error, "Session disconnected by DesktopSessionAgent.", FROM_HERE);
   }
 }
 

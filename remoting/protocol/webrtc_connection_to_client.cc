@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
@@ -79,13 +80,15 @@ protocol::Session* WebrtcConnectionToClient::session() {
   return session_.get();
 }
 
-void WebrtcConnectionToClient::Disconnect(ErrorCode error) {
+void WebrtcConnectionToClient::Disconnect(
+    ErrorCode error,
+    std::string_view error_details,
+    const base::Location& error_location) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // This should trigger OnConnectionClosed() event and this object
   // may be destroyed as the result.
-  // TODO: crbug.com/382334458 - Pass WebRTC error details to Close().
-  session_->Close(error);
+  session_->Close(error, error_details, error_location);
 }
 
 std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(
@@ -226,7 +229,8 @@ void WebrtcConnectionToClient::OnWebrtcTransportConnected() {
 
 void WebrtcConnectionToClient::OnWebrtcTransportError(ErrorCode error) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  Disconnect(error);
+  // TODO: crbug.com/382334458 - Pass WebRTC error details to Close().
+  Disconnect(error, /* error_details= */ {}, FROM_HERE);
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportProtocolChanged() {
@@ -301,9 +305,10 @@ void WebrtcConnectionToClient::OnChannelClosed(
   // or the client page is closed normally. If the client goes offline then the
   // channel will remain open. Hence it should be safe to report ErrorCode::OK
   // here.
-  HOST_LOG << "Channel " << channel_dispatcher->channel_name()
-           << " was closed.";
-  Disconnect(ErrorCode::OK);
+  std::string details = base::StringPrintf(
+      "Channel %s was closed.", channel_dispatcher->channel_name().c_str());
+  HOST_LOG << details;
+  Disconnect(ErrorCode::OK, details, FROM_HERE);
 }
 
 bool WebrtcConnectionToClient::allChannelsConnected() {

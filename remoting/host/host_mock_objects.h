@@ -43,7 +43,6 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
-#include "remoting/protocol/errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
@@ -123,7 +122,12 @@ class MockClientSessionControl : public ClientSessionControl {
   ~MockClientSessionControl() override;
 
   MOCK_METHOD(const std::string&, client_jid, (), (const, override));
-  MOCK_METHOD(void, DisconnectSession, (protocol::ErrorCode), (override));
+  MOCK_METHOD(void,
+              DisconnectSession,
+              (ErrorCode error,
+               std::string_view error_details,
+               const base::Location& error_location),
+              (override));
   MOCK_METHOD(void,
               OnLocalPointerMoved,
               (const webrtc::DesktopVector&, ui::EventType),
