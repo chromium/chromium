@@ -1,6 +1,11 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This file intentionally uses the `CHECK()` macro instead of the `CHECK_op()`
+// macros, as `CHECK()` generates significantly less code and is more likely to
+// optimize reasonably, even in non-official release builds. Please do not
+// change the `CHECK()` calls back to `CHECK_op()` calls.
 
 #ifndef BASE_CONTAINERS_CHECKED_ITERATORS_H_
 #define BASE_CONTAINERS_CHECKED_ITERATORS_H_
@@ -49,7 +54,7 @@ class CheckedContiguousIterator {
   UNSAFE_BUFFER_USAGE constexpr CheckedContiguousIterator(T* start,
                                                           const T* end)
       : start_(start), current_(start), end_(end) {
-    CHECK_LE(start, end);
+    CHECK(start <= end);
   }
 
   // Constructs an iterator from `start` to `end`, starting at `current`.
@@ -64,8 +69,8 @@ class CheckedContiguousIterator {
                                                           T* current,
                                                           const T* end)
       : start_(start), current_(current), end_(end) {
-    CHECK_LE(start, current);
-    CHECK_LE(current, end);
+    CHECK(start <= current);
+    CHECK(current <= end);
   }
 
   constexpr CheckedContiguousIterator(const CheckedContiguousIterator& other) =
@@ -83,8 +88,8 @@ class CheckedContiguousIterator {
     // We explicitly don't delegate to the 3-argument constructor here. Its
     // CHECKs would be redundant, since we expect |other| to maintain its own
     // invariant. However, DCHECKs never hurt anybody. Presumably.
-    DCHECK_LE(other.start_, other.current_);
-    DCHECK_LE(other.current_, other.end_);
+    DCHECK(other.start_ <= other.current_);
+    DCHECK(other.current_ <= other.end_);
   }
 
   ~CheckedContiguousIterator() = default;
@@ -105,7 +110,7 @@ class CheckedContiguousIterator {
   }
 
   constexpr CheckedContiguousIterator& operator++() {
-    CHECK_NE(current_, end_);
+    CHECK(current_ != end_);
     // SAFETY: `current_ <= end_` is an invariant maintained internally, and the
     // CHECK above ensures that we are not at the end yet, so incrementing stays
     // in bounds of the allocation.
@@ -120,7 +125,7 @@ class CheckedContiguousIterator {
   }
 
   constexpr CheckedContiguousIterator& operator--() {
-    CHECK_NE(current_, start_);
+    CHECK(current_ != start_);
     // SAFETY: `current_ >= start_` is an invariant maintained internally, and
     // the CHECK above ensures that we are not at the start yet, so decrementing
     // stays in bounds of the allocation.
@@ -137,8 +142,8 @@ class CheckedContiguousIterator {
   constexpr CheckedContiguousIterator& operator+=(difference_type rhs) {
     // NOTE: Since the max allocation size is PTRDIFF_MAX (in our compilers),
     // subtracting two pointers from the same allocation can not underflow.
-    CHECK_LE(rhs, end_ - current_);
-    CHECK_GE(rhs, start_ - current_);
+    CHECK(rhs <= end_ - current_);
+    CHECK(rhs >= start_ - current_);
     // SAFETY: `current_ <= end_` is an invariant maintained internally. The
     // checks above ensure:
     // `start_ - current_ <= rhs <= end_ - current_`.
@@ -164,8 +169,8 @@ class CheckedContiguousIterator {
   constexpr CheckedContiguousIterator& operator-=(difference_type rhs) {
     // NOTE: Since the max allocation size is PTRDIFF_MAX (in our compilers),
     // subtracting two pointers from the same allocation can not underflow.
-    CHECK_GE(rhs, current_ - end_);
-    CHECK_LE(rhs, current_ - start_);
+    CHECK(rhs >= current_ - end_);
+    CHECK(rhs <= current_ - start_);
     // SAFETY: `start_ <= current_` is an invariant maintained internally. The
     // checks above ensure:
     // `current_ - end_ <= rhs <= current_ - start_`.
@@ -190,20 +195,20 @@ class CheckedContiguousIterator {
   }
 
   constexpr reference operator*() const {
-    CHECK_NE(current_, end_);
+    CHECK(current_ != end_);
     return *current_;
   }
 
   constexpr pointer operator->() const {
-    CHECK_NE(current_, end_);
+    CHECK(current_ != end_);
     return current_;
   }
 
   constexpr reference operator[](difference_type rhs) const {
     // NOTE: Since the max allocation size is PTRDIFF_MAX (in our compilers),
     // subtracting two pointers from the same allocation can not underflow.
-    CHECK_GE(rhs, start_ - current_);
-    CHECK_LT(rhs, end_ - current_);
+    CHECK(rhs >= start_ - current_);
+    CHECK(rhs < end_ - current_);
     // SAFETY: `start_ <= current_ <= end_` is an invariant maintained
     // internally. The checks above ensure:
     // `start_ - current_ <= rhs < end_ - current_`.
@@ -233,8 +238,8 @@ class CheckedContiguousIterator {
 
  private:
   constexpr void CheckComparable(const CheckedContiguousIterator& other) const {
-    CHECK_EQ(start_, other.start_);
-    CHECK_EQ(end_, other.end_);
+    CHECK(start_ == other.start_);
+    CHECK(end_ == other.end_);
   }
 
   // RAW_PTR_EXCLUSION: The embedding class is stack-scoped.
