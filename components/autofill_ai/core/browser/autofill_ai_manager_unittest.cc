@@ -120,34 +120,15 @@ auto VehicleWithLicensePlate(std::u16string license_plate) {
       std::move(license_plate), /*app_locale=*/"");
 }
 
-class BaseAutofillAiManagerTest : public testing::Test {
- public:
-  BaseAutofillAiManagerTest() {
-    ON_CALL(client(), GetAutofillClient)
-        .WillByDefault(ReturnRef(autofill_client_));
-  }
-
-  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
-  MockAutofillAiClient& client() { return client_; }
-  AutofillAiManager& manager() { return manager_; }
-  autofill::TestStrikeDatabase& strike_database() { return strike_database_; }
-
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
-  autofill::TestAutofillClient autofill_client_;
-  NiceMock<MockAutofillAiClient> client_;
-  autofill::TestStrikeDatabase strike_database_;
-  AutofillAiManager manager_{&client(), &strike_database_};
-};
-
-class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
+class AutofillAiManagerTest : public testing::Test {
  public:
   AutofillAiManagerTest() {
     scoped_feature_list_.InitWithFeatures(
         {autofill::features::kAutofillAiWithDataSchema,
          autofill::features::kAutofillAiServerModel},
         {});
+    ON_CALL(client(), GetAutofillClient)
+        .WillByDefault(ReturnRef(autofill_client_));
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
     autofill_client().set_entity_data_manager(
         std::make_unique<autofill::EntityDataManager>(
@@ -199,10 +180,21 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
     return *autofill_client().GetEntityDataManager();
   }
 
+  autofill::TestAutofillClient& autofill_client() { return autofill_client_; }
+  MockAutofillAiClient& client() { return client_; }
+  AutofillAiManager& manager() { return manager_; }
+  autofill::TestStrikeDatabase& strike_database() { return strike_database_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   autofill::AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<autofill::EntityTable>()};
+  autofill::TestAutofillClient autofill_client_;
+  NiceMock<MockAutofillAiClient> client_;
+  autofill::TestStrikeDatabase strike_database_;
+  AutofillAiManager manager_{&client(), &strike_database_};
 };
 
 // Tests that the user receives a filling suggestion when interacting with
