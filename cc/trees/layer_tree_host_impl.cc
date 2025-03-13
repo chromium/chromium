@@ -457,10 +457,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       use_layer_context_for_display_(settings_.UseLayerContextForDisplay()),
       use_layer_context_for_animations_(
           settings_.UseLayerContextForAnimations()),
-      is_synchronous_single_threaded_(
-          !task_runner_provider->HasImplThread() &&
-          !settings_.single_thread_proxy_scheduler &&
-          !use_layer_context_for_display_),
+      is_synchronous_single_threaded_(!task_runner_provider->HasImplThread() &&
+                                      !settings_.single_thread_proxy_scheduler),
       cached_managed_memory_policy_(settings.memory_policy),
       // Must be initialized after is_synchronous_single_threaded_ and
       // task_runner_provider_.
