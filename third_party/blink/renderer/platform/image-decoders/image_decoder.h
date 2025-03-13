@@ -406,12 +406,6 @@ class PLATFORM_EXPORT ImageDecoder {
   // Transformation from embedded color space to target color space.
   ColorProfileTransform* ColorTransform();
 
-  // Number of bytes per pixel in the decoded data. This is a function of the
-  // destination bitmap's color type, not raw data.
-  // TODO(crbug.com/383174963): Need to make this function to const after making
-  // ImageIsHighBitDepth const.
-  wtf_size_t GetDecodedBytesPerPixel();
-
   AlphaOption GetAlphaOption() const {
     return premultiply_alpha_ ? kAlphaPremultiplied : kAlphaNotPremultiplied;
   }
