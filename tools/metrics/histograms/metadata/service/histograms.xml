@@ -173,6 +173,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.AddNonWindowClient.SharedWorkerScript.IsBlob"
+    enum="Boolean" expires_after="2025-09-12">
+  <owner>yyanagisawa@google.com</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    True if Clients.matchAll() captures SharedWorker with blob URL.
+
+    This is recorded when Clients.matchAll() is called and SharedWorker is found
+    as a client. The entry will we added per SharedWorker entries regardless of
+    its number.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.CacheStorageInstalledScript.CachedMetadataSize"
     units="bytes" expires_after="2025-10-13">
   <owner>yyanagisawa@chromium.org</owner>
@@ -570,6 +583,19 @@ chromium-metrics-reviews@google.com.
     Whether ServiceWorkerControlleeRequestHandler::MaybeCreateLoader found a
     service worker registration after looking up the registration by using
     FindRegistrationForClientUrl.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.GetClient.SharedWorkerScript.IsBlob"
+    enum="Boolean" expires_after="2025-09-12">
+  <owner>yyanagisawa@google.com</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    True if Clients.match() looks up the SharedWorker client and it is a blob
+    URL client.
+
+    This will be recorded when the Clients.match() is called, and SharedWorker
+    matches.
   </summary>
 </histogram>
 
