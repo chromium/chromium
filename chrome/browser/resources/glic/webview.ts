@@ -18,7 +18,7 @@ export type PageType =
 // Calls from the webview to its owner.
 export interface WebviewDelegate {
   // Called when there is an error during page load.
-  webviewError(): void;
+  webviewError(reason: string): void;
   // Called when the embedded web page is unresponsive.
   webviewUnresponsive(): void;
   // Called when a page commits inside the webview.
@@ -116,7 +116,7 @@ export class WebviewController {
 
   private onExit(e: any): void {
     if (e.reason !== 'normal') {
-      this.delegate.webviewError();
+      this.delegate.webviewError(e.reason);
     }
   }
 
