@@ -2356,8 +2356,6 @@
     {
       name: "HTMLInterestTargetAttribute",
       status: "experimental",
-      base_feature: "none",
-      public: true,
       origin_trial_feature_name: "HTMLInterestTargetAttribute",
     },
     {
