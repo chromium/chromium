@@ -974,7 +974,13 @@ external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-081c-print.
 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-082a-print.html
 external/wpt/css/css-break/flexbox/multi-line-row-flex-fragmentation-082d-print.html
 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-066-print.html
+external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068a-print.html
+external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068b-print.html
+external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068c-print.html
+external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-068d-print.html
+external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069c-print.html
 external/wpt/css/css-break/flexbox/single-line-column-flex-fragmentation-069d-print.html
+external/wpt/css/css-break/flexbox/single-line-row-flex-fragmentation-046-print.html
 external/wpt/css/css-break/grid/monolithic-overflow-print.html
 external/wpt/css/css-break/table/repeated-section/fixedpos-in-footer-forced-break-print.html
 external/wpt/css/css-break/table/table-fragmentation-002a-print.html
