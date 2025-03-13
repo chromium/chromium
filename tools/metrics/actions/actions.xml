@@ -12219,6 +12219,34 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.HelpCenterLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if a help center link is opened from the FRE.
+  </description>
+</action>
+
+<action name="Glic.Fre.MyActivityLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Logged if a myactivity link is opened from the FRE.</description>
+</action>
+
+<action name="Glic.Fre.PolicyLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Logged if a policy link is opened from the FRE.</description>
+</action>
+
+<action name="Glic.Fre.PrivacyNoticeLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if a privacy notice link is opened from the FRE.
+  </description>
+</action>
+
 <action name="Glic.Pinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

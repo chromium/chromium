@@ -7,6 +7,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
@@ -166,6 +168,30 @@ void GlicFreController::DismissFre() {
     fre_widget_.reset();
     tab_showing_modal_ = nullptr;
     will_detach_subscription_ = {};
+  }
+}
+
+void GlicFreController::OnLinkClicked(const GURL& url) {
+  if (url.DomainIs("support.google.com")) {
+    if (url.path().find("13594961") != std::string::npos) {
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Fre.PrivacyNoticeLinkOpened"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Fre.HelpCenterLinkOpened"));
+    }
+    return;
+  }
+
+  if (url.DomainIs("policies.google.com")) {
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.PolicyLinkOpened"));
+    return;
+  }
+
+  if (url.DomainIs("myactivity.google.com")) {
+    base::RecordAction(
+        base::UserMetricsAction("Glic.Fre.MyActivityLinkOpened"));
+    return;
   }
 }
 
