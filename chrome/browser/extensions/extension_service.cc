@@ -759,11 +759,6 @@ bool ExtensionService::UninstallExtension(
       transient_extension_id, reason, error, std::move(done_callback));
 }
 
-bool ExtensionService::IsExtensionEnabled(
-    const std::string& extension_id) const {
-  return extension_registrar_->IsExtensionEnabled(extension_id);
-}
-
 void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {

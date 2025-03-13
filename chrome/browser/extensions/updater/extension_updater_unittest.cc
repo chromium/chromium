@@ -398,10 +398,6 @@ class ServiceForManifestTests : public MockService {
     return nullptr;
   }
 
-  bool IsExtensionEnabled(const std::string& id) const override {
-    return !registry_->disabled_extensions().Contains(id);
-  }
-
   void set_extensions(ExtensionList extensions,
                       ExtensionList disabled_extensions,
                       ExtensionList blocklisted_extensions = ExtensionList()) {
