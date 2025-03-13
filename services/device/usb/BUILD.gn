@@ -141,6 +141,13 @@ static_library("usb") {
     ]
   }
 
+  if (is_android || is_linux) {
+    sources += [
+      "usb_interface_detach_allowlist.cc",
+      "usb_interface_detach_allowlist.h",
+    ]
+  }
+
   if (is_chromeos) {
     deps += [
       "//chromeos/dbus/permission_broker",

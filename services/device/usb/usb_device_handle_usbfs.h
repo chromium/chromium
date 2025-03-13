@@ -19,6 +19,10 @@
 #include "base/threading/sequence_bound.h"
 #include "services/device/usb/usb_device_handle.h"
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#include "base/containers/flat_set.h"
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+
 struct usbdevfs_urb;
 
 namespace base {
@@ -201,25 +205,33 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
                           base::WeakPtr<UsbDeviceHandleUsbfs> device_handle,
                           scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  virtual void ReleaseFileDescriptor();
+  void ReleaseFileDescriptor();
 
-  virtual bool SetConfiguration(int configuration_value);
+  bool SetConfiguration(int configuration_value);
   virtual bool ClaimInterface(int interface_number);
   virtual bool ReleaseInterface(int interface_number);
-  virtual bool SetInterface(int interface_number, int alternate_setting);
-  virtual bool ResetDevice();
-  virtual bool ClearHalt(uint8_t endpoint_address);
-  virtual void DiscardUrb(Transfer* transfer);
+  bool SetInterface(int interface_number, int alternate_setting);
+  bool ResetDevice();
+  bool ClearHalt(uint8_t endpoint_address);
+  void DiscardUrb(Transfer* transfer);
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // Detach the interface from a kernel driver before ClaimInterface
-  virtual bool DetachInterface(int interface_number);
+  virtual bool DetachInterface(int interface_number,
+                               const CombinedInterfaceInfo& interfaceInfo);
 
   // Reattach the interface to a kernel driver after ReleaseInterface
   virtual bool ReattachInterface(int interface_number);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
  private:
   // Called when |fd_| is writable without blocking.
-  virtual void OnFileCanWriteWithoutBlocking();
+  void OnFileCanWriteWithoutBlocking();
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  // Called from |DetachInterface|.
+  std::string GetKernelDriver(int interface_number) const;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
   base::ScopedFD fd_;
   base::ScopedFD lifeline_fd_;
@@ -227,6 +239,11 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> watch_controller_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  // All interfaces that have been detached from kernel drivers
+  base::flat_set<int> detached_interfaces_;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 };
 
 }  // namespace device
