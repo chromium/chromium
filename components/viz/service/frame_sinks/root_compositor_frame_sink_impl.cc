@@ -453,6 +453,15 @@ void RootCompositorFrameSinkImpl::UpdateRefreshRate(float refresh_rate) {
     external_begin_frame_source_->UpdateRefreshRate(refresh_rate);
 }
 
+void RootCompositorFrameSinkImpl::SetAdaptiveRefreshRateInfo(
+    bool has_support,
+    float suggested_normal,
+    float suggested_high,
+    const std::vector<float>& supported_refresh_rates,
+    float device_scale_factor) {
+  // TODO(crbug.com/402442892): Use this info.
+}
+
 void RootCompositorFrameSinkImpl::PreserveChildSurfaceControls() {
   display_->PreserveChildSurfaceControls();
 }

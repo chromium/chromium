@@ -905,6 +905,7 @@ public class WindowAndroid
                                     getWindowIsWideColorGamut());
             WindowAndroidJni.get()
                     .setVSyncPaused(mNativeWindowAndroid, WindowAndroid.this, mVSyncPaused);
+            onAdaptiveRefreshRateInfoChanged(mDisplayAndroid.getAdaptiveRefreshRateInfo());
         }
         return mNativeWindowAndroid;
     }
@@ -1121,6 +1122,18 @@ public class WindowAndroid
     @Override
     public void onDisplayModesChanged(@Nullable List<Display.Mode> supportedModes) {
         recomputeSupportedRefreshRates();
+    }
+
+    @Override
+    public void onAdaptiveRefreshRateInfoChanged(DisplayAndroid.AdaptiveRefreshRateInfo arrInfo) {
+        if (mNativeWindowAndroid == 0) return;
+        WindowAndroidJni.get()
+                .onAdaptiveRefreshRateInfoChanged(
+                        mNativeWindowAndroid,
+                        arrInfo.supportsAdaptiveRefreshRate,
+                        arrInfo.suggestedFrameRateNormal,
+                        arrInfo.suggestedFrameRateHigh,
+                        arrInfo.supportedFrameRates);
     }
 
     @CalledByNative
@@ -1415,6 +1428,13 @@ public class WindowAndroid
         void onSupportedRefreshRatesUpdated(
                 long nativeWindowAndroid,
                 WindowAndroid caller,
+                float @Nullable [] supportedRefreshRates);
+
+        void onAdaptiveRefreshRateInfoChanged(
+                long nativeWindowAndroid,
+                boolean supportsAdaptiveRefreshRate,
+                float suggestedFrameRateNormal,
+                float suggestedFrameRateHigh,
                 float @Nullable [] supportedRefreshRates);
 
         void onOverlayTransformUpdated(long nativeWindowAndroid, WindowAndroid caller);
