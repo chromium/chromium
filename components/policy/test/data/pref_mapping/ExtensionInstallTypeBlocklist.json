@@ -6,21 +6,14 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ExtensionInstallTypeBlocklist": [
-            "command_line"
-          ]
-        },
-        "prefs": {
-          "extensions.extension_install_type_blocklist": {
-            "value": [
-              "command_line"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "extensions.extension_install_type_blocklist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "command_line"
+        ]
+      ]
+    }
   }
 ]
