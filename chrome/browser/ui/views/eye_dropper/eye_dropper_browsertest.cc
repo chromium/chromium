@@ -76,7 +76,8 @@ class EyeDropperBrowserTest : public UiBrowserTest,
 };
 
 // Invokes the eye dropper.
-IN_PROC_BROWSER_TEST_P(EyeDropperBrowserTest, InvokeUi_default) {
+// Flaky: https://crbug.com/40150152, https://crbug.com/402170536
+IN_PROC_BROWSER_TEST_P(EyeDropperBrowserTest, DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
