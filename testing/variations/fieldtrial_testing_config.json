@@ -16805,21 +16805,6 @@
             ]
         }
     ],
-    "PasswordLeakToggleMove": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordLeakToggleMove"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordManualFallbackAvailable": [
         {
             "platforms": [
