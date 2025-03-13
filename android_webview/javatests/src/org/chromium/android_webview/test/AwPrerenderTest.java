@@ -528,6 +528,37 @@ public class AwPrerenderTest extends AwParameterizedTest {
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
     }
 
+    // Tests the case where speculation rules triggers prerendering and then loadUrl attempts to
+    // activate it with additional headers. This activation seems to fail because speculation
+    // rules doesn't send the additional headers, but actually the activation should succeed as an
+    // exceptional case (see https://crbug.com/399478939 for details).
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testSpeculationRulesPrerenderingEmbedderInitiatedActivationWithAdditionalHeaders()
+            throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+                                /*kActivated*/ 0)
+                        .build();
+
+        injectSpeculationRulesAndWait(mPrerenderingUrl);
+
+        // Attempt to activate with additional headers.
+        HashMap<String, String> additionalHeaders = new HashMap<>();
+        additionalHeaders.put("Test-Header", "1");
+        activatePage(mPrerenderingUrl, mPrerenderingUrl, ActivationBy.LOAD_URL, additionalHeaders);
+
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+    }
+
     // Tests basic end-to-end behavior of WebView prerendering trigger with
     // embedder-initiated activation.
     @Test
