@@ -6,8 +6,8 @@
 // ash/webui/personalization_app/tools/gen_tsconfig.py --root_out_dir out/pc \
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
-import {PanelStateKind} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData} from '/glic/glic_api/glic_api.js';
+import {GetTabContextErrorReason, PanelStateKind, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
+import type {GetTabContextError, GlicBrowserHost, GlicWebClient, Observable, PanelOpeningData, ScrollToError} from '/glic/glic_api/glic_api.js';
 
 import {createGlicHostRegistryOnLoad} from './api_boot.js';
 
@@ -32,6 +32,10 @@ class SequencedSubscriber<T> {
     }
     return this.signals[index]!;
   }
+}
+
+function observeSequence<T>(observable: Observable<T>): SequencedSubscriber<T> {
+  return new SequencedSubscriber(observable);
 }
 
 // A dummy web client.
@@ -126,7 +130,7 @@ class ApiTests {
 
   async testCanAttachPanel() {
     assertTrue(!!this.host.canAttachPanel);
-    const canAttach = new SequencedSubscriber(this.host.canAttachPanel());
+    const canAttach = observeSequence(this.host.canAttachPanel());
     // When subscribing to this value, an initial update is guaranteed to be
     // emited.
     assertTrue(await canAttach.next());
@@ -134,7 +138,7 @@ class ApiTests {
 
   async testGetFocusedTabStateV2() {
     assertTrue(!!this.host.getFocusedTabStateV2);
-    const sequence = new SequencedSubscriber(this.host.getFocusedTabStateV2());
+    const sequence = observeSequence(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
     assertTrue(!!focus.focusedTab, 'Should be a focused tab');
     assertTrue(
@@ -143,9 +147,173 @@ class ApiTests {
     assertEquals('Test Page', focus.focusedTab.title);
   }
 
-  async waitForPanelState(kind: PanelStateKind): Promise<void> {
+  async testGetContextFromFocusedTabWithoutPermission() {
+    assertTrue(!!this.host?.getContextFromFocusedTab);
+    await this.host?.setTabContextPermissionState(false);
+
+    try {
+      await this.host.getContextFromFocusedTab?.({});
+    } catch (e) {
+      assertEquals(
+          GetTabContextErrorReason.PERMISSION_DENIED,
+          (e as GetTabContextError).reason);
+    }
+  }
+
+  async testGetContextFromFocusedTabWithNoRequestedData() {
+    await this.host?.setTabContextPermissionState(true);
+
+    const result = await this.host.getContextFromFocusedTab?.({});
+    assertTrue(!!result);
+    assertTrue(
+        result.tabData.url.endsWith('glic/test.html') ?? false,
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertTrue(!result.annotatedPageData);
+    assertTrue(!result.pdfDocumentData);
+    assertTrue(!result.webPageData);
+    assertTrue(!result.viewportScreenshot);
+  }
+
+  // TODO(harringtond): Add a test for a PDF.
+  async testGetContextFromFocusedTabWithAllRequestedData() {
+    await this.host?.setTabContextPermissionState(true);
+
+    const result = await this.host.getContextFromFocusedTab?.({
+      innerText: true,
+      viewportScreenshot: true,
+      annotatedPageContent: true,
+      pdfData: true,
+    });
+
+    assertTrue(!!result);
+
+    assertTrue(
+        result.tabData.url.endsWith('glic/test.html') ?? false,
+        `Tab data has unexpected url ${result.tabData.url}`);
+    assertTrue(!result.pdfDocumentData);  // The page is not a PDF.
+    assertTrue(!!result.webPageData);
+    assertEquals(
+        'This is a test page', result.webPageData.mainDocument.innerText);
+    assertTrue(!!result.viewportScreenshot);
+    assertTrue(
+        (result.viewportScreenshot.data.byteLength ?? 0) > 0,
+        `Expected viewport screenshot bytes, got ${
+            result.viewportScreenshot.data.byteLength}`);
+    assertTrue(result.viewportScreenshot.heightPixels > 0);
+    assertTrue(result.viewportScreenshot.widthPixels > 0);
+    assertEquals('image/jpeg', result.viewportScreenshot.mimeType);
+    assertTrue(!!result.annotatedPageData);
+    const annotatedPageContentSize =
+        (await new Response(result.annotatedPageData.annotatedPageContent)
+             .bytes())
+            .length;
+    assertTrue(annotatedPageContentSize > 1);
+  }
+
+  // TODO(harringtond): This is disabled because it hangs. Fix it.
+  async testCaptureScreenshot() {
+    assertTrue(!!this.host.captureScreenshot);
+    const screenshot = await this.host.captureScreenshot?.();
+    assertTrue(!!screenshot);
+    assertTrue(screenshot.widthPixels > 0);
+    assertTrue(screenshot.heightPixels > 0);
+    assertTrue(screenshot.data.byteLength > 0);
+    assertEquals(screenshot.mimeType, 'image/jpeg');
+  }
+
+  async testPermissionAccess() {
+    assertTrue(!!this.host.getMicrophonePermissionState);
+    assertTrue(!!this.host.getLocationPermissionState);
+    assertTrue(!!this.host.getTabContextPermissionState);
+
+    const microphoneState =
+        observeSequence(this.host.getMicrophonePermissionState());
+    const locationState =
+        observeSequence(this.host.getLocationPermissionState());
+    const tabContextState =
+        observeSequence(this.host.getTabContextPermissionState());
+
+    assertTrue(!await microphoneState.next());
+    assertTrue(!await locationState.next());
+    assertTrue(!await tabContextState.next());
+
+    this.host.setMicrophonePermissionState(true);
+    assertTrue(await microphoneState.next());
+
+    this.host.setLocationPermissionState(true);
+    assertTrue(await locationState.next());
+
+    this.host.setTabContextPermissionState(true);
+    assertTrue(await tabContextState.next());
+  }
+
+  async testGetUserProfileInfo() {
+    assertTrue(!!this.host.getUserProfileInfo);
+    const profileInfo = await this.host.getUserProfileInfo();
+
+    assertEquals('', profileInfo.displayName);
+    assertEquals('glic-test@example.com', profileInfo.email);
+    assertEquals('', profileInfo.givenName);
+    assertEquals(false, profileInfo.isManaged!);
+    assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
+  }
+
+  async testRefreshSignInCookies() {
+    assertTrue(!!this.host.refreshSignInCookies);
+
+    await this.host.refreshSignInCookies();
+  }
+
+  async testSetContextAccessIndicator() {
+    assertTrue(!!this.host.setContextAccessIndicator);
+
+    await this.host.setContextAccessIndicator(true);
+  }
+
+  async testSetAudioDucking() {
+    assertTrue(!!this.host.setAudioDucking);
+
+    await this.host.setAudioDucking(true);
+  }
+
+  async testMetrics() {
+    assertTrue(!!this.host.getMetrics);
+    const metrics = this.host.getMetrics();
+    assertTrue(!!metrics);
+    assertTrue(!!metrics.onResponseRated);
+    assertTrue(!!metrics.onUserInputSubmitted);
+    assertTrue(!!metrics.onResponseStarted);
+    assertTrue(!!metrics.onResponseStopped);
+    assertTrue(!!metrics.onSessionTerminated);
+    metrics.onResponseRated(true);
+    metrics.onUserInputSubmitted(WebClientMode.AUDIO);
+    metrics.onResponseStarted();
+    metrics.onResponseStopped();
+    metrics.onSessionTerminated();
+  }
+
+  async testScrollToFindsText() {
+    assertTrue(!!this.host.scrollTo);
+    await this.host.scrollTo(
+        {selector: {exactText: {text: 'Test Page'}}, highlight: true});
+  }
+
+  async testScrollToNoMatchFound() {
+    assertTrue(!!this.host.scrollTo);
+    try {
+      await this.host.scrollTo(
+          {selector: {exactText: {text: 'Abracadabra'}}, highlight: true});
+    } catch (e) {
+      assertEquals(
+          ScrollToErrorReason.NO_MATCH_FOUND, (e as ScrollToError).reason);
+      return;
+    }
+    assertTrue(false, 'scrollTo should have thrown an error');
+  }
+
+  private async waitForPanelState(kind: PanelStateKind): Promise<void> {
     assertTrue(!!this.host.getPanelState);
-    const sequence = new SequencedSubscriber(this.host.getPanelState());
+    const sequence = observeSequence(this.host.getPanelState());
     while (true) {
       const state = await sequence.next();
       if (state.kind === kind) {
@@ -178,7 +346,7 @@ async function runApiTest(name: string): Promise<string> {
 
 (window as any).runApiTest = runApiTest;
 
-type ComparableValue = string|number|undefined|null;
+type ComparableValue = boolean|string|number|undefined|null;
 
 function assertTrue(x: boolean, message?: string): asserts x {
   if (!x) {
