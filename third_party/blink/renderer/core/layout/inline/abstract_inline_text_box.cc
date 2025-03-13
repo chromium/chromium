@@ -77,7 +77,7 @@ class AbstractInlineTextBoxCache final {
 
   static AbstractInlineTextBoxCache* s_instance_;
 
-  using MapType = HeapHashMap<MapKey, Member<AbstractInlineTextBox>>;
+  using MapType = GCedHeapHashMap<MapKey, Member<AbstractInlineTextBox>>;
   Persistent<MapType> map_;
 };
 

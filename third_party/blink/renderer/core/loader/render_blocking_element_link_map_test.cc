@@ -21,22 +21,21 @@ class RenderBlockingElementLinkMapTest : public PageTestBase {
 
  protected:
   using AllLinksLevelMap =
-      HeapHashMap<Member<const HTMLLinkElement>, RenderBlockingLevel>;
+      GCedHeapHashMap<Member<const HTMLLinkElement>, RenderBlockingLevel>;
 
   void OnRenderBlockingElementSetEmpty(RenderBlockingLevel level) {
     empty_handler_call_count_++;
     last_empty_handler_level_ = level;
   }
 
-  AllLinksLevelMap GetAllLinksInMap() {
-    Member<AllLinksLevelMap> elements =
-        MakeGarbageCollected<AllLinksLevelMap>();
+  AllLinksLevelMap& GetAllLinksInMap() {
+    AllLinksLevelMap* elements = MakeGarbageCollected<AllLinksLevelMap>();
     element_link_map_->ForEach(WTF::BindRepeating(
         [](AllLinksLevelMap* elements, RenderBlockingLevel level,
            const HTMLLinkElement& element) {
           elements->insert(&element, level);
         },
-        WrapPersistent(elements.Get())));
+        WrapPersistent(elements)));
     return *elements;
   }
 
@@ -99,7 +98,7 @@ TEST_F(RenderBlockingElementLinkMapTest, RemoveTargetElement) {
   EXPECT_TRUE(
       element_link_map_->HasElement(RenderBlockingLevel::kLimitFrameRate));
 
-  auto links = GetAllLinksInMap();
+  auto& links = GetAllLinksInMap();
   EXPECT_EQ(links.size(), 1u);
   EXPECT_TRUE(links.Contains(link_element3));
 }
@@ -126,7 +125,7 @@ TEST_F(RenderBlockingElementLinkMapTest, RemoveLinkWithTargetElement) {
   EXPECT_TRUE(
       element_link_map_->HasElement(RenderBlockingLevel::kLimitFrameRate));
 
-  auto links_after_remove1 = GetAllLinksInMap();
+  auto& links_after_remove1 = GetAllLinksInMap();
   EXPECT_EQ(links_after_remove1.size(), 2u);
   EXPECT_TRUE(links_after_remove1.Contains(link_element2));
   EXPECT_TRUE(links_after_remove1.Contains(link_element3));
@@ -137,7 +136,7 @@ TEST_F(RenderBlockingElementLinkMapTest, RemoveLinkWithTargetElement) {
   EXPECT_FALSE(element_link_map_->HasElement(RenderBlockingLevel::kBlock));
   EXPECT_TRUE(
       element_link_map_->HasElement(RenderBlockingLevel::kLimitFrameRate));
-  auto links_after_remove2 = GetAllLinksInMap();
+  auto& links_after_remove2 = GetAllLinksInMap();
   EXPECT_EQ(links_after_remove2.size(), 1u);
   EXPECT_TRUE(links_after_remove2.Contains(link_element3));
 }
@@ -157,7 +156,7 @@ TEST_F(RenderBlockingElementLinkMapTest, ForEachLink) {
   element_link_map_->AddLinkWithTargetElement(
       AtomicString("id3"), link_element3, RenderBlockingLevel::kLimitFrameRate);
 
-  auto links = GetAllLinksInMap();
+  auto& links = GetAllLinksInMap();
 
   EXPECT_EQ(links.size(), 3u);
   EXPECT_TRUE(links.Contains(link_element1));

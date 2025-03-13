@@ -370,7 +370,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void NotifyDidModifyDOMAttr(Element*);
 
   // Node-related methods.
-  typedef HeapHashMap<Member<Node>, int> NodeToIdMap;
+  using NodeToIdMap = GCedHeapHashMap<Member<Node>, int>;
   int Bind(Node*, NodeToIdMap*);
   void Unbind(Node*);
 

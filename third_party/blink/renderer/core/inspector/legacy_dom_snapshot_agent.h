@@ -86,7 +86,7 @@ class CORE_EXPORT LegacyDOMSnapshotAgent {
   using ComputedStylesMap =
       WTF::HashMap<Vector<String>, int, VectorStringHashTraits>;
   using CSSPropertyFilter = Vector<std::pair<String, CSSPropertyID>>;
-  using PaintOrderMap = HeapHashMap<Member<PaintLayer>, int>;
+  using PaintOrderMap = GCedHeapHashMap<Member<PaintLayer>, int>;
 
   // State of current snapshot.
   std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>> dom_nodes_;

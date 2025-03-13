@@ -224,8 +224,9 @@ TEST_F(TraceWrapperV8ReferenceTest, Ephemeron) {
   V8TestingScope testing_scope;
   SetIsolate(testing_scope.GetIsolate());
 
-  using EphemeronMap = HeapHashMap<WeakMember<TraceWrapperV8ReferenceHolder>,
-                                   TraceWrapperV8Reference<v8::Value>>;
+  using EphemeronMap =
+      GCedHeapHashMap<WeakMember<TraceWrapperV8ReferenceHolder>,
+                      TraceWrapperV8Reference<v8::Value>>;
   Persistent<EphemeronMap> holder(MakeGarbageCollected<EphemeronMap>());
   v8::Persistent<v8::Value> observer;
   Persistent<TraceWrapperV8ReferenceHolder> object(
