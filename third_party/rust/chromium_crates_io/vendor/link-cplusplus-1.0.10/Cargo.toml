@@ -21,6 +21,6 @@ version = "1.0.10"
 "nothing" = []
 
 [dependencies.cc]
-version = "*"
+version = "^1.0"
 default_features = true
 features = []
