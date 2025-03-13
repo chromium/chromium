@@ -96,7 +96,7 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         let crate_dir = format!("{}-{}", p.name, p.version);
         if is_removed(&p.id) {
             println!("Generating placeholder for removed crate {}", &crate_dir);
-            placeholder_crate(p, &nodes, paths, &config)?;
+            generate_placeholder_crate(p, &packages, &nodes, paths, &config)?;
         } else if !dirs.contains(&crate_dir) {
             println!("Downloading {}", &crate_dir);
             download_crate(&p.name, &p.version, paths)?;
@@ -328,8 +328,84 @@ fn apply_patches(
     Ok(())
 }
 
-fn placeholder_crate(
+#[derive(serde::Serialize)]
+struct PlaceholderCrate<'a> {
+    name: &'a str,
+    version: &'a semver::Version,
+    dependencies: Vec<PlaceholderDependency<'a>>,
+    features: Vec<String>,
+}
+#[derive(Debug, serde::Serialize)]
+struct PlaceholderDependency<'a> {
+    name: &'a str,
+    version: String,
+    default_features: bool,
+    features: Vec<&'a str>,
+}
+
+fn get_placeholder_crate_metadata<'a>(
+    package_id: &'a cargo_metadata::PackageId,
+    packages: &'a HashMap<&cargo_metadata::PackageId, &cargo_metadata::Package>,
+    nodes: &HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Node>,
+) -> PlaceholderCrate<'a> {
+    let node = nodes[package_id];
+    let package = packages[package_id];
+
+    // We need to collect all dependencies of the crate so they can be
+    // reproduced in the placeholder Cargo.toml file. Otherwise the
+    // Cargo.lock may be considered out of date and cargo will try
+    // to rewrite it to remove the missing dependencies.
+    //
+    // However we don't just want all dependencies that are listed in
+    // the Cargo.toml since they may be optional and not enabled by a
+    // feature in our build. In that case, cargo would want to add the
+    // new dependencies to the Cargo.lock.
+    //
+    // So we use the [`cargo_metadata::Node`] to find the resolved set
+    // of dependencies that are actually in use (in build or in prod).
+    //
+    // Since features (at this time) can not be changed per-platform,
+    // the resolved [`cargo_metadata::Node`] does not have feature
+    // information about dependencies. We grab that verbatim from the
+    // Cargo.toml through the [`cargo_metadata::Dependency`] type which
+    // we call `feature_dep_info`.
+    let dependencies = node
+        .deps
+        .iter()
+        .filter(|d| {
+            d.dep_kinds.iter().any(|k| {
+                k.kind == cargo_metadata::DependencyKind::Build
+                    || k.kind == cargo_metadata::DependencyKind::Normal
+            })
+        })
+        .map(|d| {
+            // Translate `proc_macro2` (dependency name) into `proc-macro2` (package name).
+            let dep_name = &packages[&d.pkg].name;
+            let feature_dep_info =
+                package.dependencies.iter().find(|f| f.name == *dep_name).unwrap_or_else(|| {
+                    panic!(
+                        "`{}` (`{}`) is not listed as a dependency of `{}-{}`",
+                        dep_name, d.pkg, package.name, package.version,
+                    )
+                });
+            PlaceholderDependency {
+                name: dep_name,
+                version: feature_dep_info.req.to_string(),
+                default_features: feature_dep_info.uses_default_features,
+                features: feature_dep_info.features.iter().map(String::as_str).collect(),
+            }
+        })
+        .collect();
+
+    let mut features = package.features.keys().cloned().collect::<Vec<String>>();
+    features.sort_unstable();
+
+    PlaceholderCrate { name: &package.name, version: &package.version, dependencies, features }
+}
+
+fn generate_placeholder_crate(
     package: &cargo_metadata::Package,
+    packages: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Package>,
     nodes: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Node>,
     paths: &paths::ChromiumPaths,
     config: &config::BuildConfig,
@@ -364,70 +440,7 @@ fn placeholder_crate(
         }
     }
 
-    #[derive(serde::Serialize)]
-    struct PlaceholderCrate<'a> {
-        name: &'a str,
-        version: &'a semver::Version,
-        dependencies: Vec<PlaceholderDependency<'a>>,
-        features: Vec<String>,
-    }
-    #[derive(serde::Serialize)]
-    struct PlaceholderDependency<'a> {
-        name: &'a str,
-        version: String,
-        default_features: bool,
-        features: Vec<&'a str>,
-    }
-
-    let node = nodes[&package.id];
-
-    // We need to collect all dependencies of the crate so they can be
-    // reproduced in the placeholder Cargo.toml file. Otherwise the
-    // Cargo.lock may be considered out of date and cargo will try
-    // to rewrite it to remove the missing dependencies.
-    //
-    // However we don't just want all dependencies that are listed in
-    // the Cargo.toml since they may be optional and not enabled by a
-    // feature in our build. In that case, cargo would want to add the
-    // new dependencies to the Cargo.lock.
-    //
-    // So we use the [`cargo_metadata::Node`] to find the resolved set
-    // of dependencies that are actually in use (in build or in prod).
-    //
-    // Since features (at this time) can not be changed per-platform,
-    // the resolved [`cargo_metadata::Node`] does not have feature
-    // information about dependencies. We grab that verbatim from the
-    // Cargo.toml through the [`cargo_metadata::Dependency`] type which
-    // we call `feature_dep_info`.
-    let dependencies = node
-        .deps
-        .iter()
-        .filter(|d| {
-            d.dep_kinds.iter().any(|k| {
-                k.kind == cargo_metadata::DependencyKind::Build
-                    || k.kind == cargo_metadata::DependencyKind::Normal
-            })
-        })
-        .map(|d| {
-            let feature_dep_info = package
-                .dependencies
-                .iter()
-                .find(|f| f.name == d.name)
-                .expect("dependency not in list");
-            PlaceholderDependency {
-                name: &d.name,
-                version: feature_dep_info.req.to_string(),
-                default_features: feature_dep_info.uses_default_features,
-                features: feature_dep_info.features.iter().map(String::as_str).collect(),
-            }
-        })
-        .collect();
-
-    let mut features = package.features.keys().cloned().collect::<Vec<String>>();
-    features.sort_unstable();
-
-    let placeholder_crate =
-        PlaceholderCrate { name: &package.name, version: &package.version, dependencies, features };
+    let placeholder_crate = get_placeholder_crate_metadata(&package.id, packages, nodes);
 
     {
         let rendered = removed_cargo_template.render("template", &placeholder_crate)?;
@@ -456,4 +469,54 @@ fn placeholder_crate(
         .with_context(|| format!("writing .cargo-checksum.json for crate {}", package.name))?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_get_placeholder_crate_metadata_with_proc_macro2_dependency() {
+        let metadata: cargo_metadata::Metadata =
+            serde_json::from_str(SAMPLE_CARGO_METADATA2).unwrap();
+        let packages: HashMap<_, _> = metadata_packages(&metadata).unwrap();
+        let nodes: HashMap<_, _> = metadata_nodes(&metadata);
+        let zerocopy_derive = packages.values().find(|p| p.name == "yoke-derive").unwrap();
+        let placeholder = get_placeholder_crate_metadata(&zerocopy_derive.id, &packages, &nodes);
+        assert_eq!(placeholder.name, "yoke-derive");
+        assert_eq!(placeholder.version.to_string(), "0.8.0");
+        assert!(placeholder.features.is_empty());
+
+        let mut i = 0;
+        assert_eq!(placeholder.dependencies[i].name, "proc-macro2");
+        assert_eq!(placeholder.dependencies[i].version, "^1.0.61");
+        assert!(placeholder.dependencies[i].default_features);
+        assert!(placeholder.dependencies[i].features.is_empty());
+
+        i += 1;
+        assert_eq!(placeholder.dependencies[i].name, "quote");
+        assert_eq!(placeholder.dependencies[i].version, "^1.0.28");
+        assert!(placeholder.dependencies[i].default_features);
+        assert!(placeholder.dependencies[i].features.is_empty());
+
+        i += 1;
+        assert_eq!(placeholder.dependencies[i].name, "syn");
+        assert_eq!(placeholder.dependencies[i].version, "^2.0.21");
+        assert!(placeholder.dependencies[i].default_features);
+        assert_eq!(placeholder.dependencies[i].features, &["fold"]);
+
+        i += 1;
+        assert_eq!(placeholder.dependencies[i].name, "synstructure");
+        assert_eq!(placeholder.dependencies[i].version, "^0.13.0");
+        assert!(placeholder.dependencies[i].default_features);
+        assert!(placeholder.dependencies[i].features.is_empty());
+
+        i += 1;
+        assert_eq!(placeholder.dependencies.len(), i);
+    }
+
+    // `test_metadata2.json` contains the output of `cargo metadata` run in
+    // `gnrt/sample_package2` directory.  See the `Cargo.toml` for more
+    // information.
+    static SAMPLE_CARGO_METADATA2: &str = include_str!("lib/test_metadata2.json");
 }
