@@ -1336,7 +1336,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7111394291981742152">A Chrome nagyobb irányítást ad afelett, hogy milyen hirdetések jelenjenek meg Önnek, és korlátozza, hogy mely webhelyek tudhatnak meg Önről információkat, amikor személyre szabott hirdetéseket jelenítenek meg.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 webhely engedélyei felülvizsgálva}other{# webhely engedélyei felülvizsgálva}}</translation>
 <translation id="7138678301420049075">Egyéb</translation>
-<translation id="7139479418357139965">Új link kéréséhez felveheti a kapcsolatot a küldővel.</translation>
 <translation id="7140829094791862589">Manuális rendezés</translation>
 <translation id="7146622961999026732">Úgy tűnik, ezek a webhelyek és alkalmazások fontosak Önnek:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> a következőtől: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1539,7 +1538,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8004582292198964060">Böngésző</translation>
 <translation id="8014210850410408071">Most importálja a jelszavakat</translation>
 <translation id="8015452622527143194">Minden visszaállítása alapértelmezett méretűre</translation>
-<translation id="8017431260099661477">Nem sikerült megnyitni a meghívó linket</translation>
 <translation id="8026238112629815203">Módosítottuk a jelszavak mentésének módját ezen az eszközön</translation>
 <translation id="8027395186860110042">Előfordulhat, hogy a jelszavak hamarosan nem működnek majd.</translation>
 <translation id="8027863900915310177">Letöltés helyének kiválasztása</translation>
