@@ -74,7 +74,6 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nativeC
 static void Java_SampleUniqueAnnotations_useBar1(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& inner) {
-  jni_zero::CallNativeToJavaCallback("org/jni_zero/SampleUniqueAnnotations", "useBar1");
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_SampleUniqueAnnotations_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
