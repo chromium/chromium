@@ -564,13 +564,6 @@ gn_args.config(
     ],
 )
 
-gn_args.config(
-    name = "enable_android_secondary_abi",
-    args = {
-        "enable_android_secondary_abi": True,
-    },
-)
-
 # Enables backup ref ptr by changing the default value of the feature flag.
 # This sets the default value of PartitionAllocBackupRefPtr to enabled, with
 # enabled-processes = non-renderer:
@@ -995,6 +988,18 @@ gn_args.config(
     name = "no_resource_allowlisting",
     args = {
         "enable_resource_allowlist_generation": False,
+    },
+)
+
+gn_args.config(
+    name = "no_secondary_abi",
+    args = {
+        "skip_secondary_abi_for_cq": True,
+        # A chromium build with "skip_secondary_abi_for_cq" enabled in a
+        # checkout that has src-internal fails if enable_chrome_android_internal
+        # is not set to false.
+        # TODO(crbug.com/361540497): Can remove this when the build is fixed.
+        "enable_chrome_android_internal": False,
     },
 )
 
