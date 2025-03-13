@@ -377,13 +377,6 @@ class DenseSet {
     }
   }
 
-  // Constructs a set with the union of all of `sets`.
-  constexpr DenseSet(std::initializer_list<DenseSet> sets) {
-    for (const DenseSet& set : sets) {
-      insert_all(set);
-    }
-  }
-
   template <typename InputIt, typename Proj = std::identity>
     requires(std::input_iterator<InputIt>)
   constexpr DenseSet(InputIt first, InputIt last, Proj proj = {}) {
