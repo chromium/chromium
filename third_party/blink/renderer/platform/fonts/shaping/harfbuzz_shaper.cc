@@ -406,12 +406,14 @@ BufferSlice ComputeSlice(RangeContext* range_data,
   return result;
 }
 
-bool IsLastFontToShape(HarfBuzzShaper::FallbackFontStage fallback_stage) {
+inline bool IsLastFontToShape(
+    HarfBuzzShaper::FallbackFontStage fallback_stage) {
   return fallback_stage == HarfBuzzShaper::kLast ||
          fallback_stage == HarfBuzzShaper::kLastIgnoreVS;
 }
 
-bool StageNeedsQueueReset(HarfBuzzShaper::FallbackFontStage fallback_stage) {
+inline bool StageNeedsQueueReset(
+    HarfBuzzShaper::FallbackFontStage fallback_stage) {
   return fallback_stage == HarfBuzzShaper::kLastWithVS;
 }
 
