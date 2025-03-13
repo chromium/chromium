@@ -26,6 +26,7 @@ public class Account {
     // an account that has been used in the device before.
     private final @Nullable String mSecondaryDescription;
     private final Bitmap mPictureBitmap;
+    private final Bitmap mCircledBadgedPictureBitmap;
     private final boolean mIsSignIn;
     private final boolean mIsBrowserTrustedSignIn;
     private final boolean mIsFilteredOut;
@@ -36,7 +37,11 @@ public class Account {
      * @param email Email shown to the user.
      * @param name Full name.
      * @param givenName Given name.
+     * @param secondaryDescription The secondary description for the account button. This is only
+     *     used when multiple IDPs are being used in the dialog.
      * @param pictureBitmap The Bitmap for the picture.
+     * @param circledBadgedPictureBitmap The Bitmap for the circled and badged picture. This is only
+     *     used when multiple IDPs are being used in the dialog.
      * @param isSignIn Whether this account's login state is sign in or sign up. Unlike the other
      *     fields this can be populated either by the IDP or by the browser based on its stored
      *     permission grants.
@@ -56,6 +61,7 @@ public class Account {
             @JniType("std::string") String givenName,
             @JniType("std::optional<std::string>") @Nullable String secondaryDescription,
             Bitmap pictureBitmap,
+            Bitmap circledBadgedPictureBitmap,
             boolean isSignIn,
             boolean isBrowserTrustedSignIn,
             boolean isFilteredOut,
@@ -66,6 +72,7 @@ public class Account {
         mGivenName = givenName;
         mSecondaryDescription = secondaryDescription;
         mPictureBitmap = pictureBitmap;
+        mCircledBadgedPictureBitmap = circledBadgedPictureBitmap;
         mIsSignIn = isSignIn;
         mIsBrowserTrustedSignIn = isBrowserTrustedSignIn;
         mIsFilteredOut = isFilteredOut;
@@ -94,6 +101,10 @@ public class Account {
 
     public Bitmap getPictureBitmap() {
         return mPictureBitmap;
+    }
+
+    public Bitmap getCircledBadgedPictureBitmap() {
+        return mCircledBadgedPictureBitmap;
     }
 
     public boolean isSignIn() {

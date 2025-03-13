@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
@@ -39,6 +40,9 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
 namespace {
 
+// The size of the circle cropped badged avatar on Android.
+constexpr int kCircleCroppedBadgedAvatarSize = 40;
+
 ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     JNIEnv* env,
     content::IdentityRequestAccount* account,
@@ -49,12 +53,25 @@ ScopedJavaLocalRef<jobject> ConvertToJavaAccount(
     decoded_picture =
         gfx::ConvertToJavaBitmap(*account->decoded_picture.ToSkBitmap());
   }
+  ScopedJavaLocalRef<jobject> circle_cropped_badged_picture = nullptr;
+  if (is_multi_idp) {
+    circle_cropped_badged_picture = gfx::ConvertToJavaBitmap(
+        gfx::Image(ComputeAccountCircleCroppedPicture(
+                       *account, /*avatar_size=*/kCircleCroppedBadgedAvatarSize,
+                       std::make_optional<gfx::ImageSkia>(
+                           account->identity_provider->idp_metadata
+                               .brand_decoded_icon.AsImageSkia())))
+            .AsBitmap());
+  }
   return Java_Account_Constructor(
       env, account->id, account->email, account->name, account->given_name,
       is_multi_idp ? std::make_optional<std::string>(
                          account->identity_provider->idp_for_display)
                    : std::nullopt,
-      decoded_picture, account->login_state == Account::LoginState::kSignIn,
+      // TODO(crbug.com/398001374): Pass the circle cropped image here to avoid
+      // duplication of code on Android.
+      decoded_picture, circle_cropped_badged_picture,
+      account->login_state == Account::LoginState::kSignIn,
       account->browser_trusted_login_state == Account::LoginState::kSignIn,
       account->is_filtered_out, identity_provider);
 }
