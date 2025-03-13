@@ -10,8 +10,6 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -26,20 +24,6 @@ public class LogoUtils {
     public @interface LogoSizeForLogoPolish {
         int SMALL = 0;
         int MEDIUM = 1;
-    }
-
-    /** Returns whether logo polish flag is enabled in the given context. */
-    public static boolean isLogoPolishEnabled() {
-        return ChromeFeatureList.sLogoPolish.isEnabled();
-    }
-
-    /**
-     * Returns whether logo is Google doodle and logo polish is enabled in the given context.
-     *
-     * @param isLogoDoodle True if the current logo is Google doodle.
-     */
-    public static boolean isLogoPolishEnabledWithGoogleDoodle(boolean isLogoDoodle) {
-        return isLogoDoodle && isLogoPolishEnabled();
     }
 
     /** Returns the top margin of the LogoView if Logo Polish is enabled. */

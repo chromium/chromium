@@ -389,7 +389,6 @@ public abstract class ChromeFeatureList {
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOGIN_DB_DEPRECATION_ANDROID = "LoginDbDeprecationAndroid";
-    public static final String LOGO_POLISH = "LogoPolish";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
@@ -765,7 +764,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ false);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
-    public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(MOST_VISITED_TILES_CUSTOMIZATION, false);
@@ -932,7 +930,6 @@ public abstract class ChromeFeatureList {
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
                     sLockBackPressHandlerAtStart,
-                    sLogoPolish,
                     sNotificationTrampoline,
                     sMagicStackAndroid,
                     sMostVisitedTilesCustomization,

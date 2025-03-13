@@ -133,7 +133,6 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mIsInNarrowWindowOnTablet;
     // This variable is only valid when the NTP surface is in tablet mode.
     private boolean mIsInMultiWindowModeOnTablet;
-    private boolean mIsLogoPolishEnabled;
     private View mFakeSearchBoxLayout;
     private Callback<Logo> mOnLogoAvailableCallback;
 
@@ -208,9 +207,6 @@ public class NewTabPageLayout extends LinearLayout {
         mProfile = profile;
         mUiConfig = uiConfig;
         mWindowAndroid = windowAndroid;
-        mIsLogoPolishEnabled =
-                LogoUtils.isLogoPolishEnabledWithGoogleDoodle(
-                        mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo);
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
 
@@ -362,9 +358,6 @@ public class NewTabPageLayout extends LinearLayout {
                         (logo) -> {
                             mSnapshotTileGridChanged = true;
                             mShowingNonStandardGoogleLogo = logo != null && mSearchProviderIsGoogle;
-                            mIsLogoPolishEnabled =
-                                    LogoUtils.isLogoPolishEnabledWithGoogleDoodle(
-                                            mShowingNonStandardGoogleLogo);
                         });
 
         mLogoView = findViewById(R.id.search_provider_logo);
@@ -582,8 +575,6 @@ public class NewTabPageLayout extends LinearLayout {
 
         if (!mSearchProviderIsGoogle) {
             mShowingNonStandardGoogleLogo = false;
-            mIsLogoPolishEnabled =
-                    LogoUtils.isLogoPolishEnabledWithGoogleDoodle(mShowingNonStandardGoogleLogo);
         }
 
         setSearchProviderTopMargin();
@@ -797,7 +788,7 @@ public class NewTabPageLayout extends LinearLayout {
     private int getLogoTopMargin() {
         Resources resources = getResources();
 
-        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
+        if (mShowingNonStandardGoogleLogo && mSearchProviderHasLogo) {
             return LogoUtils.getTopMarginForLogoPolish(resources);
         }
 
@@ -962,7 +953,7 @@ public class NewTabPageLayout extends LinearLayout {
         // According to the design of Logo Polish, the small logo size is used in split screens on
         // tablets. Thus, we need to adjust the logo size while the tablet transitions to or from a
         // multi-screen layout.
-        if (mIsLogoPolishEnabled
+        if (mShowingNonStandardGoogleLogo
                 && mLogoView != null
                 && isInMultiWindowModeOnTabletPreviousValue != mIsInMultiWindowModeOnTablet) {
             int realLogoSizeForLogoPolish =
@@ -971,7 +962,10 @@ public class NewTabPageLayout extends LinearLayout {
                             : LogoSizeForLogoPolish.MEDIUM;
             mLogoCoordinator.setLogoSizeForLogoPolish(realLogoSizeForLogoPolish);
             LogoUtils.setLogoViewLayoutParams(
-                    mLogoView, getResources(), mIsLogoPolishEnabled, realLogoSizeForLogoPolish);
+                    mLogoView,
+                    getResources(),
+                    mShowingNonStandardGoogleLogo,
+                    realLogoSizeForLogoPolish);
         }
     }
 

@@ -29,8 +29,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -159,7 +157,6 @@ public class LogoViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testDoodleAnimation() {
         Resources res = mView.getResources();
         int normalLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);

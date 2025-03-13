@@ -3459,11 +3459,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-logo-polish",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-mac-a11y-api-migration",
     "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
     "expiry_milestone": 142

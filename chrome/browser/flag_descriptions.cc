@@ -4577,9 +4577,6 @@ const char kLegacyTabStateDeprecationDescription[] =
     "Deprecates the legacy pickle based TabState format following the launch "
     "of the FlatBuffer based schema.";
 
-const char kLogoPolishName[] = "Logo Polish";
-const char kLogoPolishDescription[] = "Enable bigger doodle size for NTP.";
-
 const char kMagicStackAndroidName[] = "Magic Stack Android";
 const char kMagicStackAndroidDescription[] =
     "Show a magic stack which contains a list of modules on Start surface and "

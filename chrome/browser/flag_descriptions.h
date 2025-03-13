@@ -2694,9 +2694,6 @@ extern const char kInterestFeedV2Description[];
 extern const char kLegacyTabStateDeprecationName[];
 extern const char kLegacyTabStateDeprecationDescription[];
 
-extern const char kLogoPolishName[];
-extern const char kLogoPolishDescription[];
-
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 
