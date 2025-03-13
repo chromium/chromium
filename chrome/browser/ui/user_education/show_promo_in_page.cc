@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/user_education_types.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -65,9 +66,7 @@ class ShowPromoInPageImpl : public ShowPromoInPage {
       NavigateParams navigate_params(browser, params.target_url.value(),
                                      ui::PAGE_TRANSITION_LINK);
       navigate_params.disposition =
-          params.overwrite_active_tab
-              ? WindowOpenDisposition::CURRENT_TAB
-              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+          user_education::GetWindowOpenDisposition(params.page_open_mode);
       navigate_params.window_action = NavigateParams::SHOW_WINDOW;
       navigate_handle_ = Navigate(&navigate_params);
     } else {

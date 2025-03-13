@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/window_open_disposition.h"
 
 namespace glic {
 
@@ -23,7 +24,7 @@ void OpenGlicSettingsPage(Profile* profile) {
   NavigateParams params(profile,
                         chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
   Navigate(&params);
 }
 
@@ -47,6 +48,7 @@ void OpenGlicSettingsPageWithPromo(Profile* profile,
   if (show_promo_bubble) {
     promo_params.target_url =
         chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage);
+    promo_params.page_open_mode = user_education::PageOpenMode::kSingletonTab;
     ShowPromoInPage::Start(browser, std::move(promo_params));
   } else {
     glic::OpenGlicSettingsPage(profile);
