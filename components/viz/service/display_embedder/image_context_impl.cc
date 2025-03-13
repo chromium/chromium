@@ -127,6 +127,7 @@ ImageContextImpl::ImageContextImpl(
     bool maybe_concurrent_reads,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
+    GrSurfaceOrigin origin,
     bool is_for_render_pass,
     bool raw_draw_if_possible)
     : ImageContext(mailbox,
@@ -135,7 +136,8 @@ ImageContextImpl::ImageContextImpl(
                    size,
                    format,
                    ycbcr_info,
-                   color_space),
+                   color_space,
+                   origin),
       maybe_concurrent_reads_(maybe_concurrent_reads),
       is_for_render_pass_(is_for_render_pass),
       raw_draw_if_possible_(raw_draw_if_possible) {}

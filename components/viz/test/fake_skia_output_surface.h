@@ -127,6 +127,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       bool concurrent_reads,
       const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,
+      GrSurfaceOrigin origin,
       bool raw_draw_if_possible) override;
 
   gpu::SharedImageInterface* GetSharedImageInterface();
