@@ -9073,3 +9073,5 @@ crbug.com/402796552 [ Win11-arm64 ] webaudio/Analyser/realtimeanalyser-fftsize-r
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sawtooth.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sine.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
+crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-sideways-lr.html [ Failure ]
+crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Failure ]
