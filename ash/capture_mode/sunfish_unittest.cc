@@ -86,6 +86,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -4803,20 +4804,51 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerFromSmartActionsButton) {
   EXPECT_TRUE(accept_button->HasFocus());
 
   // Press tab once. The focus should stay inside the disclaimer, and loop back
-  // around to the decline button.
+  // around to the link in paragraph one.
+  SendKey(ui::VKEY_TAB, event_generator);
+  auto* paragraph_one = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphOneId));
+  ASSERT_TRUE(paragraph_one);
+  views::Link* paragraph_one_first_link =
+      paragraph_one->GetFirstLinkForTesting();
+  ASSERT_TRUE(paragraph_one_first_link);
+  EXPECT_TRUE(paragraph_one_first_link->HasFocus());
+
+  // Unfortunately, if a link spans across more than one line, each line has its
+  // own focus target: https://crbug.com/391154477
+  // Assume that each link spans at most two lines, so press the tab button
+  // up to two times to focus the link in paragraph two.
+  SendKey(ui::VKEY_TAB, event_generator);
+  auto* paragraph_three = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphThreeId));
+  ASSERT_TRUE(paragraph_three);
+  views::Link* paragraph_three_first_link =
+      paragraph_three->GetFirstLinkForTesting();
+  ASSERT_TRUE(paragraph_three_first_link);
+  if (!paragraph_three_first_link->HasFocus()) {
+    SendKey(ui::VKEY_TAB, event_generator);
+  }
+  EXPECT_TRUE(paragraph_three_first_link->HasFocus());
+
+  // Press tab up to two times to focus the decline button.
   SendKey(ui::VKEY_TAB, event_generator);
   views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
       kDisclaimerViewDeclineButtonId);
+  if (!decline_button->HasFocus()) {
+    SendKey(ui::VKEY_TAB, event_generator);
+  }
   EXPECT_TRUE(decline_button->HasFocus());
 
   // Press tab again. The accept button should now be focused.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_TRUE(accept_button->HasFocus());
 
-  // Press tab one more time. The focus should loop back around to the decline
-  // button again.
+  // Press tab one more time. The focus should loop back around to the link in
+  // paragraph one again.
   SendKey(ui::VKEY_TAB, event_generator);
-  EXPECT_TRUE(decline_button->HasFocus());
+  EXPECT_TRUE(paragraph_one_first_link->HasFocus());
 }
 
 TEST_F(ScannerTest, DisclaimerAcceptRecordsHistogramOnce) {

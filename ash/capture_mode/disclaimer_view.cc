@@ -4,8 +4,10 @@
 
 #include "ash/capture_mode/disclaimer_view.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -14,7 +16,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -134,23 +139,75 @@ views::Builder<views::StyledLabel> GetTextBodyBuilder() {
       .SetAutoColorReadabilityEnabled(false);
 }
 
+views::StyledLabel::RangeStyleInfo GetLinkTextStyleInfo(
+    base::RepeatingClosure callback) {
+  auto info =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(std::move(callback));
+  // This results in a `ui::ColorId` of `kColorLinkForeground`:
+  // https://crsrc.org/s?q=s:TypographyProvider::GetColorIdImpl%20f:%5Eui.*cc$
+  // which is `kColorSysPrimary`:
+  // https://crsrc.org/s?q=%22mixer%5BkColorLinkForeground%5D%22%20f:material
+  info.text_style = views::style::STYLE_LINK_2;
+  return info;
+}
+
 views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
+  std::vector<size_t> offsets;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return GetTextBodyBuilder().SetText(l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE));
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TERMS_LINK_TEXT);
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE, {link_text},
+      &offsets);
 #else
-  return GetTextBodyBuilder().SetText(
-      u"This is the disclaimer view for a capture mode feature.");
+  std::u16string link_text = u"terms and conditions";
+  std::u16string text = u"Read the terms and conditions.";
+  offsets = {text.find(link_text)};
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  CHECK_EQ(offsets.size(), 1u);
+
+  // TODO: b/401110577 - Pass a callback here for the terms and conditions.
+  return GetTextBodyBuilder()
+      .SetText(std::move(text))
+      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
+                     GetLinkTextStyleInfo(base::DoNothing()))
+      .SetID(DisclaimerViewId::kDisclaimerViewParagraphOneId);
 }
 
 views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return GetTextBodyBuilder().SetText(l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO));
+  std::u16string text = l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO);
 #else
-  return GetTextBodyBuilder().SetText(u"Read the terms and conditions.");
+  std::u16string text =
+      u"This is the disclaimer view for a capture mode feature.";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return GetTextBodyBuilder()
+      .SetText(std::move(text))
+      .SetID(DisclaimerViewId::kDisclaimerViewParagraphTwoId);
+}
+
+views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
+  std::vector<size_t> offsets;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_LEARN_MORE_LINK_TEXT);
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_THREE, {link_text},
+      &offsets);
+#else
+  std::u16string link_text = u"Learn more";
+  std::u16string text = u"Learn more about the feature.";
+  offsets = {text.find(link_text)};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  CHECK_EQ(offsets.size(), 1u);
+
+  // TODO: b/401110577 - Pass a callback here for the learn more link.
+  return GetTextBodyBuilder()
+      .SetText(std::move(text))
+      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
+                     GetLinkTextStyleInfo(base::DoNothing()))
+      .SetID(DisclaimerViewId::kDisclaimerViewParagraphThreeId);
 }
 
 }  // namespace
@@ -196,7 +253,8 @@ DisclaimerView::DisclaimerView(
                           .SetText(GetTextTitle())
                           .SetAccessibleRole(ax::mojom::Role::kHeading)
                           .CopyAddressTo(&title_),
-                      GetParagraphOneBuilder(), GetParagraphTwoBuilder()))
+                      GetParagraphOneBuilder(), GetParagraphTwoBuilder(),
+                      GetParagraphThreeBuilder()))
           .Build());
 
   AddChildView(
