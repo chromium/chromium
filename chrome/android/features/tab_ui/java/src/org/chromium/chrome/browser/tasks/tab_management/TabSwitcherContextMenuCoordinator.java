@@ -190,7 +190,7 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
 
     @Override
     protected @DimenRes int getMenuWidth() {
-        return R.dimen.tab_strip_group_context_menu_max_width;
+        return R.dimen.tab_switcher_context_menu_max_width;
     }
 
     @Nullable

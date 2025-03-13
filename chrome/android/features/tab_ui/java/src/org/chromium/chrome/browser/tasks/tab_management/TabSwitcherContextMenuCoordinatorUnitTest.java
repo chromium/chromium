@@ -281,7 +281,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuWidth() {
-        assertEquals(R.dimen.tab_strip_group_context_menu_max_width, mCoordinator.getMenuWidth());
+        assertEquals(R.dimen.tab_switcher_context_menu_max_width, mCoordinator.getMenuWidth());
     }
 
     @Test
