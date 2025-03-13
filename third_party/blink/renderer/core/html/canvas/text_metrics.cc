@@ -608,14 +608,29 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Move it to the start of the next RTL run on its left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        return next_run->character_offset_;
+        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
+            IsRtl(next_run->direction_)) {
+          return next_run->character_offset_;
+        }
       }
     } else if (run_offset == riter->num_characters_) {
       // Position is at the right end of an LTR run embedded in RTL. Move
       // it to the last position of the RTL run to the right, which is the first
       // position of the LTR run, unless there is no run to the right.
       if (riter != runs_with_offset_.rbegin()) {
-        return riter->character_offset_;
+        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+          return riter->character_offset_;
+        }
+        auto right_run = riter - 1;
+        if (IsRtl(right_run->direction_)) {
+          //   rtl_run_1, ltr_run_1, ltr_run_2(*riter), rtl_run_2(right_run)
+          //                                          ^run_offset
+          // In this case, what we'd like to return is
+          //   - The first position of ltr_run_1, or
+          //   - The last position of rtl_run_2.
+          // It's easy to apply the latter.
+          return right_run->character_offset_ + right_run->num_characters_;
+        }
       }
     }
   } else {
@@ -623,8 +638,11 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Position is at the right edge of a RTL run within an LTR string.
       // Move it to the start of the next LTR run on its right.
       if (riter != runs_with_offset_.rbegin()) {
-        riter--;
-        return riter->character_offset_;
+        auto previous_run = riter - 1;
+        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
+            IsLtr(previous_run->direction_)) {
+          return previous_run->character_offset_;
+        }
       }
     } else if (run_offset == riter->num_characters_) {
       // Position is at the left end of an RTL run embedded in LTR. Move
@@ -632,7 +650,10 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // no run to the left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        return next_run->character_offset_ + next_run->num_characters_;
+        if (!RuntimeEnabledFeatures::CanvasTextNgEnabled() ||
+            IsLtr(next_run->direction_)) {
+          return next_run->character_offset_ + next_run->num_characters_;
+        }
       }
     }
   }
