@@ -37,8 +37,6 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta,
                            Thread::IdleTask) override {}
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override {}
   void RemoveCancelledIdleTasks() override {}
 
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
