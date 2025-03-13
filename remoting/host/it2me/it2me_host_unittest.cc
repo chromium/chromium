@@ -1019,6 +1019,15 @@ TEST_F(It2MeHostTest, TerminateUponInputDefaultsToFalse) {
   EXPECT_FALSE(GetHost()->desktop_environment_options().terminate_upon_input());
 }
 
+TEST_F(It2MeHostTest, ConnectRespectsMaximumSessionDurationParameter) {
+  ChromeOsEnterpriseParams params;
+  params.maximum_session_duration = base::Hours(8);
+  StartHost(std::move(params));
+
+  EXPECT_EQ(GetHost()->desktop_environment_options().maximum_session_duration(),
+            base::Hours(8));
+}
+
 TEST_F(It2MeHostTest, ConnectRespectsEnableCurtainingParameter) {
   ChromeOsEnterpriseParams params;
   params.curtain_local_user_session = true;
