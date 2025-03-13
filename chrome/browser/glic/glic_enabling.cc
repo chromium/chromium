@@ -83,6 +83,11 @@ bool GlicEnabling::IsReadyForProfile(Profile* profile) {
     return false;
   }
 
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicAutomation)) {
+    return true;
+  }
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 

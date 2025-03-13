@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -106,7 +107,8 @@ ChromotingHost::~ChromotingHost() {
 
   // Disconnect all of the clients.
   while (!clients_.empty()) {
-    clients_.front()->DisconnectSession(ErrorCode::OK);
+    clients_.front()->DisconnectSession(ErrorCode::OK, /* error_details= */ {},
+                                        FROM_HERE);
   }
 
   // Destroy the session manager to make sure that |signal_strategy_| does not
@@ -172,10 +174,12 @@ void ChromotingHost::OnSessionAuthenticating(ClientSession* client) {
   // authenticates. This allows the backoff to protect from parallel
   // connection attempts as well as sequential ones.
   if (login_backoff_.ShouldRejectRequest()) {
-    LOG(WARNING) << "Disconnecting client " << client->client_jid()
-                 << " due to"
-                    " an overload of failed login attempts.";
-    client->DisconnectSession(ErrorCode::HOST_OVERLOAD);
+    client->DisconnectSession(
+        ErrorCode::HOST_OVERLOAD,
+        base::StringPrintf("Disconnecting client %s due to an overload of "
+                           "failed login attempts.",
+                           client->client_jid().c_str()),
+        FROM_HERE);
     return;
   }
   login_backoff_.InformOfRequest(false);
@@ -190,7 +194,9 @@ void ChromotingHost::OnSessionAuthenticated(ClientSession* client) {
   base::WeakPtr<ChromotingHost> self = weak_factory_.GetWeakPtr();
   while (clients_.size() > 1) {
     clients_[(clients_.front().get() == client) ? 1 : 0]->DisconnectSession(
-        ErrorCode::OK);
+        ErrorCode::OK,
+        "Disconnecting session because a new session has been authenticated.",
+        FROM_HERE);
 
     // Quit if the host was destroyed.
     if (!self) {
@@ -296,14 +302,17 @@ void ChromotingHost::BindSessionServices(
 
 void ChromotingHost::OnIncomingSession(
     protocol::Session* session,
-    protocol::SessionManager::IncomingSessionResponse* response) {
+    protocol::SessionManager::IncomingSessionResponse* response,
+    std::string* rejection_reason,
+    base::Location* rejection_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(started_);
 
   if (login_backoff_.ShouldRejectRequest()) {
-    LOG(WARNING) << "Rejecting connection due to"
-                    " an overload of failed login attempts.";
     *response = protocol::SessionManager::OVERLOAD;
+    *rejection_reason =
+        "Rejecting connection due to an overload of failed login attempts.";
+    *rejection_location = FROM_HERE;
     return;
   }
 

@@ -33,9 +33,6 @@ class Transport;
 // JingleSessionManager.
 class JingleSession : public Session {
  public:
-  // The Close() override hides all the Close() overloads in the base class, so
-  // they need to be unhidden with a using statement.
-  using Session::Close;
   JingleSession(const JingleSession&) = delete;
   JingleSession& operator=(const JingleSession&) = delete;
 

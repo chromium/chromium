@@ -49,15 +49,22 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata,
       int worklet_id);
 
-  // TODO(crbug.com/401011862): Add `std::optional<int> worklet_id as a
-  // parameter to static creators for other event types that can happen in the
-  // worklet as well as in other scope(s).
-  static SharedStorageEventParams CreateForSet(const std::string& key,
-                                               const std::string& value,
-                                               bool ignore_if_present);
-  static SharedStorageEventParams CreateForAppend(const std::string& key,
-                                                  const std::string& value);
-  static SharedStorageEventParams CreateForGetOrDelete(const std::string& key);
+  static SharedStorageEventParams CreateForSet(
+      const std::string& key,
+      const std::string& value,
+      bool ignore_if_present,
+      std::optional<int> worklet_id = std::nullopt);
+  static SharedStorageEventParams CreateForAppend(
+      const std::string& key,
+      const std::string& value,
+      std::optional<int> worklet_id = std::nullopt);
+  static SharedStorageEventParams CreateForGetOrDelete(
+      const std::string& key,
+      std::optional<int> worklet_id = std::nullopt);
+
+  // TODO(crbug.com/401011862): Use `CreateWithWorkletId()` for the worklet
+  // events that previously used `CreateDefault()`.
+  static SharedStorageEventParams CreateWithWorkletId(int worklet_id);
   static SharedStorageEventParams CreateDefault();
 
   SharedStorageEventParams(const SharedStorageEventParams&);
@@ -82,6 +89,19 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<std::string> serialized_data,
       std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
           urls_with_metadata,
+      std::optional<std::string> key,
+      std::optional<std::string> value,
+      std::optional<bool> ignore_if_present,
+      std::optional<int> worklet_id);
+
+  static SharedStorageEventParams CreateForWorkletOperation(
+      const std::string& operation_name,
+      const blink::CloneableMessage& serialized_data,
+      std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+          urls_with_metadata,
+      int worklet_id);
+
+  static SharedStorageEventParams CreateForModifierMethod(
       std::optional<std::string> key,
       std::optional<std::string> value,
       std::optional<bool> ignore_if_present,

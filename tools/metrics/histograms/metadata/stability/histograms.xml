@@ -189,7 +189,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Stability.Android.SystemExitReason"
+<histogram name="Stability.Android.SystemExitReason{AndroidProcessExitReasons}"
     enum="AndroidProcessExitReason" expires_after="2025-07-13">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
@@ -200,7 +200,25 @@ chromium-metrics-reviews@google.com.
     exits, or right after the process died for child processes.
 
     Records API failed when the ActivityManager does not return a reason.
+    {AndroidProcessExitReasons}
   </summary>
+  <token key="AndroidProcessExitReasons">
+    <variant name=".Browser" summary="Recorded for Browser crashes."/>
+    <variant name=".Browser.Background2"
+        summary="Recorded for background (application is not in running
+                 state) Browser crashes."/>
+    <variant name=".Browser.Foreground2"
+        summary="Recorded for foregound (application is in running state)
+                 Browser crashes."/>
+    <variant name=".GpuForegroundOom"
+        summary="Recorded for foreground GPU process OOM crashes."/>
+    <variant name=".UtilityForegroundOom"
+        summary="Recorded for foreground utility process OOM crashes."/>
+    <variant name=".VisibleMainFrameOom"
+        summary="Recorded for visible main frame renderer OOM crashes."/>
+    <variant name=".VisibleSubframeOom"
+        summary="Recorded for visible subframe renderer OOM crashes."/>
+  </token>
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.Chrome"

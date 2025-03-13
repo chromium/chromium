@@ -601,6 +601,13 @@
        {}
       ]
      ],
+     "anchor-fallback-to-self-crash.html": [
+      "c5a8165d11322901546f30f948041ca96cf43639",
+      [
+       null,
+       {}
+      ]
+     ],
      "anchor-scroll-composited-scrolling-001-crash.html": [
       "e8ecde3a3e36702d8833c6caa0c94782243edba4",
       [
@@ -1629,6 +1636,13 @@
      ]
     },
     "css-cascade": {
+     "layer-namespace-sandwich-crash.html": [
+      "c0a754e902fbd0b26ef784614dfe6fe71a29391f",
+      [
+       null,
+       {}
+      ]
+     ],
      "layer-statement-copy-crash.html": [
       "f183ab30ab72f2364dd71c37ff3b545bfaf556f1",
       [
@@ -4189,6 +4203,13 @@
      ],
      "scroll-buttons-container-query-crash.html": [
       "e5489228a95c6b7529e82d68b09bcbbd427e3ee2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scroll-marker-014-crash.html": [
+      "dd27d66fa5a01e69e69ae54b85dc814d57a05901",
       [
        null,
        {}
@@ -85371,6 +85392,269 @@
        ]
       },
       "corner-shape": {
+       "corner-shape-any.html": [
+        "9c256eb89778f8060906b7d943d08a01a3cfe300",
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-bottom-right-shape=superellipse(1.9)&border-bottom-right-radius=50%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=superellipse(1.9)&border-bottom-right-radius=50%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-radius=50%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=50%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-top-left-radius=30%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-left-radius=30%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=squircle&border-top-right-radius=30px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-right-radius=30px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=straight&border-bottom-leftradius=5px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=straight&border-bottom-leftradius=5px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(5.2)&border-radius=40%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(5.2)&border-radius=40%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-shape=superellipse(8)&border-top-right-radius=33px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(8)&border-top-right-radius=33px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ],
+        [
+         "css/css-borders/tentative/corner-shape/corner-shape-any.html?corner-top-right-shape=superellipse(0.1)&border-top-right-radius=50px",
+         [
+          [
+           "/css/css-borders/tentative/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=superellipse(0.1)&border-top-right-radius=50px",
+           "=="
+          ]
+         ],
+         {
+          "fuzzy": [
+           [
+            null,
+            [
+             [
+              0,
+              180
+             ],
+             [
+              0,
+              520
+             ]
+            ]
+           ]
+          ]
+         }
+        ]
+       ],
        "corner-shape-bevel-overflow-composite.html": [
         "985b5efdc9b9c868465d658e5486cd1e7eae5fd5",
         [
@@ -85422,243 +85706,6 @@
              [
               0,
               32
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "corner-shape-fill-any.html": [
-        "eb3a9830837b98f8797eebfc2b621e6627c85175",
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-bottom-left-shape=scoop&border-radius=10%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-bottom-left-shape=scoop&border-radius=10%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-bottom-right-shape=scoop&border-radius=50%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-bottom-right-shape=scoop&border-radius=50%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-shape=squircle&border-radius=10%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-shape=squircle&border-radius=10%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-shape=squircle&border-radius=30px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-shape=squircle&border-radius=30px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-shape=squircle&border-radius=50%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-shape=squircle&border-radius=50%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-shape=straight&border-radius=5px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-shape=straight&border-radius=5px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-shape=superellipse(5.2)&border-radius=33px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-shape=superellipse(5.2)&border-radius=33px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-shape=superellipse(5.2)&border-radius=50%",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-shape=superellipse(5.2)&border-radius=50%",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
-             ]
-            ]
-           ]
-          ]
-         }
-        ],
-        [
-         "css/css-borders/tentative/corner-shape/corner-shape-fill-any.html?corner-top-right-shape=scoop&border-radius=50px",
-         [
-          [
-           "/css/css-borders/tentative/corner-shape/corner-shape-fill-any-ref.html?corner-top-right-shape=scoop&border-radius=50px",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              128
-             ],
-             [
-              0,
-              500
              ]
             ]
            ]
@@ -144237,7 +144284,7 @@
        ]
       ],
       "gradient-analogous-missing-components-002.html": [
-       "71f2c6f374a4147dd80da16dd7c609de2e8862e8",
+       "96038650136fb48d49c3951c2c4433d5fe205650",
        [
         null,
         [
@@ -144246,23 +144293,7 @@
           "=="
          ]
         ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             1
-            ],
-            [
-             0,
-             1500
-            ]
-           ]
-          ]
-         ]
-        }
+        {}
        ]
       ],
       "gradient-analogous-missing-components-003.html": [
@@ -315913,42 +315944,6 @@
      "9b01ed7dae7fa79886cef7f1c4c1b593f6a52b55",
      []
     ],
-    "bidi": {
-     "adapter": {
-      "adapter-absent-getAvailability.https.window-expected.txt": [
-       "6f34a98782023867b6d149c6052aaf0eeac83976",
-       []
-      ],
-      "adapter-powered-off-getAvailability.https.window-expected.txt": [
-       "ffe4da8fbbae5bef200e2762c2ec44a892f5d393",
-       []
-      ],
-      "adapter-powered-on-getAvailability.https.window-expected.txt": [
-       "57820e31f35fac850b3afc482f86eaf455d638eb",
-       []
-      ],
-      "cross-origin-iframe-getAvailability.sub.https.window-expected.txt": [
-       "c3f8de610c3ab0f08010dba84abe534e8a0c3922",
-       []
-      ]
-     },
-     "requestDevice": {
-      "acceptAllDevices": {
-       "device-with-empty-name.https.window-expected.txt": [
-        "02f7298f2e9f837bbc084d32f20ee4b42ff3f6ab",
-        []
-       ],
-       "device-with-name.https.window-expected.txt": [
-        "7344db1791f050967b254881e278a5885e27194b",
-        []
-       ]
-      },
-      "radio-not-present.https.window-expected.txt": [
-       "43e40e14b8be1776e7c3a4e4c18043b51cc29fa7",
-       []
-      ]
-     }
-    },
     "legacy": {
      "generate.py": [
       "505375d55fede4f613f4c37b938c4f4b9e16e3c9",
@@ -329898,16 +329893,16 @@
      },
      "tentative": {
       "corner-shape": {
+       "corner-shape-any-ref.html": [
+        "688f01c8668554efce1ccde22ebf2b12a2ff61c8",
+        []
+       ],
        "corner-shape-bevel-overflow-composite-ref.html": [
         "f67be0cc6388ee35801bc1eab83f857902ea2be8",
         []
        ],
        "corner-shape-bevel-overflow-ref.html": [
         "374302671907cfc89740026e76f671df6418f40a",
-        []
-       ],
-       "corner-shape-fill-any-ref.html": [
-        "7bdb829f02205d436e5c1afd802182dc11c538e0",
         []
        ],
        "corner-shape-fill-ref.html": [
@@ -329927,12 +329922,16 @@
         []
        ],
        "resources": {
-        "corner-math.js": [
-         "0a2ddf0889d7c767b61ffc6fa143812b828b9ba0",
+        "corner-shape.js": [
+         "2aaaf5ed28987608fba8f4f8b756cd3062e82498",
+         []
+        ],
+        "corner-utils.js": [
+         "39203aefc67d57e9e0128112e60ac5b01e147d95",
          []
         ],
         "resolve-corner-style.js": [
-         "bb6fc7dca63da2945c007b3a8b811a00cab6319b",
+         "ea065f577e09c30b56cf1171685375b7aefeebc7",
          []
         ]
        }
@@ -346722,7 +346721,7 @@
        []
       ],
       "gradient-analogous-missing-components-002-ref.html": [
-       "9f81a6082679219b15ccdb51f9ad56115114a812",
+       "ecdbc4c114801aeadbd7e5ea47b54f31dd2abcc9",
        []
       ],
       "gradient-analogous-missing-components-003-ref.html": [
@@ -374616,7 +374615,7 @@
      ]
     },
     "helper.js": [
-     "26a558ac14af52e73e42136cd0646055c349d173",
+     "1cea6711c8aeb3adef49091ffcb3f11df3eb3f98",
      []
     ],
     "includeInScopeSpecification": {
@@ -374630,7 +374629,7 @@
      []
     ],
     "login.py": [
-     "2e2d93a8e47e627a4e4fe56c7d9bc200ad3a8edc",
+     "722c4b7afeeaa9da0221d73f3dffbdc0e11ca264",
      []
     ],
     "pull_server_state.py": [
@@ -374646,7 +374645,7 @@
      []
     ],
     "session_manager.py": [
-     "bc8b62e24241ffca3b0d9b2056520345f422209b",
+     "7058bdbb2f2941dfaf7a3c1b290b14626fd1e5d1",
      []
     ],
     "set_cookie.py": [
@@ -459979,7 +459978,7 @@
       ]
      ],
      "detector.https.tentative.any.js": [
-      "2fd91c245bbe16889250abc874540be2f3ef972f",
+      "2a5420b51e5ab9cdb6e94289e17a52b96bb99610",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -503175,6 +503174,13 @@
        {}
       ]
      ],
+     "dashed-function-standard-property.html": [
+      "359377b75297e0c6e016a123a85dfac9549c5c4b",
+      [
+       null,
+       {}
+      ]
+     ],
      "function-attr.html": [
       "69cb69723ff41bcfe6fcd745f0c3d6b74a1ebd81",
       [
@@ -528588,7 +528594,7 @@
      ]
     ],
     "custom-element-reaction-queue.html": [
-     "246b15a0af36cffa0b64f1d57e4208538b92bdd7",
+     "eb8366f2b415894f396da613987982ae41ffe0b6",
      [
       null,
       {}
@@ -529779,6 +529785,13 @@
       {}
      ]
     ],
+    "multiple-registrations.https.html": [
+     "1a2bcf5a95a29773e9671f4135d43d73b6f96705",
+     [
+      null,
+      {}
+     ]
+    ],
     "not-secure-connection.html": [
      "3ff834dc7c0ac5083a1bc193e177e4c9cb95b14c",
      [
@@ -529814,6 +529827,13 @@
       {}
      ]
     ],
+    "resolving-urls.https.html": [
+     "1010f7c43d61b26407ac395033c8f3a98670463d",
+     [
+      null,
+      {}
+     ]
+    ],
     "session-cookie-has-no-attributes.https.html": [
      "c4172a288926f6ea66df163a1aeb000ed5e69aa0",
      [
@@ -529829,7 +529849,7 @@
      ]
     ],
     "set-early-challenge.https.html": [
-     "133e900b3c7d3d5997b7e61fe29d589733067f05",
+     "8c557fdff541451972bc732ce0251e445eb3ab1d",
      [
       null,
       {}

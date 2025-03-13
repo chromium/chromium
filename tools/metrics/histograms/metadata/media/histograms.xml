@@ -230,6 +230,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CastStreaming.Sender.Video.EncoderType"
+    enum="CastStreamingVideoEncoderType" expires_after="2026-03-12">
+  <owner>jophba@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records which video codec was negotiated during a mirroring session. Records
+    the selected encoder configuration whenever a negotiation between the sender
+    and receiver devices is completed. This configuration includes the encoder
+    codec as well as whether it is software or hardware based.
+  </summary>
+</histogram>
+
 <histogram name="CastStreaming.Sender.Video.NegotiatedCodec" enum="VideoCodec"
     expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>

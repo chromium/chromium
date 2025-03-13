@@ -58,7 +58,7 @@ void WebrtcConnectionToHost::Connect(
 }
 
 void WebrtcConnectionToHost::Disconnect(ErrorCode error) {
-  session_->Close(error);
+  session_->Close(error, /* error_details= */ {}, FROM_HERE);
 }
 
 void WebrtcConnectionToHost::ApplyNetworkSettings(

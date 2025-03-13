@@ -263,13 +263,18 @@ chromium-metrics-reviews@google.com.
   <variant name="NewIncognitoTab"
       summary="tabs opened by an external application launching a new Chrome
                incognito tab"/>
+  <variant name="Omnibox" summary="tabs opened from omnibox"/>
   <variant name="ReadingList" summary="tabs opened from the reading list"/>
   <variant name="RecentTabs"
       summary="tabs opened in background from recent tabs"/>
   <variant name="RecentTabsForeground"
       summary="tabs opened in foreground from recent tabs"/>
-  <variant name="Reparenting" summary="tabs opened from changing windows"/>
+  <variant name="Reparenting"
+      summary="tabs opened in foreground from changing windows"/>
+  <variant name="ReparentingBackground"
+      summary="tabs opened in background from changing windows"/>
   <variant name="Restore" summary="tabs opened from restores"/>
+  <variant name="RestoreTabsUI" summary="tabs opened from restore tabs UI"/>
   <variant name="SpeculativeBackgroundCreation"
       summary="tabs opened from CCT in the background"/>
   <variant name="StartSurface" summary="tabs opened from the start surface"/>

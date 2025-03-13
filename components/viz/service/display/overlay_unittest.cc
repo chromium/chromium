@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -12,8 +13,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -26,6 +29,7 @@
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/buildflags.h"
+#include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -38,6 +42,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -127,6 +132,65 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
   void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
                                OverlayCandidateList* surfaces) override {}
   size_t GetStrategyCount() const { return strategies_.size(); }
+};
+
+class MultiOverlayHysteresisProcessor : public TestOverlayProcessor {
+ public:
+  MultiOverlayHysteresisProcessor() {
+    // Don't wait for hardware support in these tests.
+    max_overlays_considered_ = max_overlays_config_;
+    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
+
+    prioritization_config_.changing_threshold = true;
+  }
+
+  void ProcessForOverlays(
+      DisplayResourceProvider* resource_provider,
+      AggregatedRenderPassList* render_passes,
+      const SkM44& output_color_matrix,
+      const FilterOperationsMap& render_pass_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
+      SurfaceDamageRectList surface_damage_rect_list,
+      OutputSurfaceOverlayPlane* output_surface_plane,
+      CandidateList* overlay_candidates,
+      gfx::Rect* damage_rect,
+      std::vector<gfx::Rect>* content_bounds) override {
+    // Clear the combination cache every frame so results are more predictable
+    // in these tests.
+    ClearOverlayCombinationCache();
+    // Parameters unchanged.
+    OverlayProcessorUsingStrategy::ProcessForOverlays(
+        resource_provider, render_passes, output_color_matrix,
+        render_pass_filters, render_pass_backdrop_filters,
+        surface_damage_rect_list, output_surface_plane, overlay_candidates,
+        damage_rect, content_bounds);
+  }
+
+  void CheckOverlaySupportImpl(const PrimaryPlane* primary_plane,
+                               OverlayCandidateList* surfaces) override {
+    EXPECT_EQ(expected_rects_.size(), surfaces->size());
+
+    for (size_t i = 0; i < surfaces->size(); ++i) {
+      OverlayCandidate& candidate = (*surfaces)[i];
+      EXPECT_EQ(gfx::ToEnclosedRect(candidate.display_rect),
+                expected_rects_[i]);
+      candidate.overlay_handled = responses_[i];
+    }
+  }
+
+  void AddExpectedRect(const gfx::Rect& rect, bool response) {
+    expected_rects_.push_back(rect);
+    responses_.push_back(response);
+  }
+
+  void ClearExpectedRects() {
+    expected_rects_.clear();
+    responses_.clear();
+  }
+
+ private:
+  std::vector<gfx::Rect> expected_rects_;
+  std::vector<bool> responses_;
 };
 
 class FullscreenOverlayProcessor : public TestOverlayProcessor {
@@ -878,6 +942,8 @@ using SingleOverlayOnTopTest = OverlayTest<SingleOnTopOverlayProcessor>;
 using ChangeSingleOnTopTest = OverlayTest<ChangeThresholdOnTopOverlayProcessor>;
 using FullThresholdTest = OverlayTest<FullThresholdUnderlayOverlayProcessor>;
 using TransitionOverlayTypeTest = OverlayTest<TransitionOverlayProcessor>;
+using OverlayHysteresisTest =
+    UseMultipleOverlaysTest<MultiOverlayHysteresisProcessor>;
 
 using UnderlayTest = OverlayTest<UnderlayOverlayProcessor>;
 using TransparentUnderlayTest =
@@ -3140,7 +3206,7 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
   // exp_rate=(num_frames_to_clear-1)/num_frames_to_clear. We take the log to
   // find num_frames_to_clear
   const int kNumFramesClear =
-      static_cast<int>(std::ceil(std::log(1.0f / config.max_num_frames_avg) /
+      static_cast<int>(std::ceil(std::log(config.damage_rate_hysteresis_range) /
                                  std::log((config.max_num_frames_avg - 1.0f) /
                                           config.max_num_frames_avg)));
 
@@ -3205,6 +3271,201 @@ TEST_F(FullThresholdTest, ThresholdTestForPrioritization) {
     } else if (i == kDamageFrameTestEnd - 1 || i == kSlowFrameTestEnd - 1) {
       // Test to make sure no overlay was promoted
       EXPECT_EQ(0u, candidate_list.size());
+    }
+  }
+}
+
+TEST_F(OverlayHysteresisTest, HysteresisResumeWhenCandidateComeBackActive) {
+  // This test verifies the overlay candidate selection logic when presented
+  // with two candidates: one with 100% damage ratio and the other with 75%. It
+  // checks that pausing the 100% damage candidate immediately activates the 75%
+  // candidate, and upon resumption, the 100% damage candidate resumes and
+  // regains top priority from the state where it left off.
+  constexpr gfx::Rect kTopRightSmall(128, 0, 64, 64);
+  OverlayCandidateTemporalTracker::Config config;
+  const auto& candidates_tracker_map =
+      overlay_processor_->GetTrackedCandidatesForTesting();
+  struct TrackingIdData {
+    gfx::Rect rect;
+    FrameSinkId frame_sink_id;
+  };
+
+  EXPECT_EQ(0u, candidates_tracker_map.size());
+
+  int64_t frame_counter = 0;
+  // This is a helper function to simulate framerates.
+  auto wait_1_frame = [&]() { frame_counter++; };
+
+  // Unique resource for both texture quads for the first 3 frames.
+  int kContentNoChangeStart = 3;
+  // Pause no occlusion candidate for at least |max_num_frames_avg| + 10 frames
+  // so that this candidate is guaranteed to be inactive.
+  int kContentNoChangeEnd =
+      kContentNoChangeStart + config.max_num_frames_avg + 10;
+  // Test 5 more frames to see if this paused quad could resume and become
+  // active right away.
+  int kResumePausedContentEnd = kContentNoChangeEnd + 5;
+
+  ResourceId previous_no_occlusion_quad_resource_id;
+
+  for (int i = 0; i < kResumePausedContentEnd; ++i) {
+    overlay_processor_->ClearExpectedRects();
+    wait_1_frame();
+
+    auto pass = CreateRenderPass();
+    AggregatedRenderPass* main_pass = pass.get();
+
+    ResourceId no_occlusion_quad_resource_id;
+    ResourceId with_occlusion_quad_resource_id;
+    ProposedCandidateKey candidate_key_top_left;
+    ProposedCandidateKey candidate_key_top_right;
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    {
+      // Create quad partially covering up top right candidate, so that
+      // the top right candidate has a damage ratio of 0.75.
+      CreateSolidColorQuadAt(pass->shared_quad_state_list.back(),
+                             SkColors::kBlack, pass.get(), kTopRightSmall);
+    }
+    {
+      // Create a candidate quad in the top left with the resource ID selected
+      // below. This quad should have a damage ratio of 1.
+      auto* sqs = pass->CreateAndAppendSharedQuadState();
+      if (i < kContentNoChangeStart || i >= kContentNoChangeEnd) {
+        // Create a unique resource for no occlusion quad only when it is not
+        // paused
+        sqs->overlay_damage_index = surface_damage_rect_list.size();
+        surface_damage_rect_list.emplace_back(kOverlayTopLeftRect);
+        no_occlusion_quad_resource_id = CreateResource(
+            kOverlayTopLeftRect.size(), /*is_overlay_candidate=*/true);
+        previous_no_occlusion_quad_resource_id = no_occlusion_quad_resource_id;
+      } else {
+        // No occlusion quad should have the same resource ID during it is
+        // paused.
+        no_occlusion_quad_resource_id = previous_no_occlusion_quad_resource_id;
+      }
+
+      TextureDrawQuad* quad_candidate_no_occlusion =
+          main_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
+      quad_candidate_no_occlusion->SetNew(
+          sqs, kOverlayTopLeftRect, kOverlayTopLeftRect,
+          /*needs_blending=*/false, no_occlusion_quad_resource_id,
+          /*premultiplied=*/false, kUVTopLeft, kUVBottomRight,
+          SkColors::kTransparent, /*nearest=*/false,
+          /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
+      quad_candidate_no_occlusion->set_resource_size_in_pixels(
+          kOverlayTopLeftRect.size());
+      TrackingIdData track_data_top_left{
+          quad_candidate_no_occlusion->rect,
+          resource_factory_->resource_provider()
+              ->GetSurfaceId(no_occlusion_quad_resource_id)
+              .frame_sink_id()};
+      OverlayCandidate::TrackingId tracking_id_top_left = static_cast<uint32_t>(
+          base::FastHash(base::byte_span_from_ref(track_data_top_left)));
+      candidate_key_top_left.tracking_id = tracking_id_top_left;
+      candidate_key_top_left.strategy_id = OverlayStrategy::kUnderlay;
+
+      // Add expected rect for the quad only when it is not paused.
+      if (i < kContentNoChangeStart + config.max_num_frames_avg - 1 ||
+          i >= kContentNoChangeEnd) {
+        overlay_processor_->AddExpectedRect(kOverlayTopLeftRect, true);
+      }
+    }
+    {
+      // Create a candidate in the top right. This is occlusion quad, with a
+      // damage ratio of 0.75.
+      auto* sqs = pass->CreateAndAppendSharedQuadState();
+      sqs->overlay_damage_index = surface_damage_rect_list.size();
+      surface_damage_rect_list.emplace_back(kOverlayTopRightRect);
+      TextureDrawQuad* quad_candidate_with_occlusion =
+          CreateCandidateQuadAt(sqs, pass.get(), kOverlayTopRightRect);
+      with_occlusion_quad_resource_id =
+          quad_candidate_with_occlusion->resource_id;
+      overlay_processor_->AddExpectedRect(kOverlayTopRightRect, true);
+      TrackingIdData track_data_top_right{
+          quad_candidate_with_occlusion->rect,
+          resource_factory_->resource_provider()
+              ->GetSurfaceId(with_occlusion_quad_resource_id)
+              .frame_sink_id()};
+      OverlayCandidate::TrackingId tracking_id_top_right =
+          static_cast<uint32_t>(
+              base::FastHash(base::byte_span_from_ref(track_data_top_right)));
+      candidate_key_top_right.tracking_id = tracking_id_top_right;
+      candidate_key_top_right.strategy_id = OverlayStrategy::kUnderlay;
+    }
+    {
+      // Add something behind it.
+      auto* sqs = pass->CreateAndAppendSharedQuadState();
+      CreateFullscreenOpaqueQuad(sqs, main_pass);
+    }
+
+    // Check for potential candidates.
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    overlay_processor_->SetFrameSequenceNumber(frame_counter);
+    overlay_processor_->ProcessForOverlays(
+        resource_provider(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+
+    EXPECT_EQ(2u, candidates_tracker_map.size());
+
+    OverlayCandidateTemporalTracker tracker_top_left =
+        candidates_tracker_map.at(candidate_key_top_left);
+    OverlayCandidateTemporalTracker tracker_top_right =
+        candidates_tracker_map.at(candidate_key_top_right);
+
+    if (i < kContentNoChangeStart) {
+      // Before we pause, we should accumulate the number of samples we use for
+      // sampling.
+      const int expected_num_samples = i + 1;
+      EXPECT_EQ(expected_num_samples,
+                tracker_top_left.GetNumSamplesForTesting());
+    } else if (i < kContentNoChangeEnd) {
+      // During pause, the number of samples we use should not change.
+      const int expected_num_samples = kContentNoChangeStart;
+      EXPECT_EQ(expected_num_samples,
+                tracker_top_left.GetNumSamplesForTesting());
+    } else {
+      // Once the content changes again, the number of samples should resume
+      // from where it left off.
+      const int expected_num_samples =
+          i - (kContentNoChangeEnd - kContentNoChangeStart) + 1;
+      EXPECT_EQ(expected_num_samples,
+                tracker_top_left.GetNumSamplesForTesting());
+    }
+
+    // Top right candidate's content is always changing, so the number of
+    // samples we use should increase every frame until we reach
+    // |max_num_frames_avg|.
+    if (i < config.max_num_frames_avg) {
+      const int expected_num_samples = i + 1;
+      EXPECT_EQ(expected_num_samples,
+                tracker_top_right.GetNumSamplesForTesting());
+    } else {
+      const int expected_num_samples = config.max_num_frames_avg;
+      EXPECT_EQ(expected_num_samples,
+                tracker_top_right.GetNumSamplesForTesting());
+    }
+
+    if (i < kContentNoChangeStart + config.max_num_frames_avg - 1 ||
+        i >= kContentNoChangeEnd) {
+      // When no occlusion quad is not paused, we expect both quads to be
+      // promoted with the no occlusion quad being the top candidate.
+      EXPECT_EQ(2u, candidate_list.size());
+      EXPECT_EQ(no_occlusion_quad_resource_id, candidate_list[0].resource_id);
+      EXPECT_EQ(with_occlusion_quad_resource_id, candidate_list[1].resource_id);
+    } else {
+      // When the no occlusion quad is paused, we expect only the occluded quad
+      // is promoted.
+      EXPECT_EQ(1u, candidate_list.size());
+      EXPECT_EQ(with_occlusion_quad_resource_id, candidate_list[0].resource_id);
     }
   }
 }
@@ -3876,7 +4137,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   constexpr bool kIsFullscreen = false;
   // Test the default configuration.
   OverlayCandidateTemporalTracker::Config config;
-  float kDamageEpsilon = 1.0f / config.max_num_frames_avg;
+  float kDamageEpsilon = config.damage_rate_hysteresis_range;
   float kBelowLowDamage = config.damage_rate_threshold - kDamageEpsilon;
   float kAboveHighDamage = config.damage_rate_threshold + kDamageEpsilon;
   float kFullDamage = 1.0f;
@@ -3894,7 +4155,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   // exp_rate=(num_frames_to_clear-1)/num_frames_to_clear. We take the log to
   // find num_frames_to_clear
   const int kNumFramesClear =
-      static_cast<int>(std::ceil(std::log(1.0f / config.max_num_frames_avg) /
+      static_cast<int>(std::ceil(std::log(config.damage_rate_hysteresis_range) /
                                  std::log((config.max_num_frames_avg - 1.0f) /
                                           config.max_num_frames_avg)));
 
@@ -3903,7 +4164,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   // We test internal hysteresis state by running this test twice.
   for (int j = 0; j < 2; j++) {
     SCOPED_TRACE(j);
-    tracker.Reset();
+    tracker.ResetForTesting();
     // First setup a 60fps high damage candidate.
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
@@ -3997,7 +4258,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_30_inactive, 0);
 
-    tracker.Reset();
+    tracker.ResetForTesting();
     // Test low and high damage thresholds.
     for (int i = 0; i < kNumFramesClear; i++) {
       wait_1_frame();
@@ -4024,7 +4285,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     // Test our mean damage ratio computations for our tracker.
     int avg_range_tracker = config.max_num_frames_avg - 1;
     float expected_mean = 0.0f;
-    tracker.Reset();
+    tracker.ResetForTesting();
     for (int i = 0; i < avg_range_tracker; i++) {
       wait_1_frame();
       float dynamic_damage_ratio = static_cast<float>(i) / avg_range_tracker;
@@ -4051,7 +4312,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   // not resource ids (example here is low latency ink surface). Here we test
   // this small feature by keeping the resource id constant but passing in true
   // to the force update param.
-  tracker.Reset();
+  tracker.ResetForTesting();
   static const float kDamageRatio = 0.7f;
   static const ResourceId kFakeConstantResourceId(13);
   for (int i = 0; i < config.max_num_frames_avg; i++) {

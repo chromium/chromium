@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -432,8 +433,13 @@ TEST_F(ChromotingHostTest, IncomingSessionAccepted) {
   MockSession* session = session_unowned1_.get();
   protocol::SessionManager::IncomingSessionResponse response =
       protocol::SessionManager::DECLINE;
-  host_->OnIncomingSession(session_unowned1_.release(), &response);
+  std::string rejection_reason;
+  base::Location rejection_location;
+  host_->OnIncomingSession(session_unowned1_.release(), &response,
+                           &rejection_reason, &rejection_location);
   EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+  EXPECT_TRUE(rejection_reason.empty());
+  EXPECT_EQ(nullptr, rejection_location.program_counter());
 
   EXPECT_CALL(*session, Close(_, _, _))
       .WillOnce(InvokeWithoutArgs(
@@ -446,6 +452,8 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
 
   protocol::SessionManager::IncomingSessionResponse response =
       protocol::SessionManager::DECLINE;
+  std::string rejection_reason;
+  base::Location rejection_location;
   std::array<protocol::Session::EventHandler*, kNumFailuresIgnored + 1>
       session_event_handlers;
   for (auto*& session_event_handler : session_event_handlers) {
@@ -462,8 +470,11 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
           session_event_handler->OnSessionStateChange(Session::CLOSED);
         }));
     // Simulate the incoming connection.
-    host_->OnIncomingSession(session.release(), &response);
+    host_->OnIncomingSession(session.release(), &response, &rejection_reason,
+                             &rejection_location);
     EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+    EXPECT_TRUE(rejection_reason.empty());
+    EXPECT_EQ(nullptr, rejection_location.program_counter());
     // Begin authentication; this will increase the backoff count, and since
     // OnSessionAuthenticated is never called, the host should only allow
     // kNumFailuresIgnored + 1 connections before beginning the backoff.
@@ -472,8 +483,11 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
   }
 
   // As this is connection kNumFailuresIgnored + 2, it should be rejected.
-  host_->OnIncomingSession(session_unowned2_.get(), &response);
+  host_->OnIncomingSession(session_unowned2_.get(), &response,
+                           &rejection_reason, &rejection_location);
   EXPECT_EQ(protocol::SessionManager::OVERLOAD, response);
+  EXPECT_FALSE(rejection_reason.empty());
+  EXPECT_NE(nullptr, rejection_location.program_counter());
   EXPECT_EQ(host_->client_sessions_for_tests().size(), kNumFailuresIgnored + 1);
 
   // Shut down host while objects owned by this test are still in scope.
@@ -485,6 +499,8 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
 
   protocol::SessionManager::IncomingSessionResponse response =
       protocol::SessionManager::DECLINE;
+  std::string rejection_reason;
+  base::Location rejection_location;
   std::array<protocol::Session::EventHandler*, kNumFailuresIgnored + 1>
       session_event_handlers;
   for (auto*& session_event_handler : session_event_handlers) {
@@ -501,8 +517,11 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
           session_event_handler->OnSessionStateChange(Session::CLOSED);
         }));
     // Simulate the incoming connection.
-    host_->OnIncomingSession(session.release(), &response);
+    host_->OnIncomingSession(session.release(), &response, &rejection_reason,
+                             &rejection_location);
     EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+    EXPECT_TRUE(rejection_reason.empty());
+    EXPECT_EQ(nullptr, rejection_location.program_counter());
     // Begin authentication; this will increase the backoff count
     host_->OnSessionAuthenticating(
         host_->client_sessions_for_tests().front().get());
@@ -527,8 +546,11 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
       .WillOnce(InvokeWithoutArgs([&session_event_handler]() {
         session_event_handler->OnSessionStateChange(Session::CLOSED);
       }));
-  host_->OnIncomingSession(session.release(), &response);
+  host_->OnIncomingSession(session.release(), &response, &rejection_reason,
+                           &rejection_location);
   EXPECT_EQ(protocol::SessionManager::ACCEPT, response);
+  EXPECT_TRUE(rejection_reason.empty());
+  EXPECT_EQ(nullptr, rejection_location.program_counter());
 
   // Shut down host while objects owned by this test are still in scope.
   ShutdownHost();

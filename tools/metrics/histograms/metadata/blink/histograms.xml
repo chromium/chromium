@@ -1836,6 +1836,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.SegmentationPlatform.UserAction"
+    enum="FedCmUserAction" expires_after="2025-08-10">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    The action taken by the user. Recorded when the FedCM UI is destroyed, if
+    the UI shown uses segmentation platform's UI volume recommendation.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.SetLoginStatusIgnored"
     enum="FedCmSetLoginStatusIgnoredReason" expires_after="2025-08-12">
   <owner>cbiesinger@chromium.org</owner>

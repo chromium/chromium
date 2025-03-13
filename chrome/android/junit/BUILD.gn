@@ -520,6 +520,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
+      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSettingProviderTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
     ]
 

@@ -72,7 +72,7 @@ MATCHER_P6(InkAffineTransformEq,
 }
 
 // Generate the path for test files specific to Ink.
-base::FilePath GetInkTestDataFilePath(std::string_view filename);
+base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);
 
 }  // namespace chrome_pdf
 

@@ -6478,6 +6478,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="User does not sign in"/>
 </enum>
 
+<enum name="FedCmUserAction">
+  <int value="0" label="User signed in"/>
+  <int value="1" label="User ignored the UI"/>
+  <int value="2" label="User closed the UI"/>
+</enum>
+
 <enum name="FedCmUserInfoStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Caller is not same origin with config URL"/>

@@ -200,12 +200,14 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
   return gfx::ToEnclosingRect(gfx::RectF(x, y, w, h));
 }
 
-gfx::AxisTransform2d GetCanonicalToPdfTransform(float page_height) {
+gfx::AxisTransform2d GetCanonicalToPdfTransform(
+    float page_height,
+    const gfx::Vector2dF& translate) {
   CHECK_GE(page_height, 0);
   return gfx::AxisTransform2d::FromScaleAndTranslation(
       {kUnitConversionFactorPixelsToPoints,
        -kUnitConversionFactorPixelsToPoints},
-      {0, page_height});
+      {translate.x(), page_height + translate.y()});
 }
 
 }  // namespace chrome_pdf

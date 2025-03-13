@@ -162,7 +162,9 @@ class ChromotingHost : public ClientSession::EventHandler,
   // Callback for SessionManager to accept incoming sessions.
   void OnIncomingSession(
       protocol::Session* session,
-      protocol::SessionManager::IncomingSessionResponse* response);
+      protocol::SessionManager::IncomingSessionResponse* response,
+      std::string* rejection_reason,
+      base::Location* rejection_location);
 
   // The host uses a pairing registry to generate and store pairing information
   // for clients for PIN-less authentication.

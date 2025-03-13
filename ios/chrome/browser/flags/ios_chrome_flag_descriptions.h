@@ -54,6 +54,9 @@ extern const char kAutofillEnableCardBenefitsForBmoDescription[];
 extern const char kAutofillEnableCardBenefitsSyncName[];
 extern const char kAutofillEnableCardBenefitsSyncDescription[];
 
+extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
+extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
+
 // Title and description for the flag to enable dynamically loading the fields
 // for address input based on the country value.
 extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];

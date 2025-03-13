@@ -93,12 +93,6 @@ class Session {
   // method returns.
   // |error| specifies the error code in case when the session is being closed
   //   due to an error.
-  void Close(ErrorCode error);
-
-  // Closes connection. EventHandler is guaranteed not to be called after this
-  // method returns.
-  // |error| specifies the error code in case when the session is being closed
-  //   due to an error.
   // |error_details| is a free-form human-readable string that describes the
   //   reason for closing the connection.
   // |error_location| denotes where the error occurs in the code.

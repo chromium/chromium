@@ -5152,6 +5152,8 @@ static_library("test_support") {
     "drag_drop/draggable_test_view.h",
     "drag_drop/mock_drag_drop_observer.cc",
     "drag_drop/mock_drag_drop_observer.h",
+    "fast_ink/fast_ink_host_test_api.cc",
+    "fast_ink/fast_ink_host_test_api.h",
     "fast_ink/laser/laser_pointer_controller_test_api.cc",
     "fast_ink/laser/laser_pointer_controller_test_api.h",
     "frame_sink/frame_sink_holder_test_api.cc",

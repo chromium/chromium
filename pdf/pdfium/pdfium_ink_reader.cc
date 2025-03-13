@@ -15,6 +15,7 @@
 #include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_transform.h"
+#include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "printing/units.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
@@ -171,8 +172,15 @@ std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
     return results;
   }
 
+  // Get the intersection between the page's MediaBox and CropBox, to find
+  // the translation offset for the shapes' transform.
+  FS_RECTF bounding_box;
+  auto result = FPDF_GetPageBoundingBox(page, &bounding_box);
+  CHECK(result);
+  const gfx::Vector2dF offset(bounding_box.left, bounding_box.bottom);
+
   gfx::AxisTransform2d transform =
-      GetCanonicalToPdfTransform(FPDF_GetPageHeightF(page));
+      GetCanonicalToPdfTransform(FPDF_GetPageHeightF(page), offset);
   transform.Invert();
 
   const int page_object_count = FPDFPage_CountObjects(page);
