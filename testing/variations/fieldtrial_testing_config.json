@@ -14234,21 +14234,6 @@
             ]
         }
     ],
-    "MediaFoundationAV1Encoding": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MediaFoundationAV1Encoding"
-                    ]
-                }
-            ]
-        }
-    ],
     "MediaFoundationBatchRead": [
         {
             "platforms": [
