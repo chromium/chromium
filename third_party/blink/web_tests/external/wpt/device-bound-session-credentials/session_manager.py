@@ -30,8 +30,10 @@ class SessionManager:
         self.refresh_sends_challenge = True
         self.refresh_url = "/device-bound-session-credentials/refresh_session.py"
 
+    def next_session_id_value(self):
+        return len(self.session_to_key_map)
     def next_session_id(self):
-        return str(len(self.session_to_key_map))
+        return str(self.next_session_id_value())
 
     def create_new_session(self):
         session_id = self.next_session_id()
@@ -75,9 +77,12 @@ class SessionManager:
         if cookie_name_and_value is not None:
             self.cookie_name_and_value = cookie_name_and_value
 
-        next_session_cookie_name_and_value = configuration.get("cookieNameAndValueForNextRegisteredSession")
-        if next_session_cookie_name_and_value is not None:
-            self.session_to_cookie_name_and_value_map[self.next_session_id()] = next_session_cookie_name_and_value
+        next_sessions_cookie_names_and_values = configuration.get("cookieNamesAndValuesForNextRegisteredSessions")
+        if next_sessions_cookie_names_and_values is not None:
+            next_session_id_value = self.next_session_id_value()
+            for cookie_name_and_value in next_sessions_cookie_names_and_values:
+                self.session_to_cookie_name_and_value_map[str(next_session_id_value)] = cookie_name_and_value
+                next_session_id_value += 1
 
         next_session_early_challenge = configuration.get("earlyChallengeForNextRegisteredSession")
         if next_session_early_challenge is not None:
