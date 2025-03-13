@@ -2002,6 +2002,22 @@ ci.thin_tester(
             "mac_mini_intel_gpu_stable",
         ],
         per_test_modifications = {
+            "trace_test": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/402826437): Remove if this has no
+                        # effect on stability. Otherwisde, update this comment.
+                        "--jobs=2",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
             "webgl2_conformance_metal_passthrough_graphite_tests": targets.remove(
                 reason = "crbug.com/1270755",
             ),
