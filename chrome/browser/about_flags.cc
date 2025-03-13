@@ -11758,6 +11758,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kApiPrintingMarginsAndScale)},
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
+    {"supervised-user-block-interstitial-v3",
+     flag_descriptions::kSupervisedUserBlockInterstitialV3Name,
+     flag_descriptions::kSupervisedUserBlockInterstitialV3Description, kOsAll,
+     FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserBlockInterstitialV3)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

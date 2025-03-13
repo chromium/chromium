@@ -13,6 +13,15 @@
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
         A parent or guardian has to say that it's OK for you to visit this website
       </message>
+      <message name="IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_BLOCK_ALL" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent.">
+        A parent or guardian has to say that it's OK for you to visit this website
+      </message>
+      <message name="IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_SAFE_SITES" desc="Message to be shown when a site was blocked due to the SafeSites safety check.">
+        This site may have mature content. A parent or guardian has to say that it's OK for you to visit this website.
+      </message>
+      <message name="IDS_SUPERVISED_USER_INTERSTITIAL_MESSAGE_MANUAL" desc="Message to be shown to a child when a site was blocked due to a manual blocklist entry.">
+        A parent or guardian said that this site isn’t OK for you to visit. You can ask them to unblock it.
+      </message>
       <message name="IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN" desc="A message for the child user when they attempt to visit a site that is not permitted by their parent. Before they can ask their parent to allow the site, the child first needs to enter their Google Account password because their credentials expired.">
         A parent or guardian has to say that it's OK for you to visit this website. Before you ask them, we need to make sure it's you.
       </message>

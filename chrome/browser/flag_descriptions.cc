@@ -7966,6 +7966,11 @@ const char kOverlayScrollbarsOSSettingsDescription[] =
     "Enable the OS settings for overlay scrollbars on ChromeOS.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+const char kSupervisedUserBlockInterstitialV3Name[] =
+    "Enable URL filter interstitial V3";
+const char kSupervisedUserBlockInterstitialV3Description[] =
+    "Enables URL filter interstitial V3 for Family Link users.";
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 const char kSupervisedProfileHideGuestName[] = "Supervised Profile Hide Guest";
 const char kSupervisedProfileHideGuestDescription[] =

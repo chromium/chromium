@@ -10830,6 +10830,7 @@ from previous Chrome versions.
       label="AutofillLocalCardMigrationShowFeedback:disabled"/>
   <int value="-1282488703" label="LocationBarModelOptimizations:enabled"/>
   <int value="-1282433319" label="WebRtcAllowInputVolumeAdjustment:enabled"/>
+  <int value="-1282311253" label="SupervisedUserBlockInterstitialV3:enabled"/>
   <int value="-1281491005" label="DisableDnsProxy:disabled"/>
   <int value="-1281490354" label="MediaAppImageMantis:disabled"/>
   <int value="-1281465357" label="MacV2GPUSandbox:disabled"/>
@@ -13767,6 +13768,7 @@ from previous Chrome versions.
   <int value="-120988078" label="OmniboxGroupingFrameworkForZPS:enabled"/>
   <int value="-120521482" label="DirectManipulationStylus:enabled"/>
   <int value="-120430245" label="EnableExpKitTextClassifier:enabled"/>
+  <int value="-120267301" label="SupervisedUserBlockInterstitialV3:disabled"/>
   <int value="-120091289" label="CrostiniAppSearch:enabled"/>
   <int value="-119841719" label="ThreadingOptimizationsOnIo:disabled"/>
   <int value="-119283387" label="NtpAlphaBackgroundCollections:disabled"/>

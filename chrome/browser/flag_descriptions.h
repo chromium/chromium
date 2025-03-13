@@ -4714,6 +4714,9 @@ extern const char kEnablePolicyPromotionBannerName[];
 extern const char kEnablePolicyPromotionBannerDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+extern const char kSupervisedUserBlockInterstitialV3Name[];
+extern const char kSupervisedUserBlockInterstitialV3Description[];
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kSupervisedProfileHideGuestName[];
 extern const char kSupervisedProfileHideGuestDescription[];

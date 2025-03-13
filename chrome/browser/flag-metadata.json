@@ -8349,6 +8349,14 @@
     "expiry_milestone": 134
   },
   {
+    "name": "supervised-user-block-interstitial-v3",
+    "owners": [
+      "ddac@google.com",
+      "chrome-kids-eng@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "supervised-user-local-web-approvals",
     "owners": [
       "fernandex@google.com",
