@@ -30,7 +30,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -140,10 +139,6 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
 
   LOG(WARNING) << "crbug.com/1339004 : started authentication";
   SetAuthenticationStage(AuthenticationStage::kDoAuthenticate);
-
-  if (authenticated_by_pin) {
-    DCHECK(base::ContainsOnlyChars(password, "0123456789"));
-  }
 
   client_->AuthenticateUserWithPasswordOrPin(
       account_id, password, authenticated_by_pin,
