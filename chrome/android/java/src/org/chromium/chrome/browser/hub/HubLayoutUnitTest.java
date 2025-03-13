@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -105,8 +106,8 @@ public class HubLayoutUnitTest {
     private static final long FAKE_NATIVE_ADDRESS_1 = 498723734L;
     private static final long FAKE_NATIVE_ADDRESS_2 = 123210L;
     private static final float FLOAT_ERROR = 0.001f;
-    private static final int TAB_ID = 5;
-    private static final int NEW_TAB_ID = 6;
+    private static final @TabId int TAB_ID = 5;
+    private static final @TabId int NEW_TAB_ID = 6;
     private static final int NEW_TAB_INDEX = 0;
     // This animation doesn't depend on time from the LayoutManager.
     private static final long FAKE_TIME = 0L;
@@ -727,7 +728,7 @@ public class HubLayoutUnitTest {
 
     private void hide(
             @LayoutType int nextLayout,
-            int nextTabId,
+            @TabId int nextTabId,
             boolean skipStartHiding,
             @HubLayoutAnimationType int expectedAnimationType) {
         if (skipStartHiding) {
@@ -767,7 +768,7 @@ public class HubLayoutUnitTest {
         mHubLayout.show(FAKE_TIME, animate);
     }
 
-    private void startHiding(@LayoutType int nextLayout, int nextTabId) {
+    private void startHiding(@LayoutType int nextLayout, @TabId int nextTabId) {
         @LayoutType int layoutType = mHubLayout.getLayoutType();
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(layoutType);
         when(mLayoutStateProvider.getNextLayoutType()).thenReturn(nextLayout);
@@ -781,7 +782,7 @@ public class HubLayoutUnitTest {
     }
 
     private void animateCheckingSceneLayerAndLayoutTabs(
-            Runnable startAnimationRunnable, int tabId) {
+            Runnable startAnimationRunnable, @TabId int tabId) {
         assertThat(mHubLayout.getSceneLayer(), instanceOf(SolidColorSceneLayer.class));
         LayoutTab[] layoutTabs = mHubLayout.getLayoutTabsToRender();
         assertNull(layoutTabs);

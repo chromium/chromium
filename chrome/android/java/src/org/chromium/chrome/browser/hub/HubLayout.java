@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -169,7 +170,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public void selectTabAndHideHubLayout(int tabId) {
+    public void selectTabAndHideHubLayout(@TabId int tabId) {
         TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER);
         startHiding();
     }
@@ -457,7 +458,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @Override
     public void onTabCreated(
             long time,
-            int tabId,
+            @TabId int tabId,
             int tabIndex,
             int sourceTabId,
             boolean newIsIncognito,
@@ -732,7 +733,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         return mLayoutTabs[0];
     }
 
-    private void createLayoutTabForTabId(int tabId) {
+    private void createLayoutTabForTabId(@TabId int tabId) {
         LayoutTab layoutTab = createLayoutTab(tabId, mTabModelSelector.isIncognitoSelected());
         mLayoutTabs = new LayoutTab[] {layoutTab};
         updateCacheVisibleIds(Collections.singletonList(tabId));
@@ -790,10 +791,11 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     /**
      * Returns the tab id for a {@link Tab}.
+     *
      * @param tab The {@link Tab} to get an ID for or null.
      * @return the {@code tab}'s ID or {@link Tab#INVALID_TAB_ID} if null.
      */
-    private int getIdForTab(@Nullable Tab tab) {
+    private @TabId int getIdForTab(@Nullable Tab tab) {
         return tab == null ? Tab.INVALID_TAB_ID : tab.getId();
     }
 
