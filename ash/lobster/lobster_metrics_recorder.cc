@@ -51,6 +51,9 @@ void RecordLobsterBlockedReason(LobsterSystemCheck failed_reason) {
     case LobsterSystemCheck::kUnsupportedInKioskMode:
       RecordLobsterState(LobsterMetricState::kBlockedByKioskMode);
       return;
+    case LobsterSystemCheck::kUnsupportedFormFactor:
+      RecordLobsterState(LobsterMetricState::kBlockedByFormFactor);
+      return;
   }
 }
 
