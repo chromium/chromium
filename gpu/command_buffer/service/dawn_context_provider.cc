@@ -831,10 +831,32 @@ bool DawnSharedContext::OnMemoryDump(
   if (args.level_of_detail ==
       base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
     using base::trace_event::MemoryAllocatorDump;
+
+    const dawn::native::MemoryUsageInfo mem_usage =
+        dawn::native::ComputeEstimatedMemoryUsageInfo(device_.Get());
+
     pmd->GetOrCreateAllocatorDump(kDawnMemoryDumpPrefix)
         ->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes, mem_usage.totalUsage);
+    pmd->GetOrCreateAllocatorDump(
+           base::JoinString({kDawnMemoryDumpPrefix, "textures"}, "/"))
+        ->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes, mem_usage.texturesUsage);
+    pmd
+        ->GetOrCreateAllocatorDump(base::JoinString(
+            {kDawnMemoryDumpPrefix, "textures/depth_stencil"}, "/"))
+        ->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes,
-                    dawn::native::ComputeEstimatedMemoryUsage(device_.Get()));
+                    mem_usage.depthStencilTexturesUsage);
+    pmd->GetOrCreateAllocatorDump(
+           base::JoinString({kDawnMemoryDumpPrefix, "textures/msaa"}, "/"))
+        ->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes,
+                    mem_usage.msaaTexturesUsage);
+    pmd->GetOrCreateAllocatorDump(
+           base::JoinString({kDawnMemoryDumpPrefix, "buffers"}, "/"))
+        ->AddScalar(MemoryAllocatorDump::kNameSize,
+                    MemoryAllocatorDump::kUnitsBytes, mem_usage.buffersUsage);
   } else {
     DawnMemoryDump dump(pmd);
     dawn::native::DumpMemoryStatistics(device_.Get(), &dump);
