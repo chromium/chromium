@@ -64,11 +64,14 @@ public class CommerceBottomSheetContentMediator {
     }
 
     void timeOut() {
-        if (mContentReadyCount == 0) return;
+        if (mContentReadyCount == 0 || mContent != null) return;
         showBottomSheet();
     }
 
     void onBottomSheetClosed() {
+        if (mContent != null) {
+            mBottomSheetController.hideContent(mContent, true);
+        }
         mContent = null;
         mModelList.clear();
         mContentReadyCount = 0;
