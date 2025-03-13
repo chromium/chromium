@@ -2954,7 +2954,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3029808567601324798">Temps fins al bloqueig</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que baixis una actualització avui. Es baixarà automàticament quan et connectis a Internet.}other{<ph name="MANAGER" /> requereix que baixis una actualització abans del termini establert. Es baixarà automàticament quan et connectis a Internet.}}</translation>
 <translation id="3030772324014024606">Editar</translation>
-<translation id="3030795534674718505">Amb permís per utilitzar la informació que ha desat sobre tu</translation>
+<translation id="3030795534674718505">Amb permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="3030967311408872958">De la posta de sol a l'alba</translation>
 <translation id="3031417829280473749">Agent X</translation>
 <translation id="3031532026314193077">Fes servir el ratolí tàctil i el teclat per fer clic amb el botó dret</translation>
@@ -7104,7 +7104,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6016462059150340136">Qualsevol persona que estigui a prop</translation>
 <translation id="6016551720757758985">Confirmació de Powerwash amb retorn a la versió anterior</translation>
 <translation id="6016972670657536680">Botó per seleccionar l’idioma i el teclat. L'idioma seleccionat actualment és: <ph name="LANGUAGE" />.</translation>
-<translation id="6017318029492906697">Sense permís per utilitzar la informació que ha desat sobre tu</translation>
+<translation id="6017318029492906697">Sense permís per utilitzar la informació que han desat sobre tu</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019169947004469866">Retalla</translation>
 <translation id="6019851026059441029">Excel·lent: HD</translation>
