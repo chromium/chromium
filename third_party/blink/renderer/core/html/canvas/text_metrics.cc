@@ -283,6 +283,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     uint32_t end,
     ExceptionState& exception_state) {
   HeapVector<Member<DOMRectReadOnly>> selection_rects;
+  Vector<TextDirection> direction_list;
 
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
@@ -326,6 +327,9 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
           selection_rects.push_back(DOMRectReadOnly::Create(
               to_x - text_align_dx_, y, from_x - to_x, height));
         }
+        if (RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+          direction_list.push_back(run_with_offset.direction_);
+        }
       }
       continue;
     }
@@ -358,8 +362,42 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
       selection_rects.push_back(DOMRectReadOnly::Create(
           to_x - text_align_dx_, y, from_x - to_x, height));
     }
+    if (RuntimeEnabledFeatures::CanvasTextNgEnabled()) {
+      direction_list.push_back(run_with_offset.direction_);
+    }
   }
 
+  // Merges touching rectangles. Rectangles in `selection_rects` are
+  // unnecessarily split due to per-word ShapeResults. This is an internal
+  // detail and should be hidden from the web API.
+  //
+  // Test:
+  // external/wpt/html/canvas/element/text/2d.text.measure.selection-rects.tentative.html
+  if (RuntimeEnabledFeatures::CanvasTextNgEnabled() &&
+      selection_rects.size() >= 2) {
+    DCHECK_EQ(selection_rects.size(), direction_list.size());
+    auto approximately_equal = [](double v1, double v2) {
+      return std::abs(v1 - v2) <= 0.1;
+    };
+    for (wtf_size_t i = selection_rects.size() - 1; i > 0; --i) {
+      if (direction_list[i] != direction_list[i - 1]) {
+        continue;
+      }
+      const DOMRectReadOnly& rhs = *selection_rects[i];
+      const DOMRectReadOnly& lhs = *selection_rects[i - 1];
+      if (approximately_equal(rhs.right(), lhs.left())) {
+        selection_rects[i - 1] = DOMRectReadOnly::Create(
+            rhs.left(), rhs.top(), lhs.right() - rhs.left(), rhs.height());
+        selection_rects.EraseAt(i);
+        direction_list.EraseAt(i);
+      } else if (approximately_equal(rhs.left(), lhs.right())) {
+        selection_rects[i - 1] = DOMRectReadOnly::Create(
+            lhs.left(), lhs.top(), rhs.right() - lhs.left(), lhs.height());
+        selection_rects.EraseAt(i);
+        direction_list.EraseAt(i);
+      }
+    }
+  }
   return selection_rects;
 }
 
