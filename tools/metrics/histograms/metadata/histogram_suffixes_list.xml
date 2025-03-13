@@ -208,37 +208,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.HeavyAds.InterventionType2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AndroidBootTypes" separator=".">
-  <suffix name="FirstBoot" label="For the very first boot, aka opt-in."/>
-  <suffix name="FirstBootAfterUpdate"
-      label="For the first boot after Chrome OS update."/>
-  <suffix name="RegularBoot" label="For a regular boot."/>
-  <affected-histogram name="Arc.AndroidBootTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AndroidFeatureModuleName" separator=".">
-  <suffix name="ar" label="Augmented Reality Module"/>
-  <suffix name="cablev2_authenticator" label="caBLEv2 Authenticator Module"/>
-  <suffix name="chime" label="Chime Notification Module"/>
-  <suffix name="chrome" label="Chrome Module"/>
-  <suffix name="dev_ui" label="Developer UI Module"/>
-  <suffix name="feedv2" label="Feed V2 Module"/>
-  <suffix name="google3" label="Google3 Module"/>
-  <suffix name="image_editor" label="Image Editor Module"/>
-  <suffix name="read_aloud_playback" label="Read Aloud Playback Module"/>
-  <suffix name="stack_unwinder" label="Stack Unwinder Module"/>
-  <suffix name="survey" label="Survey Module"/>
-  <suffix name="tab_ui" label="Tab Management Module"/>
-  <suffix name="test_dummy" label="Test Dummy Module"/>
-  <suffix name="vr" label="Virtual Reality Module"/>
-  <affected-histogram name="Android.IsolatedSplits.ClassLoaderReplaced"/>
-  <affected-histogram name="Android.IsolatedSplits.ContextCreateTime"/>
-  <affected-histogram name="Android.IsolatedSplits.ContextCreateTime2"/>
-  <affected-histogram name="Android.IsolatedSplits.ContextCreateTime3"/>
-  <affected-histogram name="Android.IsolatedSplits.LoadFirstClassTime"/>
-  <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AndroidGetAccountsTypes" separator="_">
   <suffix name="AccountManager" label="Using Android AccountManager API"/>
   <suffix name="GoogleAuthUtil" label="Using GoogleAuthUtil API"/>
@@ -266,21 +235,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Stability.Android.SystemExitReason"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AndroidWebViewFragments" separator=".">
-  <owner>hazems@chromium.org</owner>
-  <owner>ntfschr@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <suffix name="ComponentsListFragment"
-      label="This is for the components list tool"/>
-  <suffix name="CrashesListFragment" label="This is for the crash list tool."/>
-  <suffix name="FlagsFragment" label="This is for the flag modification tool."/>
-  <suffix name="HomeFragment" label="This is for the home (default) page."/>
-  <suffix name="SafeModeFragment" label="This is for the safe mode tool."/>
-  <suffix name="Unknown"
-      label="Unknown Fragment (the histogram may need to be updated)."/>
-  <affected-histogram name="Android.WebView.DevUi.SessionDuration2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AnimationLoop" separator=".">
   <suffix name="FirstAnimationLoop"
       label="Measurement taken on the first animation loop."/>
@@ -290,14 +244,6 @@ chromium-metrics-reviews@google.com.
       label="Measurements taken on the third, fourth, and fifth animation
              loop."/>
   <affected-histogram name="AnimatedImage.NumOfFramesSkipped"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AppType" separator=".">
-  <suffix name="ArcApp" label="Android app"/>
-  <suffix name="ChromeApp" label="Chrome app"/>
-  <suffix name="PluginVmApp" label="Plugin VM app"/>
-  <suffix name="WebApp" label="Web app"/>
-  <affected-histogram name="AppManagement.AppDetailViews"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AttestationOps" separator=".">
@@ -327,14 +273,6 @@ chromium-metrics-reviews@google.com.
              unknown fields"/>
   <suffix name="PhoneOnly" label="Form has phone field only"/>
   <affected-histogram name="Autofill.FormEvents.Address"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AutofillCreditCardType" separator=".">
-  <suffix name="Local" label="Local"/>
-  <suffix name="Server" label="Server (Google Payments)"/>
-  <affected-histogram name="Autofill.DaysSinceLastUse.StoredCreditCard"/>
-  <affected-histogram name="Autofill.StoredCreditCardCount"/>
-  <affected-histogram name="Autofill.StoredCreditCardDisusedCount"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AutofillSaveCreditCardPromptWithMultipleLegalLines"
