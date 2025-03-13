@@ -403,6 +403,11 @@ extern const char kIOSReactivationNotificationsDescription[];
 extern const char kIPHForSafariSwitcherName[];
 extern const char kIPHForSafariSwitcherDescription[];
 
+extern const char
+    kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeName[];
+extern const char
+    kLensBlockFetchObjectsInteractionRPCsOnSeparateHandshakeDescription[];
+
 extern const char kLensClearcutBackgroundUploadEnabledName[];
 extern const char kLensClearcutBackgroundUploadEnabledDescription[];
 
@@ -447,6 +452,12 @@ extern const char kLensOverlayEnableLocationBarEntrypointOnSRPDescription[];
 
 extern const char kLensOverlayEnableSameTabNavigationName[];
 extern const char kLensOverlayEnableSameTabNavigationDescription[];
+
+extern const char kLensPrewarmHardStickinessInInputSelectionName[];
+extern const char kLensPrewarmHardStickinessInInputSelectionDescription[];
+
+extern const char kLensPrewarmHardStickinessInQueryFormulationName[];
+extern const char kLensPrewarmHardStickinessInQueryFormulationDescription[];
 
 extern const char kLensSingleTapTextSelectionDisabledName[];
 extern const char kLensSingleTapTextSelectionDisabledDescription[];
