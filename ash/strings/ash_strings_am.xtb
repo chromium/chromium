@@ -2264,7 +2264,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> አለው።</translation>
 <translation id="8477270416194247200">ለመሰረዝ Alt+Search ወይም Shift ይጫኑ።</translation>
 <translation id="8480418399907765580">የመሣሪያ አሞሌን አሳይ</translation>
-<translation id="8487660088084188539">እነዚህን ባህሪያት ሲያበሩ የግብዓት ጽሑፍ፣ የሰነድ ይዘት እና የድረ-ገፅ ዩአርኤል ወደ Google አገልጋዮች ሊላኩ ይችላል። ይህ መረጃ የአጻጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና ለ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዢ የሆነውን ምርት ለማሻሻል ጥቅም ላይ ይውላል። የግል፣ ልዩ ጥንቃቄ የሚያስፈልገው ወይም ምስጢራዊ የሆነ ማንኛውም ነገር አያካትቱ።</translation>
+<translation id="8487660088084188539">እነዚህን ባህሪያት ሲያበሩ የግብዓት ፅሑፍ፣ የሰነድ ይዘት እና የድረ-ገፅ ዩአርኤል ወደ Google አገልጋዮች ሊላኩ ይችላል። ይህ መረጃ የአጻጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና ለ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዢ የሆነውን ምርት ለማሻሻል ጥቅም ላይ ይውላል። ግላዊ፣ ልዩ ጥንቃቄ የሚያስፈልገው ወይም ምስጢራዊ የሆነ ማንኛውም ነገር አያካትቱ።</translation>
 <translation id="8487699605742506766">መገናኛ ነጥብ</translation>
 <translation id="8491237443345908933">አገናኝን በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ን አይደግፍም። ጥራቱ ወደ <ph name="FALLBACK_RESOLUTION" /> ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>
