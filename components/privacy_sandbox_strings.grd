@@ -296,7 +296,7 @@
       <message name="IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL" desc="Label that provides the user more details about what they can see on this page i.e. the tokens that have been issued and by whom and if and when they were redeemed." translateable="false">
         See who has issued private state tokens on your device and how they are used.
       </message>
-      <!-- Page Info: Tracking Protection (3PCD) -->
+      <!-- Page Info: ACT -->
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_ON" desc="" formatter_data="android_java" translateable="false">
         Protections are on
       </message>
@@ -332,7 +332,7 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_ON" desc="" formatter_data="android_java" translateable="false">
         Digital fingerprinting limited
       </message>
-      <!-- Tracking Protection Snackbar -->
+      <!-- ACT Snackbar -->
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         App not working?
       </message>
@@ -355,11 +355,8 @@
       <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
         Third-party cookies limited
       </message>
-      <!-- Tracking Protection WebUI -->
+      <!-- Privacy UX WebUI -->
       <!-- General -->
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off. Explains how to use a wildcard to create an exception for an entire domain." translateable="false">
-        Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that Tracking Protection will also be off for mail.google.com, because it’s part of google.com.
-      </message>
       <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL" desc="Label for an exception in the Tracking Protection exceptions list indicating that the exception only applies to third-party cookie blocking." translateable="false">
         Only applies to third-party cookie blocking
       </message>
