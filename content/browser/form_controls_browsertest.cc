@@ -154,9 +154,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 };
 
 // Checkbox renders differently on Android x86. crbug.com/1238283
-// TODO(crbug.com/401594933): The test fails on Windows ARM64.
-#if (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || \
-    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
 #define MAYBE_Checkbox DISABLED_Checkbox
 #else
 #define MAYBE_Checkbox Checkbox
@@ -242,9 +240,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
           /* screenshot_height */ 330);
 }
 
-// The test fails on Windows ARM64: crbug.com/401594933.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS))
 #define MAYBE_Textarea DISABLED_Textarea
 #else
 #define MAYBE_Textarea Textarea
@@ -296,8 +292,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
 // TODO(crbug.com/1160104/#25) This test creates large average_error_rate on
 // Android FYI SkiaRenderer Vulkan. Disable it until a resolution for is
 // found.
-// TODO(crbug.com/401594933): The test fails on Windows ARM64.
-#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ColorInput DISABLED_ColorInput
 #else
 #define MAYBE_ColorInput ColorInput
@@ -321,13 +316,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_ColorInput) {
           /* screenshot_height */ 250);
 }
 
-// TODO(crbug.com/401594933): The test fails on Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_Select DISABLED_Select
-#else
-#define MAYBE_Select DISABLED_Select
-#endif
-IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Select) {
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Select) {
   if (SkipTestForOldAndroidVersions())
     return;
 
