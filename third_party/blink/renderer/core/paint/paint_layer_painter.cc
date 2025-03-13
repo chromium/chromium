@@ -162,6 +162,16 @@ PhysicalRect PaintLayerPainter::ContentsVisualRect(const FragmentData& fragment,
   return contents_visual_rect;
 }
 
+static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
+  // We don't want to include overflowing contents.
+  PhysicalRect overflow_rect =
+      object.IsBox() ? To<LayoutBox>(object).SelfVisualOverflowRect()
+                     : object.VisualOverflowRect();
+  overflow_rect = object.ApplyFiltersToRect(overflow_rect);
+  overflow_rect.Move(object.FirstFragment().PaintOffset());
+  return ToEnclosingRect(overflow_rect);
+}
+
 static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
                                     const GraphicsContext& context,
                                     PaintFlags paint_flags) {
@@ -180,17 +190,43 @@ static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
   if (paint_flags & PaintFlag::kOmitCompositingInfo)
     return false;
 
-  return true;
-}
+  if (!RuntimeEnabledFeatures::FewerSubsequencesEnabled()) {
+    return true;
+  }
 
-static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
-  // We don't want to include overflowing contents.
-  PhysicalRect overflow_rect =
-      object.IsBox() ? To<LayoutBox>(object).SelfVisualOverflowRect()
-                     : object.VisualOverflowRect();
-  overflow_rect = object.ApplyFiltersToRect(overflow_rect);
-  overflow_rect.Move(object.FirstFragment().PaintOffset());
-  return ToEnclosingRect(overflow_rect);
+  // Create subsequence if the layer will create a paint chunk because of
+  // different properties.
+  if (context.GetPaintController().NumNewChunks() > 0 &&
+      paint_layer.GetLayoutObject()
+              .FirstFragment()
+              .LocalBorderBoxProperties() !=
+          context.GetPaintController().LastChunkProperties()) {
+    return true;
+  }
+
+  // Create subsequence if the layer has at least 2 descendants,
+  if (paint_layer.FirstChild() && (paint_layer.FirstChild()->FirstChild() ||
+                                   paint_layer.FirstChild()->NextSibling())) {
+    return true;
+  }
+
+  // Or if the merged bounds with the last chunk would be too empty.
+  if (context.GetPaintController().NumNewChunks()) {
+    const auto& object = paint_layer.GetLayoutObject();
+    gfx::Rect last_bounds = context.GetPaintController().LastChunkBounds();
+    gfx::Rect visual_rect = FirstFragmentVisualRect(object);
+    gfx::Rect merged_bounds = gfx::UnionRects(last_bounds, visual_rect);
+    float device_pixel_ratio =
+        object.GetFrame()->LocalFrameRoot().GetDocument()->DevicePixelRatio();
+    // This is similar to the condition in PendingLayer::CanMerge().
+    if (merged_bounds.size().Area64() >
+        10000 * device_pixel_ratio * device_pixel_ratio +
+            last_bounds.size().Area64() + visual_rect.size().Area64()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 PaintResult PaintLayerPainter::Paint(GraphicsContext& context,

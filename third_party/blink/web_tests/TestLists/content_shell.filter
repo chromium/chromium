@@ -1195,6 +1195,7 @@ virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-on-span.
 virtual/scalefactor200/external/wpt/css/filter-effects/repaint-added-backdrop-filter.html
 virtual/scalefactor200/external/wpt/css/printing/input-file-print.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html
+virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html 
 virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/video-data-uri.html
 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/select-tabindex-order.tentative.html

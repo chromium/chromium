@@ -139,23 +139,12 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
           PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),
           GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
           view_scroll_hit_test, gfx::Rect(0, 0, 800, 600)));
-  auto contents_properties =
-      GetLayoutView().FirstFragment().ContentsProperties();
-  EXPECT_THAT(ContentPaintChunks(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                          IsPaintChunk(1, 2,
-                                       PaintChunk::Id(div1.Layer()->Id(),
-                                                      DisplayItem::kLayerChunk),
-                                       contents_properties),
-                          IsPaintChunk(2, 3,
-                                       PaintChunk::Id(div2.Layer()->Id(),
-                                                      DisplayItem::kLayerChunk),
-                                       contents_properties)));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 5000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
+  // html and div1 are out of the cull rect.
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div2.Id(), kBackgroundType),
@@ -170,21 +159,6 @@ TEST_P(PaintControllerPaintTest, FrameScrollingContents) {
           PaintChunk::Id(GetLayoutView().Id(), DisplayItem::kScrollHitTest),
           GetLayoutView().FirstFragment().LocalBorderBoxProperties(),
           view_scroll_hit_test, gfx::Rect(0, 0, 800, 600)));
-  EXPECT_THAT(ContentPaintChunks(),
-              ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                          // html and div1 are out of the cull rect.
-                          IsPaintChunk(1, 2,
-                                       PaintChunk::Id(div2.Layer()->Id(),
-                                                      DisplayItem::kLayerChunk),
-                                       contents_properties),
-                          IsPaintChunk(2, 3,
-                                       PaintChunk::Id(div3.Layer()->Id(),
-                                                      DisplayItem::kLayerChunk),
-                                       contents_properties),
-                          IsPaintChunk(3, 4,
-                                       PaintChunk::Id(div4.Layer()->Id(),
-                                                      DisplayItem::kLayerChunk),
-                                       contents_properties)));
 }
 
 TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
@@ -471,22 +445,9 @@ TEST_P(PaintControllerPaintTest, StackingScrollHitTestOrder) {
               container.FirstFragment().LocalBorderBoxProperties(),
               container_scroll_hit_test, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
-              2, 3,
+              2, 6,
               PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
-              container.FirstFragment().ContentsProperties()),
-          IsPaintChunk(3, 4,
-                       PaintChunk::Id(neg_z_child.Layer()->Id(),
-                                      DisplayItem::kLayerChunk),
-                       neg_z_child.FirstFragment().LocalBorderBoxProperties()),
-          IsPaintChunk(4, 5,
-                       PaintChunk::Id(container.Id(),
-                                      kClippedContentsBackgroundChunkType),
-                       container.FirstFragment().ContentsProperties()),
-          IsPaintChunk(
-              5, 6,
-              PaintChunk::Id(pos_z_child.Layer()->Id(),
-                             DisplayItem::kLayerChunk),
-              pos_z_child.FirstFragment().LocalBorderBoxProperties())));
+              container.FirstFragment().ContentsProperties())));
 }
 
 TEST_P(PaintControllerPaintTest,
@@ -569,6 +530,8 @@ TEST_P(PaintControllerPaintTest, PaintChunkIsSolidColor) {
         height: 50px;
         background-color: blue;
         position: relative;
+        /* to force paint chunks */
+        transform: translateX(1px);
       }
     </style>
     <div id="target1" class="target"></div>
