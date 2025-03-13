@@ -10317,8 +10317,13 @@ be describing additional metrics about the same event.
   <summary>
     Measures the percentage of frames dropped in a sequence of frames.
 
-    The metric is reported once per page-load, and when the page closes (e.g.
-    the user closes the tab, or navigates away to a different page).
+    This metric is reported to the browser at least every 100 frames and at most
+    every 5s from the FrameSequenceMetrics trackers in the compositor. It is
+    available as `Graphics.Smoothness.PercentDroppedFrames4.AllSequences`.
+
+    The last value received by the browser is reported as a UKM when the page
+    closes (e.g. the user closes the tab, or navigates away to a different
+    page).
   </summary>
   <metric name="PercentDroppedFrames">
     <summary>
