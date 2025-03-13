@@ -96,6 +96,13 @@ bool PlainTextPainter::DrawWithBidiReorder(
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText;
   const FontDescription& font_desc = font.GetFontDescription();
+
+  if (!is_sub_run) [[likely]] {
+    STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
+        font_desc, node, blob_type);
+    DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
+    return true;
+  }
   for (const PlainTextItem& item : node.ItemList()) {
     if (item.EndOffset() <= from_index || to_index <= item.StartOffset()) {
       continue;
