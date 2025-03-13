@@ -685,6 +685,7 @@ class LocationBarMediator
         RecordUserAction.record("MobileOmniboxDeleteUrl");
         setUrlBarTextEmpty();
         updateButtonVisibility();
+        mUrlCoordinator.requestAccessibilityFocus();
     }
 
     /* package */ void micButtonClicked(View view) {
