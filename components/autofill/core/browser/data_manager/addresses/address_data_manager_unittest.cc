@@ -677,6 +677,8 @@ TEST_F(AddressDataManagerTest, RemoveLocalProfilesModifiedBetween) {
 }
 
 TEST_F(AddressDataManagerTest, RemoveProfileTriggeredByDeduplication) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
   AutofillProfile local_profile1 = test::GetFullProfile();
   AutofillProfile local_profile2 = test::GetFullProfile2();
   AutofillProfile account_profile1 = test::GetFullCanadianProfile();
@@ -707,11 +709,11 @@ TEST_F(AddressDataManagerTest, RemoveProfileTriggeredByDeduplication) {
                                        /*is_deduplication_initiated=*/false);
   task_environment_.RunUntilIdle();
 
-  // TODO(crbug.com/357074792): This should expect `HIDE_IN_AUTOFILL`. Will be
-  // updated once the db supports this type.
+  // Expect that account profile deletions triggered by deduplication, are
+  // marked as hide in autofill.
   EXPECT_CALL(observer,
               AutofillProfileChanged(AutofillProfileChangeHasCorrectType(
-                  AutofillProfileChange::REMOVE)));
+                  AutofillProfileChange::HIDE_IN_AUTOFILL)));
   address_data_manager().RemoveProfile(account_profile2.guid(),
                                        /*is_deduplication_initiated=*/true);
   task_environment_.RunUntilIdle();
@@ -890,10 +892,10 @@ TEST_F(AddressDataManagerTest, Refresh) {
               UnorderedElementsAre(Pointee(profile0), Pointee(profile1),
                                    Pointee(profile2)));
 
-  profile_database_service_->RemoveAutofillProfile(profile1.guid(),
-                                                   base::DoNothing());
-  profile_database_service_->RemoveAutofillProfile(profile2.guid(),
-                                                   base::DoNothing());
+  profile_database_service_->RemoveAutofillProfile(
+      profile1.guid(), AutofillProfileChange::REMOVE, base::DoNothing());
+  profile_database_service_->RemoveAutofillProfile(
+      profile2.guid(), AutofillProfileChange::REMOVE, base::DoNothing());
 
   address_data_manager().LoadProfiles();
   WaitForOnAddressDataChanged();
