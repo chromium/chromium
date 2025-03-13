@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -205,6 +206,7 @@
       base::UserMetricsAction("Signin_AccountMenu_Dismissed_By_User"));
   [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
                    completionIdentity:nil];
+  [self maybeShowSettingsIPH];
 }
 
 #pragma mark - AccountMenuMediatorDelegate
@@ -283,11 +285,16 @@
 
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
                         withResult:(SigninCoordinatorResult)signinResult
-                    signedIdentity:(id<SystemIdentity>)signedIdentity {
+                    signedIdentity:(id<SystemIdentity>)signedIdentity
+                   userTappedClose:(BOOL)userTappedClose {
   CHECK_EQ(mediator, _mediator);
   [self stopChildrenAndViewControllerAnimated:YES];
   [self runCompletionWithSigninResult:signinResult
                    completionIdentity:signedIdentity];
+
+  if (userTappedClose) {
+    [self maybeShowSettingsIPH];
+  }
 }
 
 - (AuthenticationFlow*)
@@ -548,6 +555,17 @@
   [navigationController.presentingViewController
       dismissViewControllerAnimated:animated
                          completion:nil];
+}
+
+// Potentially shows an IPH, informing the user that they can find Settings in
+// the overflow menu. The handler contains the logic for whether to actually
+// show it.
+- (void)maybeShowSettingsIPH {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<HelpCommands> helpCommandsHandler =
+      HandlerForProtocol(dispatcher, HelpCommands);
+  [helpCommandsHandler
+      presentInProductHelpWithType:InProductHelpType::kSettingsInOverflowMenu];
 }
 
 @end

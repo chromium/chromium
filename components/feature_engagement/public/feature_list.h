@@ -302,6 +302,8 @@ DEFINE_VARIATION_PARAM(
     "IPH_iOSReminderNotificationsOverflowMenuNewBadgeFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSDownloadAutoDeletionFeature,
                        "IPH_iOSDownloadAutoDeletion");
+DEFINE_VARIATION_PARAM(kIPHiOSSettingsInOverflowMenuBubbleFeature,
+                       "IPH_iOSSettingsInOverflowMenuBubbleFeature");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

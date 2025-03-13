@@ -105,6 +105,10 @@ class DeviceSwitcherResultDispatcher;
 // configuration and the display history of the bubble.
 - (void)presentLensOverlayTipBubble;
 
+// Optionally presents a bubble informing the user that they can find Chrome
+// settings in the overflow menu.
+- (void)presentOverflowMenuSettingsBubble;
+
 // Optionally presents a gesture IPH associated with the pull-to-refresh
 // feature. The eligibility can depend on the UI hierarchy at the moment, the
 // configuration and the display history of the bubble, etc.

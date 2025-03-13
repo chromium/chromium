@@ -37,7 +37,9 @@ enum class InProductHelpType : NSInteger {
   /// toolbar to switch tabs.
   kToolbarSwipe,
   /// Help bubble for the lens overlay feature entrypoint.
-  kLensOverlayEntrypoint
+  kLensOverlayEntrypoint,
+  /// Help bubble to point the user to "Settings" in the overflow menu.
+  kSettingsInOverflowMenu,
 };
 
 /// Commands to control the display of in-product help UI ("bubbles").

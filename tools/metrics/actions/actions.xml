@@ -47876,6 +47876,8 @@ should be able to be added at any place in this file.
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
   <suffix name="iOSSavedTabGroupClosed"
       label="For Saved Tab Group closed for the first time."/>
+  <suffix name="iOSSettingsInOverflowMenuBubbleFeature"
+      label="For Settings in the Overflow menu."/>
   <suffix name="iOSSharedTabGroupForeground"
       label="For Shared Tab Group reminder on foreground."/>
   <suffix name="iOSSwipeBackForwardFeature"

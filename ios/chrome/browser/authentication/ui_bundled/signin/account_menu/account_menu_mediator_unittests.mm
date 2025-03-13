@@ -310,7 +310,8 @@ TEST_P(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
                       withResult:SigninCoordinatorResultInterrupted
-                  signedIdentity:nil]);
+                  signedIdentity:nil
+                 userTappedClose:NO]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest, ^(){
                                    });
@@ -574,7 +575,8 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
                       withResult:SigninCoordinatorResultSuccess
-                  signedIdentity:kSecondaryIdentity]);
+                  signedIdentity:kSecondaryIdentity
+                 userTappedClose:NO]);
   signinCallback(SigninCoordinatorResultSuccess);
 }
 
@@ -667,7 +669,8 @@ TEST_P(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
                       withResult:SigninCoordinatorResultCanceledByUser
-                  signedIdentity:nil]);
+                  signedIdentity:nil
+                 userTappedClose:NO]);
   completion(YES);
 }
 
@@ -707,7 +710,8 @@ TEST_P(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
   OCMExpect([delegate_mock_
       mediatorWantsToBeDismissed:mediator_
                       withResult:SigninCoordinatorResultCanceledByUser
-                  signedIdentity:nil]);
+                  signedIdentity:nil
+                 userTappedClose:YES]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
   [mediator_
       viewControllerWantsToBeClosed:(AccountMenuViewController*)consumer_mock_];
