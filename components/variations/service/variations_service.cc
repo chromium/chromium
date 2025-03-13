@@ -222,7 +222,12 @@ bool GetInstanceManipulations(const net::HttpResponseHeaders* headers,
 // Variations seed fetching is only enabled in official Chrome builds, if a URL
 // is specified on the command line, and for testing.
 bool IsFetchingEnabled() {
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableVariationsSeedFetch)) {
+    return false;
+  }
+#else
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kVariationsServerURL) &&
       !g_should_fetch_for_testing) {
@@ -231,7 +236,7 @@ bool IsFetchingEnabled() {
         << switches::kVariationsServerURL << " specified.";
     return false;
   }
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;
 }
 
