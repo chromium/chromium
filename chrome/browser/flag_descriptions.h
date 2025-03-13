@@ -2694,9 +2694,6 @@ extern const char kInterestFeedV2Description[];
 extern const char kLegacyTabStateDeprecationName[];
 extern const char kLegacyTabStateDeprecationDescription[];
 
-extern const char kLogoPolishName[];
-extern const char kLogoPolishDescription[];
-
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
 
@@ -2855,6 +2852,9 @@ extern const char kTabStripTransitionInDesktopWindowDescription[];
 
 extern const char kTabSwitcherColorBlendAnimateName[];
 extern const char kTabSwitcherColorBlendAnimateDescription[];
+
+extern const char kTabSwitcherContextMenuAndroidName[];
+extern const char kTabSwitcherContextMenuAndroidDescription[];
 
 extern const char kHideTabletToolbarDownloadButtonName[];
 extern const char kHideTabletToolbarDownloadButtonDescription[];

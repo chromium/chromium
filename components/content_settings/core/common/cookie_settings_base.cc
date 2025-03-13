@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"

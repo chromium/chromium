@@ -501,6 +501,9 @@ class CONTENT_EXPORT FedCmMetrics {
   // already initiated an API call.
   void RecordMultipleRequestsFromDifferentIdPs(bool has_collision);
 
+  // Records whether the RP's URL has a path.
+  void RecordRpUrlHasPath(bool rp_url_has_path);
+
   int session_id() { return session_id_; }
 
  private:

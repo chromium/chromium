@@ -663,7 +663,7 @@ TEST_F(ExtensionAllowlistUnitTest, TurnOffEnhancedProtection) {
 TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
 
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   installer->set_allow_silent_install(true);
   installer->set_bypassed_safebrowsing_friction_for_testing(true);
 

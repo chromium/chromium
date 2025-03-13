@@ -420,11 +420,17 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   it2me_host_->set_authorized_helper(authorized_helper);
 
   auto dialog_style = It2MeConfirmationDialog::DialogStyle::kConsumer;
+  base::TimeDelta connection_auto_accept_timeout;
 #if BUILDFLAG(IS_CHROMEOS) || !defined(NDEBUG)
   if (is_enterprise_admin_user) {
-    dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
+    auto chromeos_enterprise_params =
+        ChromeOsEnterpriseParams::FromDict(message);
+    connection_auto_accept_timeout =
+        chromeos_enterprise_params.connection_auto_accept_timeout;
     it2me_host_->set_chrome_os_enterprise_params(
-        ChromeOsEnterpriseParams::FromDict(message));
+        std::move(chromeos_enterprise_params));
+
+    dialog_style = It2MeConfirmationDialog::DialogStyle::kEnterprise;
 
     if (reconnect_params.has_value()) {
       it2me_host_->set_reconnect_params(std::move(*reconnect_params));
@@ -432,10 +438,11 @@ void It2MeNativeMessagingHost::ProcessConnect(base::Value::Dict message,
   }
 #endif
 
-  it2me_host_->Connect(
-      host_context_->Copy(), std::move(policies),
-      std::make_unique<It2MeConfirmationDialogFactory>(dialog_style), weak_ptr_,
-      std::move(create_connection_context), username, ice_config);
+  it2me_host_->Connect(host_context_->Copy(), std::move(policies),
+                       std::make_unique<It2MeConfirmationDialogFactory>(
+                           dialog_style, connection_auto_accept_timeout),
+                       weak_ptr_, std::move(create_connection_context),
+                       username, ice_config);
 
   SendMessageToClient(std::move(response));
 }

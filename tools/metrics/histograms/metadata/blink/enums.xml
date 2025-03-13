@@ -7516,7 +7516,8 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Failed or has not been registered"/>
   <int value="2" label="Recently attached to layout tree"/>
   <int value="3"
-      label="Intersection visibility has recently become fully visible"/>
+      label="(Obsolete) Intersection visibility has recently become fully
+             visible. Deprecated as of 2024-09."/>
   <int value="4" label="Invalid style"/>
   <int value="5" label="Untrusted event"/>
   <int value="6" label="Intersection with viewport changed"/>

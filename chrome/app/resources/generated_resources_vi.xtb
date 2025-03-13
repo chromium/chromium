@@ -2301,6 +2301,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="256517381556987641">Cho đến giờ, tính năng đồng bộ hoá tệp đã tìm thấy <ph name="ITEMS_FOUND" /> tệp và vẫn đang kiểm tra dung lượng lưu trữ. Hãy thử bật lại tính năng Đồng bộ hoá tệp sau vài phút nữa.</translation>
 <translation id="2565214867520763227">Bật trình đọc màn hình</translation>
 <translation id="2566146433999774844">Tham gia nhóm thẻ cùng với <ph name="OWNER_FIRST_NAME" /> và <ph name="NUM_OTHER_MEMBERS" /> người khác</translation>
+<translation id="256726287944589768">Hiện chân trang trên trang Thẻ mới</translation>
 <translation id="2568694057933302218">Ở chế độ Ẩn danh, các trang web không thể dùng cookie để xem hoạt động duyệt web của bạn trên nhiều trang web. Thông tin về hoạt động duyệt web của bạn không được dùng cho các mục đích như cá nhân hoá quảng cáo. Các tính năng của một số trang web có thể không hoạt động.</translation>
 <translation id="2568774940984945469">Bộ chứa Thanh thông tin</translation>
 <translation id="2569972178052279830">Tên nhà bán lẻ</translation>
@@ -2809,6 +2810,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2921081876747860777">Vui lòng tạo mật khẩu để bảo vệ dữ liệu cục bộ của bạn.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> của bạn sẽ khóa ngay bây giờ.
 <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.</translation>
+<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Có <ph name="OTHER_TASK_NUM" /> việc cần làm khác trong cùng một nhóm việc cần làm: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Xóa tài khoản này</translation>
 <translation id="2923644930701689793">Truy cập vào thư viện ảnh trên điện thoại</translation>
 <translation id="292371311537977079">Cài đặt Chrome</translation>

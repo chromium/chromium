@@ -23,7 +23,8 @@
 // Requests to dismiss the account menu.
 - (void)mediatorWantsToBeDismissed:(AccountMenuMediator*)mediator
                         withResult:(SigninCoordinatorResult)result
-                    signedIdentity:(id<SystemIdentity>)signedIdentity;
+                    signedIdentity:(id<SystemIdentity>)signedIdentity
+                   userTappedClose:(BOOL)userTappedClose;
 
 // Starts the sign-in flow. Then call `completion`, with a parameter stating
 // whether the the sign-in was done.

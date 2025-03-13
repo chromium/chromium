@@ -11,11 +11,13 @@
 
 #include <stddef.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_types.h"
+#include "media/gpu/h264_dpb.h"
 
 namespace {
 
@@ -30,7 +32,7 @@ class FakeH264Accelerator : public media::H264Decoder::H264Accelerator {
 
   // media::H264Decoder::H264Accelerator
   scoped_refptr<media::H264Picture> CreateH264Picture() override {
-    return new media::H264Picture();
+    return base::MakeRefCounted<media::H264Picture>();
   }
 
   Status SubmitFrameMetadata(const media::H264SPS* sps,

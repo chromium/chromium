@@ -296,7 +296,6 @@ TabStripModel* TabModel::GetModelForTabInterface() const {
 
 TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)
     : tab_(tab->weak_factory_.GetWeakPtr()) {
-  CHECK(!tab_->showing_modal_ui_);
   tab_->showing_modal_ui_ = true;
   tab_->modal_ui_changed_callback_list_.Notify(tab_.get());
 }

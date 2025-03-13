@@ -94,10 +94,10 @@ class CORE_EXPORT MessagePort : public EventTarget,
                                                      ExceptionState&);
 
   // Returns an empty array if the passed array is empty.
-  static MessagePortArray* EntanglePorts(ExecutionContext&,
-                                         Vector<MessagePortChannel>);
-  static MessagePortArray* EntanglePorts(ExecutionContext&,
-                                         std::vector<MessagePortChannel>);
+  static GCedMessagePortArray* EntanglePorts(ExecutionContext&,
+                                             Vector<MessagePortChannel>);
+  static GCedMessagePortArray* EntanglePorts(ExecutionContext&,
+                                             std::vector<MessagePortChannel>);
 
   bool Started() const { return started_; }
 

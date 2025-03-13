@@ -37,6 +37,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "crypto/sha2.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/ad_auction/event_record.h"
 #include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -56,6 +57,7 @@ namespace {
 using ::blink::IgExpectEqualsForTesting;
 using ::blink::IgExpectNotEqualsForTesting;
 using ::blink::InterestGroup;
+using ::network::AdAuctionEventRecord;
 using ::testing::Field;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
@@ -65,6 +67,15 @@ using SellerCapabilitiesType = blink::SellerCapabilitiesType;
 
 constexpr char kFullOriginStr[] = "https://full.example.com";
 constexpr char kPartialOriginStr[] = "https://partial.example.com";
+
+constexpr char kViewClickEligibleOrigin1Str[] =
+    "https://view-click.eligible1.test";
+constexpr char kViewClickEligibleOrigin2Str[] =
+    "https://view-click.eligible2.test";
+constexpr char kViewClickProviderOrigin1Str[] =
+    "https://view-click.provider1.test";
+constexpr char kViewClickProviderOrigin2Str[] =
+    "https://view-click.provider2.test";
 
 constexpr int kOldestAllFieldsVersion = 28;
 
@@ -182,6 +193,7 @@ class InterestGroupStorageTest : public testing::Test {
         case 27:
         case 30:
         case 32:
+        case 34:
           *version_changed_ig_fields = false;
           break;
         default:
@@ -214,6 +226,10 @@ class InterestGroupStorageTest : public testing::Test {
     // instance.
 
     switch (version_number) {
+      case 34:
+        // Added `view_and_click_events` table, but introduced no new
+        // `interest_group` table fields.
+        [[fallthrough]];
       case 33:
         result.view_and_click_counts_providers = {{url::Origin::Create(
             GURL("https://view-and-click-counts-provider.test"))}};
@@ -402,6 +418,15 @@ class InterestGroupStorageTest : public testing::Test {
   const url::Origin kPartialOrigin =
       url::Origin::Create(GURL(kPartialOriginStr));
 
+  const url::Origin kViewClickEligibleOrigin1 =
+      url::Origin::Create(GURL(kViewClickEligibleOrigin1Str));
+  const url::Origin kViewClickEligibleOrigin2 =
+      url::Origin::Create(GURL(kViewClickEligibleOrigin2Str));
+  const url::Origin kViewClickProviderOrigin1 =
+      url::Origin::Create(GURL(kViewClickProviderOrigin1Str));
+  const url::Origin kViewClickProviderOrigin2 =
+      url::Origin::Create(GURL(kViewClickProviderOrigin2Str));
+
   base::ScopedTempDir temp_directory_;
 
  private:
@@ -435,8 +460,9 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
 
     // [interest_groups], [join_history], [bid_history], [win_history],
     // [joined_k_anon], [meta], [lockout_debugging_only_report],
-    // [cooldown_debugging_only_report], [bidding_and_auction_server_keys].
-    EXPECT_EQ(9u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [cooldown_debugging_only_report], [bidding_and_auction_server_keys],
+    // [view_and_click_events].
+    EXPECT_EQ(10u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -472,8 +498,9 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesOldVersion) {
 
     // [interest_groups], [join_history], [bid_history], [win_history],
     // [joined_k_anon], [meta], [lockout_debugging_only_report],
-    // [cooldown_debugging_only_report], [bidding_and_auction_server_keys].
-    EXPECT_EQ(9u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [cooldown_debugging_only_report], [bidding_and_auction_server_keys],
+    // [view_and_click_events].
+    EXPECT_EQ(10u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -509,8 +536,9 @@ TEST_F(InterestGroupStorageTest, DatabaseRazesNewVersion) {
 
     // [interest_groups], [join_history], [bid_history], [win_history],
     // [joined_k_anon], [meta], [lockout_debugging_only_report],
-    // [cooldown_debugging_only_report], [bidding_and_auction_server_keys].
-    EXPECT_EQ(9u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
+    // [cooldown_debugging_only_report], [bidding_and_auction_server_keys],
+    // [view_and_click_events].
+    EXPECT_EQ(10u, sql::test::CountSQLTables(&raw_db)) << raw_db.GetSchema();
   }
 }
 
@@ -2032,6 +2060,544 @@ TEST_F(InterestGroupStorageTest, KAnonDataExpires) {
   ASSERT_EQ(1u, groups.size());
   EXPECT_TRUE(groups[0].hashed_kanon_keys.empty());
 }
+
+enum class GroupLifetime {
+  k30Day,
+  k90Day,
+};
+
+class InterestGroupStorageDualLifetimeTest
+    : public InterestGroupStorageTest,
+      public ::testing::WithParamInterface<GroupLifetime> {
+ public:
+  void SetUp() override {
+    InterestGroupStorageTest::SetUp();
+    switch (GetParam()) {
+      case GroupLifetime::k30Day:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            blink::features::kFledgeMaxGroupLifetimeFeature,
+            {{"fledge_max_group_lifetime", "30d"}});
+        break;
+      case GroupLifetime::k90Day:
+        scoped_feature_list_.InitAndEnableFeatureWithParameters(
+            blink::features::kFledgeMaxGroupLifetimeFeature,
+            {{"fledge_max_group_lifetime", "90d"}});
+        break;
+    }
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(InterestGroupStorageDualLifetimeTest, ViewClickStoreRetrieve_Basic) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_BasicByGroupKey) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::optional<StorageInterestGroup> group = storage->GetInterestGroup(
+      blink::InterestGroupKey(kViewClickEligibleOrigin1, "cars"));
+  ASSERT_TRUE(group);
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      group->bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest, ViewClickStoreRetrieve_NoEvents) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_NoEventsNoProvider) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_EligibleDefaultsToProvider) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickProviderOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickProviderOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_ProviderNotInEligibleOrigins) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickProviderOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickProviderOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_BasicWithTwoEvents) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 2 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_BucketsTime) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record_view;
+  record_view.type = AdAuctionEventRecord::Type::kView;
+  record_view.providing_origin = kViewClickProviderOrigin1;
+  record_view.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view.IsValid());
+
+  AdAuctionEventRecord record_click;
+  record_click.type = AdAuctionEventRecord::Type::kClick;
+  record_click.providing_origin = kViewClickProviderOrigin1;
+  record_click.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_click.IsValid());
+
+  // Timeline as follows, in time before final time
+  // (d: day, w: week, h: hour, V: view, C: click, F: final time):
+  //
+  //           90d           30d           1w          1d           1h         F
+  //   1V,1C    |    2V,1C    |    0V,2C   |   1V,0C   |   2V,2C    |   1V,2C  |
+
+  storage->RecordViewClick(record_view);
+  storage->RecordViewClick(record_click);
+
+  task_environment().FastForwardBy(base::Days(90) - base::Days(30));
+
+  storage->RecordViewClick(record_view);
+  storage->RecordViewClick(record_view);
+
+  storage->RecordViewClick(record_click);
+
+  task_environment().FastForwardBy(base::Days(30) - base::Days(7));
+
+  storage->RecordViewClick(record_click);
+  storage->RecordViewClick(record_click);
+
+  task_environment().FastForwardBy(base::Days(7) - base::Days(1));
+
+  storage->RecordViewClick(record_view);
+
+  task_environment().FastForwardBy(base::Days(1) - base::Hours(1));
+
+  storage->RecordViewClick(record_view);
+  storage->RecordViewClick(record_view);
+
+  storage->RecordViewClick(record_click);
+  storage->RecordViewClick(record_click);
+
+  task_environment().FastForwardBy(base::Hours(1));
+
+  storage->RecordViewClick(record_view);
+
+  storage->RecordViewClick(record_click);
+  storage->RecordViewClick(record_click);
+
+  // Fast forward one more second so that events aren't on the exact boundaries
+  // between time buckets. Each event will go to the next older time bucket,
+  // and the oldest events fall out of reporting.
+  task_environment().FastForwardBy(base::Seconds(1));
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(1, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(3, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(4, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(4, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 6 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(2, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(4, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(4, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(6, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 7 : 0,
+            view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_NotEligibleOrigin) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin2};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_ProviderMismatch) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {{kViewClickProviderOrigin2}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_MultipleProviders) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record_provider_1;
+  record_provider_1.type = AdAuctionEventRecord::Type::kView;
+  record_provider_1.providing_origin = kViewClickProviderOrigin1;
+  record_provider_1.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_provider_1.IsValid());
+
+  storage->RecordViewClick(record_provider_1);
+
+  AdAuctionEventRecord record_view_provider_2;
+  record_view_provider_2.type = AdAuctionEventRecord::Type::kView;
+  record_view_provider_2.providing_origin = kViewClickProviderOrigin1;
+  record_view_provider_2.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_view_provider_2.IsValid());
+
+  AdAuctionEventRecord record_click_provider_2;
+  record_click_provider_2.type = AdAuctionEventRecord::Type::kClick;
+  record_click_provider_2.providing_origin = kViewClickProviderOrigin1;
+  record_click_provider_2.eligible_origins = {kViewClickEligibleOrigin1};
+  ASSERT_TRUE(record_click_provider_2.IsValid());
+
+  storage->RecordViewClick(record_view_provider_2);
+  storage->RecordViewClick(record_click_provider_2);
+
+  InterestGroup g = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g.view_and_click_counts_providers = {
+      {kViewClickProviderOrigin1, kViewClickProviderOrigin2}};
+  g.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts =
+      groups[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_hour);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_day);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_week);
+  EXPECT_EQ(2, view_and_click_counts->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 2 : 0,
+            view_and_click_counts->view_counts->past_90_days);
+  EXPECT_EQ(1, view_and_click_counts->click_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts->click_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts->click_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts->click_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts->click_counts->past_90_days);
+}
+
+TEST_P(InterestGroupStorageDualLifetimeTest,
+       ViewClickStoreRetrieve_TwoEligibleOrigins) {
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+
+  AdAuctionEventRecord record;
+  record.type = AdAuctionEventRecord::Type::kView;
+  record.providing_origin = kViewClickProviderOrigin1;
+  record.eligible_origins = {kViewClickEligibleOrigin1,
+                             kViewClickEligibleOrigin2};
+  ASSERT_TRUE(record.IsValid());
+  storage->RecordViewClick(record);
+
+  InterestGroup g_cars = NewInterestGroup(kViewClickEligibleOrigin1, "cars");
+  g_cars.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g_cars.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g_cars, GURL("https://joining-site.test"));
+
+  InterestGroup g_shoes = NewInterestGroup(kViewClickEligibleOrigin2, "shoes");
+  g_shoes.view_and_click_counts_providers = {{kViewClickProviderOrigin1}};
+  g_shoes.expiry = base::Time::Now() + base::Days(90);
+  storage->JoinInterestGroup(g_shoes, GURL("https://joining-site.test"));
+
+  std::vector<StorageInterestGroup> groups_cars =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups_cars.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts_cars =
+      groups_cars[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts_cars->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts_cars->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts_cars->click_counts->past_90_days);
+
+  std::vector<StorageInterestGroup> groups_shoes =
+      storage->GetInterestGroupsForOwner(kViewClickEligibleOrigin1);
+  ASSERT_EQ(1u, groups_shoes.size());
+
+  blink::mojom::ViewAndClickCountsPtr& view_and_click_counts_shoes =
+      groups_shoes[0].bidding_browser_signals->view_and_click_counts;
+
+  EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_hour);
+  EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_day);
+  EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_week);
+  EXPECT_EQ(1, view_and_click_counts_shoes->view_counts->past_30_days);
+  EXPECT_EQ(GetParam() == GroupLifetime::k90Day ? 1 : 0,
+            view_and_click_counts_shoes->view_counts->past_90_days);
+  EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_hour);
+  EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_day);
+  EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_week);
+  EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_30_days);
+  EXPECT_EQ(0, view_and_click_counts_shoes->click_counts->past_90_days);
+}
+
+INSTANTIATE_TEST_SUITE_P(DualLifetime,
+                         InterestGroupStorageDualLifetimeTest,
+                         ::testing::Values(GroupLifetime::k30Day,
+                                           GroupLifetime::k90Day));
 
 TEST_F(InterestGroupStorageTest, StoresAllFields) {
   StoresAllFieldsTest();
@@ -3569,13 +4135,14 @@ TEST_F(InterestGroupStorageTest, UpgradeFromV31) {
 TEST_F(InterestGroupStorageTest, MultiVersionUpgradeTest) {
   constexpr char kMisssingFileError[] =
       "You can generate the missing .sql file for the current database "
-      "version by running: "
-      "`out/Default/content_unittests "
+      "version by running: \n\n"
+      "out/Default/content_unittests "
       "--gtest_filter=\"*InterestGroupStorage*Test*DumpAllIgFields\" "
-      "--dump-all-ig-fields` after installing sqlite3 from your package "
-      "manager -- you can also build the Chromium `sqlite_shell` GN "
-      "target and rename / symlink it on your path as sqlite3. \n\n***Make "
-      "sure to add the generated file to source control***.\n\n";
+      "--dump-all-ig-fields\n\n"
+      "after installing sqlite3 from your package manager -- you can also "
+      "build the Chromium `sqlite_shell` GN target and rename / symlink it on "
+      "your path as sqlite3. \n\n"
+      "***Make sure to add the generated file to source control***.\n\n";
   for (int i = kOldestAllFieldsVersion;
        i <= InterestGroupStorage::GetCurrentVersionNumberForTesting() - 1;
        i++) {

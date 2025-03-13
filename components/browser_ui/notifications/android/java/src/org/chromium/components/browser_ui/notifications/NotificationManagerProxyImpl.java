@@ -25,6 +25,7 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.N
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -263,18 +264,22 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
      * on the ui thread.
      */
     private <T> void runCallableAndReply(
-            @Nullable TraceEvent scopedEvent, Callable<T> callable, Callback callback) {
+            @Nullable TraceEvent scopedEvent, Callable<T> callable, Callback<T> callback) {
+        @Nullable T result = null;
+        @NotificationEvent int event;
         try (scopedEvent) {
             NotificationProxyUtils.recordNotificationEventHistogram(
                     NotificationEvent.HAS_CALLBACK_START);
-            T result = callable.call();
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(result));
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.HAS_CALLBACK_SUCCESS);
+            result = callable.call();
+            event = NotificationEvent.HAS_CALLBACK_SUCCESS;
         } catch (Exception e) {
             Log.e(TAG, "Unable to call method.", e);
-            NotificationProxyUtils.recordNotificationEventHistogram(
-                    NotificationEvent.HAS_CALLBACK_FAILED);
+            event = NotificationEvent.HAS_CALLBACK_FAILED;
         }
+        NotificationProxyUtils.recordNotificationEventHistogram(event);
+        final @Nullable T finalResult = result;
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> callback.onResult(Objects.requireNonNullElse(finalResult, null)));
     }
 }

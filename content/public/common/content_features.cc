@@ -1176,6 +1176,15 @@ const base::FeatureParam<int> kTouchDragMovementThresholdDip{
     &kTouchDragAndContextMenu, "DragAndDropMovementThresholdDipParam", 60};
 #endif
 
+// Controls whether the browser should track and reuse free and empty renderer
+// processes. When enabled, the browser maintains a list of renderer processes
+// that are currently not hosting any frames and are thus eligible for reuse
+// when a new renderer process is needed. Currently, only background renderer
+// processes are considered for reuse.
+BASE_FEATURE(kTrackEmptyRendererProcessesForReuse,
+             "TrackEmptyRendererProcessesForReuse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
 // features.

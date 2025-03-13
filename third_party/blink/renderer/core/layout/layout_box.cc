@@ -4471,9 +4471,10 @@ const HeapVector<Member<Node>>& LayoutBox::ReadingFlowNodes() const {
   if (const auto* nodes = GetPhysicalFragment(0)->ReadingFlowNodes()) {
     return *nodes;
   }
-  DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Node>>>, empty_vector,
-                      (MakeGarbageCollected<HeapVector<Member<Node>>>()));
-  return *empty_vector;
+  using HolderType = DisallowNewWrapper<HeapVector<Member<Node>>>;
+  DEFINE_STATIC_LOCAL(Persistent<HolderType>, empty_vector,
+                      (MakeGarbageCollected<HolderType>()));
+  return empty_vector->Value();
 }
 
 }  // namespace blink

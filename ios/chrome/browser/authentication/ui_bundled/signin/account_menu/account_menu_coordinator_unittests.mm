@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -95,6 +96,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     mock_snackbar_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SnackbarCommands));
+    mock_help_commands_handler_ =
+        OCMStrictProtocolMock(@protocol(HelpCommands));
     mock_settings_commands_handler_ =
         OCMStrictProtocolMock(@protocol(SettingsCommands));
     mock_browser_commands_handler_ =
@@ -106,6 +109,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(ApplicationCommands)];
     [dispatcher startDispatchingToTarget:mock_snackbar_commands_handler_
                              forProtocol:@protocol(SnackbarCommands)];
+    [dispatcher startDispatchingToTarget:mock_help_commands_handler_
+                             forProtocol:@protocol(HelpCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_commands_handler_
                              forProtocol:@protocol(SettingsCommands)];
     [dispatcher startDispatchingToTarget:mock_browser_commands_handler_
@@ -161,6 +166,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_settings_commands_handler_);
     EXPECT_OCMOCK_VERIFY((id)mock_snackbar_commands_handler_);
+    EXPECT_OCMOCK_VERIFY((id)mock_help_commands_handler_);
   }
 
   // Asserts that the coordinator is still open and request it to be closed.
@@ -180,6 +186,7 @@ class AccountMenuCoordinatorTest : public PlatformTest {
       coordinator_;
   id<ApplicationCommands> mock_application_commands_handler_;
   id<SnackbarCommands> mock_snackbar_commands_handler_;
+  id<HelpCommands> mock_help_commands_handler_;
   id<SettingsCommands> mock_settings_commands_handler_;
   id<BrowserCommands> mock_browser_commands_handler_;
   SceneState* scene_state_;

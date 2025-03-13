@@ -255,6 +255,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // Create a recycler view.
         mRecyclerView =
                 new RecyclerView(new ContextThemeWrapper(mActivity, R.style.VerticalRecyclerView));
+        mRecyclerView.setId(R.id.history_page_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
         mRecyclerView.setAdapter(mHistoryAdapter);
         mRecyclerView.setHasFixedSize(true);

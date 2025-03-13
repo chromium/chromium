@@ -410,12 +410,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Returns profile_ as a BrowserContext.
   content::BrowserContext* GetBrowserContext() const;
 
-  // TODO(crbug.com/402853513): Migrate callers to use ExtensionRegistrar
-  // directly.
-  bool extensions_enabled() const {
-    return extension_registrar_->extensions_enabled();
-  }
-
   bool block_extensions() const { return block_extensions_; }
 
   // TODO(crbug.com/402825212): Migrate callers to use ExtensionRegistrar

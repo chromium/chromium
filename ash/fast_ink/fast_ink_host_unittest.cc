@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/frame_sink/frame_sink_holder.h"
 #include "ash/frame_sink/test/frame_sink_host_test_base.h"
 #include "ash/frame_sink/test/test_begin_frame_source.h"
 #include "ash/frame_sink/test/test_layer_tree_frame_sink.h"
@@ -120,6 +121,36 @@ TEST_P(FastInkHostTest, CorrectFrameSubmittedToLayerTreeFrameSink) {
             expected_quad_layer_rect_);
 
   EXPECT_EQ(frame.resource_list.back().is_overlay_candidate, auto_update_);
+}
+
+TEST_P(FastInkHostTest, RecreateGpuBufferOnLosingFrameSink) {
+  // Buffer is not initialized when there is no begin frame received.
+  ASSERT_FALSE(frame_sink_host()->client_si_for_test());
+
+  // Request the first frame. It will call
+  // `FrameSinkHost::OnFirstFrameRequested()` initializing the GPU buffer.
+  OnBeginFrame();
+
+  // MappableSI should be initialized after receiving the first begin frame.
+  ASSERT_TRUE(frame_sink_host()->client_si_for_test());
+  auto sync_token = frame_sink_host()->sync_token_for_test();
+
+  // A new frame-sink will be created. FastInkHost should also create a new
+  // shared image.
+  frame_sink_host()
+      ->frame_sink_holder_for_testing()
+      ->DidLoseLayerTreeFrameSink();
+
+  EXPECT_NE(sync_token, frame_sink_host()->sync_token_for_test());
+  sync_token = frame_sink_host()->sync_token_for_test();
+
+  // This will be the first OnBeginFrame for the new frame sink, therefore
+  // `FrameSinkHost::OnFirstFrameRequested()` will be called again.
+  OnBeginFrame();
+
+  // Ensure we do not recreate a shared image on
+  // `FrameSinkHost::OnFirstFrameRequested()`.
+  EXPECT_EQ(sync_token, frame_sink_host()->sync_token_for_test());
 }
 
 TEST_P(FastInkHostTest, DelayPaintingUntilReceivingFirstBeginFrame) {

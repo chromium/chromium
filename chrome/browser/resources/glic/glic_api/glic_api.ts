@@ -66,17 +66,23 @@ export declare interface GlicWebClient {
    *       client should be updated to set the panel size when handling this
    *       call. https://crbug.com/392141194
    *
+   * @todo Remove PanelState from the input argument type once the web client
+   *       adopts PanelOpeningData.
+   *       https://crbug.com/402147705
+   *
    * Called right before the panel is made visible to the user. This event is
    * always called no matter how the panel opening is initiated.
    *
    * The web client should use the handling of this call to execute any
    * preparations needed to become user-visible, and return a fully populated
-   * OpenPanelInfo.
+   * OpenPanelInfo. `panelOpeningData` holds information about the open request
+   * and the state of the panel that is about to be presented.
    *
    * Important: The panel is only made user-visible once the returned promise is
    * resolved or failed (failures are ignored and the panel is still shown).
    */
-  notifyPanelWillOpen?(panelState: PanelState): Promise<void|OpenPanelInfo>;
+  notifyPanelWillOpen?(panelOpeningData: PanelOpeningData&
+                       PanelState): Promise<void|OpenPanelInfo>;
 
   /**
    * Called right after the panel was hidden away and is not visible to
@@ -457,6 +463,39 @@ export declare interface PanelState {
    * attached to.
    */
   windowId?: string;
+}
+
+/**
+ * Data structure sent from the browser to the web client with panel opening
+ * information.
+ */
+export declare interface PanelOpeningData {
+  /** The state of the panel as it's being opened. */
+  panelState: PanelState;
+  /** Indicates the entry point used to trigger the opening of the panel. */
+  invocationSource: InvocationSource;
+}
+
+/** Entry points that can trigger the opening of the panel. */
+export enum InvocationSource {
+  /** Button in the OS. */
+  OS_BUTTON = 0,
+  /** Menu from button in the OS. */
+  OS_BUTTON_MENU = 1,
+  /** OS-level hotkey. */
+  OS_HOTKEY = 2,
+  /** Button in top-chrome. */
+  TOP_CHROME_BUTTON = 3,
+  /** First run experience. */
+  FRE = 4,
+  /** From the profile picker. */
+  PROFILE_PICKER = 5,
+  /** From contextual cueing. */
+  NUDGE = 6,
+  /** From 3-dot menu. */
+  THREE_DOTS_MENU = 7,
+  /** An unsupported/unknown source. */
+  UNSUPPORTED = 8,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */
@@ -905,6 +944,7 @@ export interface TypesConsumedByClient {
   documentData: DocumentData;
   panelState: PanelState;
   annotatedPageData: AnnotatedPageData;
+  panelOpeningData: PanelOpeningData;
 }
 
 // Types consumed by the host.
@@ -937,4 +977,5 @@ export interface ExtensibleEnums {
   invalidCandidateError: typeof InvalidCandidateError;
   noCandidateTabError: typeof NoCandidateTabError;
   webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
+  invocationSource: typeof InvocationSource;
 }

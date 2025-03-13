@@ -135,12 +135,12 @@ public class LogoCoordinator {
     }
 
     /**
-     * Updates the logo size to use when logo polish is enabled.
+     * Updates the logo size to use when logo is a google doodle.
      *
-     * @param logoSizeForLogoPolish The logo size to use when logo polish is enabled.
+     * @param doodleSize The logo size to use when logo is a google doodle.
      */
-    public void setLogoSizeForLogoPolish(int logoSizeForLogoPolish) {
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, logoSizeForLogoPolish);
+    public void setDoodleSize(int doodleSize) {
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, doodleSize);
     }
 
     /**

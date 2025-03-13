@@ -1868,12 +1868,7 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   if (!resource_provider)
     return false;
 
-  if (Host()->LowLatencyEnabled() &&
-      resource_provider->SupportsSingleBuffering()) {
-    // It's possible single buffering isn't enabled yet because we haven't
-    // finished the first frame e.g. this gets called first due to drawImage.
-    resource_provider->TryEnableSingleBuffering();
-    DCHECK(resource_provider->IsSingleBuffered());
+  if (Host()->LowLatencyEnabled() && resource_provider->IsSingleBuffered()) {
     // Single buffered passthrough resource provider doesn't have backing
     // texture. We need to export the backbuffer mailbox directly without
     // copying.

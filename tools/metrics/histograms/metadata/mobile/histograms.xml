@@ -1135,8 +1135,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.ReadingList.ImpressionsTilSigninButtons"
-    units="impressions" expires_after="2025-04-01">
-  <owner>myuu@google.com</owner>
+    units="impressions" expires_after="2026-04-01">
+  <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times one of the &quot;sign in&quot; buttons (any of the
@@ -1148,8 +1148,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MobileSignInPromo.ReadingList.ImpressionsTilXButton"
-    units="impressions" expires_after="2025-04-01">
-  <owner>myuu@google.com</owner>
+    units="impressions" expires_after="2026-04-01">
+  <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts how many times the explicit &quot;X&quot;-to-close button is clicked

@@ -326,6 +326,7 @@ public class FeedSurfaceMediator
     private boolean mIsNewTabSearchEngineUrlAndroidEnabled;
     private boolean mIsPropertiesInitializedForStream;
     private @ClosedReason int mClosedReason = ClosedReason.SUSPEND_APP;
+    private final boolean mIsNewTabPageCustomizationEnabled;
 
     /**
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
@@ -359,6 +360,7 @@ public class FeedSurfaceMediator
         mOptionsCoordinator.setOptionsListener(this);
         mIsNewTabSearchEngineUrlAndroidEnabled =
                 DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled();
+        mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
         mUiConfig = uiConfig;
 
         /*
@@ -613,14 +615,17 @@ public class FeedSurfaceMediator
                 mCoordinator.createFeedStream(StreamKind.FOR_YOU, new StreamsMediatorImpl()));
         setHeaderIndicatorState(suggestionsVisible);
 
-        // Build menu after section enabled key is set.
-        mFeedMenuModel = buildMenuItems();
-
         mCoordinator.initializeBubbleTriggering();
         mSigninManager.getIdentityManager().addObserver(this);
 
-        mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
-        mSectionHeaderModel.set(SectionHeaderListProperties.MENU_DELEGATE_KEY, this);
+        if (!mIsNewTabPageCustomizationEnabled) {
+            // Build menu after section enabled key is set.
+            mFeedMenuModel = buildMenuItems();
+
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.MENU_MODEL_LIST_KEY, mFeedMenuModel);
+            mSectionHeaderModel.set(SectionHeaderListProperties.MENU_DELEGATE_KEY, this);
+        }
 
         setUpWebFeedTab();
 
@@ -1076,8 +1081,11 @@ public class FeedSurfaceMediator
 
         setHeaderIndicatorState(suggestionsVisible);
 
-        // Update toggleswitch item, which is last item in list.
-        mSectionHeaderModel.set(SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());
+        if (!mIsNewTabPageCustomizationEnabled) {
+            // Update toggleswitch item, which is last item in list.
+            mSectionHeaderModel.set(
+                    SectionHeaderListProperties.MENU_MODEL_LIST_KEY, buildMenuItems());
+        }
 
         if (mLegacySignInPromo != null) {
             mLegacySignInPromo.setCanShowPersonalizedSuggestions(suggestionsVisible);

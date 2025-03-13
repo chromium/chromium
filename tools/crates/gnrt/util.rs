@@ -95,8 +95,8 @@ pub fn run_cargo_metadata(
     extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
 ) -> Result<cargo_metadata::Metadata> {
     // See the `[dependencies.cxxbridge-cmd]` section in
-    // `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why `-Zbindeps` flag is
-    // needed.
+    // `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+    // `-Zbindeps` flag is needed.
     extra_options.push("-Zbindeps".to_string());
 
     let mut command = cargo_metadata::MetadataCommand::new();
@@ -117,8 +117,8 @@ pub fn get_guppy_package_graph(
     extra_env: HashMap<std::ffi::OsString, std::ffi::OsString>,
 ) -> Result<guppy::graph::PackageGraph> {
     // See the `[dependencies.cxxbridge-cmd]` section in
-    // `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why `-Zbindeps` flag is
-    // needed.
+    // `third_party/rust/chromium_crates_io/Cargo.toml` for explanation why
+    // `-Zbindeps` flag is needed.
     extra_options.push("-Zbindeps".to_string());
 
     let mut command = guppy::MetadataCommand::new();

@@ -157,9 +157,9 @@ base::UnsafeSharedMemoryRegion CreateTracingOutputSharedMemory() {
   DCHECK(startup_config.IsEnabled() || trace_log->IsEnabled());
 
   if (!startup_config.IsEnabled()) {
-    bool has_relevant_config = std::any_of(
-        trace_log->GetTrackEventSessions().begin(),
-        trace_log->GetTrackEventSessions().end(), [](const auto& session) {
+    const auto sessions = trace_log->GetTrackEventSessions();
+    bool has_relevant_config =
+        std::any_of(sessions.begin(), sessions.end(), [](const auto& session) {
           return session.backend_type == perfetto::kCustomBackend &&
                  !session.config.has_interceptor_config();
         });

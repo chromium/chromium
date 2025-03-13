@@ -15,9 +15,9 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {DraggableArea, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
+import type {DraggableArea, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
@@ -79,11 +79,11 @@ class WebClientImpl implements WebClientInterface {
         'glicWebClientNotifyPanelClosed', undefined);
   }
 
-  async notifyPanelWillOpen(panelState: PanelStateMojo):
+  async notifyPanelWillOpen(panelOpeningData: PanelOpeningDataMojo):
       Promise<{openPanelInfo: OpenPanelInfoMojo}> {
     const result = await this.sender.requestWithResponse(
         'glicWebClientNotifyPanelWillOpen',
-        {panelState: panelStateToClient(panelState)});
+        {panelOpeningData: panelOpeningDataToClient(panelOpeningData)});
 
     // The web client is ready to show, ensure the webview is
     // displayed.
@@ -690,6 +690,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
     await this.handler.createTab(urlFromClient(url), false, null);
   }
 
+  async shouldAllowMediaPermissionRequest(): Promise<boolean> {
+    return (await this.handler.shouldAllowMediaPermissionRequest()).isAllowed;
+  }
+
+  async shouldAllowGeolocationPermissionRequest(): Promise<boolean> {
+    return (await this.handler.shouldAllowGeolocationPermissionRequest())
+        .isAllowed;
+  }
+
   // PostMessageRequestHandler implementation.
   async handleRawRequest(type: string, payload: any, extras: ResponseExtras):
       Promise<{payload: any}|undefined> {
@@ -910,6 +919,14 @@ function bitmapN32ToRGBAImage(bitmap: BitmapN32): RgbaImage|undefined {
         ImageAlphaType.PREMUL :
         ImageAlphaType.UNPREMUL,
     colorType,
+  };
+}
+
+function panelOpeningDataToClient(panelOpeningData: PanelOpeningDataMojo):
+    PanelOpeningData {
+  return {
+    panelState: panelStateToClient(panelOpeningData.panelState),
+    invocationSource: panelOpeningData.invocationSource as number,
   };
 }
 

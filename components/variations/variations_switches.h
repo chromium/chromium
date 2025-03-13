@@ -18,6 +18,8 @@ extern const char kDisableFieldTrialTestingConfig[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kDisableVariationsSafeMode[];
 COMPONENT_EXPORT(VARIATIONS)
+extern const char kDisableVariationsSeedFetch[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kDisableVariationsSeedFetchThrottling[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableBenchmarking[];

@@ -11,6 +11,7 @@ include_rules = [
   "+third_party/iaccessible2",
   "+third_party/skia",
   "+ui/accessibility",
+  "+ui/accessibility/platform",
   "+ui/actions",
   "+ui/aura",
   "+ui/menus",

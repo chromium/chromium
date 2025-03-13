@@ -104,5 +104,19 @@ TEST(AutofillEntityTypeTest, AttributeGetNameForI18n) {
   EXPECT_EQ(c.GetNameForI18n(), u"Expiration date");
 }
 
+TEST(AutofillEntityTypeTest, DataType) {
+  using enum AttributeTypeName;
+  AttributeType a = AttributeType(kPassportName);
+  AttributeType b = AttributeType(kPassportCountry);
+  AttributeType c = AttributeType(kDriversLicenseIssueDate);
+  AttributeType d = AttributeType(kDriversLicenseState);
+  AttributeType e = AttributeType(kVehicleOwner);
+  EXPECT_EQ(a.data_type(), AttributeType::DataType::kName);
+  EXPECT_EQ(b.data_type(), AttributeType::DataType::kCountry);
+  EXPECT_EQ(c.data_type(), AttributeType::DataType::kDate);
+  EXPECT_EQ(d.data_type(), AttributeType::DataType::kState);
+  EXPECT_EQ(e.data_type(), AttributeType::DataType::kString);
+}
+
 }  // namespace
 }  // namespace autofill

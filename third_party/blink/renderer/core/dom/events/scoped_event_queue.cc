@@ -42,7 +42,7 @@ namespace blink {
 ScopedEventQueue* ScopedEventQueue::instance_ = nullptr;
 
 ScopedEventQueue::ScopedEventQueue()
-    : queued_events_(MakeGarbageCollected<HeapVector<Member<Event>>>()),
+    : queued_events_(MakeGarbageCollected<GCedHeapVector<Member<Event>>>()),
       scoping_level_(0) {}
 
 ScopedEventQueue::~ScopedEventQueue() {

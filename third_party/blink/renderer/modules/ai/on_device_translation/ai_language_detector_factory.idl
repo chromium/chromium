@@ -16,12 +16,6 @@ interface AILanguageDetectorFactory {
     RaisesException
   ]
   Promise<AILanguageDetector> create(optional AILanguageDetectorCreateOptions options = {});
-  [
-    CallWith=ScriptState,
-    RaisesException
-  ]
-  // TODO(crbug.com/392185835): Remove capabilities method.
-  Promise<AILanguageDetectorCapabilities> capabilities();
 };
 
 dictionary AILanguageDetectorCreateOptions {

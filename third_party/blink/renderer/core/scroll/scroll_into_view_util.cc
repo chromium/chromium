@@ -689,13 +689,13 @@ ScrollOffset GetScrollOffsetToExpose(
 }
 
 mojom::blink::ScrollAlignment PhysicalAlignmentFromSnapAlignStyle(
-    const LayoutBox& box,
+    const LayoutObject& object,
     ScrollOrientation axis) {
-  cc::ScrollSnapAlign snap = box.Style()->GetScrollSnapAlign();
+  cc::ScrollSnapAlign snap = object.Style()->GetScrollSnapAlign();
   return ResolveToPhysicalAlignment(
       SnapAlignmentToV8ScrollLogicalPosition(snap.alignment_inline),
       SnapAlignmentToV8ScrollLogicalPosition(snap.alignment_block), axis,
-      *box.Style());
+      *object.Style());
 }
 
 }  // namespace scroll_into_view_util

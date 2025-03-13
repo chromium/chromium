@@ -1336,7 +1336,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7111394291981742152">Chrome을 사용하면 나에게 표시되는 광고를 보다 세부적으로 관리할 뿐만 아니라 사이트가 개인 맞춤 광고를 표시할 때 나에 관해 얻을 수 있는 정보를 제한할 수 있습니다.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{사이트 1개의 권한이 검토됨}other{사이트 #개의 권한이 검토됨}}</translation>
 <translation id="7138678301420049075">기타</translation>
-<translation id="7139479418357139965">발신자에게 새 링크를 요청할 수 있습니다.</translation>
 <translation id="7140829094791862589">직접 정렬</translation>
 <translation id="7146622961999026732">다음 사이트와 앱은 중요할 수도 있습니다.</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 <ph name="BEGIN_LINK" />자세히 알아보세요<ph name="END_LINK" />.</translation>
@@ -1539,7 +1538,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8014210850410408071">그런 다음, 비밀번호를 가져옵니다</translation>
 <translation id="8015452622527143194">페이지의 모든 항목을 기본 크기로 되돌리기</translation>
-<translation id="8017431260099661477">초대 링크를 열 수 없습니다</translation>
 <translation id="8026238112629815203">이 기기에 비밀번호가 저장되는 방식이 변경되었습니다.</translation>
 <translation id="8027395186860110042">비밀번호가 곧 작동하지 않을 수 있습니다</translation>
 <translation id="8027863900915310177">다운로드 위치 선택</translation>

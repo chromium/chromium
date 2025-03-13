@@ -769,7 +769,11 @@ class BidderWorkletTest : public testing::Test {
     return blink::mojom::BiddingBrowserSignals::New(
         browser_signal_join_count_, browser_signal_bid_count_,
         CloneWinList(browser_signal_prev_wins_),
-        browser_signal_for_debugging_only_in_cooldown_or_lockout_);
+        browser_signal_for_debugging_only_in_cooldown_or_lockout_,
+        /*click_and_view_counts=*/
+        blink::mojom::ViewAndClickCounts::New(
+            /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+            /*click_counts=*/blink::mojom::ViewOrClickCounts::New()));
   }
 
   // Create a BidderWorklet, returning the remote. If `out_bidder_worklet_impl`

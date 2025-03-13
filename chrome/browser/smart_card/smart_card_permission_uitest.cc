@@ -216,6 +216,9 @@ IN_PROC_BROWSER_TEST_F(SmartCardPermissionUiTest, Deny) {
       CheckReaderPermission(/*has_permission=*/false),
       RequestReaderPermission(),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
+      CheckViewProperty(PermissionPromptBubbleBaseView::kBlockButtonElementId,
+                        &views::LabelButton::GetText,
+                        l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW)),
       PressButtonAndWaitResult(
           PermissionPromptBubbleBaseView::kBlockButtonElementId,
           /*granted=*/false),

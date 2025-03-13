@@ -85,24 +85,26 @@ namespace extensions {
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
-    ExtensionService* frontend) {
-  return new CrxInstaller(frontend, std::unique_ptr<ExtensionInstallPrompt>(),
-                          nullptr);
+    content::BrowserContext* context) {
+  return new CrxInstaller(ExtensionSystem::Get(context)->extension_service(),
+                          std::unique_ptr<ExtensionInstallPrompt>(), nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
-    ExtensionService* frontend,
+    content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPrompt> client) {
-  return new CrxInstaller(frontend, std::move(client), nullptr);
+  return new CrxInstaller(ExtensionSystem::Get(context)->extension_service(),
+                          std::move(client), nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
-    ExtensionService* service,
+    content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPrompt> client,
     const InstallApproval* approval) {
-  return new CrxInstaller(service, std::move(client), approval);
+  return new CrxInstaller(ExtensionSystem::Get(context)->extension_service(),
+                          std::move(client), approval);
 }
 
 CrxInstaller::CrxInstaller(ExtensionService* service,

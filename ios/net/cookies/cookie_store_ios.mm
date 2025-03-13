@@ -29,6 +29,7 @@
 #import "ios/net/cookies/system_cookie_util.h"
 #import "ios/net/ios_net_buildflags.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/cookies/cookie_access_params.h"
 #import "net/cookies/cookie_constants.h"
 #import "net/cookies/cookie_util.h"
 #import "net/cookies/parsed_cookie.h"

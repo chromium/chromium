@@ -125,8 +125,10 @@ promise_test(async t => {
 
   // Must have at least 2 progress events, one for 0 and one for 1.
   assert_greater_than_equal(progressEvents.length, 2);
+
+  // 0 should be the first event and 1 should be the last event.
   assert_equals(progressEvents.at(0).loaded, 0);
-  assert_equals(progressEvents.at(1).loaded, 1);
+  assert_equals(progressEvents.at(-1).loaded, 1);
 
   // All progress events must have a total of 1.
   for (const progressEvent of progressEvents) {

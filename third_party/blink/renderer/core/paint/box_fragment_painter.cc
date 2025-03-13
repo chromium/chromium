@@ -1487,18 +1487,18 @@ void BoxFragmentPainter::PaintNewGridGaps(
 
       if (track_direction == kForColumns) {
         // For columns, paint a vertical strip at the center of the gap.
-        const LayoutUnit center = gap[start].column_offset;
+        const LayoutUnit center = gap[start].inline_offset;
         inline_start = center - (rule_thickness / 2);
         inline_size = rule_thickness;
-        block_start = gap[start].row_offset;
-        block_size = gap[end].row_offset - block_start;
+        block_start = gap[start].block_offset;
+        block_size = gap[end].block_offset - block_start;
       } else {
         // For rows, paint a horizontal strip at the center of the gap.
-        const LayoutUnit center = gap[start].row_offset;
+        const LayoutUnit center = gap[start].block_offset;
         block_start = center - (rule_thickness / 2);
         block_size = rule_thickness;
-        inline_start = gap[start].column_offset;
-        inline_size = gap[end].column_offset - inline_start;
+        inline_start = gap[start].inline_offset;
+        inline_size = gap[end].inline_offset - inline_start;
       }
 
       const LogicalRect gap_logical(inline_start, block_start, inline_size,

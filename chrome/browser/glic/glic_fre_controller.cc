@@ -7,12 +7,14 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/fre_util.h"
-#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -155,7 +157,8 @@ void GlicFreController::AcceptFre() {
   if (Browser* new_attached_browser =
           chrome::FindLastActiveWithProfile(profile_)) {
     glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
-        new_attached_browser, /*prevent_close=*/true, InvocationSource::kFre);
+        new_attached_browser, /*prevent_close=*/true,
+        mojom::InvocationSource::kFre);
   }
 }
 
@@ -165,6 +168,30 @@ void GlicFreController::DismissFre() {
     fre_widget_.reset();
     tab_showing_modal_ = nullptr;
     will_detach_subscription_ = {};
+  }
+}
+
+void GlicFreController::OnLinkClicked(const GURL& url) {
+  if (url.DomainIs("support.google.com")) {
+    if (url.path().find("13594961") != std::string::npos) {
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Fre.PrivacyNoticeLinkOpened"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("Glic.Fre.HelpCenterLinkOpened"));
+    }
+    return;
+  }
+
+  if (url.DomainIs("policies.google.com")) {
+    base::RecordAction(base::UserMetricsAction("Glic.Fre.PolicyLinkOpened"));
+    return;
+  }
+
+  if (url.DomainIs("myactivity.google.com")) {
+    base::RecordAction(
+        base::UserMetricsAction("Glic.Fre.MyActivityLinkOpened"));
+    return;
   }
 }
 

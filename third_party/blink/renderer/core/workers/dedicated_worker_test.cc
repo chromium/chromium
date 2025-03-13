@@ -77,7 +77,7 @@ class CustomEventWithData final : public Event {
 
   explicit CustomEventWithData(const AtomicString& event_type,
                                scoped_refptr<SerializedScriptValue> data,
-                               MessagePortArray* ports)
+                               GCedMessagePortArray* ports)
       : Event(event_type, Bubbles::kNo, Cancelable::kNo),
         data_as_serialized_script_value_(
             SerializedScriptValue::Unpack(std::move(data))),
@@ -95,11 +95,11 @@ class CustomEventWithData final : public Event {
     return data_as_serialized_script_value_->Value();
   }
 
-  MessagePortArray* ports() { return ports_; }
+  GCedMessagePortArray* ports() { return ports_; }
 
  private:
   Member<UnpackedSerializedScriptValue> data_as_serialized_script_value_;
-  Member<MessagePortArray> ports_;
+  Member<GCedMessagePortArray> ports_;
 };
 
 ScriptValue CreateStringScriptValue(ScriptState* script_state,

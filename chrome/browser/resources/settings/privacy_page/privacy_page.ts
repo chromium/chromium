@@ -360,6 +360,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
       },
 
+      enableLocalNetworkAccessSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+      },
+
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
@@ -398,6 +403,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableComposeProactiveNudge_: boolean;
   private shouldShowSafetyHub_: boolean;
   private enableWebAppInstallation_: boolean;
+  private enableLocalNetworkAccessSetting_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
   private notificationPermissionsReviewHeader_: string;

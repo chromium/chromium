@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -133,7 +134,8 @@ TEST_F(GlicMetricsTest, BasicVisible) {
   controller_->showing_ = true;
   controller_->attached_ = true;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/true, InvocationSource::kOsButton);
+  metrics_->OnGlicWindowOpen(/*attached=*/true,
+                             mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped();
@@ -150,7 +152,7 @@ TEST_F(GlicMetricsTest, BasicVisible) {
 
 TEST_F(GlicMetricsTest, BasicUkm) {
   controller_->showing_ = true;
-  metrics_->OnGlicWindowOpen(/*attached=*/false, InvocationSource::kFre);
+  metrics_->OnGlicWindowOpen(/*attached=*/false, mojom::InvocationSource::kFre);
   for (int i = 0; i < 2; ++i) {
     metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
     metrics_->OnResponseStarted();
@@ -162,8 +164,9 @@ TEST_F(GlicMetricsTest, BasicUkm) {
     ASSERT_EQ(entries.size(), 1u);
     auto entry = entries[0];
     ukm_tester_.ExpectEntryMetric(entry, "Attached", false);
-    ukm_tester_.ExpectEntryMetric(entry, "InvocationSource",
-                                  static_cast<int64_t>(InvocationSource::kFre));
+    ukm_tester_.ExpectEntryMetric(
+        entry, "InvocationSource",
+        static_cast<int64_t>(mojom::InvocationSource::kFre));
     auto* source = ukm_tester_.GetSourceForSourceId(entry->source_id);
     EXPECT_FALSE(source);
   }
@@ -179,7 +182,7 @@ TEST_F(GlicMetricsTest, BasicUkm) {
           static_cast<int64_t>(mojom::WebClientMode::kText));
       ukm_tester_.ExpectEntryMetric(
           entry, "InvocationSource",
-          static_cast<int64_t>(InvocationSource::kFre));
+          static_cast<int64_t>(mojom::InvocationSource::kFre));
       auto* source = ukm_tester_.GetSourceForSourceId(entry->source_id);
       EXPECT_FALSE(source);
     }
@@ -204,7 +207,7 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
 
   controller_->showing_ = true;
   metrics_->DidRequestContextFromFocusedTab();
-  metrics_->OnGlicWindowOpen(/*attached=*/false, InvocationSource::kFre);
+  metrics_->OnGlicWindowOpen(/*attached=*/false, mojom::InvocationSource::kFre);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped();
@@ -233,7 +236,8 @@ TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
   controller_->showing_ = true;
   controller_->attached_ = true;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/true, InvocationSource::kOsButton);
+  metrics_->OnGlicWindowOpen(/*attached=*/true,
+                             mojom::InvocationSource::kOsButton);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped();
@@ -245,11 +249,12 @@ TEST_F(GlicMetricsTest, SegmentationOsButtonAttachedText) {
       /*expected_count=*/1);
 }
 
-TEST_F(GlicMetricsTest, SegmentationChroMenuDetachedAudio) {
+TEST_F(GlicMetricsTest, Segmentation3DotsMenuDetachedAudio) {
   controller_->showing_ = true;
   controller_->attached_ = false;
 
-  metrics_->OnGlicWindowOpen(/*attached=*/false, InvocationSource::kChroMenu);
+  metrics_->OnGlicWindowOpen(/*attached=*/false,
+                             mojom::InvocationSource::kThreeDotsMenu);
   metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
   metrics_->OnResponseStarted();
   metrics_->OnResponseStopped();
@@ -258,12 +263,13 @@ TEST_F(GlicMetricsTest, SegmentationChroMenuDetachedAudio) {
   histogram_tester_.ExpectTotalCount("Glic.Response.Segmentation", 1);
   histogram_tester_.ExpectBucketCount(
       "Glic.Response.Segmentation",
-      ResponseSegmentation::kChroMenuDetachedAudio,
+      ResponseSegmentation::kThreeDotsMenuDetachedAudio,
       /*expected_count=*/1);
 }
 
 TEST_F(GlicMetricsTest, SessionDuration_LogsDuration) {
-  metrics_->OnGlicWindowOpen(/*attached=*/true, InvocationSource::kOsButton);
+  metrics_->OnGlicWindowOpen(/*attached=*/true,
+                             mojom::InvocationSource::kOsButton);
   int minutes = 10;
   task_environment_.FastForwardBy(base::Minutes(minutes));
   metrics_->OnGlicWindowClose();

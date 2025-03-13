@@ -239,14 +239,7 @@ class HotseatWidgetForestTest : public HotseatWidgetTest {
   }
 };
 
-class StackedHotseatWidgetTest : public HotseatWidgetTest {
- public:
-  void SetupFeatureLists() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()}});
-  }
-};
+using StackedHotseatWidgetTest = HotseatWidgetTest;
 
 // Counts the number of times the work area changes.
 class DisplayWorkAreaChangeCounter : public display::DisplayObserver {

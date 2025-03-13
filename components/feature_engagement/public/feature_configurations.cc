@@ -2410,6 +2410,29 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.blocking.type = Blocking::Type::NONE;
     return config;
   }
+
+  if (kIPHiOSSettingsInOverflowMenuBubbleFeature.name == feature->name) {
+    // A config that allows the Settings-in-overflow-menu IPH to be shown to
+    // users. This will be triggered a maximum of 2 times (once per week).
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+
+    constexpr char kSettingsInOverflowTriggerEvent[] =
+        "settings_in_overflow_trigger";
+
+    // Show at most 2 times total.
+    config.trigger =
+        EventConfig(kSettingsInOverflowTriggerEvent, Comparator(LESS_THAN, 2),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // Show at most once per week.
+    config.event_configs.emplace(kSettingsInOverflowTriggerEvent,
+                                 Comparator(EQUAL, 0), 7, 7);
+
+    return config;
+  }
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

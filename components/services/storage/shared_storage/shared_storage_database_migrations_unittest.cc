@@ -446,7 +446,7 @@ TEST_F(SharedStorageDatabaseMigrationsTest, MigrateVersion3ToCurrent) {
 
     while (select_statement.Step()) {
       premigration_values[select_statement.ColumnInt64(0)] = std::make_tuple(
-          url::Origin::Create(GURL(select_statement.ColumnString(1))),
+          url::Origin::Create(GURL(select_statement.ColumnStringView(1))),
           select_statement.ColumnTime(2), select_statement.ColumnDouble(3));
     }
   }

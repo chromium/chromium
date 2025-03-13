@@ -7,8 +7,20 @@
 #include "base/logging.h"
 #include "base/task/common/task_annotator.h"
 #include "base/time/time.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace ui {
+namespace {
+
+void WriteBeginFrameIdToTrace(perfetto::EventContext& ctx,
+                              const viz::BeginFrameId frame_id) {
+  auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+  auto* begin_frame_id = event->set_begin_frame_id();
+  begin_frame_id->set_source_id(frame_id.source_id);
+  begin_frame_id->set_sequence_number(frame_id.sequence_number);
+}
+
+}  // namespace
 
 HostBeginFrameObserver::HostBeginFrameObserver(
     SimpleBeginFrameObserverList& observers,
@@ -28,6 +40,11 @@ void HostBeginFrameObserver::OnStandaloneBeginFrame(
   }
 
   if (pending_coalesce_callback_) {
+    TRACE_EVENT_INSTANT("ui", "HostBeginFrameObserver::continue coalescing",
+                        perfetto::Flow::Global(coalesce_flow_id_),
+                        [&](perfetto::EventContext ctx) {
+                          WriteBeginFrameIdToTrace(ctx, args.frame_id);
+                        });
     begin_frame_args_ = args;
     return;
   }
@@ -35,6 +52,12 @@ void HostBeginFrameObserver::OnStandaloneBeginFrame(
   if ((base::TimeTicks::Now() - args.frame_time) > args.interval) {
     begin_frame_args_ = args;
     pending_coalesce_callback_ = true;
+    coalesce_flow_id_ = base::trace_event::GetNextGlobalTraceId();
+    TRACE_EVENT_INSTANT("ui", "HostBeginFrameObserver::start coalescing",
+                        perfetto::Flow::Global(coalesce_flow_id_),
+                        [&](perfetto::EventContext ctx) {
+                          WriteBeginFrameIdToTrace(ctx, args.frame_id);
+                        });
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&HostBeginFrameObserver::CoalescedBeginFrame,
@@ -53,9 +76,16 @@ HostBeginFrameObserver::GetBoundRemote() {
 
 void HostBeginFrameObserver::CoalescedBeginFrame() {
   DCHECK(begin_frame_args_.IsValid());
+  TRACE_EVENT_INSTANT("ui", "HostBeginFrameObserver::finish coalescing",
+                      perfetto::Flow::Global(coalesce_flow_id_),
+                      [&](perfetto::EventContext ctx) {
+                        WriteBeginFrameIdToTrace(ctx,
+                                                 begin_frame_args_.frame_id);
+                      });
   pending_coalesce_callback_ = false;
   viz::BeginFrameArgs args = begin_frame_args_;
   begin_frame_args_ = viz::BeginFrameArgs();
+  coalesce_flow_id_ = ~0ull;
   CallObservers(args);
 }
 

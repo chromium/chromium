@@ -183,7 +183,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_TRUE(provider->SupportsSingleBuffering());
+  EXPECT_TRUE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if BUILDFLAG(IS_MAC)
@@ -193,10 +193,6 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #endif
-
-  EXPECT_FALSE(provider->IsSingleBuffered());
-  provider->TryEnableSingleBuffering();
-  EXPECT_TRUE(provider->IsSingleBuffered());
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
@@ -214,7 +210,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_FALSE(provider->SupportsSingleBuffering());
+  EXPECT_FALSE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to kRGBA8
   EXPECT_EQ(provider->GetSkImageInfo(),
@@ -243,7 +239,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   EXPECT_TRUE(provider->SupportsDirectCompositing());
 
   // We do not support single buffering for unaccelerated low latency canvas.
-  EXPECT_FALSE(provider->SupportsSingleBuffering());
+  EXPECT_FALSE(provider->IsSingleBuffered());
 
   EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
 
@@ -345,7 +341,6 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_FALSE(provider->IsSingleBuffered());
-  EXPECT_FALSE(provider->SupportsSingleBuffering());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if BUILDFLAG(IS_MAC)
@@ -593,7 +588,6 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
   EXPECT_TRUE(provider->IsValid());
   EXPECT_FALSE(provider->IsAccelerated());
   EXPECT_FALSE(provider->SupportsDirectCompositing());
-  EXPECT_FALSE(provider->SupportsSingleBuffering());
   EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 
   EXPECT_FALSE(provider->IsSingleBuffered());
@@ -633,11 +627,8 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsValid());
   EXPECT_FALSE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_FALSE(provider->SupportsSingleBuffering());
   EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 
-  EXPECT_FALSE(provider->IsSingleBuffered());
-  provider->TryEnableSingleBuffering();
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
@@ -661,7 +652,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_TRUE(provider->SupportsSingleBuffering());
+  EXPECT_TRUE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
   // will internally force it to RGBA8, or BGRA8 on MacOS
 #if BUILDFLAG(IS_MAC)
@@ -671,10 +662,6 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
 #endif
-
-  EXPECT_FALSE(provider->IsSingleBuffered());
-  provider->TryEnableSingleBuffering();
-  EXPECT_TRUE(provider->IsSingleBuffered());
 }
 
 TEST_F(CanvasResourceProviderTest,
@@ -691,12 +678,8 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_TRUE(provider->SupportsSingleBuffering());
-  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
-
-  EXPECT_FALSE(provider->IsSingleBuffered());
-  provider->TryEnableSingleBuffering();
   EXPECT_TRUE(provider->IsSingleBuffered());
+  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 
   auto client_si = gpu::ClientSharedImage::CreateForTesting();
 
@@ -821,7 +804,6 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
   EXPECT_TRUE(provider->IsValid());
   EXPECT_TRUE(provider->IsAccelerated());
   EXPECT_TRUE(provider->SupportsDirectCompositing());
-  EXPECT_TRUE(provider->SupportsSingleBuffering());
   EXPECT_TRUE(provider->IsSingleBuffered());
   EXPECT_EQ(provider->GetSkImageInfo(), kInfo);
 }

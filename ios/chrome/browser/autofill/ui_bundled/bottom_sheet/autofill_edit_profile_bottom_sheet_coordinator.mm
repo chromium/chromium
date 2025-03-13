@@ -6,27 +6,18 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/debug/dump_without_crashing.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
-#import "components/infobars/core/infobar.h"
-#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_table_view_controller.h"
-#import "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -36,6 +27,7 @@
     AutofillEditProfileBottomSheetTableViewControllerDelegate,
     AutofillProfileEditMediatorDelegate,
     UIAdaptivePresentationControllerDelegate>
+
 @end
 
 @implementation AutofillEditProfileBottomSheetCoordinator {
@@ -54,10 +46,14 @@
   AutofillProfileEditMediator* _autofillProfileEditMediator;
 
   raw_ptr<autofill::PersonalDataManager> _personalDataManager;
-  raw_ptr<web::WebState> _webState;
 
   // The action sheet coordinator, if one is currently being shown.
   ActionSheetCoordinator* _actionSheetCoordinator;
+
+  // Handler that manages the process of saving addresses, either by creating a
+  // new address record or by editing an existing one before saving, depending
+  // on the context in which this coordinator is used.
+  __weak id<AutofillEditProfileBottomSheetHandler> _handler;
 }
 
 - (instancetype)
@@ -74,7 +70,8 @@
     _personalDataManager =
         autofill::PersonalDataManagerFactory::GetForProfile(profile);
 
-    _webState = browser->GetWebStateList()->GetActiveWebState();
+    CHECK(handler);
+    _handler = handler;
   }
   return self;
 }
@@ -82,40 +79,26 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegate];
-  CHECK(delegate);
-  _autofillProfile =
-      std::make_unique<autofill::AutofillProfile>(*delegate->GetProfile());
-
-  AutofillSaveProfilePromptMode saveProfilePromptMode =
-      AutofillSaveProfilePromptMode::kNewProfile;
-  if (delegate->IsMigrationToAccount()) {
-    saveProfilePromptMode = AutofillSaveProfilePromptMode::kMigrateProfile;
-  } else if (delegate->GetOriginalProfile() != nullptr) {
-    saveProfilePromptMode = AutofillSaveProfilePromptMode::kUpdateProfile;
-  }
+  _autofillProfile = [_handler autofillProfile];
 
   _autofillProfileEditMediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
       personalDataManager:_personalDataManager
           autofillProfile:_autofillProfile.get()
-        isMigrationPrompt:delegate->IsMigrationToAccount()];
+        isMigrationPrompt:[_handler isMigrationToAccount]];
 
   // Bottom sheet table VC
   AutofillEditProfileBottomSheetTableViewController* editModalViewController =
       [[AutofillEditProfileBottomSheetTableViewController alloc]
           initWithDelegate:self
-             editSheetMode:saveProfilePromptMode];
+             editSheetMode:[_handler saveProfilePromptMode]];
 
   // View controller that lays down the table views for the edit profile view.
   _autofillProfileEditTableViewController =
       [[AutofillProfileEditTableViewController alloc]
           initWithDelegate:_autofillProfileEditMediator
-                 userEmail:(delegate->UserAccountEmail()
-                                ? base::SysUTF16ToNSString(
-                                      delegate->UserAccountEmail().value())
-                                : nil)controller:editModalViewController
+                 userEmail:[_handler userEmail]
+                controller:editModalViewController
               settingsView:NO];
   _autofillProfileEditMediator.consumer =
       _autofillProfileEditTableViewController;
@@ -241,14 +224,7 @@
 }
 
 - (void)didSaveProfile {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegateAndAcceptInfobar];
-
-  if (delegate) {
-    delegate->SetProfile(_autofillProfile.get());
-    delegate->EditAccepted();
-  }
-
+  [_handler didSaveProfile:_autofillProfile.get()];
   [self stop];
 }
 
@@ -266,70 +242,12 @@
 #pragma mark - AutofillEditProfileBottomSheetTableViewControllerDelegate
 
 - (void)didCancelBottomSheetView {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegate];
-  if (delegate->IsMigrationToAccount()) {
-    delegate->Never();
-    infobars::InfoBar* infobar = [self addressInfobar];
-    if (infobar) {
-      InfoBarManagerImpl::FromWebState(_webState)->RemoveInfoBar(infobar);
-    }
-  } else {
-    delegate->EditDeclined();
-  }
+  [_handler didCancelBottomSheetView];
 
   [self stop];
 }
 
 #pragma mark - Private
-
-- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)
-    fetchDelegateAndAcceptInfobar {
-  InfoBarIOS* infobar = static_cast<InfoBarIOS*>([self addressInfobar]);
-  if (!infobar) {
-    return nullptr;
-  }
-
-  infobar->set_accepted(YES);
-  return [self fetchDelegateFromInfobar:infobar];
-}
-
-- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)fetchDelegate {
-  InfoBarIOS* infobar = static_cast<InfoBarIOS*>([self addressInfobar]);
-  if (!infobar) {
-    return nullptr;
-  }
-
-  return [self fetchDelegateFromInfobar:infobar];
-}
-
-- (infobars::InfoBar*)addressInfobar {
-  if (!_webState) {
-    // Stop here if the '_webState' was deleted. Doing anything further is
-    // unsafe.
-    base::debug::DumpWithoutCrashing();
-    return nullptr;
-  }
-
-  InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(_webState);
-  CHECK(manager);
-  const auto it = std::ranges::find(
-      manager->infobars(), InfobarType::kInfobarTypeSaveAutofillAddressProfile,
-      [](const infobars::InfoBar* infobar) {
-        return static_cast<const InfoBarIOS*>(infobar)->infobar_type();
-      });
-
-  return it != manager->infobars().cend() ? *it : nullptr;
-}
-
-- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)
-    fetchDelegateFromInfobar:(InfoBarIOS*)infobar {
-  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
-          FromInfobarDelegate(infobar->delegate());
-
-  return delegate;
-}
 
 - (void)dismissActionSheetCoordinator {
   [_actionSheetCoordinator stop];

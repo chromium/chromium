@@ -25,6 +25,7 @@ GroupSuggestionsServiceImpl::GroupSuggestionsServiceImpl(
 
 GroupSuggestionsServiceImpl::~GroupSuggestionsServiceImpl() {
   tab_events_transformer_->set_tab_event_tracker(nullptr);
+  ClearAllUserData();
 }
 
 TabEventTracker* GroupSuggestionsServiceImpl::GetTabEventTracker() {

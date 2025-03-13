@@ -7,13 +7,15 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -73,10 +75,7 @@ std::string GenerateJWKSet(base::span<const uint8_t> key,
   jwk_set.Set(kKeysTag, std::move(list));
 
   // Finally serialize |jwk_set| into a string and return it.
-  std::string serialized_jwk;
-  JSONStringValueSerializer serializer(&serialized_jwk);
-  serializer.Serialize(base::Value(std::move(jwk_set)));
-  return serialized_jwk;
+  return base::WriteJson(jwk_set).value_or(std::string());
 }
 
 std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
@@ -100,10 +99,7 @@ std::string GenerateJWKSet(const KeyIdAndKeyPairs& keys,
   }
 
   // Finally serialize |jwk_set| into a string and return it.
-  std::string serialized_jwk;
-  JSONStringValueSerializer serializer(&serialized_jwk);
-  serializer.Serialize(base::Value(std::move(jwk_set)));
-  return serialized_jwk;
+  return base::WriteJson(jwk_set).value_or(std::string());
 }
 
 // Processes a JSON Web Key to extract the key id and key value. Sets |jwk_key|
@@ -312,12 +308,11 @@ void CreateLicenseRequest(const KeyIdList& key_ids,
   }
 
   // Serialize the license request as a string.
-  std::string json;
-  JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(request);
+  std::optional<std::string> json =
+      base::WriteJson(request).value_or(std::string());
 
   // Convert the serialized license request into std::vector and return it.
-  std::vector<uint8_t> result(json.begin(), json.end());
+  std::vector<uint8_t> result(json->begin(), json->end());
   license->swap(result);
 }
 
@@ -340,12 +335,11 @@ base::Value::Dict MakeKeyIdsDictionary(const KeyIdList& key_ids) {
 std::vector<uint8_t> SerializeDictionaryToVector(
     const base::Value::Dict& dictionary) {
   // Serialize the dictionary as a string.
-  std::string json;
-  JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(dictionary);
+  std::optional<std::string> json =
+      base::WriteJson(dictionary).value_or(std::string());
 
   // Convert the serialized data into std::vector and return it.
-  return std::vector<uint8_t>(json.begin(), json.end());
+  return std::vector<uint8_t>(json->begin(), json->end());
 }
 
 void CreateKeyIdsInitData(const KeyIdList& key_ids,

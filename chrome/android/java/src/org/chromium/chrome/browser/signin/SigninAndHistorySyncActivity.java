@@ -111,6 +111,10 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
 
         if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
             updateSystemUiForFullscreenSignin();
+
+            // Workaround for https://crbug.com/172602571. See https://crbug.com/394559360
+            intent.setExtrasClassLoader(
+                    FullscreenSigninAndHistorySyncConfig.class.getClassLoader());
             FullscreenSigninAndHistorySyncConfig config =
                     intent.getParcelableExtra(ARGUMENT_FULLSCREEN_SIGNIN_CONFIG);
             mIsFullscreenPromo = true;
@@ -140,6 +144,9 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         }
 
         setStatusBarColor(Color.TRANSPARENT);
+
+        // Workaround for https://crbug.com/172602571. See https://crbug.com/394559360
+        intent.setExtrasClassLoader(BottomSheetSigninAndHistorySyncConfig.class.getClassLoader());
         BottomSheetSigninAndHistorySyncConfig config =
                 intent.getParcelableExtra(ARGUMENT_BOTTOM_SHEET_SIGNIN_CONFIG);
         mCoordinator =

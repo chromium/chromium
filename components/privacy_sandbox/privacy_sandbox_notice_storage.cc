@@ -472,9 +472,14 @@ void PrivacySandboxNoticeStorage::SetNoticeActionTaken(
   }
 
   // Emitting histograms.
+  // TODO(chrstne): Deprecate NoticeAction histogram once it is no longer used
+  // in other codepaths.
   base::UmaHistogramEnumeration(
       base::StrCat({"PrivacySandbox.Notice.NoticeAction.", notice}),
       NoticeEventToNoticeAction(notice_action_taken));
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PrivacySandbox.Notice.NoticeEvent.", notice}),
+      notice_action_taken);
 
   base::Value::Dict entry =
       BuildDictEntryEvent(notice_action_taken, notice_action_taken_time);
@@ -530,8 +535,13 @@ void PrivacySandboxNoticeStorage::SetNoticeShown(PrefService* pref_service,
       ->EnsureList(kPrivacySandboxEvents)
       ->Append(std::move(entry));
 
+  // TODO(chrstne): Deprecate NoticeShown histogram once it is no longer used
+  // in other codepaths.
   base::UmaHistogramBoolean(
       base::StrCat({"PrivacySandbox.Notice.NoticeShown.", notice}), true);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PrivacySandbox.Notice.NoticeEvent.", notice}),
+      NoticeEvent::kShown);
 
   auto notice_data = ReadNoticeData(pref_service, notice);
   if (*notice_data->GetNoticeFirstShownFromEvents() == notice_shown_time) {

@@ -76,6 +76,9 @@ class GlicFreController {
   // Closes the FRE dialog.
   void DismissFre();
 
+  // Notify FRE controller that the user clicked on a link.
+  void OnLinkClicked(const GURL& url);
+
   // Returns the WebContents from the dialog view.
   content::WebContents* GetWebContents();
 

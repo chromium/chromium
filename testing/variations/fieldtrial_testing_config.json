@@ -8111,6 +8111,22 @@
             ]
         }
     ],
+    "DeviceBoundSessionCredentials": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250312",
+                    "enable_features": [
+                        "DeviceBoundSessions",
+                        "PersistDeviceBoundSessions"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeviceIdValidation": [
         {
             "platforms": [
@@ -9781,6 +9797,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FastPairKeyboards"
+                    ]
+                }
+            ]
+        }
+    ],
+    "FastPathNoRaster": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "linux",
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FastPathNoRaster"
                     ]
                 }
             ]
@@ -16769,21 +16805,6 @@
             ]
         }
     ],
-    "PasswordLeakToggleMove": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordLeakToggleMove"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordManualFallbackAvailable": [
         {
             "platforms": [
@@ -18241,6 +18262,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PrivacySandboxAllowPromptForBlocked3PCookies"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrivacySandboxAttestationsDefaultDeny": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "DefaultAllowPrivacySandboxAttestations"
                     ]
                 }
             ]
@@ -23039,25 +23079,6 @@
             ]
         }
     ],
-    "SplitCacheByNavigationInitiatorSite": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "CrossSiteMainFrameNavigationBoolean_CANARY_DEV_20240916",
-                    "enable_features": [
-                        "SplitCacheByCrossSiteMainFrameNavigationBoolean"
-                    ]
-                }
-            ]
-        }
-    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
@@ -24350,26 +24371,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PreloadMediaEngagementData"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UnoDesktopM0Followup": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillRemovePaymentsButterDropdown",
-                        "ImprovedSettingsUIOnDesktop",
-                        "ImprovedSigninUIOnDesktop",
-                        "OutlineSilhouetteIcon"
                     ]
                 }
             ]

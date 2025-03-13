@@ -100,7 +100,7 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   uint32_t GetLoadedByteSize() override;
 
-  bool ReadLoadedBytes(uint32_t length, void* buffer) override;
+  bool ReadLoadedBytes(base::span<uint8_t> buffer) override;
 
   MOCK_METHOD(void,
               RequestThumbnail,

@@ -21,7 +21,6 @@ use guppy::{
         PackageMetadata, PackageQuery, PackageSet,
     },
     platform::PlatformStatus,
-    PackageId,
 };
 use itertools::Itertools;
 pub use semver::Version;
@@ -72,6 +71,30 @@ pub struct Package {
 impl Package {
     pub fn crate_id(&self) -> crates::VendoredCrate {
         crates::VendoredCrate { name: self.package_name.clone(), version: self.version.clone() }
+    }
+}
+
+#[derive(Debug, Eq, Hash, Ord, PartialOrd, PartialEq)]
+pub struct PackageId {
+    name: String,
+    version: Version,
+}
+
+impl From<&Package> for PackageId {
+    fn from(p: &Package) -> Self {
+        Self { name: p.package_name.clone(), version: p.version.clone() }
+    }
+}
+
+impl<'g> From<&PackageMetadata<'g>> for PackageId {
+    fn from(p: &PackageMetadata<'g>) -> Self {
+        Self { name: p.name().to_string(), version: p.version().clone() }
+    }
+}
+
+impl From<&cargo_metadata::Package> for PackageId {
+    fn from(p: &cargo_metadata::Package) -> Self {
+        Self { name: p.name.clone(), version: p.version.clone() }
     }
 }
 
@@ -319,7 +342,9 @@ struct PackageResolver<'a> {
 
 /// Gets the key to use in `cargo_set_links` `HashSet`.
 fn get_link_key(link: &PackageLink) -> (PackageId, PackageId) {
-    (link.from().id().clone(), link.to().id().clone())
+    let from = &link.from();
+    let to = &link.to();
+    (from.into(), to.into())
 }
 
 fn get_link_condition(link: &PackageLink, dep_kind: guppy::DependencyKind) -> Condition {

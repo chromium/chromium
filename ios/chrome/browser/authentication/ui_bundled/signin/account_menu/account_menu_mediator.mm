@@ -234,7 +234,8 @@
   self.userInteractionsBlocked = YES;
   [self.delegate mediatorWantsToBeDismissed:self
                                  withResult:SigninCoordinatorResultInterrupted
-                             signedIdentity:nil];
+                             signedIdentity:nil
+                            userTappedClose:NO];
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
@@ -276,7 +277,8 @@
   self.userInteractionsBlocked = YES;
   [_delegate mediatorWantsToBeDismissed:self
                              withResult:SigninCoordinatorResultCanceledByUser
-                         signedIdentity:nil];
+                         signedIdentity:nil
+                        userTappedClose:YES];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect {
@@ -424,7 +426,8 @@
     // SigninCoordinatorResult.
     [_delegate mediatorWantsToBeDismissed:self
                                withResult:SigninCoordinatorResultCanceledByUser
-                           signedIdentity:nil];
+                           signedIdentity:nil
+                          userTappedClose:NO];
   } else {
     // User had not signed-out. Allow to interact with the UI.
     self.userInteractionsBlocked = NO;
@@ -443,7 +446,8 @@
     [_delegate triggerAccountSwitchSnackbarWithIdentity:newIdentity];
     [_delegate mediatorWantsToBeDismissed:self
                                withResult:result
-                           signedIdentity:newIdentity];
+                           signedIdentity:newIdentity
+                          userTappedClose:NO];
   } else if (_accountManagerService->IsValidIdentity(previousIdentity)) {
     // If the sign-in failed, sign back in previous account if possible and
     // restart using the account menu.
@@ -455,7 +459,8 @@
   } else {
     [_delegate mediatorWantsToBeDismissed:self
                                withResult:result
-                           signedIdentity:nil];
+                           signedIdentity:nil
+                          userTappedClose:NO];
   }
 }
 

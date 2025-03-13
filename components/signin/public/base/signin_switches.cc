@@ -139,7 +139,7 @@ BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
 
 BASE_FEATURE(kImprovedSigninUIOnDesktop,
              "ImprovedSigninUIOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsImprovedSigninUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
@@ -147,7 +147,12 @@ bool IsImprovedSigninUIOnDesktopEnabled() {
 
 BASE_FEATURE(kImprovedSettingsUIOnDesktop,
              "ImprovedSettingsUIOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 bool IsImprovedSettingsUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kImprovedSettingsUIOnDesktop);
@@ -240,7 +245,7 @@ BASE_FEATURE(kProfilesReordering,
 
 BASE_FEATURE(kOutlineSilhouetteIcon,
              "OutlineSilhouetteIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,

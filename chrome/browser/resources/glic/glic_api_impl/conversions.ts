@@ -87,3 +87,5 @@ assertNever<CheckEnumCompatibility<
     typeof api.CaptureScreenshotErrorReason>>();
 assertNever<CheckEnumCompatibility<
     typeof mojom.ScrollToErrorReason, typeof api.ScrollToErrorReason>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.InvocationSource, typeof api.InvocationSource>>();

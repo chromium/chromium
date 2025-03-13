@@ -30,11 +30,11 @@ class GapFragmentData {
   class GapIntersection {
    public:
     GapIntersection() = default;
-    GapIntersection(LayoutUnit column_offset, LayoutUnit row_offset)
-        : column_offset(column_offset), row_offset(row_offset) {}
+    GapIntersection(LayoutUnit inline_offset, LayoutUnit block_offset)
+        : inline_offset(inline_offset), block_offset(block_offset) {}
 
-    LayoutUnit column_offset;
-    LayoutUnit row_offset;
+    LayoutUnit inline_offset;
+    LayoutUnit block_offset;
 
     // Represents whether the intersection point is blocked before or after
     // due to the presence of a spanning item.

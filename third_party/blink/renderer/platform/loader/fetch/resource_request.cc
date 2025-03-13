@@ -522,8 +522,8 @@ bool ResourceRequest::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
     return false;
   }
 
-  return policy->IsFeatureEnabledForSubresourceRequestAssumingOptIn(feature,
-                                                                    origin);
+  return policy->IsFeatureEnabledForOrigin(
+      feature, origin, /*override_default_policy_to_all=*/true);
 }
 
 }  // namespace blink

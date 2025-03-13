@@ -92,9 +92,8 @@ void AILanguageDetectorFactory::AILanguageDetectorCreateTask::OnModelLoaded(
     // TODO (crbug.com/383022111): Pass the real download progress rather than
     // mocking one.
     if (monitor_) {
-      monitor_->OnDownloadProgressUpdate(0, model->GetModelSize());
-      monitor_->OnDownloadProgressUpdate(model->GetModelSize(),
-                                         model->GetModelSize());
+      monitor_->OnDownloadProgressUpdate(0, 0x10000);
+      monitor_->OnDownloadProgressUpdate(0x10000, 0x10000);
     }
     resolver_->Resolve(
         MakeGarbageCollected<AILanguageDetector>(model, task_runner_));
@@ -191,32 +190,6 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
         create_task->CreateDetector(std::move(model_file));
       },
       RejectOnDestructionHelper(resolver), WrapPersistent(create_task)));
-
-  return resolver->Promise();
-}
-
-ScriptPromise<AILanguageDetectorCapabilities>
-AILanguageDetectorFactory::capabilities(ScriptState* script_state,
-                                        ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid() || !GetExecutionContext()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return EmptyPromise();
-  }
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<AILanguageDetectorCapabilities>>(script_state);
-  // The call may silently fail on mojo connection errors. The
-  // RejectOnDestructionHelper class is created to reject the promise if
-  // such error happens.
-  GetLanguageDetectionDriverRemote()->GetLanguageDetectionModelStatus(
-      WTF::BindOnce(
-          [](RejectOnDestructionHelper<AILanguageDetectorCapabilities> resolver,
-             AILanguageDetectorCapabilities::LanguageDetectionModelStatus
-                 status) {
-            resolver.Take()->Resolve(
-                MakeGarbageCollected<AILanguageDetectorCapabilities>(status));
-          },
-          RejectOnDestructionHelper(resolver)));
 
   return resolver->Promise();
 }

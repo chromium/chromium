@@ -295,12 +295,6 @@ void WorkerThreadScheduler::PostIdleTask(const base::Location& location,
   IdleTaskRunner()->PostIdleTask(location, std::move(task));
 }
 
-void WorkerThreadScheduler::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
-}
-
 void WorkerThreadScheduler::RemoveCancelledIdleTasks() {
   idle_helper_.RemoveCancelledIdleTasks();
 }

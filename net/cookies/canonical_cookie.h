@@ -11,30 +11,29 @@
 #include <string_view>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/gtest_prod_util.h"
 #include "base/rand_util.h"
-#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "crypto/process_bound_string.h"
-#include "net/base/features.h"
 #include "net/base/net_export.h"
-#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/unique_cookie_key.h"
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
 
+namespace base {
+class Time;
+}  // namespace base
+
 namespace net {
 
 class ParsedCookie;
 class CanonicalCookie;
+class CookieInclusionStatus;
+class CookiePartitionKey;
 
 struct CookieWithAccessResult;
 struct CookieAndLineWithAccessResult;

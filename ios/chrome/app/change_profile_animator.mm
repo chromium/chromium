@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/change_profile_animator.h"
 
+#import <MaterialComponents/MaterialOverlayWindow.h>
 #import <objc/runtime.h>
 
 #import "base/functional/bind.h"
@@ -28,29 +29,166 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
   }
 }
 
+// Duration for the fade-in and fade-out of the change profile animation.
+constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
+
 }  // namespace
+
+@interface ChangeProfileAnimation : NSObject
+
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithWindow:(MDCOverlayWindow*)window
+    NS_DESIGNATED_INITIALIZER;
+
+// Captures a snapshot of the view presented by the window, install it as
+// an overlay, and start an animation to blur that view during `duration`.
+- (void)blurWithDuration:(base::TimeDelta)duration;
+
+// Removes the snapshot overlay, and remove the blur effect in `duration`.
+// If called while the blur animation is in progress, the unblur will wait
+// for the blur animation to complete before starting.
+- (void)unblurWithDuration:(base::TimeDelta)duration;
+
+@end
+
+@implementation ChangeProfileAnimation {
+  // The window on which the animations should be played.
+  __weak MDCOverlayWindow* _window;
+
+  // Visual effect view used to animate the blur and unblur animations.
+  UIVisualEffectView* _effectView;
+
+  // Snapshot of the old UI captured when the blur animation is started.
+  UIView* _snapshotView;
+
+  // Records whether the blur animation is in progress. Used to delay
+  // the unblur animation if the profile initialisation was faster than
+  // the blur animation.
+  BOOL _blurInProgress;
+
+  // Store the duration passed if -unblurWithDuration: was called while
+  // the blur animation was still in progress. If it has a value when
+  // the blur animation completes, the unblur will start automatically
+  // with that duration.
+  std::optional<base::TimeDelta> _unblurDuration;
+}
+
+- (instancetype)initWithWindow:(MDCOverlayWindow*)window {
+  if ((self = [super init])) {
+    _window = window;
+  }
+  return self;
+}
+
+- (void)blurWithDuration:(base::TimeDelta)duration {
+  UIView* view = _window.rootViewController.view;
+  if (!view) {
+    return;
+  }
+
+  _effectView = [[UIVisualEffectView alloc] initWithEffect:nil];
+  _snapshotView = [view snapshotViewAfterScreenUpdates:NO];
+
+  // Install the snapshot and the effect view as overlays above the UIWindow.
+  // The effect initially does nothing, but it is possible to animate it by
+  // setting the -effect property in an animation block.
+  [_window activateOverlay:_snapshotView withLevel:UIWindowLevelNormal];
+  [_window activateOverlay:_effectView withLevel:(UIWindowLevelNormal + 1.0)];
+
+  _blurInProgress = YES;
+
+  // Use `self` to allow the block to retain the object until the animation
+  // completes. This is required because the ChangeProfileAnimator drops its
+  // reference after starting the fade out.
+  [UIView animateWithDuration:duration.InSecondsF()
+      animations:^{
+        [self blurAnimations];
+      }
+      completion:^(BOOL) {
+        [self blurComplete];
+      }];
+}
+
+- (void)unblurWithDuration:(base::TimeDelta)duration {
+  if (_blurInProgress) {
+    _unblurDuration = duration;
+    return;
+  }
+
+  if (!_snapshotView) {
+    return;
+  }
+
+  [_window deactivateOverlay:_snapshotView];
+  _snapshotView = nil;
+
+  // Use `self` to allow the block to retain the object until the animation
+  // completes. This is required because the ChangeProfileAnimator drops its
+  // reference after starting the fade out.
+  [UIView animateWithDuration:duration.InSecondsF()
+      animations:^{
+        [self unblurAnimations];
+      }
+      completion:^(BOOL) {
+        [self unblurComplete];
+      }];
+}
+
+// Performs the view changes to animate as part of the blur animation.
+- (void)blurAnimations {
+  _effectView.effect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
+}
+
+// Invoked when the blur animation is complete. Will invoke the unblur
+// animation if it was requested while the blur animation was still in
+// progress.
+- (void)blurComplete {
+  _blurInProgress = NO;
+  if (_unblurDuration.has_value()) {
+    base::TimeDelta duration = *_unblurDuration;
+    _unblurDuration = std::nullopt;
+
+    [self unblurWithDuration:duration];
+    return;
+  }
+}
+
+// Performs the view changes to animate as part of the unblur animation.
+- (void)unblurAnimations {
+  _effectView.effect = nil;
+}
+
+// Invoked when the unblur animation is complete. Should remove all the
+// view used for the animations.
+- (void)unblurComplete {
+  [_window deactivateOverlay:_effectView];
+  _effectView = nil;
+}
+
+@end
 
 @interface ChangeProfileAnimator () <ProfileStateObserver, SceneStateObserver>
 @end
 
 @implementation ChangeProfileAnimator {
-  __weak UIViewController* _viewController;
+  ChangeProfileAnimation* _animation;
   __weak SceneState* _sceneState;
   ProfileInitStage _minimumInitStage;
   ChangeProfileContinuation _continuation;
 }
 
-- (instancetype)initWithViewController:(UIViewController*)viewController {
+- (instancetype)initWithWindow:(MDCOverlayWindow*)window {
   if ((self = [super init])) {
-    _viewController = viewController;
+    if (window) {
+      _animation = [[ChangeProfileAnimation alloc] initWithWindow:window];
+    }
   }
   return self;
 }
 
 - (void)startAnimation {
-  // TODO(crbug.com/385091409): implement an animation. This is not possible
-  // for the moment because the UIWindow's rootViewController is directly
-  // accessed and changed by the UI code.
+  [_animation blurWithDuration:kAnimationDuration];
 }
 
 - (void)waitForSceneState:(SceneState*)sceneState
@@ -96,9 +234,7 @@ void InvokeChangeProfileContinuation(ChangeProfileContinuation continuation,
 // Stops the animation (if it has been started). No-op if the animation
 // has not been started or already stopped.
 - (void)stopAnimation {
-  // TODO(crbug.com/385091409): implement an animation. This is not possible
-  // for the moment because the UIWindow's rootViewController is directly
-  // accessed and changed by the UI code.
+  [_animation unblurWithDuration:kAnimationDuration];
 }
 
 // Called when the initialisation progressed (i.e. the state of any of the

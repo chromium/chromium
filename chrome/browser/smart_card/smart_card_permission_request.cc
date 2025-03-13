@@ -44,6 +44,10 @@ std::optional<std::u16string> SmartCardPermissionRequest::GetAllowAlwaysText()
   return l10n_util::GetStringUTF16(IDS_SMART_CARD_PERMISSION_ALWAYS_ALLOW);
 }
 
+std::optional<std::u16string> SmartCardPermissionRequest::GetBlockText() const {
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW);
+}
+
 void SmartCardPermissionRequest::OnPermissionDecided(
     ContentSetting content_setting_result,
     bool is_one_time,

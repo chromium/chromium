@@ -84,6 +84,24 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Watch Position"/>
 </enum>
 
+<!-- LINT.IfChange(GoogleOneOutcome) -->
+
+<enum name="GoogleOneOutcome">
+  <int value="0" label="Success (User likely purchased a plan)"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Unspecified GoogleOne error"/>
+  <int value="3" label="Flow externally interrupted"/>
+  <int value="4" label="Flow interrupted to open a link"/>
+  <int value="5" label="Flow interrupted by the user"/>
+  <int value="6" label="GoogleOne already presented"/>
+  <int value="7" label="Purchase failed"/>
+  <int value="8" label="Flow continued in another app"/>
+  <int value="9" label="Flow could not launch"/>
+  <int value="10" label="Invalid parameters"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/google_one/coordinator/google_one_coordinator.mm:GoogleOneOutcome) -->
+
 <enum name="InactiveTabsThresholdSettingType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Never Move"/>

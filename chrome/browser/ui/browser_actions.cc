@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -79,6 +80,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -313,6 +315,7 @@ void BrowserActions::InitializeBrowserActions() {
           .SetText(l10n_util::GetStringUTF16((IDS_ZOOM_NORMAL)))
           .SetTooltipText(l10n_util::GetStringUTF16((IDS_TOOLTIP_ZOOM)))
           .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
+          .SetProperty(views::kElementIdentifierKey, kActionItemZoomElementId)
           .Build());
 
   //------- Chrome Menu Actions --------//

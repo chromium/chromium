@@ -232,7 +232,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, Close) {
   response_reader->Close(close_future.GetCallback());
   ASSERT_TRUE(close_future.Wait());
 
-  EXPECT_EQ(raw_reader->GetState(), SignedWebBundleReader::State::kClosed);
+  EXPECT_TRUE(raw_reader->IsClosed());
 
   // If the response_reader is closed, then reading the response should return
   // `net::ERR_FAILED`.

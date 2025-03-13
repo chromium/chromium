@@ -63,6 +63,9 @@ class PermissionPromptBaseView : public views::BubbleDialogDelegateView,
   static std::u16string GetAllowAlwaysText(
       const std::vector<raw_ptr<permissions::PermissionRequest,
                                 VectorExperimental>>& visible_requests);
+  static std::u16string GetBlockText(
+      const std::vector<raw_ptr<permissions::PermissionRequest,
+                                VectorExperimental>>& visible_requests);
 
   // Starts observing our widget for occlusion by a picture-in-picture window.
   // Subclasses must manually call this if they override `AddedToWidget()`

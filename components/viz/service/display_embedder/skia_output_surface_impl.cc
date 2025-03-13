@@ -773,10 +773,11 @@ SkiaOutputSurfaceImpl::CreateImageContext(
     bool maybe_concurrent_reads,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
+    GrSurfaceOrigin origin,
     bool raw_draw_if_possible) {
   return std::make_unique<ImageContextImpl>(
       mailbox, sync_token, texture_target, size, format, maybe_concurrent_reads,
-      ycbcr_info, std::move(color_space),
+      ycbcr_info, std::move(color_space), origin,
       /*is_for_render_pass=*/false, raw_draw_if_possible);
 }
 
@@ -988,6 +989,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromRenderPass(
         mailbox, gpu::SyncToken(), GL_TEXTURE_2D, size, format,
         /*maybe_concurrent_reads=*/false,
         /*ycbcr_info=*/std::nullopt, std::move(color_space),
+        kTopLeft_GrSurfaceOrigin,
         /*is_for_render_pass=*/true);
   }
   if (!image_context->has_image()) {

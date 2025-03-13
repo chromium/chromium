@@ -189,6 +189,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH},
       {"iconLabelBrowserSearch",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH},
+      {"iconLabelCameraAccessToggle",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CAMERA_ACCESS_TOGGLE},
       {"iconLabelContextMenu",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU},
       {"iconLabelDoNotDisturb",

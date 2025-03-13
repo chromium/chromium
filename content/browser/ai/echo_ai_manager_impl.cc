@@ -26,7 +26,7 @@ namespace content {
 namespace {
 
 const int kMockDownloadPreparationTimeMillisecond = 300;
-const int kMockModelSizeBytes = 3000;
+const int kMockModelSizeBytes = 0x10000;
 
 using blink::mojom::AILanguageCodePtr;
 

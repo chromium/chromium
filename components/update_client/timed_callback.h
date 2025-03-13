@@ -10,7 +10,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 
@@ -43,26 +42,27 @@ namespace update_client {
 //           base::Seconds(30),
 //           std::nullopt));
 //
-template <typename ReturnType, typename... Args>
-base::OnceCallback<ReturnType(Args...)> MakeTimedCallback(
-    base::OnceCallback<ReturnType(Args...)> callback,
+template <typename ReturnType, typename... CallbackArgs, typename... Args>
+base::OnceCallback<ReturnType(CallbackArgs...)> MakeTimedCallback(
+    base::OnceCallback<ReturnType(CallbackArgs...)> callback,
     base::TimeDelta timeout,
-    Args... timeout_args) {
-  auto wrapper =
-      std::make_unique<base::CancelableOnceCallback<ReturnType(Args...)>>(
-          std::move(callback));
+    Args&&... timeout_args) {
+  auto wrapper = std::make_unique<
+      base::CancelableOnceCallback<ReturnType(CallbackArgs...)>>(
+      std::move(callback));
   // Both callbacks must be constructed before either has a chance to run.
   // `callback_1` will be run with the `timeout_args` after `timeout`.
   // When either callback is run, they invalidate CancelableCallback's internal
   // weak pointers, and the other callback becomes a no-op.
   base::OnceCallback<ReturnType()> callback_1 =
-      base::BindOnce(wrapper->callback(), std::move(timeout_args)...);
-  base::OnceCallback<ReturnType(Args...)> callback_2 = wrapper->callback();
-
+      base::BindOnce(wrapper->callback(), std::forward<Args>(timeout_args)...);
+  base::OnceCallback<ReturnType(CallbackArgs...)> callback_2 =
+      wrapper->callback();
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](std::unique_ptr<base::CancelableOnceCallback<ReturnType(Args...)>>
+          [](std::unique_ptr<
+                 base::CancelableOnceCallback<ReturnType(CallbackArgs...)>>
              /* wrapper */,  // This callback takes ownership of `wrapper`.
              base::OnceCallback<ReturnType()> callback_1) {
             std::move(callback_1).Run();

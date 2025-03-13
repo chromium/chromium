@@ -49,6 +49,10 @@
     accessoryTrailingView:(UIView*)trailingView
                completion:(void (^)(BOOL finished))completion;
 
+// Sets whether the UI is in compact mode, so that the keyboard accessory can
+// adapt to the compact size class if necessary.
+- (void)setIsCompact:(BOOL)isCompact;
+
 // Reset content insets back to zero and sets the delegate to nil. Used to stop
 // hearing for the pull gesture to reset and unlock the trailing view.
 - (void)resetContentInsetAndDelegateAnimated:(BOOL)animated;

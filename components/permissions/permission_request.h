@@ -147,6 +147,13 @@ class PermissionRequest {
   // The default implementation returns std::nullopt (ie, use generic text).
   virtual std::optional<std::u16string> GetAllowAlwaysText() const;
 
+  // Returns the text to be used in the "block" button of the permission
+  // prompt.
+  //
+  // If not provided, the generic text for this button will be used instead.
+  // The default implementation returns std::nullopt (ie, use generic text).
+  virtual std::optional<std::u16string> GetBlockText() const;
+
   // Whether the request was initiated by the user clicking on the permission
   // element.
   bool IsEmbeddedPermissionElementInitiated() const;

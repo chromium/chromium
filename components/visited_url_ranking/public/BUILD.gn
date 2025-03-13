@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 source_set("public") {
   sources = [
     "decoration.cc",
@@ -81,4 +87,15 @@ source_set("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (is_android) {
+  android_library("public_java") {
+    sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsService.java" ]
+
+    deps = [
+      "//chrome/browser/tab:java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
 }

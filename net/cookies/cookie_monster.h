@@ -26,14 +26,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster_change_dispatcher.h"
 #include "net/cookies/cookie_store.h"
 #include "net/log/net_log_with_source.h"
@@ -41,7 +38,9 @@
 
 namespace net {
 
+class CanonicalCookie;
 class CookieChangeDispatcher;
+class CookieInclusionStatus;
 
 // The cookie monster is the system for storing and retrieving cookies. It has
 // an in-memory list of all cookies, and synchronizes non-session cookies to an

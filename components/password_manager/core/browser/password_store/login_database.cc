@@ -967,7 +967,7 @@ std::string GeneratePlaceholders(size_t count) {
 // and returns it.
 PasswordForm GetFormForRemoval(sql::Statement& statement) {
   PasswordForm form;
-  form.url = GURL(statement.ColumnString(COLUMN_ORIGIN_URL));
+  form.url = GURL(statement.ColumnStringView(COLUMN_ORIGIN_URL));
   form.username_element = statement.ColumnString16(COLUMN_USERNAME_ELEMENT);
   form.username_value = statement.ColumnString16(COLUMN_USERNAME_VALUE);
   form.password_element = statement.ColumnString16(COLUMN_PASSWORD_ELEMENT);
@@ -1764,9 +1764,9 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
     autofill::DeserializeFormData(&form_data_iter, &form.form_data);
   }
   form.display_name = s.ColumnString16(COLUMN_DISPLAY_NAME);
-  form.icon_url = GURL(s.ColumnString(COLUMN_ICON_URL));
+  form.icon_url = GURL(s.ColumnStringView(COLUMN_ICON_URL));
   form.federation_origin =
-      url::SchemeHostPort(GURL(s.ColumnString(COLUMN_FEDERATION_URL)));
+      url::SchemeHostPort(GURL(s.ColumnStringView(COLUMN_FEDERATION_URL)));
   form.skip_zero_click = (s.ColumnInt(COLUMN_SKIP_ZERO_CLICK) > 0);
   form.generation_upload_status =
       static_cast<PasswordForm::GenerationUploadStatus>(
@@ -1783,7 +1783,7 @@ PasswordForm LoginDatabase::GetFormWithoutPasswordFromStatement(
   form.sender_email = s.ColumnString16(COLUMN_SENDER_EMAIL);
   form.sender_name = s.ColumnString16(COLUMN_SENDER_NAME);
   form.sender_profile_image_url =
-      GURL(s.ColumnString(COLUMN_SENDER_PROFILE_IMAGE_URL));
+      GURL(s.ColumnStringView(COLUMN_SENDER_PROFILE_IMAGE_URL));
   form.date_received = s.ColumnTime(COLUMN_DATE_RECEIVED);
   form.sharing_notification_displayed =
       s.ColumnBool(COLUMN_SHARING_NOTIFICATION_DISPLAYED);

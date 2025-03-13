@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::config::BuildConfig;
 use crate::group::Group;
 use anyhow::Result;
 
@@ -79,7 +78,7 @@ pub enum AuditCriteria {
 /// specified for each crate through gnrt_config.toml.
 pub fn create_vet_config<'a>(
     packages: impl IntoIterator<Item = &'a cargo_metadata::Package>,
-    config: &BuildConfig,
+    is_removed: impl Fn(&'a cargo_metadata::PackageId) -> bool,
     mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Group,
     mut find_shipped: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
 ) -> Result<VetConfigToml> {
@@ -92,11 +91,8 @@ pub fn create_vet_config<'a>(
         crate_name.push(':');
         crate_name.push_str(&package.version.to_string());
 
-        let criteria = if config.resolve.remove_crates.contains(&package.name) {
-            vec![]
-        } else {
-            group_vet_criteria(group, shipped)
-        };
+        let criteria =
+            if is_removed(&package.id) { vec![] } else { group_vet_criteria(group, shipped) };
 
         vet_config_toml.policies.push(Policy { crate_name, criteria });
     }
