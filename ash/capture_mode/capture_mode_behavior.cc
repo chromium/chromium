@@ -348,12 +348,8 @@ class SunfishBehavior : public CaptureModeBehavior {
   ~SunfishBehavior() override = default;
 
   // CaptureModeBehavior:
-  void AttachToSession() override {
-    CaptureModeBehavior::AttachToSession();
-    if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
-      scanner_controller->StartNewSession();
-    }
-  }
+  // The Scanner session is started from
+  // `CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup`.
   void DetachFromSession() override {
     CaptureModeBehavior::DetachFromSession();
     if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
