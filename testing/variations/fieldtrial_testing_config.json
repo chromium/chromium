@@ -8111,6 +8111,22 @@
             ]
         }
     ],
+    "DeviceBoundSessionCredentials": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250312",
+                    "enable_features": [
+                        "DeviceBoundSessions",
+                        "PersistDeviceBoundSessions"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeviceIdValidation": [
         {
             "platforms": [
