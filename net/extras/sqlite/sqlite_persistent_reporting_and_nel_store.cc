@@ -1403,7 +1403,7 @@ void SQLitePersistentReportingAndNelStore::Backend::
         /* group_name = */ endpoints_statement.ColumnString(4),
         ReportingTargetType::kDeveloper);
     ReportingEndpoint::EndpointInfo endpoint_info;
-    endpoint_info.url = GURL(endpoints_statement.ColumnString(5));
+    endpoint_info.url = GURL(endpoints_statement.ColumnStringView(5));
     endpoint_info.priority = endpoints_statement.ColumnInt(6);
     endpoint_info.weight = endpoints_statement.ColumnInt(7);
 

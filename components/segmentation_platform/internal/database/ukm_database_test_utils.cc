@@ -103,7 +103,7 @@ void AssertUrlsInTable(sql::Database& db, const std::vector<UrlMatcher>& urls) {
   while (statement.Step()) {
     actual_rows.emplace_back(
         UrlMatcher{.url_id = static_cast<UrlId>(statement.ColumnInt64(0)),
-                   .url = GURL(statement.ColumnString(1))});
+                   .url = GURL(statement.ColumnStringView(1))});
   }
 
   EXPECT_THAT(actual_rows, UnorderedElementsAreArray(urls));

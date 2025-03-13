@@ -911,7 +911,7 @@ std::vector<mojom::StorageUsageInfoPtr> SharedStorageDatabase::FetchOrigins() {
   while (statement.Step()) {
     fetched_origin_infos.emplace_back(mojom::StorageUsageInfo::New(
         blink::StorageKey::CreateFirstParty(
-            url::Origin::Create(GURL(statement.ColumnString(0)))),
+            url::Origin::Create(GURL(statement.ColumnStringView(0)))),
         statement.ColumnInt64(2), statement.ColumnTime(1)));
   }
 

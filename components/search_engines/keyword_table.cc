@@ -592,8 +592,8 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.search_url_post_params = s.ColumnString(17);
   data.suggestions_url_post_params = s.ColumnString(18);
   data.image_url_post_params = s.ColumnString(19);
-  data.favicon_url = GURL(s.ColumnString(3));
-  data.originating_url = GURL(s.ColumnString(6));
+  data.favicon_url = GURL(s.ColumnStringView(3));
+  data.originating_url = GURL(s.ColumnStringView(6));
   data.safe_for_autoreplace = s.ColumnBool(5);
   data.input_encodings = base::SplitString(
       s.ColumnString(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
