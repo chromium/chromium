@@ -516,6 +516,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.fire(ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
+  protected onTextStyleMenuButtonClickFromOverflow_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+    const menu = this.moreOptionsButtons_[index];
+
+    menu.openMenu(currentTarget);
+  }
+
   protected onTextStyleMenuButtonClick_(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number.parseInt(currentTarget.dataset['index']!);
