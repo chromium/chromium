@@ -97,12 +97,9 @@ class MODULES_EXPORT AIPageContentAgent final
     void AddPageInteractionInfo(
         const Document& document,
         mojom::blink::AIPageContent& page_content) const;
-    void AddFrameInteractionInfo(
+    void AddFrameData(
         const LocalFrame& frame,
-        mojom::blink::AIPageContent& page_content) const;
-    void AddFrameInteractionInfo(
-        const LocalFrame& frame,
-        mojom::blink::AIPageContentIframeData& iframe_data) const;
+        mojom::blink::AIPageContentFrameData& frame_data) const;
     void AddFrameInteractionInfo(
         const LocalFrame& frame,
         mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info)
@@ -111,7 +108,7 @@ class MODULES_EXPORT AIPageContentAgent final
         const LayoutObject& object,
         mojom::blink::AIPageContentAttributes& attributes) const;
     void AddMetaData(
-        const Document& document,
+        const LocalFrame& frame,
         WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const;
 
     const raw_ref<const mojom::blink::AIPageContentOptions> options_;
