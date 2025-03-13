@@ -111,6 +111,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
     private int mAppHeaderHeight;
     private int mBottomControlsHeight;
+    private boolean mIsAnchoredToBottomControls;
 
     /**
      * Build a new controller of the bottom sheet.
@@ -680,6 +681,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         return mBottomSheet.isSmallScreen();
     }
 
+    @Override
+    public boolean isAnchoredToBottomControls() {
+        return mIsAnchoredToBottomControls;
+    }
+
     // ScrimCoordinator.Observer
     @Override
     public void scrimVisibilityChanged(boolean scrimVisible) {
@@ -687,13 +693,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         if (scrimVisible && mBottomSheet.isSheetOpen()) {
             // Scrimmed bottom sheet. Draw the bottom sheet container on top of all sibling views,
             // originating from the bottom of the screen.
+            mIsAnchoredToBottomControls = false;
             mBottomSheetContainer.setZ(1.0f);
             mBottomSheet.setBottomMargin(0);
-
         } else {
             // Unscrimmed bottom sheet. Draw the bottom sheet container in its "natural" order; i.e.
             // in the order specified in res_app/layout/main.xml. Draw originating from the top of
             // the bottom controls.
+            mIsAnchoredToBottomControls = true;
             mBottomSheetContainer.setZ(0.0f);
             mBottomSheet.setBottomMargin(mBottomControlsHeight);
         }
