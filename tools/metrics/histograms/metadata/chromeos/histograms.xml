@@ -2328,7 +2328,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Inputs.Stylus.BatteryReportingEligibility"
-    enum="BatteryReportingEligibility" expires_after="2025-03-15">
+    enum="BatteryReportingEligibility" expires_after="2026-03-15">
   <owner>wmahon@google.com</owner>
   <owner>chromeos-tango@google.com</owner>
   <summary>
