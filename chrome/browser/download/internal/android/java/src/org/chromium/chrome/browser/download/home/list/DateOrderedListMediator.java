@@ -216,7 +216,8 @@ class DateOrderedListMediator implements BackPressHandler {
                 new ThumbnailProviderImpl(
                         discardableReferencePool,
                         config.inMemoryThumbnailCacheSizeBytes,
-                        ThumbnailProviderImpl.ClientType.DOWNLOAD_HOME);
+                        ThumbnailProviderImpl.ClientType.DOWNLOAD_HOME,
+                        true /* useMultipleRequests */);
         new MediatorSelectionObserver(selectionDelegate);
 
         mModel.getProperties().set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
