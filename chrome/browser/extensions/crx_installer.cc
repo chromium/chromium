@@ -109,7 +109,8 @@ CrxInstaller::CrxInstaller(ExtensionService* service,
                            std::unique_ptr<ExtensionInstallPrompt> client,
                            const InstallApproval* approval)
     : profile_(service->profile()),
-      install_directory_(service->install_directory()),
+      install_directory_(
+          ExtensionRegistrar::Get(profile_)->install_directory()),
       install_source_(mojom::ManifestLocation::kInternal),
       approved_(false),
       fail_install_if_unexpected_version_(false),

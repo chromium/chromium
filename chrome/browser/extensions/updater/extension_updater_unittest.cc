@@ -568,7 +568,8 @@ class ExtensionUpdaterTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault());
     // The registrar needs a delegate in order to call certain methods on it.
     ExtensionRegistrar::Get(prefs_->profile())
-        ->SetDelegate(&stub_extension_registrar_delegate_);
+        ->Init(&stub_extension_registrar_delegate_, base::FilePath(),
+               base::FilePath());
   }
 
   void TearDown() override {
@@ -576,7 +577,9 @@ class ExtensionUpdaterTest : public testing::Test {
     // on the IO thread. Make sure the IO loop spins before shutdown so that
     // those objects are released.
     RunUntilIdle();
-    ExtensionRegistrar::Get(prefs_->profile())->SetDelegate(nullptr);
+    // Reset the ExtensionRegistrar delegate.
+    ExtensionRegistrar::Get(prefs_->profile())
+        ->Init(/*delegate=*/nullptr, base::FilePath(), base::FilePath());
     prefs_.reset();
   }
 

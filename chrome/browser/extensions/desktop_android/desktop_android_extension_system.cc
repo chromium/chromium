@@ -15,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -236,7 +237,10 @@ void DesktopAndroidExtensionSystem::InitForRegularProfile(
       std::make_unique<DesktopAndroidExtensionRegistrarDelegate>(
           browser_context_);
   registrar_ = ExtensionRegistrar::Get(browser_context_);
-  registrar_->SetDelegate(registrar_delegate_.get());
+  registrar_->Init(
+      registrar_delegate_.get(),
+      browser_context_->GetPath().AppendASCII(kInstallDirectoryName),
+      browser_context_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
 
   service_worker_manager_ =
       std::make_unique<ServiceWorkerManager>(browser_context_);

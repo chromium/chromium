@@ -75,17 +75,13 @@ bool SkipDeleteExtensionDir(const Extension& extension,
 ChromeExtensionRegistrarDelegate::ChromeExtensionRegistrarDelegate(
     Profile* profile,
     ExtensionService* extension_service,
-    ComponentLoader* component_loader,
-    const base::FilePath& install_directory,
-    const base::FilePath& unpacked_install_directory)
+    ComponentLoader* component_loader)
     : profile_(profile),
       system_(ExtensionSystem::Get(profile_)),
       extension_service_(extension_service),
       extension_prefs_(ExtensionPrefs::Get(profile_)),
       registry_(ExtensionRegistry::Get(profile_)),
-      component_loader_(component_loader),
-      install_directory_(install_directory),
-      unpacked_install_directory_(unpacked_install_directory) {}
+      component_loader_(component_loader) {}
 
 ChromeExtensionRegistrarDelegate::~ChromeExtensionRegistrarDelegate() = default;
 
@@ -212,7 +208,9 @@ void ChromeExtensionRegistrarDelegate::PostUninstallExtension(
         is_unpacked_location ? extension->path() : extension->path().DirName();
 
     base::FilePath extensions_install_dir =
-        is_unpacked_location ? unpacked_install_directory_ : install_directory_;
+        is_unpacked_location
+            ? extension_registrar_->unpacked_install_directory()
+            : extension_registrar_->install_directory();
 
     // Tell the backend to start deleting the installed extension on the file
     // thread.

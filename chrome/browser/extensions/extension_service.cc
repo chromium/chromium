@@ -409,8 +409,6 @@ ExtensionService::ExtensionService(
           this),
       registry_(ExtensionRegistry::Get(profile)),
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
-      install_directory_(install_directory),
-      unpacked_install_directory_(unpacked_install_directory),
       extensions_enabled_(extensions_enabled),
       ready_(ready),
       component_loader_(std::make_unique<ComponentLoader>(system_, profile_)),
@@ -420,9 +418,7 @@ ExtensionService::ExtensionService(
           std::make_unique<ChromeExtensionRegistrarDelegate>(
               profile_,
               this,
-              component_loader_.get(),
-              install_directory,
-              unpacked_install_directory)),
+              component_loader_.get())),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
       omaha_attributes_handler_(extension_prefs,
                                 ExtensionRegistry::Get(profile),
@@ -436,7 +432,8 @@ ExtensionService::ExtensionService(
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
   extension_registrar_delegate_->Init(extension_registrar_,
                                       &delayed_install_manager_);
-  extension_registrar_->SetDelegate(extension_registrar_delegate_.get());
+  extension_registrar_->Init(extension_registrar_delegate_.get(),
+                             install_directory, unpacked_install_directory);
   // Figure out if extension installation should be enabled.
   if (ExtensionsBrowserClient::Get()->AreExtensionsDisabled(*command_line,
                                                             profile)) {

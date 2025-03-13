@@ -73,8 +73,13 @@ ExtensionRegistrar* ExtensionRegistrar::Get(content::BrowserContext* context) {
   return ExtensionRegistrarFactory::GetForBrowserContext(context);
 }
 
-void ExtensionRegistrar::SetDelegate(Delegate* delegate) {
+void ExtensionRegistrar::Init(
+    Delegate* delegate,
+    const base::FilePath& install_directory,
+    const base::FilePath& unpacked_install_directory) {
   delegate_ = delegate;
+  install_directory_ = install_directory;
+  unpacked_install_directory_ = unpacked_install_directory;
 }
 
 base::WeakPtr<ExtensionRegistrar> ExtensionRegistrar::GetWeakPtr() {

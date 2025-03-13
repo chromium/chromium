@@ -423,9 +423,13 @@ class ExtensionService : public ExtensionServiceInterface,
 
   bool block_extensions() const { return block_extensions_; }
 
-  const base::FilePath& install_directory() const { return install_directory_; }
+  // TODO(crbug.com/402825212): Migrate callers to use ExtensionRegistrar
+  // directly.
+  const base::FilePath& install_directory() const {
+    return extension_registrar_->install_directory();
+  }
   const base::FilePath& unpacked_install_directory() const {
-    return unpacked_install_directory_;
+    return extension_registrar_->unpacked_install_directory();
   }
 
   DelayedInstallManager* delayed_install_manager() {
@@ -633,13 +637,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Hold the set of pending extensions. Not owned.
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
-
-  // The full path to the directory where extensions are installed.
-  const base::FilePath install_directory_;
-
-  // The full path to the directory where unpacked (e.g. from .zip files)
-  // extensions are installed.
-  const base::FilePath unpacked_install_directory_;
 
   // Whether or not extensions are enabled.
   bool extensions_enabled_ = true;

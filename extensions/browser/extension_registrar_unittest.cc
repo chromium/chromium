@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
@@ -107,7 +108,7 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     extensions_browser_client()->set_extension_system_factory(&factory_);
     extension_ = ExtensionBuilder("extension").Build();
     registrar_ = std::make_unique<ExtensionRegistrar>(browser_context());
-    registrar_->SetDelegate(delegate());
+    registrar_->Init(delegate(), base::FilePath(), base::FilePath());
 
     // Mock defaults.
     ON_CALL(delegate_, CanAddExtension(extension_.get()))
