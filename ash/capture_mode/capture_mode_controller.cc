@@ -23,6 +23,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/capture_mode/search_results_panel.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -46,6 +47,7 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -683,6 +685,7 @@ CaptureModeController::CaptureModeController(
 
   Shell::Get()->session_controller()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+  shell_observation_.Observe(Shell::Get());
 }
 
 CaptureModeController::~CaptureModeController() {
@@ -1540,6 +1543,24 @@ void CaptureModeController::SetSystemMediaDeviceStatus(
 void CaptureModeController::StopAllScreenShare() {
   // Our screen recordings are not considered screen shares, and we already have
   // the stop recording button, so this does nothing.
+}
+
+void CaptureModeController::OnPinnedStateChanged(aura::Window* pinned_window) {
+  // This can change whether sunfish/scanner can be used. Update the
+  auto* shell = Shell::Get();
+  if (auto* feature_watcher = shell->sunfish_scanner_feature_watcher()) {
+    feature_watcher->UpdateFeatureStates();
+  }
+
+  if (!shell->screen_pinning_controller()->IsPinned()) {
+    return;
+  }
+
+  if (IsActive() && capture_mode_session_->active_behavior()->behavior_type() ==
+                        BehaviorType::kSunfish) {
+    Stop();
+  }
+  CloseSearchResultsPanel();
 }
 
 void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_public_test_util.h"
@@ -36,6 +37,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
@@ -58,6 +60,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_util.h"
 #include "base/auto_reset.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -90,6 +93,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
+#include "ui/wm/core/window_util.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -2607,6 +2611,24 @@ TEST_F(SunfishTest, PressingSearchButtonShowsErrorIfOffline) {
       session_test_api.GetActionContainerErrorView();
   ASSERT_TRUE(error_view);
   EXPECT_TRUE(error_view->GetVisible());
+}
+
+TEST_F(SunfishTest, PinnedWindowExitSession) {
+  auto* controller = CaptureModeController::Get();
+
+  std::unique_ptr<aura::Window> pinned_window = CreateAppWindow();
+  wm::ActivateWindow(pinned_window.get());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  EXPECT_FALSE(ash::CanShowSunfishUi());
+
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kUnpin, {});
+  EXPECT_TRUE(ash::CanShowSunfishUi());
+
+  controller->StartSunfishSession();
+  EXPECT_TRUE(controller->IsActive());
+  window_util::PinWindow(pinned_window.get(), /*trusted=*/false);
+  EXPECT_FALSE(controller->IsActive());
 }
 
 using SunfishMultiDisplayTest = SunfishTest;

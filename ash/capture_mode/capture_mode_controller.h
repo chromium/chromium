@@ -19,6 +19,8 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/scanner/scanner_session.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -26,6 +28,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -78,7 +81,8 @@ class ASH_EXPORT CaptureModeController
       public recording::mojom::DriveFsQuotaDelegate,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer,
-      public crosapi::mojom::VideoConferenceManagerClient {
+      public crosapi::mojom::VideoConferenceManagerClient,
+      public ShellObserver {
  public:
   // Contains info about the folder used for saving the captured images and
   // videos.
@@ -415,6 +419,9 @@ class ASH_EXPORT CaptureModeController
       bool disabled,
       SetSystemMediaDeviceStatusCallback callback) override;
   void StopAllScreenShare() override;
+
+  // ShellObserver:
+  void OnPinnedStateChanged(aura::Window* pinned_window) override;
 
   // Skips the 3-second count down, and IsCaptureAllowed() checks, and starts
   // video recording right away for testing purposes.
@@ -914,6 +921,8 @@ class ASH_EXPORT CaptureModeController
   base::ObserverList<CaptureModeObserver> observers_;
 
   std::unique_ptr<CaptureModeEducationController> education_controller_;
+
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };
