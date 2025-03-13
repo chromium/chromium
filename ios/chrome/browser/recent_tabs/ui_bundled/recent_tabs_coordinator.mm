@@ -167,7 +167,8 @@
 }
 
 - (void)stop {
-  [self stopHistorySyncPopupCoordinator];
+  [_historySyncPopupCoordinator interruptAnimated:NO];
+  _historySyncPopupCoordinator = nil;
   [self.recentTabsTableViewController dismissModals];
   self.recentTabsTableViewController.imageDataSource = nil;
   self.recentTabsTableViewController.browser = nil;

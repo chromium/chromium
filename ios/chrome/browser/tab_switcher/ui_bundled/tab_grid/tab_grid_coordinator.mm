@@ -1130,7 +1130,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
-  [self stopHistorySyncPopupCoordinator];
+  [_historySyncPopupCoordinator interruptAnimated:NO];
+  _historySyncPopupCoordinator = nil;
 
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
