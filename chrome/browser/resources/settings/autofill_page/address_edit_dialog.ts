@@ -121,10 +121,10 @@ export class SettingsAddressEditDialogElement extends
       this.addressFields_.set(entry.type, entry.value);
     }
 
-    const forAccountAddressProfile = !!this.address.guid &&
+    const forAccountStorage = !!this.address.guid &&
         this.address.metadata !== undefined &&
         this.address.metadata.recordType === AddressRecordType.ACCOUNT;
-    this.countryInfo_.getCountryList(forAccountAddressProfile)
+    this.countryInfo_.getCountryList(forAccountStorage)
         .then(countryList => {
           this.countries_ = countryList;
 
@@ -402,7 +402,7 @@ export interface CountryDetailManager {
    * The default country will be first, followed by a separator, followed by
    * an alphabetized list of countries available.
    */
-  getCountryList(forAccountAddressProfile: boolean): Promise<CountryEntry[]>;
+  getCountryList(forAccountStorage: boolean): Promise<CountryEntry[]>;
 
   /**
    * Gets the address format for a given country code.
@@ -414,8 +414,8 @@ export interface CountryDetailManager {
  * Default implementation. Override for testing.
  */
 export class CountryDetailManagerImpl implements CountryDetailManager {
-  getCountryList(forAccountAddressProfile: boolean): Promise<CountryEntry[]> {
-    return chrome.autofillPrivate.getCountryList(forAccountAddressProfile);
+  getCountryList(forAccountStorage: boolean): Promise<CountryEntry[]> {
+    return chrome.autofillPrivate.getCountryList(forAccountStorage);
   }
 
   getAddressFormat(countryCode: string): Promise<AddressComponents> {

@@ -227,7 +227,7 @@ var availableTests = [
     };
 
     chrome.autofillPrivate.getCountryList(
-        /*forAccountAddressProfile=*/ false, handler);
+        /*forAccountStorage=*/ false, handler);
   },
 
   function getAddressComponents() {

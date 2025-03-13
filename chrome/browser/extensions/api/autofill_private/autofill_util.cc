@@ -7,6 +7,8 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,6 +18,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -110,6 +113,37 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       ConvertProfileRecordType(profile.record_type());
 
   return address;
+}
+
+extensions::autofill_util::CountryEntryList GenerateCountryList(
+    base::FunctionRef<bool(std::string_view)> filter_country_code) {
+  autofill::CountryComboboxModel model;
+  const variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  model.SetCountries(
+      GeoIpCountryCode(variations_service
+                           ? variations_service->GetLatestCountry()
+                           : std::string()),
+      {}, extensions::ExtensionsBrowserClient::Get()->GetApplicationLocale());
+  const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
+      model.countries();
+
+  extensions::autofill_util::CountryEntryList list;
+  for (const auto& country : countries) {
+    // A null `country` means "insert a space here", so we add a country w/o a
+    // `name` or `country_code` to the list and let the UI handle it.
+    if (!country) {
+      list.emplace_back();
+      continue;
+    }
+    if (filter_country_code(country->country_code())) {
+      autofill_private::CountryEntry& entry = list.emplace_back();
+      entry.name = base::UTF16ToUTF8(country->name());
+      entry.country_code = country->country_code();
+    }
+  }
+
+  return list;
 }
 
 std::string CardNetworkToIconResourceIdString(const std::string& network) {
@@ -222,37 +256,15 @@ AddressEntryList GenerateAddressList(const autofill::AddressDataManager& adm) {
   return list;
 }
 
-CountryEntryList GenerateCountryList(const autofill::AddressDataManager& adm,
-                                     bool for_account_address_profile) {
-  autofill::CountryComboboxModel model;
-  const variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  model.SetCountries(
-      GeoIpCountryCode(variations_service
-                           ? variations_service->GetLatestCountry()
-                           : std::string()),
-      base::RepeatingCallback<bool(const std::string&)>(),
-      ExtensionsBrowserClient::Get()->GetApplicationLocale());
-  const std::vector<std::unique_ptr<autofill::AutofillCountry>>& countries =
-      model.countries();
+CountryEntryList GenerateCountryListForAccountStorage(
+    const autofill::AddressDataManager& adm) {
+  return GenerateCountryList([&](std::string_view country_code) {
+    return adm.IsCountryEligibleForAccountStorage(country_code);
+  });
+}
 
-  CountryEntryList list;
-  for (const auto& country : countries) {
-    // A null |country| means "insert a space here", so we add a country w/o a
-    // |name| or |country_code| to the list and let the UI handle it.
-    if (!country) {
-      list.emplace_back();
-      continue;
-    }
-    if (!for_account_address_profile ||
-        adm.IsCountryEligibleForAccountStorage(country->country_code())) {
-      api::autofill_private::CountryEntry& entry = list.emplace_back();
-      entry.name = base::UTF16ToUTF8(country->name());
-      entry.country_code = country->country_code();
-    }
-  }
-
-  return list;
+CountryEntryList GenerateCountryListForProfileStorage() {
+  return GenerateCountryList([](std::string_view) { return true; });
 }
 
 CreditCardEntryList GenerateCreditCardList(

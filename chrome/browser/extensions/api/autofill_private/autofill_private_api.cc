@@ -330,21 +330,24 @@ ExtensionFunction::ResponseAction AutofillPrivateGetCountryListFunction::Run() {
   std::optional<api::autofill_private::GetCountryList::Params> parameters =
       api::autofill_private::GetCountryList::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
-  AddressDataManager* adm = address_data_manager();
-  if (!adm) {
-    return RespondNow(Error(kErrorDataUnavailable));
-  }
 
-  // Return an empty list if data is not loaded.
-  if (!adm->has_initial_load_finished()) {
-    autofill_util::CountryEntryList empty_list;
-    return RespondNow(ArgumentList(
-        api::autofill_private::GetCountryList::Results::Create(empty_list)));
-  }
+  autofill_util::CountryEntryList country_list;
+  if (parameters->for_account_storage) {
+    AddressDataManager* adm = address_data_manager();
+    if (!adm) {
+      return RespondNow(Error(kErrorDataUnavailable));
+    }
 
-  autofill_util::CountryEntryList country_list =
-      autofill_util::GenerateCountryList(
-          *adm, parameters->for_account_address_profile);
+    // Return an empty list if data is not loaded.
+    if (!adm->has_initial_load_finished()) {
+      return RespondNow(
+          ArgumentList(api::autofill_private::GetCountryList::Results::Create(
+              country_list)));
+    }
+    country_list = autofill_util::GenerateCountryListForAccountStorage(*adm);
+  } else {
+    country_list = autofill_util::GenerateCountryListForProfileStorage();
+  }
   return RespondNow(ArgumentList(
       api::autofill_private::GetCountryList::Results::Create(country_list)));
 }
