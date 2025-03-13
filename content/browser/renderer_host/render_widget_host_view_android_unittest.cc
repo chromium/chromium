@@ -1085,6 +1085,30 @@ TEST_F(RenderWidgetHostViewAndroidRotationTest, ToggleFullscreenWithoutResize) {
   GetLocalSurfaceIdAndConfirmNewerThan(post_fullscreen_local_surface_id);
 }
 
+TEST_F(RenderWidgetHostViewAndroidRotationTest,
+       FullscreenEvictionWithoutAnySizeChanged) {
+  RenderWidgetHostViewAndroid* rwhva = render_widget_host_view_android();
+  // When we are evicted while hidden, the viz::LocalSurfaceId should be
+  // invalidated, and we should no longer throttle synchronizing.
+  rwhva->Hide();
+  rwhva->WasEvicted();
+  EXPECT_FALSE(rwhva->GetLocalSurfaceId().is_valid());
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+
+  EnterFullscreenMode();
+  // Entering fullscreen mode without `any_non_rotation_size_changed` blocks
+  // synchronizing.
+  EXPECT_FALSE(rwhva->CanSynchronizeVisualProperties());
+
+  // Here we have web page in background and in fullscreen
+  // with invalid surface and without ability to synchronizing.
+  // This shouldn't crash. And should generate new surface to bring web in
+  // visible state.
+  rwhva->ShowWithVisibility(blink::mojom::PageVisibilityState::kVisible);
+  EXPECT_TRUE(rwhva->GetLocalSurfaceId().is_valid());
+  EXPECT_TRUE(rwhva->CanSynchronizeVisualProperties());
+}
+
 // Tests rotation and fullscreen cases that are supported by both the visual
 // properties analysis, and the fullscreen killswitch legacy path.
 //
