@@ -301,6 +301,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetContextFromFocusedTab(*options, std::move(callback));
   }
 
+  void ActInFocusedTab(
+      const std::vector<uint8_t>& action_proto,
+      glic::mojom::GetTabContextOptionsPtr options,
+      ActInFocusedTabCallback callback) override {
+    glic_service_->ActInFocusedTab(action_proto, *options, std::move(callback));
+  }
+
   void CaptureScreenshot(CaptureScreenshotCallback callback) override {
     glic_service_->CaptureScreenshot(std::move(callback));
   }

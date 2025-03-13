@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Glic.Action.ActInFocusedTabErrorReason"
+    enum="ActInFocusedTabErrorReason" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>chasej@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client receives an error reason from the
+    browser when attempting to act.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
@@ -43,6 +54,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ApiRequestType) -->
 
   <token key="ApiRequestType">
+    <variant name="ActInFocusedTab"/>
     <variant name="AttachPanel"/>
     <variant name="CaptureScreenshot"/>
     <variant name="ClosePanel"/>

@@ -169,6 +169,17 @@ export declare interface GlicBrowserHost {
       (options: TabContextOptions): Promise<TabContextResult>;
 
   /**
+   * @todo Not yet implemented. https://crbug.com/402086021
+   *
+   * Inform Chrome about an action. Chrome Takes an action based on the
+   * action proto and returns new context based on the tab context options.
+   *
+   * @throws {ActInFocusedTabError} on failure.
+   */
+  actInFocusedTab?
+      (params: ActInFocusedTabParams): Promise<ActInFocusedTabResult>;
+
+  /**
    * Requests the host to capture a screenshot. The choice of the screenshot
    * target is made by the host, possibly allowing the user to choose between a
    * desktop, window or arbitrary region.
@@ -693,6 +704,7 @@ export declare interface ErrorReasonTypes {
   captureScreenshot: CaptureScreenshotErrorReason;
   scrollTo: ScrollToErrorReason;
   webClientInitialize: WebClientInitializeErrorReason;
+  actInFocusedTab: ActInFocusedTabErrorReason;
 }
 
 /** Reason why the web client could not initialize. */
@@ -727,6 +739,17 @@ export enum GetTabContextErrorReason {
   UNSUPPORTED_URL = 3,
   /** There are no Chrome tabs available to be focused. */
   NO_FOCUSABLE_TABS = 4,
+}
+
+/** Reason for failure while acting in the focused tab. */
+export enum ActInFocusedTabErrorReason {
+  UNKNOWN = 0,
+  /** Context could not be gathered after acting. */
+  GET_CONTEXT_FAILED = 1,
+  /** The action proto is invalid. */
+  INVALID_ACTION_PROTO = 2,
+  /** Action target is not found. */
+  TARGET_NOT_FOUND = 3,
 }
 
 /**
@@ -769,11 +792,28 @@ export enum CaptureScreenshotErrorReason {
   USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
 }
 
+export declare interface ActInFocusedTabResult {
+  // The tab context result after acting and gathering new context.
+  tabContextResult?: TabContextResult;
+}
+
+export declare interface ActInFocusedTabParams {
+  // Corresponds to
+  // components/optimization_guide/proto/features/actions_data.proto:
+  // BrowserAction
+  actionProto: ArrayBuffer;
+  // Tab context options to gather context after acting.
+  tabContextOptions: TabContextOptions;
+}
+
 /** Error type used for tab context extraction errors. */
 export type GetTabContextError = ErrorWithReason<'tabContext'>;
 
 /** Error type used for screenshot capture errors. */
 export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
+
+/** Error type used for actuation errors. */
+export type ActInFocusedTabError = ErrorWithReason<'actInFocusedTab'>;
 
 /** Params for scrollTo(). */
 export declare interface ScrollToParams {
@@ -945,6 +985,7 @@ export interface TypesConsumedByClient {
   panelState: PanelState;
   annotatedPageData: AnnotatedPageData;
   panelOpeningData: PanelOpeningData;
+  actInFocusedTabResult: ActInFocusedTabResult;
 }
 
 // Types consumed by the host.
@@ -961,6 +1002,7 @@ export interface TypesConsumedByHost {
   scrollToSelector: ScrollToSelector;
   scrollToTextSelector: ScrollToTextSelector;
   scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
+  actInFocusedTabParams: ActInFocusedTabParams;
 }
 
 // Enums that should not be changed.
@@ -978,4 +1020,5 @@ export interface ExtensibleEnums {
   noCandidateTabError: typeof NoCandidateTabError;
   webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
   invocationSource: typeof InvocationSource;
+  actInFocusedTabErrorReason: typeof ActInFocusedTabErrorReason;
 }

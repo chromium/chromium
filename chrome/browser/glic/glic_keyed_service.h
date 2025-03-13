@@ -141,6 +141,11 @@ class GlicKeyedService : public KeyedService {
       const mojom::GetTabContextOptions& options,
       glic::mojom::WebClientHandler::GetContextFromFocusedTabCallback callback);
 
+  void ActInFocusedTab(
+      const std::vector<uint8_t>& action_proto,
+      const mojom::GetTabContextOptions& options,
+      mojom::WebClientHandler::ActInFocusedTabCallback callback);
+
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 

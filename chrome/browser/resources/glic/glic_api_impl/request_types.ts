@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ActInFocusedTabParams, ActInFocusedTabResult, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -66,6 +66,14 @@ export declare interface HostRequestTypes {
     },
     response: {
       tabContextResult: TabContextResultPrivate,
+    },
+  };
+  glicBrowserActInFocusedTab: {
+    request: {
+      actInFocusedTabParams: ActInFocusedTabParams,
+    },
+    response: {
+      actInFocusedTabResult: ActInFocusedTabResultPrivate,
     },
   };
   glicBrowserCaptureScreenshot: {
@@ -226,6 +234,7 @@ type HostRequestEnumNamesType = {
     ClosePanel: 0,
     ShowProfilePicker: 0,
     GetContextFromFocusedTab: 0,
+    ActInFocusedTab: 0,
     CaptureScreenshot: 0,
     ResizeWindow: 0,
     SetWindowDraggableAreas: 0,
@@ -324,6 +333,7 @@ export type WebClientInitialStatePrivate =
       chromeVersion: ChromeVersion,
       focusedTabData: FocusedTabDataPrivate,
       scrollToEnabled: boolean,
+      actInFocusedTabEnabled: boolean,
       loggingEnabled: boolean,
     }>;
 
@@ -374,6 +384,11 @@ export declare interface TabContextResultPrivate extends
   tabData: TabDataPrivate;
   pdfDocumentData?: PdfDocumentDataPrivate;
   annotatedPageData?: AnnotatedPageDataPrivate;
+}
+
+export declare interface ActInFocusedTabResultPrivate extends
+    Omit<ActInFocusedTabResult, 'tabContextResult'> {
+  tabContextResult: TabContextResultPrivate;
 }
 
 export declare interface UserProfileInfoPrivate extends

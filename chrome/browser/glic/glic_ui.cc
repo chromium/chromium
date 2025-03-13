@@ -116,6 +116,10 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddBoolean("enableScrollTo",
                      base::FeatureList::IsEnabled(features::kGlicScrollTo));
 
+  source->AddBoolean(
+      "enableActInFocusedTab",
+      base::FeatureList::IsEnabled(features::kGlicActInFocusedTab));
+
   // Set up for periodic web client responsiveness check and its interval,
   // timeout, and max unresponsive ui time.
   source->AddBoolean(

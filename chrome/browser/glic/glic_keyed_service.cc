@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -36,6 +37,45 @@
 #include "url/gurl.h"
 
 namespace glic {
+
+namespace {
+// TODO(https://crbug.com/402086021): Move acting code to its own file.
+mojom::ActInFocusedTabErrorReason ConvertErrorReason(
+    mojom::GetTabContextErrorReason error_reason) {
+  switch (error_reason) {
+    case mojom::GetTabContextErrorReason::kUnknown:
+      return mojom::ActInFocusedTabErrorReason::kUnknown;
+    case mojom::GetTabContextErrorReason::kWebContentsChanged:
+    case mojom::GetTabContextErrorReason::kPermissionDenied:
+    case mojom::GetTabContextErrorReason::kUnsupportedUrl:
+    case mojom::GetTabContextErrorReason::kNoFocusableTabs:
+      return mojom::ActInFocusedTabErrorReason::kGetContextFailed;
+  }
+  return mojom::ActInFocusedTabErrorReason::kUnknown;
+}
+
+void OnGetContextFromFocusedTab(
+    mojom::WebClientHandler::ActInFocusedTabCallback callback,
+    mojom::GetContextResultPtr tab_context_result) {
+  if (tab_context_result->is_error_reason()) {
+    mojom::ActInFocusedTabResultPtr result =
+        mojom::ActInFocusedTabResult::NewErrorReason(
+            ConvertErrorReason(tab_context_result->get_error_reason()));
+    UMA_HISTOGRAM_ENUMERATION("Glic.Action.ActInFocusedTabErrorReason",
+                              result->get_error_reason());
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
+  mojom::ActInFocusedTabResultPtr result =
+      mojom::ActInFocusedTabResult::NewActInFocusedTabResponse(
+          mojom::ActInFocusedTabResponse::New(
+              std::move(tab_context_result->get_tab_context())));
+
+  std::move(callback).Run(std::move(result));
+}
+
+}  // namespace
 
 GlicKeyedService::GlicKeyedService(Profile* profile,
                                    signin::IdentityManager* identity_manager,
@@ -256,6 +296,16 @@ void GlicKeyedService::GetContextFromFocusedTab(
             std::move(callback).Run(std::move(result));
           },
           std::move(fetcher), std::move(callback)));
+}
+
+void GlicKeyedService::ActInFocusedTab(
+    const std::vector<uint8_t>& action_proto,
+    const mojom::GetTabContextOptions& options,
+    mojom::WebClientHandler::ActInFocusedTabCallback callback) {
+  // TODO(https://crbug.com/402086021): Use actor tool service.
+  // For now, just call GetContextFromFocusedTab.
+  GetContextFromFocusedTab(
+      options, base::BindOnce(OnGetContextFromFocusedTab, std::move(callback)));
 }
 
 void GlicKeyedService::CaptureScreenshot(
