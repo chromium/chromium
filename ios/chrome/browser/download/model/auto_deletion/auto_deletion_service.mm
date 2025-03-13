@@ -60,8 +60,8 @@ void RemoveScheduledFilesHelper(
 
 namespace auto_deletion {
 
-AutoDeletionService::AutoDeletionService()
-    : scheduler_(GetApplicationContext()->GetLocalState()) {}
+AutoDeletionService::AutoDeletionService(PrefService* local_state)
+    : scheduler_(local_state) {}
 
 AutoDeletionService::~AutoDeletionService() = default;
 

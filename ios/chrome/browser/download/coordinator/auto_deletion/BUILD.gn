@@ -16,6 +16,7 @@ source_set("auto_deletion") {
     "//components/feature_engagement/public:feature_constants",
     "//components/prefs",
     "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/download/model/auto_deletion",
     "//ios/chrome/browser/download/ui/auto_deletion",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/shared/coordinator/alert",
