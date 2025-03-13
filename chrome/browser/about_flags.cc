@@ -7307,6 +7307,12 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kTabSwitcherColorBlendAnimate,
          kTabSwitcherColorBlendAnimateVariations,
          "TabSwitcherColorBlendAnimateVariations")},
+
+    {"tab-switcher-context-menu-android",
+     flag_descriptions::kTabSwitcherContextMenuAndroidName,
+     flag_descriptions::kTabSwitcherContextMenuAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabSwitcherContextMenuAndroid)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"show-warnings-for-suspicious-notifications",

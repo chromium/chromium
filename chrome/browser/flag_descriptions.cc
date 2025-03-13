@@ -7599,6 +7599,11 @@ const char kTabSwitcherColorBlendAnimateName[] =
 const char kTabSwitcherColorBlendAnimateDescription[] =
     "Animates the color transition between incognito and regular tab switcher "
     "panes in the Hub.";
+
+const char kTabSwitcherContextMenuAndroidName[] = "Tab Switcher Context Menu";
+const char kTabSwitcherContextMenuAndroidDescription[] =
+    "Shows a context menu on long pressing a tab card in the tab switcher";
+
 #else
 const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";
 const char kTaskManagerDesktopRefreshDescription[] =

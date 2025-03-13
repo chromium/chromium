@@ -14755,6 +14755,7 @@ from previous Chrome versions.
   <int value="273489120" label="CrostiniDiskResizing:disabled"/>
   <int value="274103741" label="enable-ntp-popular-sites"/>
   <int value="275314794" label="DeprecateUnload:disabled"/>
+  <int value="275484835" label="TabSwitcherContextMenuAndroid:enabled"/>
   <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
   <int value="275690549" label="AppManagementAppDetails:enabled"/>
   <int value="275804776" label="CctSignInPrompt:enabled"/>
@@ -15793,6 +15794,7 @@ from previous Chrome versions.
   <int value="676922235" label="SeparateUserDisplayModeForCrOS:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>
+  <int value="678629816" label="TabSwitcherContextMenuAndroid:disabled"/>
   <int value="678752544" label="VcWebApi:enabled"/>
   <int value="679931272" label="DcheckIsFatal:enabled"/>
   <int value="680070635"

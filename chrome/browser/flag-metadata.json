@@ -8598,6 +8598,10 @@
     "owners": [ "skym@chromium.org", "mfiaz@google.com" ],
     "expiry_milestone": 140
   },
+  { "name": "tab-switcher-context-menu-android",
+    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 140
+  },
   {
     "name": "tabstrip-combo-button",
     "owners": [ "emshack@chromium.org", "chrome-desktop-ui-sea@google.com" ],
