@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tabpersistence.TabStateFileManager.TabStateMigrationStatus;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -319,6 +320,54 @@ public class TabStateFlatBufferTest {
                 TabStateFileManager.restoreTabState(
                         temporaryFolder.getRoot(), /* id= */ 4, sCipherFactory);
         Assert.assertNull(restored.legacyFileToDelete);
+    }
+
+    @Test
+    @LargeTest
+    public void testMigrationStatusRecordingBothFiles() throws ExecutionException, IOException {
+        TabState state = getTestTabState(/* isIncognito= */ false);
+        File legacyFile = getLegacyTestFile(/* tabId= */ 1, /* isEncrypted= */ false);
+        File flatBufferFile = getTestFile(/* tabId= */ 1, /* isEncrypted= */ false);
+        TabStateFileManager.saveStateInternal(
+                legacyFile, state, /* encrypted= */ false, sCipherFactory);
+        TabStateFileManager.saveStateInternal(
+                flatBufferFile, state, /* encrypted= */ false, sCipherFactory);
+        var histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.FLATBUFFER_AND_LEGACY_HAND_WRITTEN);
+        TabStateFileManager.recordTabStateMigrationStatus(temporaryFolder.getRoot(), /* id= */ 1);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testMigrationStatusRecordingFlatBufferOnly()
+            throws ExecutionException, IOException {
+        TabState state = getTestTabState(/* isIncognito= */ false);
+        File flatBufferFile = getTestFile(/* tabId= */ 1, /* isEncrypted= */ false);
+        TabStateFileManager.saveStateInternal(
+                flatBufferFile, state, /* encrypted= */ false, sCipherFactory);
+        var histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabState.MigrationStatus", TabStateMigrationStatus.FLATBUFFER);
+        TabStateFileManager.recordTabStateMigrationStatus(temporaryFolder.getRoot(), /* id= */ 1);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    public void testMigrationStatusRecordingLegacyOnly() throws ExecutionException, IOException {
+        TabState state = getTestTabState(/* isIncognito= */ false);
+        File legacyFile = getLegacyTestFile(/* tabId= */ 1, /* isEncrypted= */ false);
+        TabStateFileManager.saveStateInternal(
+                legacyFile, state, /* encrypted= */ false, sCipherFactory);
+        var histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Tabs.TabState.MigrationStatus",
+                        TabStateMigrationStatus.LEGACY_HAND_WRITTEN);
+        TabStateFileManager.recordTabStateMigrationStatus(temporaryFolder.getRoot(), /* id= */ 1);
+        histograms.assertExpected();
     }
 
     private static TabState getTestTabState(boolean isIncognito) throws ExecutionException {
