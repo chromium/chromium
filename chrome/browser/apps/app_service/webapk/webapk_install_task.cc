@@ -83,7 +83,7 @@ constexpr net::NetworkTrafficAnnotationTag kWebApksTrafficAnnotation =
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
-              email: "tsergeant@google.com"
+              email: "cros-web-apps-team@google.com"
             }
           }
           user_data {
