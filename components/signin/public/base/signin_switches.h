@@ -104,19 +104,9 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
 #endif
 
-// Used for the launch of the UNO model on Desktop Phase 0.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kExplicitBrowserSigninUIOnDesktop);
-// Param to control whether the bubbles are dismissible by pressing on the
-// avatar button.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<bool>
-    kInterceptBubblesDismissibleByAvatarButton;
+BASE_DECLARE_FEATURE(kInterceptBubblesDismissibleByAvatarButton);
 
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsExplicitBrowserSigninUIOnDesktopEnabled();
-
-// Requires `kExplicitBrowserSigninUIOnDesktop`.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kImprovedSigninUIOnDesktop);
 

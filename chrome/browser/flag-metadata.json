@@ -4350,11 +4350,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "explicit-browser-signin-ui-on-desktop",
-    "owners": [ "droger@chromium.org", "rsult@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "extension-disable-unsupported-developer-mode-extensions",
     "owners": [ "richche@google.com" ],
     "expiry_milestone": 143

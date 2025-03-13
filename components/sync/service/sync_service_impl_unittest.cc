@@ -2336,9 +2336,7 @@ class SyncServiceImplWithBatchUploadDesktopTest : public SyncServiceImplTest {
   void SetUp() override {
     SyncServiceImplTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kBatchUploadDesktop,
-                              switches::kExplicitBrowserSigninUIOnDesktop},
-        {});
+        /*enabled_features=*/{switches::kBatchUploadDesktop}, {});
   }
 
  private:

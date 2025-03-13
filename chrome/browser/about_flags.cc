@@ -9982,12 +9982,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          profile_management::features::kOidcAuthProfileManagement)},
 
-    {"explicit-browser-signin-ui-on-desktop",
-     flag_descriptions::kExplicitBrowserSigninUIOnDesktopName,
-     flag_descriptions::kExplicitBrowserSigninUIOnDesktopDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_VALUE_TYPE(switches::kExplicitBrowserSigninUIOnDesktop)},
-
     {"enable-generic-oidc-auth-profile-management",
      flag_descriptions::kEnableGenericOidcAuthProfileManagementName,
      flag_descriptions::kEnableGenericOidcAuthProfileManagementDescription,
