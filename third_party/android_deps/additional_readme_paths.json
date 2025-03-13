@@ -68,7 +68,6 @@
     "libs/com_squareup_wire_wire_runtime_jvm",
     "libs/jakarta_inject_jakarta_inject_api",
     "libs/javax_annotation_javax_annotation_api",
-    "libs/javax_annotation_jsr250_api",
     "libs/javax_inject_javax_inject",
     "libs/net_bytebuddy_byte_buddy",
     "libs/net_bytebuddy_byte_buddy_agent",

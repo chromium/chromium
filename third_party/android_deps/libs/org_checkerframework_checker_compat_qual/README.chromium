@@ -5,8 +5,8 @@ Version: 2.5.5
 License: Apache-2.0, MIT, GPL-2.0-with-classpath-exception
 License File: LICENSE
 CPEPrefix: unknown
-Security Critical: yes
-Shipped: yes
+Security Critical: no
+Shipped: no
 
 Description:
 Checker Qual is the set of annotations (qualifiers) and supporting classes used by the Checker Framework to type check Java source code. Please see artifact: org.checkerframework:checker
