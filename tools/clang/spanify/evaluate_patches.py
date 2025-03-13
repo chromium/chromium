@@ -182,7 +182,7 @@ run("gclient sync -fD", exit_on_error=False)
 run("gn gen out/linux", "Failed to generate out/linux.")
 
 try:
-    run("gcertstatus --check_remaining=3h --check_loas2=false")
+    run("gcertstatus --check_remaining=3h --nocheck_ssh")
     print("Remote exec available. Enabling.")
     with open("out/linux/args.gn", "w") as f:
         f.write("use_remoteexec = true\n")
