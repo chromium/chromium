@@ -322,7 +322,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, OpenMenuItemShows) {
+// Flaky on macOS: https://crbug.com/401158115
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenMenuItemShows DISABLED_OpenMenuItemShows
+#else
+#define MAYBE_OpenMenuItemShows OpenMenuItemShows
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, MAYBE_OpenMenuItemShows) {
   RunTestSequence(SimulateOpenMenuItem(),
                   WaitForAndInstrumentGlic(kHostAndContents),
                   CheckControllerHasWidget(true),
