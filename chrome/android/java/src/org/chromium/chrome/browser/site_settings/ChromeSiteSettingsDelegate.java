@@ -363,7 +363,7 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     @Override
     public boolean shouldDisplayIpProtection() {
         // This is copied from the `IsIpProtectionEnabled` check in the TPS API.
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
                 && UserPrefs.get(mProfile).getBoolean(Pref.IP_PROTECTION_ENABLED);
     }
 

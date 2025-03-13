@@ -381,7 +381,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &privacy_sandbox::kActUserBypassUx,
     &privacy_sandbox::kDisplayWildcardInContentSettings,
     &privacy_sandbox::kFingerprintingProtectionUx,
-    &privacy_sandbox::kIpProtectionV1,
     &privacy_sandbox::kIpProtectionUx,
     &privacy_sandbox::kPrivacySandboxActivityTypeStorage,
     &privacy_sandbox::kPrivacySandboxNoticeActionDebouncingAndroid,
