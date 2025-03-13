@@ -1238,38 +1238,41 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
     // First enforce the foregrounded limit. The idea is that we need to
     // strictly enforce the limit on pages using foregrounded processes because
     // Android will not kill a foregrounded process, however it will kill a
-    // backgrounded process if there is memory pressue, so we can allow more of
+    // backgrounded process if there is memory pressure, so we can allow more of
     // those to be kept in the cache.
-    EnforceCacheSizeLimitInternal(GetForegroundedEntriesCacheSize(),
-                                  /*foregrounded_only=*/true);
+    EnforceCacheSizeLimitInternal(
+        GetForegroundedEntriesCacheSize(),
+        BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit);
   }
-  EnforceCacheSizeLimitInternal(GetCacheSize(),
-                                /*foregrounded_only=*/false);
+  EnforceCacheSizeLimitInternal(
+      GetCacheSize(), BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
 }
 
 void BackForwardCacheImpl::Prune(size_t limit) {
-  EnforceCacheSizeLimitInternal(limit,
-                                /*foregrounded_only=*/false);
+  EnforceCacheSizeLimitInternal(
+      limit, BackForwardCacheMetrics::NotRestoredReason::kCacheLimitPruned);
 }
 
 size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     size_t limit,
-    bool foregrounded_only) {
+    BackForwardCacheMetrics::NotRestoredReason reason) {
   size_t count = 0;
   for (auto& stored_entry : entries_) {
-    if (stored_entry->render_frame_host()->is_evicted_from_back_forward_cache())
+    if (stored_entry->render_frame_host()
+            ->is_evicted_from_back_forward_cache()) {
       continue;
-    if (foregrounded_only && !HasForegroundedProcess(*stored_entry))
+    }
+    if (reason ==
+            BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit &&
+        !HasForegroundedProcess(*stored_entry)) {
       continue;
+    }
     if (!AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
       continue;
     }
     if (++count > limit) {
       stored_entry->render_frame_host()->EvictFromBackForwardCacheWithReason(
-          foregrounded_only
-              ? BackForwardCacheMetrics::NotRestoredReason::
-                    kForegroundCacheLimit
-              : BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
+          reason);
     }
   }
   return count;

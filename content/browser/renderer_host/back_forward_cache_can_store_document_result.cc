@@ -198,6 +198,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::UNKNOWN;
     case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return ProtoEnum::CACHE_CONTROL_NO_STORE_DEVICE_BOUND_SESSION_TERMINATED;
+    case Reason::kCacheLimitPruned:
+      return ProtoEnum::CACHE_LIMIT_PRUNED;
   }
   NOTREACHED();
 }
@@ -357,6 +359,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "cache limit";
     case Reason::kForegroundCacheLimit:
       return "foreground cache limit";
+    case Reason::kCacheLimitPruned:
+      return "Cache limit pruned";
     case Reason::kJavaScriptExecution:
       return "JavaScript execution";
     case Reason::kRendererProcessKilled:
@@ -552,6 +556,7 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kCacheFlushed:
     case Reason::kCacheLimit:
     case Reason::kForegroundCacheLimit:
+    case Reason::kCacheLimitPruned:
     case Reason::kHaveInnerContents:
     case Reason::kJavaScriptExecution:
     case Reason::kBackForwardCacheDisabledByLowMemory:
