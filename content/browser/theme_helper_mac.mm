@@ -354,4 +354,11 @@ void ThemeHelperMac::OnRenderProcessHostCreated(
   SendSystemColorsChangedMessage(renderer);
 }
 
+void ThemeHelperMac::SetAccentColorForTesting(SkColor accent_color) {
+  auto values = writable_color_map_.GetMemoryAsSpan<SkColor>(
+      blink::kMacSystemColorIDCount * blink::kMacSystemColorSchemeCount);
+  values[static_cast<size_t>(blink::MacSystemColorID::kControlAccentColor)] =
+      accent_color;
+}
+
 }  // namespace content

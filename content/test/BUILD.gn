@@ -1387,6 +1387,7 @@ test("content_browsertests") {
   sources = [
     "../app/content_main_runner_impl_browsertest.cc",
     "../app/mojo/mojo_browsertest.cc",
+    "../browser/accent_color_browsertest.cc",
     "../browser/accessibility/accessibility_action_browsertest.cc",
     "../browser/accessibility/accessibility_content_browsertest.cc",
     "../browser/accessibility/accessibility_content_browsertest.h",
