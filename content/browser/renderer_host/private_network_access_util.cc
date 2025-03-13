@@ -66,17 +66,10 @@ FeatureState FeatureStateForContext(RequestContext request_context) {
 
 }  // namespace
 
-Policy DerivePrivateNetworkRequestPolicy(
-    const PolicyContainerPolicies& policies,
-    RequestContext private_network_request_context) {
-  return DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
-                                           policies.is_web_secure_context,
-                                           private_network_request_context);
-}
-
-Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
-  if (base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecks)) {
+Policy DerivePolicyForNonSecureContext(
+    AddressSpace ip_address_space,
+    bool local_network_access_checks_enabled) {
+  if (local_network_access_checks_enabled) {
     // LNA blocks all local network access requests coming from non-secure
     // contexts.
     // See:
@@ -123,9 +116,9 @@ Policy DerivePolicyForNonSecureContext(AddressSpace ip_address_space) {
   }
 }
 
-Policy DerivePolicyForSecureContext(AddressSpace ip_address_space) {
-  if (base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecks)) {
+Policy DerivePolicyForSecureContext(AddressSpace ip_address_space,
+                                    bool local_network_access_checks_enabled) {
+  if (local_network_access_checks_enabled) {
     // See:
     // https://github.com/explainers-by-googlers/local-network-access?tab=readme-ov-file#permission-prompts
     return network::features::kLocalNetworkAccessChecksWarn.Get()
@@ -178,7 +171,8 @@ Policy ApplyFeatureStateToPolicy(FeatureState feature_state, Policy policy) {
 Policy DerivePrivateNetworkRequestPolicy(
     AddressSpace ip_address_space,
     bool is_web_secure_context,
-    RequestContext private_network_request_context) {
+    RequestContext private_network_request_context,
+    bool local_network_access_checks_enabled) {
   // Disable PNA checks entirely when running with `--disable-web-security`.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity)) {
@@ -188,16 +182,45 @@ Policy DerivePrivateNetworkRequestPolicy(
   FeatureState feature_state =
       FeatureStateForContext(private_network_request_context);
 
-  Policy policy = is_web_secure_context
-                      ? DerivePolicyForSecureContext(ip_address_space)
-                      : DerivePolicyForNonSecureContext(ip_address_space);
+  Policy policy =
+      is_web_secure_context
+          ? DerivePolicyForSecureContext(ip_address_space,
+                                         local_network_access_checks_enabled)
+          : DerivePolicyForNonSecureContext(
+                ip_address_space, local_network_access_checks_enabled);
 
-  if (base::FeatureList::IsEnabled(
-          network::features::kLocalNetworkAccessChecks)) {
+  if (local_network_access_checks_enabled) {
     return policy;
   } else {
     return ApplyFeatureStateToPolicy(feature_state, policy);
   }
+}
+
+Policy DerivePrivateNetworkRequestPolicy(
+    const PolicyContainerPolicies& policies,
+    RequestContext private_network_request_context) {
+  return DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
+                                           policies.is_web_secure_context,
+                                           private_network_request_context);
+}
+
+Policy DerivePrivateNetworkRequestPolicy(
+    AddressSpace ip_address_space,
+    bool is_web_secure_context,
+    RequestContext private_network_request_context) {
+  return DerivePrivateNetworkRequestPolicy(
+      ip_address_space, is_web_secure_context, private_network_request_context,
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks));
+}
+
+Policy DerivePrivateNetworkRequestPolicy(
+    const PolicyContainerPolicies& policies,
+    RequestContext private_network_request_context,
+    bool local_network_access_checks_enabled) {
+  return DerivePrivateNetworkRequestPolicy(
+      policies.ip_address_space, policies.is_web_secure_context,
+      private_network_request_context, local_network_access_checks_enabled);
 }
 
 network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
