@@ -1201,6 +1201,9 @@ AutofillPrivateGetAllAttributeTypesForEntityTypeNameFunction::Run() {
             base::to_underlying(attribute_type.name());
         private_api_attribute_type.type_name_as_string =
             base::UTF16ToUTF8(attribute_type.GetNameForI18n());
+        private_api_attribute_type.data_type = autofill_ai_util::
+            AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
+                attribute_type.data_type());
         return private_api_attribute_type;
       });
   return RespondNow(ArgumentList(

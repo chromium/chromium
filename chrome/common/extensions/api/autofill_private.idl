@@ -159,6 +159,13 @@ namespace autofillPrivate {
     ACCOUNT
   };
 
+  // The type of data that can be stored for an attribute type.
+  enum AttributeTypeDataType {
+    COUNTRY,
+    DATE,
+    STRING
+  };
+
   // Metadata about an autofill entry (address or credit card) which is used to
   // render a summary list of all entries.
   dictionary AutofillMetadata {
@@ -327,6 +334,8 @@ namespace autofillPrivate {
     long typeName;
     // The type name as a human readable string.
     DOMString typeNameAsString;
+    // The type of data stored for this attribute type.
+    AttributeTypeDataType dataType;
   };
 
   // Contains the entity type name and other relevant information about the

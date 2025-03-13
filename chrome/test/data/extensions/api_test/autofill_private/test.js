@@ -6,6 +6,8 @@
 // that callbacks are correctly invoked, expected parameters are correct,
 // and failures are detected.
 
+const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
+
 // Constants for the tests.
 var FIRST_NAME = 'Firstname';
 var LAST_NAME = 'Lastname';
@@ -40,7 +42,14 @@ var ENTITY_INSTANCE = {
     editEntityTypeString: 'Edit vehicle',
   },
   attributeInstances: [
-    {type: {typeName: 14, typeNameAsString: 'License plate'}, value: 'ABCDE'},
+    {
+      type: {
+        typeName: 14,
+        typeNameAsString: 'License plate',
+        dataType: AttributeTypeDataType.STRING,
+      },
+      value: 'ABCDE',
+    },
   ],
   guid: GUID,
   nickname: 'Personal car',
@@ -982,11 +991,31 @@ var availableTests = [
         await chrome.autofillPrivate.getAllAttributeTypesForEntityTypeName(
             /*entityTypeName=*/ 1);
     const expectedAttributeTypesList = [
-      {typeName: 5, typeNameAsString: 'Name'},
-      {typeName: 6, typeNameAsString: 'State'},
-      {typeName: 7, typeNameAsString: 'Number'},
-      {typeName: 8, typeNameAsString: 'Issue date'},
-      {typeName: 9, typeNameAsString: 'Expiration date'},
+      {
+        typeName: 5,
+        typeNameAsString: 'Name',
+        dataType: AttributeTypeDataType.STRING,
+      },
+      {
+        typeName: 6,
+        typeNameAsString: 'State',
+        dataType: AttributeTypeDataType.STRING,
+      },
+      {
+        typeName: 7,
+        typeNameAsString: 'Number',
+        dataType: AttributeTypeDataType.STRING,
+      },
+      {
+        typeName: 8,
+        typeNameAsString: 'Issue date',
+        dataType: AttributeTypeDataType.DATE,
+      },
+      {
+        typeName: 9,
+        typeNameAsString: 'Expiration date',
+        dataType: AttributeTypeDataType.DATE,
+      },
     ];
     chrome.test.assertEq(expectedAttributeTypesList, attributeTypesList);
     chrome.test.succeed();
