@@ -6322,6 +6322,120 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
   }
 }
 
+// Renderer process reuse with empty available renderers tests. Feature flag
+// kTrackEmptyRendererProcessesForReuse controls enablement.
+class RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTrackEmptyRendererProcessesForReuse);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
+                       ReuseEmptyAvailableRenderForMainFrame) {
+  // The test assumes that the main frame RFH will be reused when navigating.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  auto* first_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  // Normally, a policy above //content (e.g., KeepAliveDSEPolicy, like via
+  // SetDSEKeepAlive()) might keep an empty process alive using
+  // IncrementPendingReuseRefCount(). This emulates such a policy directly and
+  // force the renderer process to remain alive for reuse.
+  first_navigation_rph->IncrementPendingReuseRefCount();
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+  EXPECT_TRUE(first_navigation_rph->IsInitializedAndNotDead());
+
+  // Navigate to a different page.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  auto* second_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_NE(first_navigation_rph->GetID(), second_navigation_rph->GetID());
+
+  // Make sure the initial renderer is still available.
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+
+  // Navigate back to the initial page should take the empty renderer process
+  // being kept alive from the first navigation.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  auto* third_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_EQ(first_navigation_rph->GetID(), third_navigation_rph->GetID());
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// On Android, the OS can kill the renderer process at any point without the
+// browser's control. Therefore, the Android version of the test below cannot
+// guarantee that the original process will still be alive and available for
+// reuse. It checks if it's still alive; if so, it should be reused. If not,
+// a new process will be created, which is also acceptable. This is different
+// from the Desktop scenario where the browser has more control over the process
+// lifecycle.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplReuseEmptyAvailableRenderBrowserTest,
+                       ReuseEmptyAvailableRenderIfAvailableForMainFrame) {
+  // The test assumes that the main frame RFH will be reused when navigating.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  auto* first_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+
+  // Normally, a policy above //content (e.g., KeepAliveDSEPolicy, like via
+  // SetDSEKeepAlive()) might keep an empty process alive using
+  // IncrementPendingReuseRefCount(). This emulates such a policy directly and
+  // force the renderer process to remain alive for reuse.
+  first_navigation_rph->IncrementPendingReuseRefCount();
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+  EXPECT_TRUE(first_navigation_rph->IsInitializedAndNotDead());
+
+  // Navigate to a different page.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  auto* second_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_NE(first_navigation_rph->GetID(), second_navigation_rph->GetID());
+
+  // Make sure the initial renderer is still available.
+  EXPECT_EQ(1, first_navigation_rph->GetPendingReuseRefCountForTesting());
+
+  // Navigate back to the initial page should take the empty renderer process
+  // being kept alive from the first navigation.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  auto* third_navigation_rph =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess();
+  if (first_navigation_rph->IsInitializedAndNotDead()) {
+    EXPECT_EQ(first_navigation_rph->GetID(), third_navigation_rph->GetID());
+  } else {
+    EXPECT_NE(first_navigation_rph->GetID(), third_navigation_rph->GetID());
+  }
+}
+#endif
+
 // Test that multiple subframe-shutdown delays from the same source can be in
 // effect, and that cancelling one delay does not cancel the others.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplSubframeReuseBrowserTest,
