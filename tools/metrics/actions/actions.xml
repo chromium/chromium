@@ -44172,6 +44172,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabSwitcher.ContextMenu">
+  <owner>mfiaz@google.com</owner>
+  <owner>skym@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <description>
+    Recorded when a user long presses on a tab card in the tab switcher to show
+    the tab context menu.
+  </description>
+</action>
+
 <action name="TaskManagement.OpenInChromeActionButtonClicked">
   <obsolete>The button option was removed and code deleted.</obsolete>
   <owner>dfalcantara@chromium.org</owner>
@@ -48825,6 +48835,25 @@ should be able to be added at any place in this file.
   <suffix name="NoGroupsExist"
       label="Recorded when no tab groups exist when clicked."/>
   <affected-action name="TabGroupParity.TabListEditorMenuActions"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="AddTabToGroup"
+      label="Recorded when the 'Add to group' option in the context menu is
+             selected."/>
+  <suffix name="AddToBookmark"
+      label="Recorded when the 'Add to bookmarks' option in the context menu
+             is selected."/>
+  <suffix name="CloseTab"
+      label="Recorded when the 'Close tab' option in the context menu is
+             selected."/>
+  <suffix name="SelectTabs"
+      label="Recorded when the 'Select tabs' option in the context menu is
+             selected."/>
+  <suffix name="ShareTab"
+      label="Recorded when the 'Share' option in the context menu is
+             selected."/>
+  <affected-action name="TabSwitcher.ContextMenu"/>
 </action-suffix>
 
 </actions>
