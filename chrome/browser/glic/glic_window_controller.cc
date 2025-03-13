@@ -647,6 +647,10 @@ void GlicWindowController::OpenDetached() {
   // simplified to just setting the z-order.
   if (AlwaysDetached()) {
     GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
+#if BUILDFLAG(IS_MAC)
+    GetGlicWidget()->SetActivationIndependence(true);
+    GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
+#endif
   } else {
     // Be sure to reparent the widget and set its state first before showing it.
     MaybeCreateHolderWindowAndReparent();
