@@ -207,6 +207,10 @@ BASE_FEATURE(kWebViewPrefetchNativeLibrary,
              "WebViewPrefetchNativeLibrary",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// A parameter to trigger the prefetch from the renderer instead of the browser.
+const base::FeatureParam<bool> kWebViewPrefetchFromRenderer{
+    &kWebViewPrefetchNativeLibrary, "WebViewPrefetchFromRenderer", false};
+
 // If enabled TYPE_SCROLLED accessibility events are sent every 100ms when user
 // is scrolling irrespective of GestureScrollUpdate being consumed or not.
 // If disabled events are sent on GSU consumed ack.

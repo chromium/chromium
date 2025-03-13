@@ -403,7 +403,12 @@ public class WebViewChromiumAwInit {
                                 AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_DISABLE_CHIPS));
                     });
 
-            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)) {
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY)
+                    && !AwFeatureMap.getInstance()
+                            .getFieldTrialParamByFeatureAsBoolean(
+                                    AwFeatures.WEBVIEW_PREFETCH_NATIVE_LIBRARY,
+                                    "WebViewPrefetchFromRenderer",
+                                    false)) {
                 PostTask.postTask(
                         TaskTraits.BEST_EFFORT,
                         () -> {
