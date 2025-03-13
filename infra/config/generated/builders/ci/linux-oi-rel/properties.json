@@ -106,5 +106,11 @@
     ]
   },
   "builder_group": "chromium.linux",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "chromium"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
 }

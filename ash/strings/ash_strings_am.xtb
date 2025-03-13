@@ -74,7 +74,6 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />፣ የPlay መደብር መተግበሪያ</translation>
 <translation id="1225748608451425081">የእርስዎ Chromebook በአንድ የታወቀ ችግር ምክንያት ተቆልፏል። ከሚከተለው ያህል ጊዜ በኋላ ወደ መለያ መግባት ይችላሉ፦ <ph name="TIME_LEFT" />።</translation>
 <translation id="1229194443904279055">መምረጥ ያቁሙ</translation>
-<translation id="1230853660706736937">በምስሎች ውስጥ ጽሑፍ ይፈልጉ እና የምስል ቅድመ-እይታዎችን ይመልከቱ</translation>
 <translation id="1235458158152011030">የታወቁ አውታረ መረቦች</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ተገናኝቷል።</translation>
 <translation id="1240638468526743569">መተግበሪያ</translation>
@@ -2265,7 +2264,7 @@
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> አለው።</translation>
 <translation id="8477270416194247200">ለመሰረዝ Alt+Search ወይም Shift ይጫኑ።</translation>
 <translation id="8480418399907765580">የመሣሪያ አሞሌን አሳይ</translation>
-<translation id="8487660088084188539">እነዚህን ባህሪያት ሲያበሩ የግብዓት ጽሑፍ፣ የሰነድ ይዘት እና የድረ-ገፅ ዩአርኤል ወደ Google አገልጋዮች ሊላኩ ይችላል። ይህ መረጃ የአጻጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና ለ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዢ የሆነውን ምርት ለማሻሻል ጥቅም ላይ ይውላል። የግል፣ ልዩ ጥንቃቄ የሚያስፈልገው ወይም ምስጢራዊ የሆነ ማንኛውም ነገር አያካትቱ።</translation>
+<translation id="8487660088084188539">እነዚህን ባህሪያት ሲያበሩ የግብዓት ፅሑፍ፣ የሰነድ ይዘት እና የድረ-ገፅ ዩአርኤል ወደ Google አገልጋዮች ሊላኩ ይችላል። ይህ መረጃ የአጻጻፍ ጥቆማዎችን ለማመንጨት፣ ማጠቃለያዎች ለማመንጨት፣ ጥያቄዎችን ለመመለስ፣ እና ለ<ph name="LINK_TO_SERVICE_TERMS" /> ተገዢ የሆነውን ምርት ለማሻሻል ጥቅም ላይ ይውላል። ግላዊ፣ ልዩ ጥንቃቄ የሚያስፈልገው ወይም ምስጢራዊ የሆነ ማንኛውም ነገር አያካትቱ።</translation>
 <translation id="8487699605742506766">መገናኛ ነጥብ</translation>
 <translation id="8491237443345908933">አገናኝን በአዲስ ትር ውስጥ ይክፈቱ</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" />ን አይደግፍም። ጥራቱ ወደ <ph name="FALLBACK_RESOLUTION" /> ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>

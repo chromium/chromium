@@ -19,7 +19,7 @@
 
 namespace blink {
 
-HeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
+GCedHeapVector<Member<const MLOperator>>* GetOperatorsInTopologicalOrder(
     const MLNamedOperands& named_outputs) {
   // A WebNN graph is represented by a directed acyclic graph (DAG) that has
   // operators as vertices and operand as edges. The topological sorting is

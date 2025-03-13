@@ -373,7 +373,11 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   // The spec snapshots the array at the beginning of a dispatch so that
   // listeners adding or removing other event listeners during dispatch is
   // done in a consistent way.
-  bool FireEventListeners(Event&, EventTargetData*, EventListenerVector);
+  using EventListenerVectorSnapshot =
+      HeapVector<Member<RegisteredEventListener>, 1>;
+  bool FireEventListeners(Event&,
+                          EventTargetData*,
+                          EventListenerVectorSnapshot);
   void CountLegacyEvents(const AtomicString& legacy_type_name,
                          EventListenerVector*,
                          EventListenerVector*);

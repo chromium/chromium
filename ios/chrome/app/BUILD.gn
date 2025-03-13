@@ -594,6 +594,7 @@ source_set("change_profile_animator") {
     "//base",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/third_party/material_components_ios",
   ]
 }
 

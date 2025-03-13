@@ -15,10 +15,12 @@ namespace glic {
 class GlicWebClientAccess {
  public:
   using PanelWillOpenCallback = mojom::WebClient::NotifyPanelWillOpenCallback;
+
   // Informs the web client that the panel will open. The panel should not be
   // shown until `done` is called.
-  virtual void PanelWillOpen(const mojom::PanelState& panel_state,
+  virtual void PanelWillOpen(mojom::PanelOpeningDataPtr panel_opening_data,
                              PanelWillOpenCallback done) = 0;
+
   // Informs the web client the panel was closed (no longer visible). The web
   // client should not be destroyed until after `done` is called.
   virtual void PanelWasClosed(base::OnceClosure done) = 0;

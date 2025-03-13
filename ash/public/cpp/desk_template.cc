@@ -89,14 +89,18 @@ constexpr char DeskTemplate::kIncognitoWindowIdentifier[];
 std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
       uuid_, source_, base::UTF16ToUTF8(template_name_), created_time_, type_);
-  if (WasUpdatedSinceCreation())
+  if (WasUpdatedSinceCreation()) {
     desk_template->set_updated_time(updated_time_);
-  if (desk_restore_data_)
+  }
+  if (desk_restore_data_) {
     desk_template->set_desk_restore_data(desk_restore_data_->Clone());
+  }
   desk_template->set_client_cache_guid(client_cache_guid_);
   desk_template->should_launch_on_startup_ = should_launch_on_startup_;
   desk_template->policy_definition_ = policy_definition_.Clone();
   desk_template->lacros_profile_id_ = lacros_profile_id_;
+  desk_template->set_coral_tab_app_entities(
+      mojo::Clone(coral_tab_app_entities_));
   return desk_template;
 }
 

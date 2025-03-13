@@ -43,6 +43,14 @@ DerivePrivateNetworkRequestPolicy(
     const PolicyContainerPolicies& policies,
     PrivateNetworkRequestContext private_network_request_context);
 
+// Overload to allow for explicit control over whether LNA checks are enabled or
+// not when deriving the policy.
+network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
+DerivePrivateNetworkRequestPolicy(
+    const PolicyContainerPolicies& policies,
+    PrivateNetworkRequestContext private_network_request_context,
+    bool local_network_access_checks_enabled);
+
 network::mojom::ClientSecurityStatePtr CONTENT_EXPORT DeriveClientSecurityState(
     const PolicyContainerPolicies& policies,
     PrivateNetworkRequestContext private_network_request_context);
@@ -68,4 +76,4 @@ network::mojom::PrivateNetworkRequestPolicy OverrideBlockWithWarn(
 
 }  // namespace content
 
-#endif  //  CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_
+#endif  // CONTENT_BROWSER_RENDERER_HOST_PRIVATE_NETWORK_ACCESS_UTIL_H_

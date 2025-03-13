@@ -382,7 +382,6 @@ public abstract class ChromeFeatureList {
     public static final String HTTPS_FIRST_BALANCED_MODE = "HttpsFirstBalancedMode";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
     public static final String INSTALL_MESSAGE_THROTTLE = "InstallMessageThrottle";
-    public static final String IP_PROTECTION_V1 = "IpProtectionV1";
     public static final String IP_PROTECTION_UX = "IpProtectionUx";
     public static final String LEGACY_TAB_STATE_DEPRECATION = "LegacyTabStateDeprecation";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
@@ -390,7 +389,6 @@ public abstract class ChromeFeatureList {
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";
     public static final String LOGIN_DB_DEPRECATION_ANDROID = "LoginDbDeprecationAndroid";
-    public static final String LOGO_POLISH = "LogoPolish";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String MAGIC_STACK_ANDROID = "MagicStackAndroid";
@@ -558,6 +556,7 @@ public abstract class ChromeFeatureList {
             "TabStripTransitionInDesktopWindow";
     public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
     public static final String TAB_SWITCHER_COLOR_BLEND_ANIMATE = "TabSwitcherColorBlendAnimate";
+    public static final String TAB_SWITCHER_CONTEXT_MENU_ANDROID = "TabSwitcherContextMenuAndroid";
     public static final String TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT =
             "TabSwitcherForeignFaviconSupport";
     public static final String TAB_WINDOW_MANAGER_INDEX_REASSIGNMENT_ACTIVITY_FINISHING =
@@ -765,7 +764,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ false);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
-    public static final CachedFlag sLogoPolish = newCachedFlag(LOGO_POLISH, true);
     public static final CachedFlag sMagicStackAndroid = newCachedFlag(MAGIC_STACK_ANDROID, true);
     public static final CachedFlag sMostVisitedTilesCustomization =
             newCachedFlag(MOST_VISITED_TILES_CUSTOMIZATION, false);
@@ -932,7 +930,6 @@ public abstract class ChromeFeatureList {
                     sHideTabletToolbarDownloadButton,
                     sHistoryPaneAndroid,
                     sLockBackPressHandlerAtStart,
-                    sLogoPolish,
                     sNotificationTrampoline,
                     sMagicStackAndroid,
                     sMostVisitedTilesCustomization,
@@ -1061,6 +1058,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherColorBlendAnimate =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_COLOR_BLEND_ANIMATE, true);
+    public static final MutableFlagWithSafeDefault sTabSwitcherContextMenuAndroid =
+            newMutableFlagWithSafeDefault(TAB_SWITCHER_CONTEXT_MENU_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =
             newMutableFlagWithSafeDefault(TAB_SWITCHER_FOREIGN_FAVICON_SUPPORT, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =

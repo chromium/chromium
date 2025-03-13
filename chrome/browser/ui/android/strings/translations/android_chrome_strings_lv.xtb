@@ -1336,7 +1336,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7111394291981742152">Chrome nodrošina lielāku kontroli pār jums rādītajām reklāmām un ierobežo informāciju, ko vietnes var uzzināt par jums, kad tās rāda jums personalizētas reklāmas.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Vienai vietnei ir pārskatītas atļaujas.}zero{# vietnēm ir pārskatītas atļaujas.}one{# vietnei ir pārskatītas atļaujas.}other{# vietnēm ir pārskatītas atļaujas.}}</translation>
 <translation id="7138678301420049075">Cits</translation>
-<translation id="7139479418357139965">Varat sazināties ar sūtītāju un lūgt nosūtīt jaunu saiti.</translation>
 <translation id="7140829094791862589">Kārtot manuāli</translation>
 <translation id="7146622961999026732">Šķiet, ka šīs vietnes un lietotnes jums ir svarīgas:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Iegūstiet plašāku informāciju<ph name="END_LINK" /> no uzņēmuma <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1539,7 +1538,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
 <translation id="8014210850410408071">Tagad importējiet paroles</translation>
 <translation id="8015452622527143194">Atjaunot visam lapas saturam noklusējuma lielumu</translation>
-<translation id="8017431260099661477">Nevarēja atvērt uzaicinājuma saiti</translation>
 <translation id="8026238112629815203">Mēs mainījām veidu, kā paroles tiek saglabātas šajā ierīcē</translation>
 <translation id="8027395186860110042">Drīz var tikt pārtraukta paroļu darbība</translation>
 <translation id="8027863900915310177">Izvēlieties lejupielādes vietu</translation>

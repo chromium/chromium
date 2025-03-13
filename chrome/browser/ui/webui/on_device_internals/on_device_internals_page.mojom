@@ -51,7 +51,8 @@ interface OnDeviceInternalsPageHandler {
   LoadModel(mojo_base.mojom.FilePath model_path,
             on_device_model.mojom.ModelPerformanceHint performance_hint,
             pending_receiver<on_device_model.mojom.OnDeviceModel> model) =>
-      (on_device_model.mojom.LoadModelResult result);
+      (on_device_model.mojom.LoadModelResult result,
+       on_device_model.mojom.Capabilities capabilities);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() =>

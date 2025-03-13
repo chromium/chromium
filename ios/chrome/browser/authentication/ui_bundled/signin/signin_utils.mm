@@ -464,10 +464,6 @@ void MultiProfileSignOut(Browser* browser,
 
   if (signout_source ==
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings) {
-    // TODO(crbug.com/375605174): Verify that This signout source is only used
-    // when signing out from Accounts settings page. For now, it is also used
-    // in the signout button in ManageAccounts view, which will no longer be
-    // shown once kSeparateProfilesForManagedAccounts is enabled.
     ChangeProfileContinuation postSignoutContinuation =
         CreateChangeProfileSettingsContinuation();
     continuation = ChainChangeProfileContinuations(

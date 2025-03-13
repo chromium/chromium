@@ -94,6 +94,12 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
                       v8::Local<v8::String> label) override;
   void consoleTimeStamp(v8::Isolate* isolate,
                         v8::Local<v8::String> label) override;
+
+  void consoleTimeStampWithArgs(
+      v8::Isolate* isolate,
+      v8::Local<v8::String> label,
+      const v8::LocalVector<v8::Value>& args) override;
+
   void startRepeatingTimer(double,
                            v8_inspector::V8InspectorClient::TimerCallback,
                            void* data) override;

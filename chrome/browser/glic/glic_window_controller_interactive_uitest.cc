@@ -11,6 +11,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -64,13 +65,14 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
     // TODO: Actually implement the hotkey when we know what it is.
     return Do([this]() {
       glic_service()->ToggleUI(nullptr, /*prevent_close=*/false,
-                               InvocationSource::kOsHotkey);
+                               mojom::InvocationSource::kOsHotkey);
     });
   }
 
   auto SimulateOpenMenuItem() {
-    return Do(
-        [this]() { glic_controller_->Show(InvocationSource::kOsButtonMenu); });
+    return Do([this]() {
+      glic_controller_->Show(mojom::InvocationSource::kOsButtonMenu);
+    });
   }
 
  private:
@@ -283,6 +285,30 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       ESCWhenDetachedActiveCloses) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kActivateSurfaceIncompatibilityNotice),
+      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
+      SimulateAcceleratorPress(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      InAnyContext(WaitForHide(kGlicViewElementId)),
+      CheckControllerHasWidget(false));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       ESCWhenAttachedActiveCloses) {
+  RunTestSequence(
+      OpenGlicWindow(GlicWindowMode::kAttached),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              kActivateSurfaceIncompatibilityNotice),
+      InAnyContext(ActivateSurface(test::kGlicHostElementId)),
+      SimulateAcceleratorPress(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE)),
+      InAnyContext(WaitForHide(kGlicViewElementId)),
+      CheckControllerHasWidget(false));
+}
+
 // TODO(388102775): When Mac app focus issues are resolved, add a test to verify
 // that invoking the hotkey while open detached always closes glic regardless of
 // activation.
@@ -320,7 +346,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       CheckControllerHasWidget(false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, OpenMenuItemShows) {
+// Flaky on macOS: https://crbug.com/401158115
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_OpenMenuItemShows DISABLED_OpenMenuItemShows
+#else
+#define MAYBE_OpenMenuItemShows OpenMenuItemShows
+#endif
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, MAYBE_OpenMenuItemShows) {
   RunTestSequence(SimulateOpenMenuItem(),
                   WaitForAndInstrumentGlic(kHostAndContents),
                   CheckControllerHasWidget(true),

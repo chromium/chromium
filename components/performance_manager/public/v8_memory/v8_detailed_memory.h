@@ -8,12 +8,10 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 
@@ -55,8 +53,7 @@ namespace v8_memory {
 // V8DetailedMemoryRequest, V8DetailedMemoryExecutionContextData and
 // V8DetailedMemoryProcessData must all be accessed on the graph sequence, and
 // V8DetailedMemoryObserver::OnV8MemoryMeasurementAvailable will be called on
-// this sequence. To request memory measurements from another sequence use the
-// wrappers in v8_detailed_memory_any_seq.h.
+// this sequence.
 //
 // Usage:
 //
@@ -269,7 +266,6 @@ class V8DetailedMemoryObserver : public base::CheckedObserver {
 // The following classes create requests for memory measurements.
 
 class V8DetailedMemoryDecorator;
-class V8DetailedMemoryRequestAnySeq;
 class V8DetailedMemoryRequestOneShot;
 class V8DetailedMemoryRequestQueue;
 
@@ -347,19 +343,6 @@ class V8DetailedMemoryRequest {
 
   // Implementation details below this point.
 
-  // Private constructor for V8DetailedMemoryRequestAnySeq. Saves
-  // |off_sequence_request| as a pointer to the off-sequence object that
-  // triggered the request and starts measurements with frequency
-  // |min_time_between_requests|. If |process_to_measure| is nullopt, the
-  // request will be sent to every renderer process, otherwise it will be sent
-  // only to |process_to_measure|.
-  V8DetailedMemoryRequest(
-      base::PassKey<V8DetailedMemoryRequestAnySeq>,
-      const base::TimeDelta& min_time_between_requests,
-      MeasurementMode mode,
-      std::optional<base::WeakPtr<ProcessNode>> process_to_measure,
-      base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request);
-
   // Private constructor for V8DetailedMemoryRequestOneShot. Sets
   // min_time_between_requests_ to 0, which is not allowed for repeating
   // requests, and registers |on_owner_unregistered_closure| to be called from
@@ -380,9 +363,6 @@ class V8DetailedMemoryRequest {
       const ProcessNode* process_node) const;
 
  private:
-  void StartMeasurementFromOffSequence(
-      std::optional<base::WeakPtr<ProcessNode>> process_to_measure,
-      Graph* graph);
   void StartMeasurementImpl(Graph* graph, const ProcessNode* process_node);
 
   base::TimeDelta min_time_between_requests_
@@ -393,15 +373,6 @@ class V8DetailedMemoryRequest {
   base::ObserverList<V8DetailedMemoryObserver, /*check_empty=*/true> observers_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Pointer back to the off-sequence V8DetailedMemoryRequestAnySeq that
-  // created this, if any.
-  base::WeakPtr<V8DetailedMemoryRequestAnySeq> off_sequence_request_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Sequence that |off_sequence_request_| lives on.
-  scoped_refptr<base::SequencedTaskRunner> off_sequence_request_sequence_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
   // Additional closure that will be called from OnOwnerUnregistered for
   // one-shot requests. Used to clean up resources in the
   // V8DetailedMemoryRequestOneShot wrapper.
@@ -410,8 +381,6 @@ class V8DetailedMemoryRequest {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-class V8DetailedMemoryRequestOneShotAnySeq;
 
 class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
  public:
@@ -469,18 +438,8 @@ class V8DetailedMemoryRequestOneShot final : public V8DetailedMemoryObserver {
 
   // Implementation details below this point.
 
-  // Private constructor for V8DetailedMemoryRequestOneShotAnySeq. Will be
-  // called from off-sequence.
-  V8DetailedMemoryRequestOneShot(
-      base::PassKey<V8DetailedMemoryRequestOneShotAnySeq>,
-      base::WeakPtr<ProcessNode> process,
-      MeasurementCallback callback,
-      MeasurementMode mode = MeasurementMode::kDefault);
-
  private:
   void InitializeRequest();
-  void StartMeasurementFromOffSequence(base::WeakPtr<ProcessNode>,
-                                       MeasurementCallback callback);
   void DeleteRequest();
   void OnOwnerUnregistered();
 

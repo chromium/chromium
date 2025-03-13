@@ -11,7 +11,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_test_utils.h"
-#import "ios/chrome/browser/download/model/auto_deletion/scheduled_file_queue.h"
 #import "ios/chrome/browser/download/model/auto_deletion/scheduler.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"

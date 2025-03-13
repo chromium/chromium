@@ -622,7 +622,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   //
 
   // Return the platform-native GUI object that should be used as a target
-  // for accessibility events.
+  // for accessibility events. This function is performance-critical and must
+  // remain efficient.
   virtual gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent();
 
   //

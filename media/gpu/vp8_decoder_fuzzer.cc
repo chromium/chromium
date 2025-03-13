@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
@@ -31,7 +32,7 @@ class FakeVP8Accelerator : public media::VP8Decoder::VP8Accelerator {
 
   // media::VP8Decoder::VP8Accelerator
   scoped_refptr<media::VP8Picture> CreateVP8Picture() override {
-    return new media::VP8Picture();
+    return base::MakeRefCounted<media::VP8Picture>();
   }
   bool SubmitDecode(
       scoped_refptr<media::VP8Picture> pic,

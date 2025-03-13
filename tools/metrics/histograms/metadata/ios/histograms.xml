@@ -1805,6 +1805,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.GoogleOne.Outcome.{EntryPoint}" enum="GoogleOneOutcome"
+    expires_after="2026-03-12">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>qpubert@chromium.org</owner>
+  <summary>
+    The outcome of the GoogleOne flow initiated from {EntryPoint}.
+  </summary>
+  <token key="EntryPoint">
+    <variant name="Drive" summary="Google Drive save error"/>
+    <variant name="Photos" summary="Google Photos save error"/>
+    <variant name="Settings" summary="the settings"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled"
     enum="Boolean" expires_after="2025-08-11">
   <owner>adamta@google.com</owner>

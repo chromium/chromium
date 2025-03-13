@@ -712,6 +712,7 @@ TEST_F(It2MeNativeMessagingHostTest,
   params.suppress_notifications = true;
   params.terminate_upon_input = true;
   params.curtain_local_user_session = true;
+  params.connection_auto_accept_timeout = base::Hours(8);
   connect_message.Merge(params.ToDict());
   WriteMessageToInputPipe(connect_message);
   VerifyConnectResponses(next_id);
@@ -721,6 +722,8 @@ TEST_F(It2MeNativeMessagingHostTest,
   ASSERT_TRUE(get_chrome_os_enterprise_params()->suppress_notifications);
   ASSERT_TRUE(get_chrome_os_enterprise_params()->terminate_upon_input);
   ASSERT_TRUE(get_chrome_os_enterprise_params()->curtain_local_user_session);
+  ASSERT_EQ(get_chrome_os_enterprise_params()->connection_auto_accept_timeout,
+            base::Hours(8));
 #else
   ASSERT_FALSE(get_chrome_os_enterprise_params().has_value());
 #endif

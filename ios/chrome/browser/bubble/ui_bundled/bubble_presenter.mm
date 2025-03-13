@@ -109,6 +109,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
       _priceNotificationsWhileBrowsingBubbleTipPresenter;
   BubbleViewControllerPresenter* _lensKeyboardPresenter;
   BubbleViewControllerPresenter* _lensOverlayEntrypointBubblePresenter;
+  BubbleViewControllerPresenter* _settingsInOverflowMenuBubblePresenter;
 
   // List of existing gestural IPH views.
   GestureInProductHelpView* _pullToRefreshGestureIPH;
@@ -472,6 +473,46 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   if (presenter) {
     _lensOverlayEntrypointBubblePresenter = presenter;
+  }
+}
+
+- (void)presentOverflowMenuSettingsBubble {
+  if (![self canPresentBubble]) {
+    return;
+  }
+
+  // Only show on top of the NTP:
+  // If the user had opened the account menu from the NTP, chances are they were
+  // looking for settings (because that's where the account particle disc used
+  // to link), so this IPH will help them.
+  // If they had opened the account menu from anywhere else, there's no
+  // connection to settings, and so this IPH wouldn't make sense.
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (!IsUrlNtp(currentWebState->GetVisibleURL())) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection =
+      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
+                                                  : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_IN_OVERFLOW_MENU_IPH_TEXT);
+
+  CGPoint toolsMenuAnchor = [self anchorPointToGuide:kToolsMenuGuide
+                                           direction:arrowDirection];
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the IPH, then end early to prevent the potential reassignment of the
+  // existing presenter to nil.
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:
+                feature_engagement::kIPHiOSSettingsInOverflowMenuBubbleFeature
+                          direction:arrowDirection
+                               text:text
+              voiceOverAnnouncement:text
+                        anchorPoint:toolsMenuAnchor];
+  if (presenter) {
+    _settingsInOverflowMenuBubblePresenter = presenter;
   }
 }
 

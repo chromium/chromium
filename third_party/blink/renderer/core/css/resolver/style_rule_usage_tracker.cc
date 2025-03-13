@@ -42,7 +42,7 @@ void StyleRuleUsageTracker::Track(const CSSStyleSheet* parent_sheet,
   } else {
     used_rules_delta_
         .insert(parent_sheet,
-                MakeGarbageCollected<HeapVector<Member<const StyleRule>>>())
+                MakeGarbageCollected<GCedHeapVector<Member<const StyleRule>>>())
         .stored_value->value->push_back(rule);
   }
 }

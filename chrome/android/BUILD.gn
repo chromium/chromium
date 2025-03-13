@@ -909,6 +909,7 @@ if (current_toolchain == default_toolchain) {
       "//components/saved_tab_groups/internal:java",
       "//components/saved_tab_groups/public:conversion_utils_java",
       "//components/segmentation_platform/internal:internal_java",
+      "//components/visited_url_ranking/internal:internal_java",
     ]
   }
 
@@ -3278,6 +3279,7 @@ group("jni_headers") {
     "//chrome/browser/segmentation_platform:jni_headers",
     "//chrome/browser/ssl/android:jni_headers",
     "//chrome/browser/tab:jni_headers",
+    "//chrome/browser/tab_group_suggestion:jni_headers",
     "//chrome/browser/tab_group_sync:factory_jni_headers",
     "//chrome/browser/tab_group_sync:jni_headers",
     "//chrome/browser/tab_ui/android:jni_headers",

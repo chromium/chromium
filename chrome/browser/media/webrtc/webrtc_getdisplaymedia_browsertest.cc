@@ -1051,7 +1051,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaHiDpiBrowserTest, Capture) {
   // The HiDPI scale change only occurs once the capture has actually started
   // and the size information was propagated back to the browser process.
   // Waiting for the video to start playing helps ensure that this is the case.
-  StartDetectingVideo(Tab(), "local-view");
+  StartDetectingVideo(Tab(), "video");
   WaitForVideoToPlay(Tab());
 
   // If the video size is higher resolution than the browser window
@@ -1689,6 +1689,14 @@ class CaptureSessionDetails {
         "send-wheel-resolved");
   }
 
+  // Forwards from the target element, or stops forwarding if target is "null".
+  void ForwardWheel(const std::string& target) {
+    EXPECT_EQ(content::EvalJs(
+                  capturing_tab_->GetPrimaryMainFrame(),
+                  base::StringPrintf("forwardWheel(%s);", target.c_str())),
+              "forward-wheel-resolved");
+  }
+
   void UpdateZoomLevel(const std::string& action, bool expect_success = true) {
     const std::string command =
         base::StringPrintf("updateZoomLevel(\"%s\");", action);
@@ -1793,6 +1801,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     // TODO(crbug.com/40276312): Migrate from sendWheel() to either
     // forwardWheel() or forwardGestures(), whichever the case may be.
     kSendWheel,
+    kForwardWheel,      // forwardWheel(validElement)
+    kForwardWheelNull,  // forwardWheel(null)
     kIncreaseZoomLevel,
     kDecreaseZoomLevel,
     kResetZoomLevel,
@@ -1809,6 +1819,8 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
       case Action::kResetZoomLevel:
         return "reset";
       case Action::kSendWheel:
+      case Action::kForwardWheel:
+      case Action::kForwardWheelNull:
       case Action::kGetZoomLevel:
       case Action::kGetSupportedZoomLevels:
         break;
@@ -1816,15 +1828,17 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     NOTREACHED() << "Not a ZoomLevelAction.";
   }
 
-  static bool IsWriteAccessAction(Action action) {
+  static bool ShouldTriggerCscIndicator(Action action) {
     switch (action) {
       case Action::kSendWheel:
+      case Action::kForwardWheel:
       case Action::kIncreaseZoomLevel:
       case Action::kDecreaseZoomLevel:
       case Action::kResetZoomLevel:
         return true;
       case Action::kGetZoomLevel:
       case Action::kGetSupportedZoomLevels:
+      case Action::kForwardWheelNull:
         return false;
     }
     NOTREACHED();
@@ -1835,6 +1849,12 @@ class GetDisplayMediaCapturedSurfaceControlTest : public WebRtcTestBase {
     switch (action) {
       case Action::kSendWheel:
         capture_session.SendWheel();
+        return;
+      case Action::kForwardWheel:
+        capture_session.ForwardWheel("video");
+        return;
+      case Action::kForwardWheelNull:
+        capture_session.ForwardWheel("null");
         return;
       case Action::kIncreaseZoomLevel:
       case Action::kDecreaseZoomLevel:
@@ -2374,6 +2394,8 @@ class GetDisplayMediaCapturedSurfaceControlIndicatorTest
 INSTANTIATE_TEST_SUITE_P(,
                          GetDisplayMediaCapturedSurfaceControlIndicatorTest,
                          Values(CscAction::kSendWheel,
+                                CscAction::kForwardWheel,
+                                CscAction::kForwardWheelNull,
                                 CscAction::kIncreaseZoomLevel,
                                 CscAction::kDecreaseZoomLevel,
                                 CscAction::kResetZoomLevel,
@@ -2413,7 +2435,7 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaCapturedSurfaceControlIndicatorTest,
   // The capturing tab's infobar shows the CSC indicator, but only
   // if the action was a write-access action.
   EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
-            IsWriteAccessAction(action_));
+            ShouldTriggerCscIndicator(action_));
 
   // The CSC indicator is not shown on any other infobar.
   EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));
@@ -2462,7 +2484,7 @@ IN_PROC_BROWSER_TEST_P(
   // The capturing tab's infobar show the CSC indicator if the action
   // was a write-access action.
   EXPECT_EQ(HasCscIndicator(capture_session.capturing_tab()),
-            IsWriteAccessAction(action_));
+            ShouldTriggerCscIndicator(action_));
 
   // The CSC indicator is not shown on any other infobar.
   EXPECT_FALSE(HasCscIndicator(capture_session.initially_captured_tab()));

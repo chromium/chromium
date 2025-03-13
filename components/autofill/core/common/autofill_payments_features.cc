@@ -214,7 +214,7 @@ BASE_FEATURE(kAutofillEnableVerveCardSupport,
 // will not be displayed, and Autofill will work as if it had been selected.
 BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
              "AutofillRemovePaymentsButterDropdown",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // When enabled, save card bottomsheet will be shown when the user has not

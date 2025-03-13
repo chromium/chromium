@@ -5,6 +5,7 @@
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import './support_tool_shared.css.js';
 

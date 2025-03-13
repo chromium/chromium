@@ -389,6 +389,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failure IllegalArgumentException"/>
 </enum>
 
+<enum name="TabStateMigrationStatus">
+  <int value="0" label="FlatBuffer TabState file only exists"/>
+  <int value="1" label="Both FlatBuffer and legacy TabState files exist"/>
+  <int value="2" label="Legacy TabState file only exists"/>
+</enum>
+
 <enum name="TabStateRestoreMethod">
   <int value="0" label="FlatBuffer Schema"/>
   <int value="1" label="Legacy hand written Schema"/>

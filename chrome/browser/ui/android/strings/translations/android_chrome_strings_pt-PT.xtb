@@ -1336,7 +1336,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7111394291981742152">O Chrome dá-lhe mais controlo sobre os anúncios que vê e limita o que os sites podem saber sobre si quando lhe mostram anúncios personalizados.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizações revistas para 1 site}other{Autorizações revistas para # sites}}</translation>
 <translation id="7138678301420049075">Outros</translation>
-<translation id="7139479418357139965">Pode contactar o remetente para pedir um novo link.</translation>
 <translation id="7140829094791862589">Ordenar manualmente</translation>
 <translation id="7146622961999026732">Estes sites e apps parecem ser importantes para si:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Receba mais informações<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1539,7 +1538,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8014210850410408071">Em seguida, importe as palavras-passe</translation>
 <translation id="8015452622527143194">Repor tamanho predefinido dos itens na página</translation>
-<translation id="8017431260099661477">Não foi possível abrir o link de convite</translation>
 <translation id="8026238112629815203">Alterámos a forma como as palavras-passe são guardadas neste dispositivo</translation>
 <translation id="8027395186860110042">As palavras-passe podem deixar de funcionar em breve</translation>
 <translation id="8027863900915310177">Escolha a localização da transferência</translation>

@@ -44,7 +44,7 @@ namespace blink {
 class EventListenerOptions;
 class EventTarget;
 
-using EventListenerVector = HeapVector<Member<RegisteredEventListener>, 1>;
+using EventListenerVector = GCedHeapVector<Member<RegisteredEventListener>, 1>;
 
 class CORE_EXPORT EventListenerMap final {
   DISALLOW_NEW();

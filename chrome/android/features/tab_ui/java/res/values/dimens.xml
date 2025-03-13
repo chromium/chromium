@@ -152,4 +152,8 @@ found in the LICENSE file.
     <dimen name="tab_group_list_new_group_icon_button_height">44dp</dimen>
     <dimen name="tab_group_list_new_group_icon_height">30dp</dimen>
     <dimen name="tab_group_list_first_element_left_right_margin">16dp</dimen>
+
+    <!-- Dimens for tab switcher context menu. -->
+    <dimen name="tab_switcher_context_menu_max_width">225dp</dimen>
+
 </resources>

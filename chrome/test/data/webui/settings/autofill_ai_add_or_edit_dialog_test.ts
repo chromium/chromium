@@ -14,6 +14,8 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 // clang-format on
 
+const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
+
 suite('AutofillAiAddOrEditDialogUiTest', function() {
   let dialog: SettingsAutofillAiAddOrEditDialogElement;
   let entityDataManager: TestEntityDataManagerProxy;
@@ -38,6 +40,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           type: {
             typeName: 10,
             typeNameAsString: 'Make',
+            dataType: AttributeTypeDataType.STRING,
           },
           value: 'Toyota',
         },
@@ -45,6 +48,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           type: {
             typeName: 13,
             typeNameAsString: 'Owner',
+            dataType: AttributeTypeDataType.STRING,
           },
           value: 'Mark Nolan',
         },
@@ -52,6 +56,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           type: {
             typeName: 16,
             typeNameAsString: 'VIN',
+            dataType: AttributeTypeDataType.STRING,
           },
           value: 'ABCDE123',
         },
@@ -63,30 +68,37 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       {
         typeName: 10,
         typeNameAsString: 'Make',
+        dataType: AttributeTypeDataType.STRING,
       },
       {
         typeName: 11,
         typeNameAsString: 'Model',
+        dataType: AttributeTypeDataType.STRING,
       },
       {
         typeName: 12,
         typeNameAsString: 'Year',
+        dataType: AttributeTypeDataType.STRING,
       },
       {
         typeName: 13,
         typeNameAsString: 'Owner',
+        dataType: AttributeTypeDataType.STRING,
       },
       {
         typeName: 14,
         typeNameAsString: 'Plate number',
+        dataType: AttributeTypeDataType.STRING,
       },
       {
         typeName: 15,
         typeNameAsString: 'Plate state',
+        dataType: AttributeTypeDataType.STRING,
       },
       {
         typeName: 16,
         typeNameAsString: 'VIN',
+        dataType: AttributeTypeDataType.STRING,
       },
     ];
     entityDataManager.setGetAllAttributeTypesForEntityTypeNameResponse(
@@ -126,6 +138,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
                 type: {
                   typeName: 10,
                   typeNameAsString: 'Make',
+                  dataType: AttributeTypeDataType.STRING,
                 },
                 value: newAttributeInstanceValue,
               },

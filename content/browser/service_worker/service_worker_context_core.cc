@@ -438,9 +438,25 @@ void ServiceWorkerClientOwner::HasMainFrameWindowClient(
 ScopedServiceWorkerClient
 ServiceWorkerClientOwner::CreateServiceWorkerClientForWindow(
     bool are_ancestors_secure,
-    FrameTreeNodeId frame_tree_node_id) {
+    FrameTreeNodeId ongoing_navigation_frame_tree_node_id) {
   auto client = std::make_unique<ServiceWorkerClient>(
-      context_->AsWeakPtr(), are_ancestors_secure, frame_tree_node_id);
+      context_->AsWeakPtr(), are_ancestors_secure,
+      ongoing_navigation_frame_tree_node_id);
+  auto weak_client = client->AsWeakPtr();
+  auto inserted = service_worker_clients_by_uuid_
+                      .emplace(weak_client->client_uuid(), std::move(client))
+                      .second;
+  DCHECK(inserted);
+  return ScopedServiceWorkerClient(std::move(weak_client));
+}
+
+ScopedServiceWorkerClient
+ServiceWorkerClientOwner::CreateServiceWorkerClientForPrefetch() {
+  // Currently prefetching is enabled only for top-level navigation.
+  const bool are_ancestors_secure = true;
+
+  auto client = std::make_unique<ServiceWorkerClient>(
+      context_->AsWeakPtr(), are_ancestors_secure, FrameTreeNodeId());
   auto weak_client = client->AsWeakPtr();
   auto inserted = service_worker_clients_by_uuid_
                       .emplace(weak_client->client_uuid(), std::move(client))

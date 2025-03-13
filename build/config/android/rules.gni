@@ -1675,6 +1675,8 @@ if (!is_robolectric && enable_java_templates) {
   #   direct_deps_only: Do not recurse on deps (optional, defaults false).
   #   jar_excluded_patterns: List of globs for paths to exclude (optional).
   #   jar_included_patterns: List of globs for paths to include (optional).
+  #   resource_excluded_patterns: Resource path glob list to exclude (optional)
+  #   resource_included_patterns: Resource path glob list to include (optional)
   #
   # Example
   #   dist_aar("my_aar") {
@@ -1772,6 +1774,11 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(invoker.resource_included_patterns)) {
         args += [
           "--resource-included-globs=${invoker.resource_included_patterns}",
+        ]
+      }
+      if (defined(invoker.resource_excluded_patterns)) {
+        args += [
+          "--resource-excluded-globs=${invoker.resource_excluded_patterns}",
         ]
       }
     }

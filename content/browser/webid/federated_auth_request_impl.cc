@@ -5,6 +5,7 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -1851,6 +1852,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Although not useful for catching malicious IDPs, it should only be a very
   // small percentage of the samples recorded.
   fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
+  fedcm_metrics_->RecordRpUrlHasPath(
+      render_frame_host().GetMainFrame()->GetLastCommittedURL().path() != "/");
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/google_one/coordinator/google_one_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/scoped_ui_blocker.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -15,6 +16,85 @@
 #import "ios/public/provider/chrome/browser/google_one/google_one_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Constants to build the name of the outcome histogram.
+const char kOutcomeHistogramPrefix[] = "IOS.GoogleOne.Outcome";
+const char kSettingsHistogramSuffix[] = ".Settings";
+const char kDriveHistogramSuffix[] = ".Drive";
+const char kPhotosHistogramSuffix[] = ".Photos";
+
+// Returns the correct suffix based on `entry_point`.
+std::string HistogramSuffixForEntryPoint(GoogleOneEntryPoint entry_point) {
+  switch (entry_point) {
+    case GoogleOneEntryPoint::kSettings:
+      return kSettingsHistogramSuffix;
+    case GoogleOneEntryPoint::kSaveToDriveAlert:
+      return kDriveHistogramSuffix;
+    case GoogleOneEntryPoint::kSaveToPhotosAlert:
+      return kPhotosHistogramSuffix;
+  }
+}
+
+// Returns the correct histogram based on `entry_point`.
+std::string HistogramForEntryPoint(GoogleOneEntryPoint entry_point) {
+  return kOutcomeHistogramPrefix + HistogramSuffixForEntryPoint(entry_point);
+}
+
+// An histogram value for the different outcomes of the GoogleOne flow, based
+// on the outcome returned by the library and the internal state of the feature.
+// LINT.IfChange(GoogleOneOutcome)
+enum class GoogleOneOutcomeMetrics {
+  kSuccess = 0,
+  kUnknownFailure = 1,
+  kUnspecifiedFailure = 2,
+  kInterrupted = 3,
+  kInterruptedByOpeningURL = 4,
+  kInterruptedByUser = 5,
+  kAlreadyPresented = 6,
+  kPurchaseFailed = 7,
+  kUserWillLeaveApp = 8,
+  kLaunchFailed = 9,
+  kInvalidParameters = 10,
+  kMaxValue = kInvalidParameters
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:GoogleOneOutcome)
+
+// Returns the correct histogram bucket based on the outcome returned by the
+// library and the internal state of the feature.
+GoogleOneOutcomeMetrics HistogramOutcomeBucket(GoogleOneOutcome outcome,
+                                               BOOL opened_url,
+                                               BOOL stopped) {
+  switch (outcome) {
+    case GoogleOneOutcome::kGoogleOneEntryOutcomeNoError:
+      return GoogleOneOutcomeMetrics::kSuccess;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomeUnknownError:
+      return GoogleOneOutcomeMetrics::kUnknownFailure;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomeErrorUnspecified:
+      return GoogleOneOutcomeMetrics::kUnspecifiedFailure;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomePurchaseCancelled:
+      if (opened_url) {
+        return GoogleOneOutcomeMetrics::kInterruptedByOpeningURL;
+      }
+      if (stopped) {
+        return GoogleOneOutcomeMetrics::kInterrupted;
+      }
+      return GoogleOneOutcomeMetrics::kInterruptedByUser;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomeAlreadyPresented:
+      return GoogleOneOutcomeMetrics::kAlreadyPresented;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomePurchaseFailed:
+      return GoogleOneOutcomeMetrics::kPurchaseFailed;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomeWillLeaveApp:
+      return GoogleOneOutcomeMetrics::kUserWillLeaveApp;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomeLaunchFailed:
+      return GoogleOneOutcomeMetrics::kLaunchFailed;
+    case GoogleOneOutcome::kGoogleOneEntryOutcomeInvalidParameters:
+      return GoogleOneOutcomeMetrics::kInvalidParameters;
+  }
+}
+
+}  // namespace
 
 @implementation GoogleOneCoordinator {
   GoogleOneEntryPoint _entryPoint;
@@ -28,6 +108,8 @@
   // Whether this coordinator has been stopped, either from the controller or
   // by an external source.
   BOOL _stopped;
+  // Whether a URL has been opened from the library.
+  BOOL _openedURL;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -49,6 +131,10 @@
   configuration.entryPoint = _entryPoint;
   configuration.identity = _identity;
   __weak __typeof(self) weakSelf = self;
+  configuration.flowDidEndWithErrorCallback =
+      ^(GoogleOneOutcome outcome, NSError* error) {
+        [weakSelf flowDidCompleteWithOutcome:outcome error:error];
+      };
   configuration.openURLCallback = ^(NSURL* url) {
     [weakSelf openURL:url];
   };
@@ -56,10 +142,7 @@
   _UIBlocker = std::make_unique<ScopedUIBlocker>(self.browser->GetSceneState(),
                                                  UIBlockerExtent::kApplication);
   _controller = ios::provider::CreateGoogleOneController(configuration);
-  [_controller launchWithViewController:self.baseViewController
-                             completion:^(NSError* error) {
-                               [weakSelf flowDidCompleteWithError:error];
-                             }];
+  [_controller launchWithViewController:self.baseViewController completion:nil];
 }
 
 - (void)stop {
@@ -81,6 +164,7 @@
   if (!browser) {
     return;
   }
+  _openedURL = YES;
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:net::GURLWithNSURL(url)
                    inIncognito:browser->GetProfile()->IsOffTheRecord()];
@@ -89,13 +173,16 @@
       openURLInNewTab:command];
 }
 
-- (void)flowDidCompleteWithError:(NSError*)error {
+- (void)flowDidCompleteWithOutcome:(GoogleOneOutcome)outcome
+                             error:(NSError*)error {
   Browser* browser = self.browser;
   if (!browser) {
     return;
   }
+  base::UmaHistogramEnumeration(
+      HistogramForEntryPoint(_entryPoint),
+      HistogramOutcomeBucket(outcome, _openedURL, _stopped));
   _controllerStopped = YES;
-  // TODO(crbug.com/388443644): handle error.
   if (!_stopped) {
     [HandlerForProtocol(browser->GetCommandDispatcher(), GoogleOneCommands)
         hideGoogleOne];

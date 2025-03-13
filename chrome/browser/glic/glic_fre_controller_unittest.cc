@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
@@ -105,4 +106,24 @@ TEST_F(GlicFreControllerTest, UpdateLauncherOnFreCompletion) {
       shell_integration::DefaultWebClientState::NOT_DEFAULT);
   EXPECT_TRUE(GlicLauncherConfiguration::IsEnabled());
 }
+
+TEST_F(GlicFreControllerTest, OpenLink) {
+  base::UserActionTester tester;
+  glic_fre_controller()->OnLinkClicked(
+      GURL("https://support.google.com/clic/answer/13594961"));
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.PrivacyNoticeLinkOpened"), 1);
+
+  glic_fre_controller()->OnLinkClicked(
+      GURL("https://support.google.com/glic/answer/123456"));
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.HelpCenterLinkOpened"), 1);
+
+  glic_fre_controller()->OnLinkClicked(
+      GURL("https://policies.google.com/terms"));
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.PolicyLinkOpened"), 1);
+
+  glic_fre_controller()->OnLinkClicked(
+      GURL("https://myactivity.google.com/product/glic"));
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.MyActivityLinkOpened"), 1);
+}
+
 }  // namespace glic

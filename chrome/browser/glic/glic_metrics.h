@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_enums.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -75,11 +74,15 @@ enum class ResponseSegmentation {
   kNudgeAttachedAudio = 26,
   kNudgeDetachedText = 27,
   kNudgeDetachedAudio = 28,
-  kChroMenuAttachedText = 29,
-  kChroMenuAttachedAudio = 30,
-  kChroMenuDetachedText = 31,
-  kChroMenuDetachedAudio = 32,
-  kMaxValue = kChroMenuDetachedAudio,
+  kThreeDotsMenuAttachedText = 29,
+  kThreeDotsMenuAttachedAudio = 30,
+  kThreeDotsMenuDetachedText = 31,
+  kThreeDotsMenuDetachedAudio = 32,
+  kUnsupportedAttachedText = 33,
+  kUnsupportedAttachedAudio = 34,
+  kUnsupportedDetachedText = 35,
+  kUnsupportedDetachedAudio = 36,
+  kMaxValue = kUnsupportedDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
@@ -108,7 +111,7 @@ class GlicMetrics {
 
   // ----Public API called by other glic classes-----
   // Called when the glic window starts to open.
-  void OnGlicWindowOpen(bool attached, InvocationSource source);
+  void OnGlicWindowOpen(bool attached, mojom::InvocationSource source);
   // Called when the glic window finishes closing.
   void OnGlicWindowClose();
   // Called when the glic window attaches or detaches.
@@ -144,7 +147,8 @@ class GlicMetrics {
   // called.
   int session_responses_ = 0;
   base::TimeTicks session_start_time_;
-  InvocationSource invocation_source_ = InvocationSource::kOsButton;
+  mojom::InvocationSource invocation_source_ =
+      mojom::InvocationSource::kOsButton;
 
   // Used to record impressions of glic entry points.
   base::RepeatingTimer impression_timer_;

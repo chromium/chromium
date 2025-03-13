@@ -15,6 +15,8 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 // clang-format on
 
+const AttributeTypeDataType = chrome.autofillPrivate.AttributeTypeDataType;
+
 suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   let section: SettingsAutofillAiSectionElement;
   let entityDataManager: TestEntityDataManagerProxy;
@@ -149,6 +151,7 @@ suite('AutofillAiSectionUiTest', function() {
           type: {
             typeName: 8,
             typeNameAsString: 'Owner',
+            dataType: AttributeTypeDataType.STRING,
           },
           value: 'Mark Nolan',
         },
@@ -156,6 +159,7 @@ suite('AutofillAiSectionUiTest', function() {
           type: {
             typeName: 10,
             typeNameAsString: 'Registration',
+            dataType: AttributeTypeDataType.STRING,
           },
           value: 'ABCDE123',
         },

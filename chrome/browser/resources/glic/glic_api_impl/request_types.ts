@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -154,7 +154,7 @@ export declare interface HostRequestTypes {
 export declare interface WebClientRequestTypes {
   glicWebClientNotifyPanelWillOpen: {
     request: {
-      panelState: PanelState,
+      panelOpeningData: PanelOpeningData,
     },
     response: {
       openPanelInfo?: OpenPanelInfo,

@@ -2,3 +2,5 @@ file://chrome/android/OWNERS
 
 hnakashima@chromium.org
 wnwen@chromium.org
+
+per-file ...DefaultBrowser*=file://chrome/browser/ui/android/default_browser_promo/OWNERS

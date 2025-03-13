@@ -140,7 +140,7 @@ const V8DetailedMemoryRequest* ChooseHigherPriorityRequest(
 internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 
 // Per-frame memory measurement involves the following classes that live on the
-// PM sequence:
+// UI thread:
 //
 // V8DetailedMemoryDecorator: Central rendezvous point. Coordinates
 //     V8DetailedMemoryRequest and V8DetailedMemoryObserver objects. Owned by
@@ -150,8 +150,8 @@ internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 //     there are no more measurements scheduled.
 //
 // V8DetailedMemoryRequest: Indicates that a caller wants memory to be measured
-//     at a specific interval. Owned by the caller but must live on the PM
-//     sequence. V8DetailedMemoryRequest objects register themselves with
+//     at a specific interval. Owned by the caller but must live on the UI
+//     thread. V8DetailedMemoryRequest objects register themselves with
 //     V8DetailedMemoryDecorator on creation and unregister themselves on
 //     deletion, which cancels the corresponding measurement.
 //
@@ -181,17 +181,7 @@ internal::BindV8DetailedMemoryReporterCallback* g_test_bind_callback = nullptr;
 // V8DetailedMemoryObserver: Callers can implement this and register with
 //     V8DetailedMemoryDecorator::AddObserver() to be notified when
 //     measurements are available for a process. Owned by the caller but must
-//     live on the PM sequence.
-//
-// Additional wrapper classes can access these classes from other sequences:
-//
-// V8DetailedMemoryRequestAnySeq: Wraps V8DetailedMemoryRequest. Owned by the
-//     caller and lives on any sequence.
-//
-// V8DetailedMemoryObserverAnySeq: Callers can implement this and register it
-//     with V8DetailedMemoryRequestAnySeq::AddObserver() to be notified when
-//     measurements are available for a process. Owned by the caller and lives
-//     on the same sequence as the V8DetailedMemoryRequestAnySeq.
+//     live on the UI thread.
 
 ////////////////////////////////////////////////////////////////////////////////
 // ExecutionContextAttachedData

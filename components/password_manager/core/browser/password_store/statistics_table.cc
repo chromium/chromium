@@ -29,7 +29,8 @@ std::vector<InteractionsStats> StatementToInteractionsStats(sql::Statement* s) {
   std::vector<InteractionsStats> results;
   while (s->Step()) {
     results.emplace_back();
-    results.back().origin_domain = GURL(s->ColumnString(COLUMN_ORIGIN_DOMAIN));
+    results.back().origin_domain =
+        GURL(s->ColumnStringView(COLUMN_ORIGIN_DOMAIN));
     results.back().username_value = s->ColumnString16(COLUMN_USERNAME);
     results.back().dismissal_count = s->ColumnInt(COLUMN_DISMISSALS);
     results.back().update_time = s->ColumnTime(COLUMN_DATE);
@@ -146,7 +147,7 @@ bool StatisticsTable::RemoveStatsByOriginAndTime(
 
   std::set<std::string> origins;
   while (select_statement.Step()) {
-    if (!origin_filter.Run(GURL(select_statement.ColumnString(0)))) {
+    if (!origin_filter.Run(GURL(select_statement.ColumnStringView(0)))) {
       continue;
     }
 

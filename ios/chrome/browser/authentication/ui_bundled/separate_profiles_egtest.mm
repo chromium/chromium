@@ -184,7 +184,7 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/331783685): Find a better way to wait for this.
+  // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
@@ -307,7 +307,7 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
       performAction:grey_tap()];
 
   // Wait for the new profile to finish loading.
-  // TODO(crbug.com/331783685): Find a better way to wait for this.
+  // TODO(crbug.com/399033938): Find a better way to wait for this.
   GREYWaitForAppToIdle(@"App failed to idle");
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];

@@ -10,7 +10,6 @@ PASS window.addEventListener.length is 2
 PASS window.removeEventListener.length is 2
 PASS window.postMessage.length is 1
 PASS window.dispatchEvent.length is 1
-PASS window.openDatabase.length is 4
 PASS window.history.pushState.length is 2
 PASS window.history.length is 1
 PASS window.URL.createObjectURL.length is 1

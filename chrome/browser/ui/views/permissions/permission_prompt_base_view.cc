@@ -152,6 +152,24 @@ std::u16string PermissionPromptBaseView::GetAllowAlwaysText(
           : IDS_PERMISSION_ALLOW_EVERY_VISIT);
 }
 
+std::u16string PermissionPromptBaseView::GetBlockText(
+    const std::vector<raw_ptr<permissions::PermissionRequest,
+                              VectorExperimental>>& visible_requests) {
+  CHECK_GT(visible_requests.size(), 0u);
+  if (auto text = visible_requests[0]->GetBlockText();
+      visible_requests.size() == 1u && text.has_value()) {
+    // A prompt for a single request can use a "block" text that is customized
+    // for it.
+    return text.value();
+  }
+
+  // Use the generic text.
+  return l10n_util::GetStringUTF16(
+      permissions::feature_params::kUseStrongerPromptLanguage.Get()
+          ? IDS_PERMISSION_NEVER_ALLOW
+          : IDS_PERMISSION_DONT_ALLOW);
+}
+
 void PermissionPromptBaseView::StartTrackingPictureInPictureOcclusion() {
   // If we're for a picture-in-picture window, then we are in an always-on-top
   // widget that should be tracked by the PictureInPictureOcclusionTracker.

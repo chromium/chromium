@@ -45,6 +45,9 @@ class OnDeviceInternalsPageHandler : public mojom::OnDeviceInternalsPageHandler,
       LoadModelCallback callback,
       ml::ModelPerformanceHint performance_hint,
       on_device_model::ModelAssets assets);
+  void OnModelLoaded(LoadModelCallback callback,
+                     on_device_model::ModelAssets assets,
+                     on_device_model::mojom::LoadModelResult result);
 #endif
 
   // mojom::OnDeviceInternalsPageHandler:

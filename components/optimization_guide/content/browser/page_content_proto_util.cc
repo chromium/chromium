@@ -462,9 +462,9 @@ void ConvertIframeData(
   }
   proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
   auto* proto_frame_data = proto_iframe_data->mutable_frame_data();
-  if (mojom_iframe_data.frame_interaction_info) {
+  if (mojom_iframe_data.local_frame_data) {
     ConvertFrameInteractionInfo(
-        *mojom_iframe_data.frame_interaction_info,
+        *mojom_iframe_data.local_frame_data->frame_interaction_info,
         proto_frame_data->mutable_frame_interaction_info());
   }
 }
@@ -560,10 +560,10 @@ bool ConvertAIPageContentToProto(
     ConvertPageInteractionInfo(*main_frame_page_content.page_interaction_info,
                               proto->mutable_page_interaction_info());
   }
-  if (main_frame_page_content.main_frame_interaction_info) {
+  if (main_frame_page_content.frame_data) {
     auto* proto_main_frame_data = proto->mutable_main_frame_data();
     ConvertFrameInteractionInfo(
-        *main_frame_page_content.main_frame_interaction_info,
+        *main_frame_page_content.frame_data->frame_interaction_info,
         proto_main_frame_data->mutable_frame_interaction_info());
   }
 

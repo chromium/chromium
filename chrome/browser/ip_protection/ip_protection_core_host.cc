@@ -523,7 +523,7 @@ bool IpProtectionCoreHost::IsIpProtectionEnabled() {
   // `tracking_protection_settings_->IsIpProtectionEnabled()` but we can't yet
   // because it would prevent us from being able to do experiments via Finch
   // without showing the user setting.
-  if (!base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionV1)) {
+  if (!base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx)) {
     // If the preference isn't visible to users then IP Protection is enabled
     // via other means like via Finch experiment.
     return true;

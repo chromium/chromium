@@ -15,8 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 
+class BookmarkMergedSurfaceService;
 class BookmarkParentFolderChildren;
 
 // `BookmarkMergedSurfaceOrderingStorage` handles writing custom ordering

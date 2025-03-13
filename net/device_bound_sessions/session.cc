@@ -10,6 +10,7 @@
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_store.h"

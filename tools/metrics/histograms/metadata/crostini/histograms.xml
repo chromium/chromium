@@ -572,15 +572,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Crostini.UnsupportedNotification.Reason"
+<histogram
+    name="Crostini.UnsupportedNotification.Reason{CrostiniUnsupportedNotificationCategories}"
     enum="CrostiniUnsupportedNotificationReason" expires_after="2024-09-22">
   <owner>denniskempin@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
     Recorded each time we display (or would display, see suffixes) a
     notification that the user is trying to do something Crostini doesn't
-    support.
+    support. {CrostiniUnsupportedNotificationCategories}
   </summary>
+  <token key="CrostiniUnsupportedNotificationCategories">
+    <variant name=".Shown" summary="A message was displayed to the user."/>
+    <variant name=".Triggered"
+        summary="A user did an unsupported thing. May or may not have
+                 resulted in a message to the user."/>
+  </token>
 </histogram>
 
 <histogram name="Crostini.UpgradeAvailable"

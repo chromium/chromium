@@ -81,8 +81,14 @@ void OnDeviceInternalsPageHandler::LoadModel(
         on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
     return;
   }
-  GetService().LoadPlatformModel(uuid, std::move(model), mojo::NullRemote(),
-                                 std::move(callback));
+  GetService().LoadPlatformModel(
+      uuid, std::move(model), mojo::NullRemote(),
+      base::BindOnce(
+          [](LoadModelCallback callback,
+             on_device_model::mojom::LoadModelResult result) {
+            std::move(callback).Run(result, on_device_model::Capabilities());
+          },
+          std::move(callback)));
 #else
   // Warm the service while assets load in the background.
   std::ignore = GetService();
@@ -122,11 +128,26 @@ void OnDeviceInternalsPageHandler::OnModelAssetsLoaded(
     ml::ModelPerformanceHint performance_hint,
     on_device_model::ModelAssets assets) {
   auto params = on_device_model::mojom::LoadModelParams::New();
-  params->assets = std::move(assets);
+  params->assets = assets;
   params->max_tokens = 4096;
   params->performance_hint = performance_hint;
-  GetService().LoadModel(std::move(params), std::move(model),
-                         std::move(callback));
+  GetService().LoadModel(
+      std::move(params), std::move(model),
+      base::BindOnce(&OnDeviceInternalsPageHandler::OnModelLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(assets)));
+}
+
+void OnDeviceInternalsPageHandler::OnModelLoaded(
+    LoadModelCallback callback,
+    on_device_model::ModelAssets assets,
+    on_device_model::mojom::LoadModelResult result) {
+  if (result != on_device_model::mojom::LoadModelResult::kSuccess) {
+    std::move(callback).Run(result, on_device_model::Capabilities());
+    return;
+  }
+  GetService().GetCapabilities(std::move(assets),
+                               base::BindOnce(std::move(callback), result));
 }
 #endif
 

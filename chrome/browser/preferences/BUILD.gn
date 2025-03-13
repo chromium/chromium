@@ -55,6 +55,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//chrome/browser/ui/safety_hub/safety_hub_prefs.h",
     "//chrome/common/pref_names.h",
     "//components/autofill/core/common/autofill_prefs.h",
+    "//components/bookmarks/common/bookmark_pref_names.h",
     "//components/commerce/core/pref_names.h",
     "//components/dom_distiller/core/pref_names.h",
     "//components/embedder_support/pref_names.h",

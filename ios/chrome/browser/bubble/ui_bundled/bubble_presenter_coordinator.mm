@@ -168,6 +168,9 @@
       [_presenter presentLensOverlayTipBubble];
       break;
     }
+    case InProductHelpType::kSettingsInOverflowMenu: {
+      [_presenter presentOverflowMenuSettingsBubble];
+    }
   }
 }
 

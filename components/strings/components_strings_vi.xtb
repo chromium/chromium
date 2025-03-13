@@ -3021,6 +3021,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6337133576188860026">Giải phóng dưới <ph name="SIZE" /> dung lượng. Một số trang web có thể tải chậm hơn vào lần tới bạn truy cập.</translation>
 <translation id="6337534724793800597">Lọc chính sách theo tên</translation>
 <translation id="633770708279464947">Giá trị <ph name="SECURE_DNS_SALT" /> không hợp lệ và sẽ không được sử dụng.</translation>
+<translation id="6338645927051849741">Mật khẩu • Trình quản lý mật khẩu của Google</translation>
 <translation id="6340739886198108203">Chính sách của quản trị viên không khuyến khích chụp ảnh màn hình hoặc ghi âm khi đang có nội dung bảo mật trên màn hình:</translation>
 <translation id="6341434961864773665">{0,plural, =1{Theo chính sách của quản trị viên, bạn không nên tải tệp này lên <ph name="DESTINATION_NAME" />}other{Theo chính sách của quản trị viên, bạn không nên tải các tệp này lên <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="6342069812937806050">Vừa xong</translation>

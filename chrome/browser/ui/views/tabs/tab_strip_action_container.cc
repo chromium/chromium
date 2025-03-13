@@ -38,8 +38,8 @@
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -419,8 +419,8 @@ void TabStripActionContainer::OnGlicButtonClicked() {
       ->ToggleUI(tab_strip_controller_->GetBrowserWindowInterface(),
                  /*prevent_close=*/false,
                  glic_button_->GetIsShowingNudge()
-                     ? glic::InvocationSource::kNudge
-                     : glic::InvocationSource::kTopChromeButton);
+                     ? glic::mojom::InvocationSource::kNudge
+                     : glic::mojom::InvocationSource::kTopChromeButton);
 
   if (glic_button_->GetIsShowingNudge()) {
     glic_nudge_controller_->OnNudgeActivity(

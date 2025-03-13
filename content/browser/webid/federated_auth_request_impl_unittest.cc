@@ -8108,4 +8108,16 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
   CheckAllFedCmSessionIDs();
 }
+
+// Tests that we record whether the RP's URL has a path when an accounts dialog
+// is shown.
+TEST_F(FederatedAuthRequestImplTest, MetricsForRpUrlHasPath) {
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  ExpectUkmValueInEntry("RpUrlHasPath", FedCmEntry::kEntryName, false);
+  CheckAllFedCmSessionIDs();
+}
+
 }  // namespace content

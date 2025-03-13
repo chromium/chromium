@@ -7228,10 +7228,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(segmentation_platform::features::
                             kSegmentationPlatformAndroidHomeModuleRankerV2)},
 
-    {"enable-logo-polish", flag_descriptions::kLogoPolishName,
-     flag_descriptions::kLogoPolishDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kLogoPolish)},
-
     {"search-in-cct", flag_descriptions::kSearchInCCTName,
      flag_descriptions::kSearchInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSearchInCCT)},
@@ -7307,6 +7303,12 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kTabSwitcherColorBlendAnimate,
          kTabSwitcherColorBlendAnimateVariations,
          "TabSwitcherColorBlendAnimateVariations")},
+
+    {"tab-switcher-context-menu-android",
+     flag_descriptions::kTabSwitcherContextMenuAndroidName,
+     flag_descriptions::kTabSwitcherContextMenuAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabSwitcherContextMenuAndroid)},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"show-warnings-for-suspicious-notifications",

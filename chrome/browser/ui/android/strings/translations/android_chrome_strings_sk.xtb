@@ -1336,7 +1336,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7111394291981742152">Chrome vám poskytuje väčšiu kontrolu nad reklamami, ktoré vidíte, a obmedzuje, čo sa o vás weby môžu dozvedieť, keď vám zobrazujú prispôsobené reklamy.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Boli skontrolované povolenia pre 1 web}few{Boli skontrolované povolenia pre # weby}many{Permissions reviewed for # sites}other{Boli skontrolované povolenia pre # webov}}</translation>
 <translation id="7138678301420049075">Ostatné</translation>
-<translation id="7139479418357139965">Môžete kontaktovať odosielateľa a požiadať o nový odkaz.</translation>
 <translation id="7140829094791862589">Zoradiť manuálne</translation>
 <translation id="7146622961999026732">Tieto weby a aplikácie zrejme považujete za dôležité:</translation>
 <translation id="7148400116894863598">Získajte <ph name="BEGIN_LINK" />ďalšie informácie<ph name="END_LINK" /> od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
@@ -1539,7 +1538,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8004582292198964060">Prehliadač</translation>
 <translation id="8014210850410408071">V rámci ďalšieho kroku importujte heslá</translation>
 <translation id="8015452622527143194">Vrátenie obsahu stránky na predvolenú veľkosť</translation>
-<translation id="8017431260099661477">Odkaz na pozvánku sa nepodarilo otvoriť</translation>
 <translation id="8026238112629815203">Zmenili sme spôsob ukladania hesiel v tomto zariadení</translation>
 <translation id="8027395186860110042">Heslá môžu čoskoro prestať fungovať</translation>
 <translation id="8027863900915310177">Vyberte, kam sa má súbor stiahnuť</translation>

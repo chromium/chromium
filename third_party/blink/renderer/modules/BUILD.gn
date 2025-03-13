@@ -625,7 +625,6 @@ source_set("unit_tests") {
     "webaudio/media_stream_audio_destination_handler_test.cc",
     "webaudio/script_processor_node_test.cc",
     "webaudio/stereo_panner_node_test.cc",
-    "webdatabase/dom_window_web_database_test.cc",
     "webdatabase/quota_tracker_test.cc",
     "webrtc/webrtc_audio_device_impl_test.cc",
     "webshare/navigator_share_test.cc",

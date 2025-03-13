@@ -19,7 +19,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
@@ -387,10 +387,7 @@ std::unique_ptr<base::Value::Dict> MidiManagerAlsa::MidiPort::Value() const {
 }
 
 std::string MidiManagerAlsa::MidiPort::JSONValue() const {
-  std::string json;
-  JSONStringValueSerializer serializer(&json);
-  serializer.Serialize(*Value().get());
-  return json;
+  return base::WriteJson(*Value()).value_or(std::string());
 }
 
 // TODO(agoode): Do not use SHA256 here. Instead store a persistent

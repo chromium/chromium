@@ -3289,6 +3289,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabState.MigrationStatus" enum="TabStateMigrationStatus"
+    expires_after="2026-03-11">
+  <owner>davidjm@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    TabState (Tab metadata persistence system on Chrome for Android) has being
+    migrated from a hand-written schema to a FlatBuffer based schema. Part of
+    the cleanup is removing legacy hand-written FlatBuffer files. This metric
+    records if the TabState is fully migrated (FlatBuffer file exists and no
+    legacy file exists), is partially migrated (both FlatBuffer file and legacy
+    file exist) or is unmigrated (only legacy file exists). This metric is
+    recorded when a Tab is restored.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabState.RestoreMethod" enum="TabStateRestoreMethod"
     expires_after="2025-08-31">
   <owner>davidjm@chromium.org</owner>

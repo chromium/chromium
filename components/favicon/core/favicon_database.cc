@@ -232,7 +232,8 @@ bool FaviconDatabase::IconMappingEnumerator::GetNextIconMapping(
     IconMapping* icon_mapping) {
   if (!statement_.Step())
     return false;
-  FillIconMapping(GURL(statement_.ColumnString(4)), statement_, icon_mapping);
+  FillIconMapping(GURL(statement_.ColumnStringView(4)), statement_,
+                  icon_mapping);
   return true;
 }
 
@@ -323,8 +324,8 @@ FaviconDatabase::GetOldOnDemandFavicons(base::Time threshold) {
 
   while (old_icons.Step()) {
     favicon_base::FaviconID id = old_icons.ColumnInt64(0);
-    icon_mappings[id].icon_url = GURL(old_icons.ColumnString(1));
-    icon_mappings[id].page_urls.push_back(GURL(old_icons.ColumnString(2)));
+    icon_mappings[id].icon_url = GURL(old_icons.ColumnStringView(1));
+    icon_mappings[id].page_urls.push_back(GURL(old_icons.ColumnStringView(2)));
   }
 
   return icon_mappings;
@@ -600,7 +601,7 @@ favicon_base::FaviconID FaviconDatabase::GetFaviconIDForFaviconURL(
   statement.BindInt64(0, icon_id);
   while (statement.Step()) {
     const auto candidate_origin =
-        url::Origin::Create(GURL(statement.ColumnString(0)));
+        url::Origin::Create(GURL(statement.ColumnStringView(0)));
     if (candidate_origin == page_origin) {
       return icon_id;
     }
@@ -637,7 +638,7 @@ bool FaviconDatabase::GetFaviconHeader(favicon_base::FaviconID icon_id,
     return false;  // No entry for the id.
 
   if (icon_url)
-    *icon_url = GURL(statement.ColumnString(0));
+    *icon_url = GURL(statement.ColumnStringView(0));
   if (icon_type)
     *icon_type = FromPersistedIconType(statement.ColumnInt(1));
 
@@ -771,7 +772,7 @@ std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
         FaviconDatabase::FromPersistedIconType(statement.ColumnInt(1));
 
     if (required_icon_types.count(icon_type) != 0)
-      return std::make_optional(GURL(statement.ColumnString(0)));
+      return std::make_optional(GURL(statement.ColumnStringView(0)));
   }
   return std::nullopt;
 }
@@ -1025,7 +1026,7 @@ void FaviconDatabase::FillIconMapping(const GURL& page_url,
   icon_mapping->mapping_id = statement.ColumnInt64(0);
   icon_mapping->icon_id = statement.ColumnInt64(1);
   icon_mapping->icon_type = FromPersistedIconType(statement.ColumnInt(2));
-  icon_mapping->icon_url = GURL(statement.ColumnString(3));
+  icon_mapping->icon_url = GURL(statement.ColumnStringView(3));
   icon_mapping->page_url = page_url;
   icon_mapping->page_url_type =
       FromPersistedPageUrlType(statement.ColumnInt64(4));

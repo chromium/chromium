@@ -301,7 +301,7 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
     // TODO(devlin): Allow consumers to specify the install ui type.
     std::unique_ptr<ExtensionInstallPrompt> install_ui;
     scoped_refptr<CrxInstaller> installer =
-        CrxInstaller::Create(extension_service_, std::move(install_ui));
+        CrxInstaller::Create(browser_context_, std::move(install_ui));
     installer->set_expected_id(expected_id_);
     installer->set_creation_flags(creation_flags_);
     installer->set_install_source(location_);

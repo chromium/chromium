@@ -662,6 +662,39 @@ const void* const kPendingSiteProcessCountTrackerKey =
     "PendingSiteProcessCountTrackerKey";
 const void* const kDelayedShutdownSiteProcessCountTrackerKey =
     "DelayedShutdownSiteProcessCountTrackerKey";
+
+// This tracker is used to implement empty process reuse for performance. By
+// tracking processes that have become empty (no frames attached), we can avoid
+// the overhead of creating new processes when a new SiteInstance needs a
+// renderer.
+//
+// New processes are explicitly not added to this tracker upon initial creation
+// when they are empty. This tracker is specifically for processes that have
+// been used, have become empty (lost all frames), and are then eligible for
+// reuse.
+//
+// TODO:(crbug.com/396105965): Unify DelayedShutdownSiteProcessCountTracker and
+// EmptySiteProcessCountTracker. It's worth noting that the
+// DelayedShutdownSiteProcessCountTracker similarly tracks processes that have
+// become empty. However, it specifically manages empty processes for subframes,
+// to support delayed shutdown scenarios. The reason for not unifying these two
+// trackers immediately is to first evaluate the effectiveness of this empty
+// process reuse experiment. Unification can be considered later if the
+// experiment proves to be beneficial.
+const void* const kEmptySiteProcessCountTrackerKey =
+    "EmptySiteProcessCountTrackerKey";
+
+// Returns true if empty renderer process reuse is allowed on the current
+// platform.
+//
+// This feature, controlled by the kTrackEmptyRendererProcessesForReuse feature
+// flag, enables the browser to track and reuse free and empty renderer
+// processes to optimize process creation and navigation performance.
+bool IsEmptyRendererProcessesReuseAllowed() {
+  return base::FeatureList::IsEnabled(
+      features::kTrackEmptyRendererProcessesForReuse);
+}
+
 class SiteProcessCountTracker : public base::SupportsUserData::Data,
                                 public RenderProcessHostObserver {
  public:
@@ -1239,6 +1272,35 @@ bool IsKeepAliveRefCountAllowed() {
              blink::features::kKeepAliveInBrowserMigration) ||
          !base::FeatureList::IsEnabled(
              blink::features::kAttributionReportingInBrowserMigration);
+}
+
+static RenderProcessHost* FindEmptyBackgroundHostForReuse(
+    BrowserContext* browser_context,
+    SiteInstanceImpl* site_instance) {
+  std::set<RenderProcessHost*> eligible_foreground_hosts;
+  std::set<RenderProcessHost*> eligible_background_hosts;
+
+  SiteProcessCountTracker* tracker = static_cast<SiteProcessCountTracker*>(
+      browser_context->GetUserData(kEmptySiteProcessCountTrackerKey));
+  if (!tracker) {
+    return nullptr;
+  }
+
+  tracker->FindRenderProcessesForSiteInstance(
+      site_instance, ProcessReusePolicy::DEFAULT, &eligible_foreground_hosts,
+      &eligible_background_hosts);
+
+  CHECK(eligible_foreground_hosts.empty());
+  if (!eligible_background_hosts.empty()) {
+    // Background hosts are prioritized for reuse due to lower risk. Foreground
+    // hosts should be empty here, because empty processes never contain any
+    // visible frames. However, even if foreground hosts were present, they
+    // would pose a higher risk of residual state or incomplete cleanup,
+    // increasing the potential for incorrect reuse.
+    return *eligible_background_hosts.begin();
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -3032,14 +3094,23 @@ void RenderProcessHostImpl::AddFrameWithSite(
   if (!ShouldTrackProcessForSite(site_info))
     return;
 
-  SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
-      browser_context, kCommittedSiteProcessCountTrackerKey);
-  tracker->IncrementSiteProcessCount(site_info, render_process_host->GetID());
+  {
+    SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
+        browser_context, kCommittedSiteProcessCountTrackerKey);
+    tracker->IncrementSiteProcessCount(site_info, render_process_host->GetID());
+    MAYBEVLOG(2) << __func__ << "(" << site_info
+                 << "): Site added to process host "
+                 << render_process_host->GetID() << "." << std::endl
+                 << GetCurrentHostMapDebugString(tracker);
+  }
 
-  MAYBEVLOG(2) << __func__ << "(" << site_info
-               << "): Site added to process host "
-               << render_process_host->GetID() << "." << std::endl
-               << GetCurrentHostMapDebugString(tracker);
+  if (IsEmptyRendererProcessesReuseAllowed()) {
+    // Remove process from the tracker of empty processes since it's no longer
+    // empty.
+    SiteProcessCountTracker::GetInstance(browser_context,
+                                         kEmptySiteProcessCountTrackerKey)
+        ->ClearProcessForAllSites(render_process_host->GetID());
+  }
 }
 
 // static
@@ -3053,6 +3124,17 @@ void RenderProcessHostImpl::RemoveFrameWithSite(
   SiteProcessCountTracker* tracker = SiteProcessCountTracker::GetInstance(
       browser_context, kCommittedSiteProcessCountTrackerKey);
   tracker->DecrementSiteProcessCount(site_info, render_process_host->GetID());
+
+  if (IsEmptyRendererProcessesReuseAllowed()) {
+    // If the last frame is being removed from the process, add it to the
+    // tracker of empty processes.
+    CHECK_NE(render_process_host->GetRenderFrameHostCount(), 0);
+    if (render_process_host->GetRenderFrameHostCount() == 1) {
+      SiteProcessCountTracker::GetInstance(browser_context,
+                                           kEmptySiteProcessCountTrackerKey)
+          ->IncrementSiteProcessCount(site_info, render_process_host->GetID());
+    }
+  }
 }
 
 // static
@@ -4137,6 +4219,15 @@ void RenderProcessHostImpl::Cleanup() {
   // shutdown delay has now been cancelled.
   StopTrackingProcessForShutdownDelay();
 
+  if (IsEmptyRendererProcessesReuseAllowed()) {
+    // Remove this host from the tracker of empty processes. This is required
+    // to ensure that the process' id is not kept in the tracker if it's
+    // cleaned up while non-empty.
+    SiteProcessCountTracker::GetInstance(GetBrowserContext(),
+                                         kEmptySiteProcessCountTrackerKey)
+        ->ClearProcessForAllSites(GetID());
+  }
+
   // Use `DeleteSoon` to delete `this` RenderProcessHost *after* the tasks
   // that are *already* queued on the UI thread have been given a chance to run
   // (this may include IPC handling tasks that depend on the existence of
@@ -4812,6 +4903,12 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
         site_instance->is_for_service_worker())) {
     render_process_host =
         UnmatchedServiceWorkerProcessTracker::MatchWithSite(site_instance);
+  }
+
+  if (!render_process_host && IsEmptyRendererProcessesReuseAllowed()) {
+    // If not (or if none found), see if an empty host can be used.
+    render_process_host =
+        FindEmptyBackgroundHostForReuse(browser_context, site_instance);
   }
 
   if (render_process_host) {

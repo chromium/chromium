@@ -22,6 +22,7 @@ found in the LICENSE file.
     <item type="id" name="close_tab_group" />
     <item type="id" name="delete_tab_group" />
     <item type="id" name="add_to_tab_group" />
+    <item type="id" name="add_to_bookmarks" />
     <item type="id" name="remove_from_tab_group" />
     <item type="id" name="share_tab" />
 

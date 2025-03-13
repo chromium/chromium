@@ -309,7 +309,7 @@ bool ForceLeavingPrimaryAccountConfirmationDialog(
     case SignedInUserState::kManagedAccountClearsDataOnSignout:
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing:
       if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
-        // TODO(crbug.com/375604649): Might need to update this implementation
+        // TODO(crbug.com/355167413): Might need to update this implementation
         // for pre-existing managed account in the personal profile.
         return false;
       } else {

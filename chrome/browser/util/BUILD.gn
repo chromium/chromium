@@ -13,6 +13,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/util/BrowserUiUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProvider.java",
+    "android/java/src/org/chromium/chrome/browser/util/DefaultBrowserInfo.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/KeyNavigationUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",

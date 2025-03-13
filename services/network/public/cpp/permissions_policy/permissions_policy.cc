@@ -231,7 +231,7 @@ bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequest(
   }
 
   // Note that currently permissions for `sharedStorageWritable` are checked
-  // using `IsFeatureEnabledForSubresourceRequestAssumingOptIn()`, since a
+  // using `IsFeatureEnabledForOrigin()`, since a
   // `network::ResourceRequest` is not available at the call site and
   // `blink::ResourceRequest` should not be used in blink public APIs.
   if (shared_storage_writable_eligible) {
@@ -657,18 +657,6 @@ bool PermissionsPolicy::IsFeatureEnabledForOriginImpl(
   }
   // 9.9.6: Return "Disabled".
   return false;
-}
-
-bool PermissionsPolicy::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-    network::mojom::PermissionsPolicyFeature feature,
-    const url::Origin& origin) const {
-  CHECK(base::Contains(defined_opt_in_features_, feature));
-
-  // Make an opt-in features set containing exactly `feature`, as we're not
-  // given access to the full request to derive any other opt-in features.
-  std::set<network::mojom::PermissionsPolicyFeature> opt_in_features({feature});
-
-  return IsFeatureEnabledForOriginImpl(feature, origin, opt_in_features);
 }
 
 // Implements Permissions Policy 9.7: Define an inherited policy for

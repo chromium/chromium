@@ -83,6 +83,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "ppapi/buildflags/buildflags.h"

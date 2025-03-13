@@ -71,6 +71,9 @@ EXCLUDED_TESTS = [
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
     os.path.join('tests', 'ui', 'sanitizer', 'asan_odr_windows.rs'),
+
+    # Temporarily disabled due to https://crbug.com/400524229
+    os.path.join('tests', 'ui', 'process', 'win-command-child-path.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
 ]
@@ -590,6 +593,11 @@ def GitApplyCherryPicks():
     # cherry-pick fixes into it, then point RUST_SRC_DIR at that fork
     # with `GitMoveSubmoduleBranch()`.
     #############################
+
+    # TODO(crbug.com/402689296): Remove once
+    # https://github.com/rust-lang/rust/pull/138420 lands and we roll past it.
+    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
+                  'eb2e421e36e6de25a0a9b95cb461a266a48c91c2')
 
     print('Finished applying cherry-picks.')
 

@@ -18,8 +18,6 @@ from blinkpy.web_tests.port.base import VirtualTestSuite
 from blinkpy.wpt_tests.wpt_adapter import WPTAdapter
 
 
-@mock.patch('blinkpy.wpt_tests.wpt_adapter.WPTAdapter.using_upstream_wpt',
-            False)
 class WPTAdapterTest(unittest.TestCase):
     def setUp(self):
         self.host = MockHost()

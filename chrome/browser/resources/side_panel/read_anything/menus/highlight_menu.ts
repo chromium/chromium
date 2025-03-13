@@ -8,6 +8,8 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {SettingsPrefs} from '../common.js';
+
 import {getHtml} from './highlight_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem} from './menu_util.js';
@@ -30,6 +32,19 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
   override render() {
     return getHtml.bind(this)();
   }
+
+  static override get properties() {
+    return {settingsPrefs: {type: Object}};
+  }
+
+  settingsPrefs: SettingsPrefs = {
+    letterSpacing: 0,
+    lineSpacing: 0,
+    theme: 0,
+    speechRate: 0,
+    font: '',
+    highlightGranularity: 0,
+  };
 
   protected options_: Array<MenuStateItem<number>> = [
     {
@@ -60,7 +75,7 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
 
   protected restoredHighlightIndex_(): number {
     return getIndexOfSetting(
-        this.options_, chrome.readingMode.highlightGranularity);
+        this.options_, this.settingsPrefs['highlightGranularity']);
   }
 }
 

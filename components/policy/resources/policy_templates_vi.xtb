@@ -5803,6 +5803,11 @@ Nếu bạn không đặt chính sách này hoặc danh sách không chứa tệ
       Nếu bạn không đặt chính sách này, thì khoảng thời gian mặc định là 604800000 mili giây (một tuần) sẽ được dùng.</translation>
 <translation id="5212810195096589189">Chỉ định quyền của CLI máy ảo</translation>
 <translation id="5213038356678567351">Các trang web sẽ không bao giờ kích hoạt quá trình chuyển trình duyệt.</translation>
+<translation id="5216520638921067085">Chỉ định thời gian tối thiểu kể từ ngày phát hành để thông báo chạy lại được gửi thường xuyên hơn. Thời gian kể từ ngày phát hành được tính từ thời điểm phiên bản đang chạy được phân phát lần gần nhất cho ứng dụng.
+
+Nếu phiên bản mới đang chờ áp dụng, bạn cần chạy lại trình duyệt hoặc khởi động lại thiết bị, ngoài ra, phiên bản hiện tại đã bị thay thế quá số ngày mà chế độ cài đặt này quy định, thì chính sách <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sẽ được ghi đè thành 2 giờ. Nếu bạn đặt chính sách <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> thành 1 (Bắt buộc), người dùng sẽ buộc phải chạy lại hoặc khởi động lại vào cuối khoảng thời gian đó.
+
+Nếu bạn không đặt chính sách này hoặc không xác định thời gian kể từ ngày phát hành, thì chính sách <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sẽ được áp dụng cho mọi bản cập nhật.</translation>
 <translation id="5216815237712190041">Định cấu hình hình nền cấp thiết bị hiện trên màn hình đăng nhập nếu chưa có người dùng nào đăng nhập vào thiết bị này. Bạn có thể thiết lập chính sách này bằng cách chỉ định URL nơi thiết bị ChromeOS có thể tải hình nền xuống và chỉ định một hàm băm mật mã dùng để xác minh tính toàn vẹn của tệp tải xuống. Định dạng của hình ảnh phải là JPEG, kích thước tệp không được vượt quá 16 MB. URL phải truy cập được mà không có hình thức xác thực nào. Hình nền sẽ được tải xuống và lưu vào bộ nhớ đệm. Tệp này sẽ được tải xuống mỗi khi URL hoặc hàm băm thay đổi.
 
       Nếu bạn thiết lập chính sách hình nền thiết bị, thì thiết bị ChromeOS sẽ tải và sử dụng hình nền trên màn hình đăng nhập nếu chưa có người dùng nào đăng nhập vào thiết bị. Sau khi người dùng đăng nhập, chính sách hình nền của người dùng sẽ được kích hoạt.
@@ -6903,6 +6908,7 @@ Nếu bạn đặt chính sách này thành <ph name="DISPLAY_MANAGEMENT_LABEL_T
 
       Ngoài ra, nếu phải duy trì khả năng tương thích với máy chủ bị lỗi thì bạn có thể đặt chính sách này thành "tls1.1". Đây là một giải pháp tạm thời và máy chủ cần được khắc phục nhanh chóng.</translation>
 <translation id="5932767795525445337">Chính sách này cũng có thể được dùng để ghim ứng dụng Android.</translation>
+<translation id="5936192285609409992">Máy tính (được hỗ trợ kể từ phiên bản 136)</translation>
 <translation id="5936193585187054065">ClientHello được mã hoá (ECH) là tiện ích của TLS, giúp mã hoá các trường nhạy cảm của ClientHello và cải thiện quyền riêng tư.
 
       Nếu bạn đặt chính sách này thành bật hoặc chưa thiết lập chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình phát hành mặc định dành cho ECH. Nếu bạn tắt chính sách này thì <ph name="PRODUCT_NAME" /> sẽ không bật ECH.
@@ -7405,6 +7411,7 @@ Các nguồn gốc phải tương ứng với các ứng dụng web bị buộc 
 <translation id="6287128640500683781">Cho phép mọi người dùng đăng nhập</translation>
 <translation id="6287310684159482272">Cài đặt cookie</translation>
 <translation id="6287742528823584153">Bật dịch vụ <ph name="PRODUCT_NAME" /> và mở không gian làm việc từ xa khi đăng nhập</translation>
+<translation id="6288152932495466841">Thông báo cho người dùng về các phiên bản trình duyệt đã bị thay thế</translation>
 <translation id="6299147100249359151">Cho phép Phát hiện phạm vi chính sách.</translation>
 <translation id="6299554629216555326">Cài đặt quyền Quản lý cửa sổ</translation>
 <translation id="6302021021024941085">Tắt các công cụ khắc phục sự cố Kiosk.</translation>
@@ -11356,6 +11363,7 @@ Lưu ý: Thao tác khởi động lại thiết bị sẽ xoá bộ nhớ đệm
 <translation id="9107635531763682565">Nếu bạn đặt chính sách này thành 1, thì các trang web có thể hiển thị thông báo trên màn hình. Nếu bạn đặt chính sách này thành 2, thì các trang web không được hiển thị thông báo trên màn hình.
 
 Nếu bạn không đặt chính sách này, thì <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> sẽ được áp dụng nhưng người dùng có thể thay đổi chế độ cài đặt này.</translation>
+<translation id="9107664925383184344">Khoảng thời gian (ngày)</translation>
 <translation id="910929592571075861">Không phân vùng URL blob trong quá trình tìm nạp và điều hướng.</translation>
 <translation id="9110194749335632373">Không cho phép quản trị viên doanh nghiệp truy cập máy này từ xa</translation>
 <translation id="9110198768621013941">Bật chế độ cài đặt Cụm từ gợi ý của tính năng tự động điền.

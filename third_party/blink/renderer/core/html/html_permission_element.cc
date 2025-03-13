@@ -570,8 +570,6 @@ String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return "being recently attached to layout tree";
-    case DisableReason::kIntersectionRecentlyFullyVisible:
-      return "being recently fully visible";
     case DisableReason::kIntersectionWithViewportChanged:
       return "intersection with viewport changed";
     case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
@@ -592,8 +590,6 @@ HTMLPermissionElement::DisableReasonToUserInteractionDeniedReason(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return UserInteractionDeniedReason::kRecentlyAttachedToLayoutTree;
-    case DisableReason::kIntersectionRecentlyFullyVisible:
-      return UserInteractionDeniedReason::kIntersectionRecentlyFullyVisible;
     case DisableReason::kIntersectionWithViewportChanged:
       return UserInteractionDeniedReason::kIntersectionWithViewportChanged;
     case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
@@ -615,8 +611,6 @@ AtomicString HTMLPermissionElement::DisableReasonToInvalidReasonString(
   switch (reason) {
     case DisableReason::kRecentlyAttachedToLayoutTree:
       return AtomicString("recently_attached");
-    case DisableReason::kIntersectionRecentlyFullyVisible:
-      return AtomicString("intersection_visible");
     case DisableReason::kIntersectionWithViewportChanged:
       return AtomicString("intersection_changed");
     case DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped:
@@ -1389,7 +1383,7 @@ void HTMLPermissionElement::OnIntersectionChanged(
   CHECK(!entries.empty());
   Member<IntersectionObserverEntry> latest_observation = entries.back();
   CHECK_EQ(this, latest_observation->target());
-  IntersectionVisibility intersection_visibility =
+  IntersectionVisibility new_intersection_visibility =
       IntersectionVisibility::kFullyVisible;
   // `intersectionRatio` >= `kIntersectionThreshold` (1.0f) means the element is
   // fully visible on the viewport (vs `intersectionRatio` < 1.0f means its
@@ -1397,27 +1391,31 @@ void HTMLPermissionElement::OnIntersectionChanged(
   // `isVisible` false means the element is occluded by something else or has
   // distorted visual effect applied.
   if (!latest_observation->isVisible()) {
-    intersection_visibility =
+    new_intersection_visibility =
         latest_observation->intersectionRatio() >= kIntersectionThreshold
             ? IntersectionVisibility::kOccludedOrDistorted
             : IntersectionVisibility::kOutOfViewportOrClipped;
   }
 
-  if (intersection_visibility_ == intersection_visibility) {
+  if (intersection_visibility_ == new_intersection_visibility) {
     return;
   }
-  intersection_visibility_ = intersection_visibility;
+
+  intersection_visibility_ = new_intersection_visibility;
   occluder_node_id_ = kInvalidDOMNodeId;
   switch (intersection_visibility_) {
     case IntersectionVisibility::kFullyVisible: {
-      std::optional<base::TimeDelta> interval =
+      std::optional<base::TimeDelta> recently_attached_timeout_remaining =
           GetRecentlyAttachedTimeoutRemaining();
-      DisableClickingTemporarily(
-          DisableReason::kIntersectionRecentlyFullyVisible,
-          interval ? interval.value() : kDefaultDisableTimeout);
-      EnableClicking(DisableReason::kIntersectionVisibilityOccludedOrDistorted);
-      EnableClicking(
-          DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped);
+      base::TimeDelta interval =
+          recently_attached_timeout_remaining
+              ? recently_attached_timeout_remaining.value()
+              : kDefaultDisableTimeout;
+      EnableClickingAfterDelay(
+          DisableReason::kIntersectionVisibilityOccludedOrDistorted, interval);
+      EnableClickingAfterDelay(
+          DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped,
+          interval);
       break;
     }
     case IntersectionVisibility::kOccludedOrDistorted:

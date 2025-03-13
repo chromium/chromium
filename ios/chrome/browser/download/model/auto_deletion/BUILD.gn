@@ -4,8 +4,6 @@ source_set("auto_deletion") {
     "auto_deletion_service.mm",
     "scheduled_file.h",
     "scheduled_file.mm",
-    "scheduled_file_queue.h",
-    "scheduled_file_queue.mm",
     "scheduler.h",
     "scheduler.mm",
   ]
@@ -25,7 +23,6 @@ source_set("unit_tests") {
     "auto_deletion_service_unittest.mm",
     "auto_deletion_test_utils.h",
     "auto_deletion_test_utils.mm",
-    "scheduled_file_queue_unittest.mm",
     "scheduled_file_unittest.mm",
     "scheduler_unittest.mm",
   ]

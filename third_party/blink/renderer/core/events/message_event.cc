@@ -96,7 +96,7 @@ MessageEvent::MessageEvent(const AtomicString& type,
   if (initializer->hasSource() && IsValidSource(initializer->source()))
     source_ = initializer->source();
   if (initializer->hasPorts())
-    ports_ = MakeGarbageCollected<MessagePortArray>(initializer->ports());
+    ports_ = MakeGarbageCollected<GCedMessagePortArray>(initializer->ports());
   if (initializer->hasUserActivation())
     user_activation_ = initializer->userActivation();
   DCHECK(IsValidSource(source_.Get()));
@@ -105,7 +105,7 @@ MessageEvent::MessageEvent(const AtomicString& type,
 MessageEvent::MessageEvent(const String& origin,
                            const String& last_event_id,
                            EventTarget* source,
-                           MessagePortArray* ports)
+                           GCedMessagePortArray* ports)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeScriptValue),
       origin_(origin),
@@ -119,7 +119,7 @@ MessageEvent::MessageEvent(scoped_refptr<SerializedScriptValue> data,
                            const String& origin,
                            const String& last_event_id,
                            EventTarget* source,
-                           MessagePortArray* ports,
+                           GCedMessagePortArray* ports,
                            UserActivation* user_activation)
     : Event(event_type_names::kMessage, Bubbles::kNo, Cancelable::kNo),
       data_type_(kDataTypeSerializedScriptValue),
@@ -230,7 +230,7 @@ void MessageEvent::initMessageEvent(const AtomicString& type,
   if (ports.empty()) {
     ports_ = nullptr;
   } else {
-    ports_ = MakeGarbageCollected<MessagePortArray>(std::move(ports));
+    ports_ = MakeGarbageCollected<GCedMessagePortArray>(std::move(ports));
   }
   is_ports_dirty_ = true;
 }

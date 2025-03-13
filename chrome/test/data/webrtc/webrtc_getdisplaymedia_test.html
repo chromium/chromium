@@ -167,6 +167,16 @@
     return logAndReturn("send-wheel-resolved");
   }
 
+  async function forwardWheel(action) {
+    try {
+      await controller.forwardWheel(action);
+      return logAndReturn("forward-wheel-resolved");
+    } catch (e) {
+      // TODO(crbug.com/40276312): Extend test coverage to errors.
+      return `${e}`;
+    }
+  }
+
   async function updateZoomLevel(action) {
     try {
       if (action === "increase") {
@@ -215,7 +225,7 @@
     </tr>
     <tr>
       <td>
-        <video id="local-view" autoplay></video>
+        <video id="video" autoplay></video>
       </td>
     </tr>
   </table>

@@ -145,6 +145,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kQuickInsertIcon;
     case ui::VKEY_DO_NOT_DISTURB:
       return &ash::kKsDoNotDisturbIcon;
+    case ui::VKEY_CAMERA_ACCESS_TOGGLE:
+      return &ash::kKsCameraAccessToggleIcon;
     default:
       return nullptr;
   }

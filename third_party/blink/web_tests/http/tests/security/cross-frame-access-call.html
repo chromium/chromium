@@ -33,7 +33,6 @@ window.onload = function()
     shouldThrow("window.confirm.call(targetWindow, 'message')", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
     shouldThrow("window.prompt.call(targetWindow, 'message', 'defaultValue')", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
     shouldThrow("window.getComputedStyle.call(targetWindow, document.body, '')", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
-    shouldThrow("window.openDatabase.call(targetWindow, 'name', '1.0', 'description', 0)", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
     shouldThrow("window.atob.call(targetWindow, 'string')", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
     shouldThrow("window.btoa.call(targetWindow, 'string')", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');
     shouldThrow("window.clearTimeout.call(targetWindow, 0);", '"SecurityError: Blocked a frame with origin \\"http://127.0.0.1:8000\\" from accessing a cross-origin frame."');

@@ -528,6 +528,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kQuickInsertIcon;
     case kKeyboardShortcutDoNotDisturb:
       return &kKsDoNotDisturbIcon;
+    case kKeyboardShortcutCameraAccessToggle:
+      return &kKsCameraAccessToggleIcon;
     default:
       return nullptr;
   }

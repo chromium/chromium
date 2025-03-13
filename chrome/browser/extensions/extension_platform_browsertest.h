@@ -25,6 +25,7 @@ class WebContents;
 
 namespace extensions {
 class Extension;
+class ExtensionBrowserTestPlatformDelegate;
 class ExtensionRegistrar;
 class ExtensionRegistry;
 
@@ -45,6 +46,10 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   ~ExtensionPlatformBrowserTest() override;
 
  protected:
+  // The platform delegate is an implementation detail of the test harness
+  // and should be able to access anything any general test would access.
+  friend class ExtensionBrowserTestPlatformDelegate;
+
   // content::BrowserTestBase:
   void SetUp() override;
   void SetUpOnMainThread() override;

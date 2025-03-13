@@ -371,6 +371,7 @@ crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_Repe
 crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_Video_Context_Loss_VP9 [ Slow ]
 crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_Video_Context_Loss_MP4 [ Slow ]
 crbug.com/338200323 [ mac angle-metal asan intel-0x3e9b passthrough ] Pixel_WebGLContextRestored [ Slow ]
+crbug.com/403252788 [ mac angle-metal asan graphite-enabled intel-0x3e9b passthrough ] Pixel_2DCanvasWebGL [ Slow ]
 
 # Flakily hits heartbeat timeout, context restoration likely just slow on these
 # devices

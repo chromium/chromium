@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -22,6 +23,7 @@
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "chrome/browser/app_mode/test/fake_origin_test_server_mixin.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/browser/ash/app_mode/fake_cws_mixin.h"
@@ -35,6 +37,7 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -225,6 +228,15 @@ void ConfigureAutoLaunchAccountId(ScopedDevicePolicyUpdate& update,
       std::string(account_id));
 }
 
+// Configures the default user policies applied by DM server for Kiosk Web apps
+// and IWAs into `update`.
+void ConfigureDefaultWebAppUserPolicies(ScopedUserPolicyUpdate& update) {
+  update.policy_payload()
+      ->mutable_extensioninstallblocklist()
+      ->mutable_value()
+      ->add_entries("*");
+}
+
 }  // namespace
 
 KioskMixin::KioskMixin(InProcessBrowserTestMixinHost* host,
@@ -261,39 +273,61 @@ void KioskMixin::SetUpInProcessBrowserTestFixture() {
   }
 }
 
-void KioskMixin::Configure(ScopedDevicePolicyUpdate& scoped_update,
+void KioskMixin::Configure(ScopedDevicePolicyUpdate& device_policy_update,
+                           const Config& config) {
+  auto user_policy_update_callback =
+      base::BindLambdaForTesting([this](std::string_view account_id) {
+        return device_state_.RequestDeviceLocalAccountPolicyUpdate(
+            std::string(account_id));
+      });
+  Configure(device_policy_update, user_policy_update_callback, config);
+}
+
+void KioskMixin::Configure(ScopedDevicePolicyUpdate& device_policy_update,
+                           UserPolicyUpdateCallback user_policy_update_callback,
                            const Config& config) {
   CheckIsValid(config);
+
   for (const auto& option : config.options) {
+    auto account_id = GetAccountId(option);
+    auto user_policy_update = user_policy_update_callback.Run(account_id);
     std::visit(
         base::Overloaded{
-            [this, &scoped_update](const DefaultServerWebAppOption& option) {
-              ConfigureWebApp(scoped_update,
+            [this, &device_policy_update,
+             &user_policy_update](const DefaultServerWebAppOption& option) {
+              ConfigureWebApp(device_policy_update,
                               web_server_.GetUrl(option.url_path),
                               option.account_id);
+              ConfigureDefaultWebAppUserPolicies(*user_policy_update);
             },
-            [&scoped_update](const WebAppOption& option) {
-              ConfigureWebApp(scoped_update, option.url, option.account_id);
+            [&device_policy_update,
+             &user_policy_update](const WebAppOption& option) {
+              ConfigureWebApp(device_policy_update, option.url,
+                              option.account_id);
+              ConfigureDefaultWebAppUserPolicies(*user_policy_update);
             },
-            [this, &scoped_update](const CwsChromeAppOption& option) {
+            [this, &device_policy_update](const CwsChromeAppOption& option) {
               fake_cws().SetUpdateCrx(option.app_id, option.crx_filename,
                                       option.crx_version);
-              ConfigureCwsChromeApp(scoped_update, option.app_id,
+              ConfigureCwsChromeApp(device_policy_update, option.app_id,
                                     option.account_id);
             },
-            [&scoped_update](const SelfHostedChromeAppOption& option) {
-              ConfigureSelfHostedChromeApp(scoped_update, option.app_id,
+            [&device_policy_update](const SelfHostedChromeAppOption& option) {
+              ConfigureSelfHostedChromeApp(device_policy_update, option.app_id,
                                            option.account_id,
                                            option.update_url);
             },
-            [&scoped_update](const IsolatedWebAppOption& option) {
-              ConfigureIsolatedWebApp(scoped_update, option);
+            [&device_policy_update,
+             &user_policy_update](const IsolatedWebAppOption& option) {
+              ConfigureIsolatedWebApp(device_policy_update, option);
+              ConfigureDefaultWebAppUserPolicies(*user_policy_update);
             },
         },
         option);
   }
+
   if (config.auto_launch_account_id.has_value()) {
-    ConfigureAutoLaunchAccountId(scoped_update,
+    ConfigureAutoLaunchAccountId(device_policy_update,
                                  config.auto_launch_account_id->value());
   }
 }

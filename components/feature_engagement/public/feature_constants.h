@@ -285,6 +285,7 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHiOSReminderNotificationsOverflowMenuBubbleFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSSettingsInOverflowMenuBubbleFeature);
 
 // A feature flag to enable and parametrize the sliding window of time for a
 // user's eligibility to be shown a default browser promo. This is not an FET

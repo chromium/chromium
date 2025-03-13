@@ -37,14 +37,12 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "cc/paint/paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -113,16 +111,6 @@ inline float BlurRadiusToStdDev(float radius) {
   // https://html.spec.whatwg.org/C/#when-shadows-are-drawn
   return radius * 0.5f;
 }
-
-void PLATFORM_EXPORT DrawPlatformFocusRing(const SkRRect&,
-                                           cc::PaintCanvas*,
-                                           SkColor4f,
-                                           float width);
-void PLATFORM_EXPORT DrawPlatformFocusRing(const SkPath&,
-                                           cc::PaintCanvas*,
-                                           SkColor4f,
-                                           float width,
-                                           float corner_radius);
 
 // Attempts to allocate an SkData on the PartitionAlloc buffer partition.
 // If this fails (e.g. due to low memory), returns a null sk_sp<SkData> instead.

@@ -1336,7 +1336,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7111394291981742152">Chrome sizga koʻrsatiladigan reklamalar ustidan koʻproq nazorat beradi va saytlar sizga moslangan reklama chiqarganida siz haqingizda nimani bilishini cheklaydi.</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ta sayt uchun ruxsatlar tekshirilgan}other{# ta sayt uchun ruxsatlar tekshirilgan}}</translation>
 <translation id="7138678301420049075">Boshqa</translation>
-<translation id="7139479418357139965">Yuboruvchidan yangi havola yuborishni soʻrang.</translation>
 <translation id="7140829094791862589">Qoʻlda saralash</translation>
 <translation id="7146622961999026732">Bu sayt va ilovalar siz uchun muhimga oʻxshaydi:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> orqali <ph name="BEGIN_LINK" />batafsil axborot oling<ph name="END_LINK" />.</translation>
@@ -1539,7 +1538,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8004582292198964060">Brauzer</translation>
 <translation id="8014210850410408071">Keyin parollarni import qiling</translation>
 <translation id="8015452622527143194">Sahifadagi barcha narsani standart hajmga qaytarish</translation>
-<translation id="8017431260099661477">Taklif havolasini ochish imkonsiz</translation>
 <translation id="8026238112629815203">Bu qurilmada parollar qanday saqlanishini oʻzgartirdik</translation>
 <translation id="8027395186860110042">Tez orada parollar ishlamay qolishi mumkin</translation>
 <translation id="8027863900915310177">Qayerga yuklab olishni tanlang</translation>

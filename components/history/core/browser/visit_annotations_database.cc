@@ -491,7 +491,7 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   out_content_annotations->related_searches =
       DeserializeFromStringColumn(statement.ColumnString(6));
   out_content_annotations->search_normalized_url =
-      GURL(statement.ColumnString(7));
+      GURL(statement.ColumnStringView(7));
   out_content_annotations->search_terms = statement.ColumnString16(8);
   out_content_annotations->alternative_title = statement.ColumnString(9);
   out_content_annotations->page_language = statement.ColumnString(10);
@@ -941,8 +941,8 @@ ClusterVisit VisitAnnotationsDatabase::GetClusterVisit(VisitID visit_id) {
   cluster_visit.score = static_cast<float>(statement.ColumnDouble(2));
   cluster_visit.engagement_score =
       static_cast<float>(statement.ColumnDouble(3));
-  cluster_visit.url_for_deduping = GURL(statement.ColumnString(4));
-  cluster_visit.normalized_url = GURL(statement.ColumnString(5));
+  cluster_visit.url_for_deduping = GURL(statement.ColumnStringView(4));
+  cluster_visit.normalized_url = GURL(statement.ColumnStringView(5));
   cluster_visit.url_for_display = statement.ColumnString16(6);
   cluster_visit.interaction_state =
       InteractionStateFromInt(statement.ColumnInt(7));

@@ -23,8 +23,6 @@ MAX_WAIT_TIME_TO_DELETE_RUNTIME = 45  # 45 seconds
 SIMULATOR_DEFAULT_PATH = os.path.expanduser(
     '~/Library/Developer/CoreSimulator/Devices')
 
-IOS18_SIM_RUNTIME_ID = 'com.apple.CoreSimulator.SimRuntime.iOS-18-0'
-
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
 

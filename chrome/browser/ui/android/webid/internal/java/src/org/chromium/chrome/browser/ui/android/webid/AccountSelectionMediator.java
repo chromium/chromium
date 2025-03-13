@@ -1223,8 +1223,10 @@ class AccountSelectionMediator {
     private void requestAvatarImage(PropertyModel accountModel) {
         Account account = accountModel.get(AccountProperties.ACCOUNT);
         final String name = account.getName();
-        final Bitmap picture = account.getPictureBitmap();
-
+        final Bitmap picture =
+                mIsMultipleIdps
+                        ? account.getCircledBadgedPictureBitmap()
+                        : account.getPictureBitmap();
         accountModel.set(
                 AccountProperties.AVATAR,
                 new AccountProperties.Avatar(name, picture, mDesiredAvatarSize));
@@ -1352,6 +1354,7 @@ class AccountSelectionMediator {
                                 isAccountClickable && !account.isFilteredOut()
                                         ? this::onClickAccountSelected
                                         : null)
+                        .with(AccountProperties.SHOW_IDP, mIsMultipleIdps)
                         .build();
         requestAvatarImage(model);
         return model;

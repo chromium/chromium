@@ -68,7 +68,7 @@ class MockExternalUseClient : public ExternalUseClient {
   MOCK_METHOD1(ReleaseImageContexts,
                gpu::SyncToken(
                    std::vector<std::unique_ptr<ImageContext>> image_contexts));
-  MOCK_METHOD9(
+  MOCK_METHOD10(
       CreateImageContext,
       std::unique_ptr<ImageContext>(const gpu::Mailbox& mailbox,
                                     const gpu::SyncToken& sync_token,
@@ -78,6 +78,7 @@ class MockExternalUseClient : public ExternalUseClient {
                                     bool,
                                     const std::optional<gpu::VulkanYCbCrInfo>&,
                                     sk_sp<SkColorSpace>,
+                                    GrSurfaceOrigin,
                                     bool));
 };
 
@@ -171,12 +172,13 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       mailbox, sync_token1, GL_TEXTURE_2D, size, format,
-      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr);
+      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr,
+      kTopLeft_GrSurfaceOrigin);
   auto* image_context = owned_image_context.get();
 
   gpu::Mailbox mailbox_out;
   gpu::SyncToken sync_token_out;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _, _, _))
+  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _, _, _, _))
       .WillOnce(DoAll(SaveArg<0>(&mailbox_out), SaveArg<1>(&sync_token_out),
                       Return(ByMove(std::move(owned_image_context)))));
 
@@ -253,12 +255,13 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
   auto format = SinglePlaneFormat::kRGBA_8888;
   auto owned_image_context = std::make_unique<ExternalUseClient::ImageContext>(
       mailbox, sync_token1, GL_TEXTURE_2D, size, format,
-      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr);
+      /*ycbcr_info=*/std::nullopt, /*color_space=*/nullptr,
+      kTopLeft_GrSurfaceOrigin);
   auto* image_context = owned_image_context.get();
 
   gpu::Mailbox mailbox_out;
   gpu::SyncToken sync_token_out;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _, _, _))
+  EXPECT_CALL(client_, CreateImageContext(_, _, _, _, _, _, _, _, _, _))
       .WillOnce(DoAll(SaveArg<0>(&mailbox_out), SaveArg<1>(&sync_token_out),
                       Return(ByMove(std::move(owned_image_context)))));
 
