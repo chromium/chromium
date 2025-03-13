@@ -59,6 +59,8 @@ class GlicFreController {
   // Returns the WebContents from the dialog view.
   content::WebContents* GetWebContents();
 
+  AuthController& GetAuthControllerForTesting() { return auth_controller_; }
+
   base::WeakPtr<GlicFreController> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

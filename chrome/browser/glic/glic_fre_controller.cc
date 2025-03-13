@@ -9,6 +9,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/auth_controller.h"
+#include "chrome/browser/glic/fre_util.h"
 #include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
@@ -74,6 +76,7 @@ bool GlicFreController::CanShowFreDialog(Browser* browser) {
 
 void GlicFreController::ShowFreDialog(Browser* browser) {
   auth_controller_.CheckAuthBeforeShow(
+      AuthController::FallbackBehavior::kShowReauthPage,
       base::BindOnce(&GlicFreController::ShowFreDialogAfterAuthCheck,
                      GetWeakPtr(), browser->AsWeakPtr()));
 }
@@ -81,9 +84,10 @@ void GlicFreController::ShowFreDialog(Browser* browser) {
 void GlicFreController::ShowFreDialogAfterAuthCheck(
     base::WeakPtr<Browser> browser,
     AuthController::BeforeShowResult result) {
-  if (result == AuthController::BeforeShowResult::kShowingReauthSigninPage) {
+  if (result != AuthController::BeforeShowResult::kReady) {
     return;
   }
+
   // Abort if the browser was closed, to avoid crashing. Note, the user
   // shouldn't have much chance to close the browser between ShowFreDialog() and
   // ShowFreDialogAfterAuthCheck().

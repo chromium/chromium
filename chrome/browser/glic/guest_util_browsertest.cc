@@ -87,6 +87,11 @@ class GuestUtilBrowserTest : public InProcessBrowserTest {
         std::make_unique<glic::GlicTestEnvironment>(browser()->profile());
   }
 
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
+    glic_test_environment_.reset();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Load blank page in glic guest view
     command_line->AppendSwitchASCII(::switches::kGlicGuestURL, "about:blank");

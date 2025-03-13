@@ -64,6 +64,13 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
 #endif
   }
 
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
+#if BUILDFLAG(ENABLE_GLIC)
+    glic_test_environment_.reset();
+#endif
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =

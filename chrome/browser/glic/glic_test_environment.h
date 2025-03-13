@@ -9,6 +9,7 @@
 
 class Profile;
 namespace glic {
+class GlicKeyedService;
 namespace internal {
 class TestCookieSynchronizer;
 }
@@ -26,14 +27,19 @@ class GlicTestEnvironment {
   explicit GlicTestEnvironment(Profile* profile);
   ~GlicTestEnvironment();
 
+  GlicKeyedService* GetService();
+
   // Glic syncs sign-in cookies to the webview before showing the window. By
   // default, this class replaces this step with an immediately fake success.
   // Change the result of this operation here.
-  void SetResultForFutureCookieSyncRequests(bool result);
+  void SetResultForFutureCookieSync(bool result);
+  void SetResultForFutureCookieSyncInFre(bool result);
 
  private:
+  raw_ptr<Profile> profile_;
   // Null during teardown.
   base::WeakPtr<internal::TestCookieSynchronizer> cookie_synchronizer_;
+  base::WeakPtr<internal::TestCookieSynchronizer> fre_cookie_synchronizer_;
 };
 
 }  // namespace glic

@@ -151,6 +151,11 @@ class InteractiveGlicTestT : public T {
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
+  void TearDownOnMainThread() override {
+    T::TearDownOnMainThread();
+    glic_test_environment_.reset();
+  }
+
   // Ensures that the WebContents for some combination of glic host and contents
   // are instrumented, per `instrument_mode`.
   auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode) {
@@ -260,6 +265,37 @@ class InteractiveGlicTestT : public T {
         Api::WaitForHide(kGlicViewElementId)));
     Api::AddDescriptionPrefix(steps, "CloseGlicWindow");
     return steps;
+  }
+
+  glic::GlicTestEnvironment& glic_test_environment() {
+    return *glic_test_environment_;
+  }
+
+  auto CheckControllerHasWidget(bool expect_widget) {
+    return Api::CheckResult(
+        [this]() { return window_controller().GetGlicWidget() != nullptr; },
+        expect_widget, "CheckControllerHasWidget");
+  }
+
+  auto CheckControllerShowing(bool expect_showing) {
+    return Api::CheckResult(
+        [this]() { return window_controller().IsShowing(); }, expect_showing,
+        "CheckControllerShowing");
+  }
+
+  auto CheckControllerWidgetMode(GlicWindowMode mode) {
+    return Api::CheckResult(
+        [this]() {
+          return window_controller().IsAttached() ? GlicWindowMode::kAttached
+                                                  : GlicWindowMode::kDetached;
+        },
+        mode, "CheckControllerWidgetMode");
+  }
+
+  auto CheckIfAttachedToBrowser(Browser* new_browser) {
+    return Api::CheckResult(
+        [this] { return window_controller().attached_browser(); }, new_browser,
+        "attached to the other browser");
   }
 
  protected:

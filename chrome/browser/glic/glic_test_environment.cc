@@ -6,6 +6,7 @@
 
 #include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -16,22 +17,31 @@ namespace internal {
 // A fake GlicCookieSynchronizer.
 class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
  public:
-  static TestCookieSynchronizer* InjectForProfile(Profile* profile) {
+  static std::pair<TestCookieSynchronizer*, TestCookieSynchronizer*>
+  InjectForProfile(Profile* profile) {
     GlicKeyedService* service =
         GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     auto cookie_synchronizer = std::make_unique<TestCookieSynchronizer>(
-        profile, IdentityManagerFactory::GetForProfile(profile));
+        profile, IdentityManagerFactory::GetForProfile(profile),
+        /*use_for_fre=*/false);
     TestCookieSynchronizer* ptr = cookie_synchronizer.get();
     service->GetAuthController().SetCookieSynchronizerForTesting(
         std::move(cookie_synchronizer));
-    return ptr;
+
+    auto fre_cookie_synchronizer = std::make_unique<TestCookieSynchronizer>(
+        profile, IdentityManagerFactory::GetForProfile(profile),
+        /*use_for_fre=*/true);
+    TestCookieSynchronizer* fre_cookie_synchronizer_ptr =
+        fre_cookie_synchronizer.get();
+    service->window_controller()
+        .fre_controller()
+        ->GetAuthControllerForTesting()
+        .SetCookieSynchronizerForTesting(std::move(fre_cookie_synchronizer));
+
+    return std::make_pair(ptr, fre_cookie_synchronizer_ptr);
   }
 
-  TestCookieSynchronizer(content::BrowserContext* context,
-                         signin::IdentityManager* identity_manager)
-      : GlicCookieSynchronizer(context,
-                               identity_manager,
-                               /*use_for_fre=*/false) {}
+  using GlicCookieSynchronizer::GlicCookieSynchronizer;
 
   void CopyCookiesToWebviewStoragePartition(
       base::OnceCallback<void(bool)> callback) override {
@@ -52,15 +62,29 @@ class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
 
 }  // namespace internal
 
-GlicTestEnvironment::GlicTestEnvironment(Profile* profile) {
-  cookie_synchronizer_ =
-      internal::TestCookieSynchronizer::InjectForProfile(profile)->GetWeakPtr();
+GlicTestEnvironment::GlicTestEnvironment(Profile* profile) : profile_(profile) {
+  std::pair<internal::TestCookieSynchronizer*,
+            internal::TestCookieSynchronizer*>
+      cookie_synchronizers =
+          internal::TestCookieSynchronizer::InjectForProfile(profile);
+
+  cookie_synchronizer_ = cookie_synchronizers.first->GetWeakPtr();
+  fre_cookie_synchronizer_ = cookie_synchronizers.second->GetWeakPtr();
+  // ForceSigninAndModelExecutionCapability(profile);
 }
 
 GlicTestEnvironment::~GlicTestEnvironment() = default;
 
-void GlicTestEnvironment::SetResultForFutureCookieSyncRequests(bool result) {
+GlicKeyedService* GlicTestEnvironment::GetService() {
+  return GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+}
+
+void GlicTestEnvironment::SetResultForFutureCookieSync(bool result) {
   cookie_synchronizer_->set_copy_cookies_result(result);
+}
+
+void GlicTestEnvironment::SetResultForFutureCookieSyncInFre(bool result) {
+  fre_cookie_synchronizer_->set_copy_cookies_result(result);
 }
 
 }  // namespace glic
