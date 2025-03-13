@@ -1743,9 +1743,15 @@ InspectorCSSAgent::CustomPropertiesForNode(Element* element) {
   Document& document = element->GetDocument();
   DCHECK(!document.NeedsLayoutTreeUpdateForNode(*element));
 
-  const ComputedStyle* style = element->EnsureComputedStyle();
-  if (!style /*|| !style->HasVariableReference()*/)
+  auto style_sheets = document_to_css_style_sheets_.find(&document);
+  if (style_sheets == document_to_css_style_sheets_.end()) {
     return result;
+  }
+
+  const ComputedStyle* style = element->EnsureComputedStyle();
+  if (!style) {
+    return result;
+  }
 
   for (const AtomicString& var_name : style->GetVariableNames()) {
     const auto* registration =
@@ -1757,8 +1763,7 @@ InspectorCSSAgent::CustomPropertiesForNode(Element* element) {
     if (StyleRuleProperty* rule = registration->PropertyRule()) {
       // Find CSSOM wrapper.
       CSSPropertyRule* property_rule = nullptr;
-      for (CSSStyleSheet* style_sheet :
-           *document_to_css_style_sheets_.at(&document)) {
+      for (CSSStyleSheet* style_sheet : *style_sheets->value) {
         property_rule = FindPropertyRule(style_sheet, rule);
         if (property_rule)
           break;
@@ -1821,10 +1826,14 @@ InspectorCSSAgent::FontPalettesForNode(Element& element) {
     return {};
   }
 
+  auto style_sheets = document_to_css_style_sheets_.find(&document);
+  if (style_sheets == document_to_css_style_sheets_.end()) {
+    return {};
+  }
+
   // Find CSSOM wrapper.
   CSSFontPaletteValuesRule* values_rule = nullptr;
-  for (CSSStyleSheet* style_sheet :
-       *document_to_css_style_sheets_.at(&document)) {
+  for (CSSStyleSheet* style_sheet : *style_sheets->value) {
     values_rule = FindFontPaletteValuesRule(style_sheet, rule);
     if (values_rule)
       break;
