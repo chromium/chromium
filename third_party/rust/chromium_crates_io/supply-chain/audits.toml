@@ -1371,6 +1371,12 @@ Either way, the result is code that does exactly the same thing and does not cha
 See https://crrev.com/c/6323164 for more audit details.
 """
 
+[[audits.either]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "1.14.0 -> 1.15.0"
+notes = "The delta in `lib.rs` only tweaks doc comments and `#[cfg(feature = \"std\")]`."
+
 [[audits.equivalent]]
 who = "Jonathan Hao <phao@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

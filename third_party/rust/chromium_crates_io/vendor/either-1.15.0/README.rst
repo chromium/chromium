@@ -31,6 +31,13 @@ How to use with cargo::
 Recent Changes
 --------------
 
+- 1.15.0
+
+  - Fix ``serde`` support when building without ``std``, by @klkvr (#119)
+
+  - Use a more common ``std`` feature for default enablement, deprecating
+    the ``use_std`` feature as a mere alias of the new name.
+
 - 1.14.0
 
   - **MSRV**: ``either`` now requires Rust 1.63 or later.

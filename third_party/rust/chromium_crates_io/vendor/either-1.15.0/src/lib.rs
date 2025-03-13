@@ -5,7 +5,7 @@
 //!
 //! **Crate features:**
 //!
-//! * `"use_std"`
+//! * `"std"`
 //!   Enabled by default. Disable to make the library `#![no_std]`.
 //!
 //! * `"serde"`
@@ -15,7 +15,7 @@
 #![doc(html_root_url = "https://docs.rs/either/1/")]
 #![no_std]
 
-#[cfg(any(test, feature = "use_std"))]
+#[cfg(any(test, feature = "std"))]
 extern crate std;
 
 #[cfg(feature = "serde")]
@@ -31,9 +31,9 @@ use core::ops::Deref;
 use core::ops::DerefMut;
 use core::pin::Pin;
 
-#[cfg(any(test, feature = "use_std"))]
+#[cfg(any(test, feature = "std"))]
 use std::error::Error;
-#[cfg(any(test, feature = "use_std"))]
+#[cfg(any(test, feature = "std"))]
 use std::io::{self, BufRead, Read, Seek, SeekFrom, Write};
 
 pub use crate::Either::{Left, Right};
@@ -1154,10 +1154,10 @@ where
     }
 }
 
-#[cfg(any(test, feature = "use_std"))]
+#[cfg(any(test, feature = "std"))]
 /// `Either<L, R>` implements `Read` if both `L` and `R` do.
 ///
-/// Requires crate feature `"use_std"`
+/// Requires crate feature `"std"`
 impl<L, R> Read for Either<L, R>
 where
     L: Read,
@@ -1180,10 +1180,10 @@ where
     }
 }
 
-#[cfg(any(test, feature = "use_std"))]
+#[cfg(any(test, feature = "std"))]
 /// `Either<L, R>` implements `Seek` if both `L` and `R` do.
 ///
-/// Requires crate feature `"use_std"`
+/// Requires crate feature `"std"`
 impl<L, R> Seek for Either<L, R>
 where
     L: Seek,
@@ -1194,8 +1194,8 @@ where
     }
 }
 
-#[cfg(any(test, feature = "use_std"))]
-/// Requires crate feature `"use_std"`
+#[cfg(any(test, feature = "std"))]
+/// Requires crate feature `"std"`
 impl<L, R> BufRead for Either<L, R>
 where
     L: BufRead,
@@ -1218,10 +1218,10 @@ where
     }
 }
 
-#[cfg(any(test, feature = "use_std"))]
+#[cfg(any(test, feature = "std"))]
 /// `Either<L, R>` implements `Write` if both `L` and `R` do.
 ///
-/// Requires crate feature `"use_std"`
+/// Requires crate feature `"std"`
 impl<L, R> Write for Either<L, R>
 where
     L: Write,
@@ -1279,18 +1279,18 @@ macro_rules! impl_specific_ref_and_mut {
 impl_specific_ref_and_mut!(str,);
 impl_specific_ref_and_mut!(
     ::std::path::Path,
-    cfg(feature = "use_std"),
-    doc = "Requires crate feature `use_std`."
+    cfg(feature = "std"),
+    doc = "Requires crate feature `std`."
 );
 impl_specific_ref_and_mut!(
     ::std::ffi::OsStr,
-    cfg(feature = "use_std"),
-    doc = "Requires crate feature `use_std`."
+    cfg(feature = "std"),
+    doc = "Requires crate feature `std`."
 );
 impl_specific_ref_and_mut!(
     ::std::ffi::CStr,
-    cfg(feature = "use_std"),
-    doc = "Requires crate feature `use_std`."
+    cfg(feature = "std"),
+    doc = "Requires crate feature `std`."
 );
 
 impl<L, R, Target> AsRef<[Target]> for Either<L, R>
@@ -1345,10 +1345,10 @@ where
     }
 }
 
-#[cfg(any(test, feature = "use_std"))]
+#[cfg(any(test, feature = "std"))]
 /// `Either` implements `Error` if *both* `L` and `R` implement it.
 ///
-/// Requires crate feature `"use_std"`
+/// Requires crate feature `"std"`
 impl<L, R> Error for Either<L, R>
 where
     L: Error,
@@ -1553,7 +1553,7 @@ fn _unsized_ref_propagation() {
 }
 
 // This "unused" method is here to ensure that compilation doesn't fail on given types.
-#[cfg(feature = "use_std")]
+#[cfg(feature = "std")]
 fn _unsized_std_propagation() {
     check_t!(::std::path::Path);
     check_t!(::std::ffi::OsStr);

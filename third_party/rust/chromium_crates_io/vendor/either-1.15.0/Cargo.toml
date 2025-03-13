@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63.0"
 name = "either"
-version = "1.14.0"
+version = "1.15.0"
 authors = ["bluss"]
 build = false
 autolib = false
@@ -44,21 +44,27 @@ features = ["serde"]
 features = ["serde"]
 
 [package.metadata.release]
-no-dev-version = true
+allow-branch = ["main"]
+sign-tag = true
 tag-name = "{{version}}"
 
 [features]
-default = ["use_std"]
-use_std = []
+default = ["std"]
+std = []
+use_std = ["std"]
 
 [lib]
 name = "either"
 path = "src/lib.rs"
 
 [dependencies.serde]
-version = "1.0"
-features = ["derive"]
+version = "1.0.95"
+features = [
+    "alloc",
+    "derive",
+]
 optional = true
+default-features = false
 
 [dev-dependencies.serde_json]
 version = "1.0.0"

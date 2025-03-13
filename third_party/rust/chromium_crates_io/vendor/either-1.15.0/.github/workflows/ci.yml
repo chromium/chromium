@@ -38,7 +38,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
 
       - name: Build (no_std)
-        run: cargo build --no-default-features
+        run: cargo build --no-default-features --features "${{ matrix.features }}"
 
       - name: Build
         run: cargo build --features "${{ matrix.features }}"
