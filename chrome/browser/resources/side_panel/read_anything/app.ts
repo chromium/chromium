@@ -308,7 +308,14 @@ export class AppElement extends AppElementBase {
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
   private speech_: SpeechBrowserProxy;
-  protected settingsPrefs_: SettingsPrefs;
+  protected settingsPrefs_: SettingsPrefs = {
+    letterSpacing: 0,
+    lineSpacing: 0,
+    theme: 0,
+    speechRate: 0,
+    font: '',
+    highlightGranularity: 0,
+  };
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
