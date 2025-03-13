@@ -194,32 +194,6 @@ ScriptPromise<AILanguageDetector> AILanguageDetectorFactory::create(
   return resolver->Promise();
 }
 
-ScriptPromise<AILanguageDetectorCapabilities>
-AILanguageDetectorFactory::capabilities(ScriptState* script_state,
-                                        ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid() || !GetExecutionContext()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return EmptyPromise();
-  }
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<AILanguageDetectorCapabilities>>(script_state);
-  // The call may silently fail on mojo connection errors. The
-  // RejectOnDestructionHelper class is created to reject the promise if
-  // such error happens.
-  GetLanguageDetectionDriverRemote()->GetLanguageDetectionModelStatus(
-      WTF::BindOnce(
-          [](RejectOnDestructionHelper<AILanguageDetectorCapabilities> resolver,
-             AILanguageDetectorCapabilities::LanguageDetectionModelStatus
-                 status) {
-            resolver.Take()->Resolve(
-                MakeGarbageCollected<AILanguageDetectorCapabilities>(status));
-          },
-          RejectOnDestructionHelper(resolver)));
-
-  return resolver->Promise();
-}
-
 HeapMojoRemote<
     language_detection::mojom::blink::ContentLanguageDetectionDriver>&
 AILanguageDetectorFactory::GetLanguageDetectionDriverRemote() {

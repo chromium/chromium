@@ -22,15 +22,9 @@ interface AILanguageDetector
     method constructor
     method destroy
     method detect
-interface AILanguageDetectorCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method languageAvailable
 interface AILanguageDetectorFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
 interface AILanguageModel : EventTarget
