@@ -4702,8 +4702,8 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
   // since the histogram should have been initialized by the CM construction
   // above.
   base::HistogramBase* expired_histogram = base::Histogram::FactoryGet(
-      "Cookie.ExpirationDurationMinutesSecure.Subsampled", 1,
-      10 * 365 * 24 * 60, 50, base::Histogram::kUmaTargetedHistogramFlag);
+      "Cookie.ExpirationDurationMinutesSecure.Subsampled2", 1, 400 * 24 * 60,
+      100, base::Histogram::kUmaTargetedHistogramFlag);
 
   std::unique_ptr<base::HistogramSamples> samples1(
       expired_histogram->SnapshotSamples());
