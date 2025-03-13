@@ -13,7 +13,7 @@ import {createApp, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
-suite('HighlightMenu', () => {
+suite('HighlightMenuElement', () => {
   let app: AppElement;
   let toolbar: ReadAnythingToolbarElement;
   let highlightButton: CrIconButtonElement;

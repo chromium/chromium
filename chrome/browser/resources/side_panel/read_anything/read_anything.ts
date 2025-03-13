@@ -17,7 +17,7 @@ export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboar
 export type {LanguageMenuElement} from './language_menu.js';
 export type {LanguageToastElement} from './language_toast.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
-export type {HighlightMenu} from './menus/highlight_menu.js';
+export type {HighlightMenuElement} from './menus/highlight_menu.js';
 export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export {MenuStateItem} from './menus/menu_util.js';
