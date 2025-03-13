@@ -54,7 +54,7 @@ static_assert(WTF::IsTraceable<IntWrapper>::value,
 
 using IntVector = blink::HeapVector<blink::Member<IntWrapper>>;
 using IntDeque = blink::GCedHeapDeque<blink::Member<IntWrapper>>;
-using IntMap = blink::HeapHashMap<blink::Member<IntWrapper>, int>;
+using IntMap = blink::GCedHeapHashMap<blink::Member<IntWrapper>, int>;
 // TODO(sof): decide if this ought to be a global trait specialization.
 // (i.e., for HeapHash*<T>.)
 WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(IntVector)
@@ -150,7 +150,7 @@ TEST_F(HeapCompactTest, CompactVectorOfVector) {
 TEST_F(HeapCompactTest, CompactHashPartVector) {
   ClearOutOldGarbage();
 
-  using IntVectorMap = HeapHashMap<int, Member<IntVector>>;
+  using IntVectorMap = GCedHeapHashMap<int, Member<IntVector>>;
 
   Persistent<IntVectorMap> int_vector_map =
       MakeGarbageCollected<IntVectorMap>();
@@ -335,7 +335,7 @@ TEST_F(HeapCompactTest, CompactInlinedBackingStore) {
   // The internal forwarding pointer to the inlined storage needs to be handled
   // by compaction.
   using Value = HeapVector<Member<IntWrapper>, 64>;
-  using MapWithInlinedBacking = HeapHashMap<Key, Member<Value>>;
+  using MapWithInlinedBacking = GCedHeapHashMap<Key, Member<Value>>;
 
   Persistent<MapWithInlinedBacking> map =
       MakeGarbageCollected<MapWithInlinedBacking>();

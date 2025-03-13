@@ -1,2 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Device with empty name and no UUIDs nearby. Should be found if acceptAllDevices is true.

@@ -759,7 +759,7 @@ scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(shared_image), sync_token,
       /* shared_image_texture_id = */ 0, size_, format, kPremul_SkAlphaType,
-      nullptr, context_provider_->GetWeakPtr(),
+      gfx::ColorSpace::CreateSRGB(), context_provider_->GetWeakPtr(),
       base::PlatformThread::CurrentRef(),
       ThreadScheduler::Current()->CleanupTaskRunner(),
       std::move(release_callback));

@@ -19,6 +19,7 @@ class PaintFlags;
 
 namespace blink {
 
+class FrameShapeCache;
 class PlainTextNode;
 class TextRun;
 
@@ -107,11 +108,22 @@ class PLATFORM_EXPORT PlainTextPainter
                                              const gfx::PointF& left_baseline,
                                              float height);
 
+  // This function should be called between the end of an animation frame and
+  // the beginning of the next animation frame. This is for <canvas>, and we
+  // don't need to call this for the shared instance.
+  void DidSwitchFrame();
+
  private:
   const PlainTextNode& CreateNode(const TextRun& text_run,
                                   const Font& font,
                                   bool supports_bidi = true);
+  FrameShapeCache* GetCacheFor(const Font& font);
 
+  // A map from a FontFallbackList to a FrameShapeCache.
+  // We don't need to worry about Web Fonts. When a Web Font loading state is
+  // changed, affected FontFallbackLists are invalidated, and are disconnected
+  // from owner Fonts. They will be removed from `cache_map_` by GC.
+  HeapHashMap<WeakMember<FontFallbackList>, Member<FrameShapeCache>> cache_map_;
   const Mode mode_;
 };
 

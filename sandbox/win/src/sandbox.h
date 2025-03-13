@@ -23,9 +23,11 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/windows_types.h"
@@ -236,7 +238,7 @@ class [[clang::lto_visibility_public]] PolicyInfo {
  public:
   // Returns a JSON representation of the policy snapshot.
   // This pointer has the same lifetime as this PolicyInfo object.
-  virtual const char* JsonString() = 0;
+  virtual const std::string& JsonString() const LIFETIME_BOUND = 0;
   virtual ~PolicyInfo() {}
 };
 

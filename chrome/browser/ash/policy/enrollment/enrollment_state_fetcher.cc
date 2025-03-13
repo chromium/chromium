@@ -49,8 +49,6 @@ namespace {
 
 namespace em = enterprise_management;
 
-// TODO(b/265923216): Wrap callbacks into an object ensuring they are called.
-
 RlwePlaintextId ConstructPlainttextId(const std::string& rlz_brand_code,
                                       const std::string& serial_number) {
   RlwePlaintextId rlwe_id;
@@ -79,7 +77,6 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
     }
   }
 
-  // TODO(b/309921228): Add more suffixes.
   return absl::visit(
       base::Overloaded{
           [](AutoEnrollmentSafeguardTimeoutError) {
@@ -547,7 +544,6 @@ class EnrollmentState {
 
   void Request(DeterminationContext& context,
                CompletionCallback completion_callback) {
-    // TODO(b/265923216): Replace this with unified request type.
     auto config = std::make_unique<DMServerJobConfiguration>(
         context.device_management_service,
         DeviceManagementService::JobConfiguration::TYPE_DEVICE_STATE_RETRIEVAL,
@@ -877,13 +873,12 @@ class EnrollmentStateFetcherImpl::Sequence {
     base::UmaHistogramBoolean(kUMAStateDeterminationOnFlex,
                               ash::switches::IsRevenBranding());
 
-    // TODO(b/265923216): Investigate the possibility of using bypassing PSM and
-    // using state key to directly request state when identifiers are missing.
     if (!device_identifiers_.Retrieve(context_.statistics_provider,
                                       context_.rlz_brand_code,
                                       context_.serial_number)) {
       // Skip enrollment if serial number or brand code are missing.
       // This is expected to happen for prototype devices, for instance.
+      // See crbug.com/376581659.
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 

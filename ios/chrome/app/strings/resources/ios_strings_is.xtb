@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Aðgangslykill</translation>
 <translation id="1030376737535466765">Opna aðgangsorðastjórnun</translation>
 <translation id="1035980983510608210">Ef öllum flipum er lokað verður festum flipum einnig lokað.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1041322626941363065">Fá viðvörun ef aðgangsorðin þín eru afhjúpuð í öryggisbroti</translation>
 <translation id="1044891598689252897">Vefsvæði virka sem skyldi</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Fótspor og gögn vefsvæða</translation>
 <translation id="1312721752506309252">Kveikt er á aukinni vörn</translation>
 <translation id="1317821187353201763">Loka flipa</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Rekja þennan pakka}one{Rekja alla pakka}other{Rekja alla pakka}}</translation>
 <translation id="1321993286294231467">Villa kom upp við að vista mynd.</translation>
 <translation id="1322735045095424339">Fyrirtækið þitt krefst huliðsstillingar</translation>
 <translation id="1323735185997015385">Eyða</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
 <translation id="1709916727352927457">Eyða aðgangslykli</translation>
 <translation id="1712341189152602203">Fyrirliggjandi vefskoðunargögn verða tengd við <ph name="USER_EMAIL" />. Fyrirtækið þitt getur hugsanlega séð gögnin.</translation>
-<translation id="1713777106376424209">Afhendingaraðili:</translation>
 <translation id="1715515772563243997">Ef þú treystir <ph name="SITE" /> geturðu notað vistað aðgangsorð til að skrá þig inn.</translation>
 <translation id="1718835860248848330">Undanfarna klukkustund</translation>
 <translation id="1728549374069268714">Líma og opna</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Verðrakning og innsýn</translation>
 <translation id="1820195936249950412">Skráðu þig inn með gildum reikningi</translation>
 <translation id="1820259098641718022">Bætt við leslista</translation>
-<translation id="1822994441903263130">FedEx</translation>
 <translation id="1824490729233982311">Viðvaranir þegar þú flipa er deilt úr hinum tækjunum þínum.</translation>
 <translation id="1827529786398596735">Haltu inni á heimaskjánum</translation>
 <translation id="1832848789136765277">Staðfestu að þetta sért þú til að hafa alltaf aðgang að samstillingargögnunum þínum</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Einingarval</translation>
 <translation id="2330607597130465898">Engin vörn</translation>
 <translation id="233375395665273385">Eyða og skrá út</translation>
-<translation id="2348630484974447747">Pakki</translation>
 <translation id="2351097562818989364">Þýðingarstillingarnar þínar hafa verið núllstilltar.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Þú getur vistað aðgangsorðið fyrir {DOMAIN_ONE} á Google-reikningnum þínum, {EMAIL}.}=2{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE} og {DOMAIN_TWO} á Google-reikningnum þínum, {EMAIL}.}=3{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}.}one{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}.}other{Þú getur vistað aðgangsorðin fyrir {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} í viðbót á Google-reikningnum þínum, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Sjálfgefin birting vefsvæðis</translation>
@@ -797,7 +792,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4460014764210899310">Sundra hópi</translation>
 <translation id="446314443268698477">Notaðu myndavélina þína eða myndirnar til að versla, þýða og bera kennsl á það sem þú sérð.</translation>
 <translation id="4469324811108161144">Glósur geta verið allt að <ph name="CHARACTER_LIMIT" /> stafir að lengd.</translation>
-<translation id="4469834037720363704">Pakkanúmer</translation>
 <translation id="4471472356135655769">Ekki tókst að flytja út aðgangsorð</translation>
 <translation id="4473608001744970767">Fela „Vakta verð“</translation>
 <translation id="4474142134969976028">Engar niðurstöður fundust</translation>
@@ -1289,7 +1283,6 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="647867789226964031">Breyttu aðgangsorðunum þínum</translation>
 <translation id="6494931198667773526">Lýkur</translation>
 <translation id="6495521251906266731">Veldu hvað á að gera við núverandi vefskoðunargögn í þessu tæki, eins og aðgangsorð, feril og fleira.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Hætta að rekja þennan pakka}one{Hætta að rekja alla pakka}other{Hætta að rekja alla pakka}}</translation>
 <translation id="6503077044568424649">Oftast heimsótt</translation>
 <translation id="6503763061813913607">Tilkynningar fyrir öryggisathugun</translation>
 <translation id="6505334220040167806">Draga saman flipahóp.</translation>
@@ -1761,7 +1754,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8481184073299279701">Ýttu á hnappinn „Hefja annálaskráningu“ til að safna annálum JavaScript-stjórnborðs og villum úr öllum flipum. Annálum verður safnað (og þeir aðeins geymdir í minni) þar til þessari síðu er lokað eða ýtt er á „Stöðva annálaskráningu“.</translation>
 <translation id="8487667956631253959">Kveikt</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Ekki er hægt að búa til tengil</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="8505361906966222822">Vista í/á…</translation>

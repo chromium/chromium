@@ -5,7 +5,7 @@
 INCLUDE PERFETTO MODULE slices.with_context;
 
 -- Top level scroll events, with metrics.
-CREATE PERFETTO TABLE chrome_scroll_interactions(
+CREATE PERFETTO TABLE chrome_scroll_interactions (
   -- Unique id for an individual scroll.
   id LONG,
   -- Name of the scroll event.
@@ -30,27 +30,23 @@ CREATE PERFETTO TABLE chrome_scroll_interactions(
   -- The process id this event occurred on.
   renderer_upid LONG
 ) AS
-WITH scroll_metrics AS (
-  SELECT
-    id,
-    ts,
-    dur,
-    EXTRACT_ARG(arg_set_id, 'scroll_metrics.frame_count')
-      AS frame_count,
-    EXTRACT_ARG(arg_set_id, 'scroll_metrics.vsync_count')
-      AS vsync_count,
-    EXTRACT_ARG(arg_set_id, 'scroll_metrics.missed_vsync_max')
-      AS missed_vsync_max,
-    EXTRACT_ARG(arg_set_id, 'scroll_metrics.missed_vsync_sum')
-      AS missed_vsync_sum,
-    EXTRACT_ARG(arg_set_id, 'scroll_metrics.delayed_frame_count')
-      AS delayed_frame_count,
-    EXTRACT_ARG(arg_set_id, 'scroll_metrics.predictor_janky_frame_count')
-      AS predictor_janky_frame_count,
-    upid AS renderer_upid
-  FROM process_slice
-  WHERE name = 'Scroll'
-)
+WITH
+  scroll_metrics AS (
+    SELECT
+      id,
+      ts,
+      dur,
+      extract_arg(arg_set_id, 'scroll_metrics.frame_count') AS frame_count,
+      extract_arg(arg_set_id, 'scroll_metrics.vsync_count') AS vsync_count,
+      extract_arg(arg_set_id, 'scroll_metrics.missed_vsync_max') AS missed_vsync_max,
+      extract_arg(arg_set_id, 'scroll_metrics.missed_vsync_sum') AS missed_vsync_sum,
+      extract_arg(arg_set_id, 'scroll_metrics.delayed_frame_count') AS delayed_frame_count,
+      extract_arg(arg_set_id, 'scroll_metrics.predictor_janky_frame_count') AS predictor_janky_frame_count,
+      upid AS renderer_upid
+    FROM process_slice
+    WHERE
+      name = 'Scroll'
+  )
 SELECT
   id,
   'Scroll' AS name,

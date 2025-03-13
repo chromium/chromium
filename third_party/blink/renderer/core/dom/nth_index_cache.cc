@@ -302,7 +302,7 @@ unsigned NthIndexCache::NthLastOfTypeIndex(Element& element) {
 void NthIndexCache::EnsureCache() {
   if (!cache_) {
     cache_ = MakeGarbageCollected<
-        HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>>();
+        GCedHeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>>();
   }
 }
 

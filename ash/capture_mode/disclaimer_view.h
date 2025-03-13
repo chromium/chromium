@@ -20,6 +20,9 @@ namespace ash {
 enum DisclaimerViewId {
   kDisclaimerViewAcceptButtonId = 1,
   kDisclaimerViewDeclineButtonId,
+  kDisclaimerViewParagraphOneId,
+  kDisclaimerViewParagraphTwoId,
+  kDisclaimerViewParagraphThreeId,
 };
 
 // DisclaimerView shows the consent disclaimer for the Scanner and Sunfish

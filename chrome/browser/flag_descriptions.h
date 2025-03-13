@@ -3117,15 +3117,6 @@ extern const char kSCTAuditingDescription[];
 extern const char kSmartCardWebApiName[];
 extern const char kSmartCardWebApiDescription[];
 
-extern const char kWebAppSyncGeneratedIconBackgroundFixName[];
-extern const char kWebAppSyncGeneratedIconBackgroundFixDescription[];
-
-extern const char kWebAppSyncGeneratedIconRetroactiveFixName[];
-extern const char kWebAppSyncGeneratedIconRetroactiveFixDescription[];
-
-extern const char kWebAppSyncGeneratedIconUpdateFixName[];
-extern const char kWebAppSyncGeneratedIconUpdateFixDescription[];
-
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kTranslateOpenSettingsName[];
 extern const char kTranslateOpenSettingsDescription[];
@@ -4648,9 +4639,6 @@ extern const char kThirdPartyProfileManagementDescription[];
 extern const char kOidcAuthProfileManagementName[];
 extern const char kOidcAuthProfileManagementDescription[];
 
-extern const char kExplicitBrowserSigninUIOnDesktopName[];
-extern const char kExplicitBrowserSigninUIOnDesktopDescription[];
-
 extern const char kGlicName[];
 extern const char kGlicDescription[];
 
@@ -4725,6 +4713,9 @@ extern const char kOverlayScrollbarsOSSettingsDescription[];
 extern const char kEnablePolicyPromotionBannerName[];
 extern const char kEnablePolicyPromotionBannerDescription[];
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+extern const char kSupervisedUserBlockInterstitialV3Name[];
+extern const char kSupervisedUserBlockInterstitialV3Description[];
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 extern const char kSupervisedProfileHideGuestName[];

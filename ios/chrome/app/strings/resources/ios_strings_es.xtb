@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1030376737535466765">Abrir el Gestor de contraseñas</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1041322626941363065">Avisarte si tus contraseñas se ven expuestas en una brecha de seguridad de datos</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies y datos de sitios</translation>
 <translation id="1312721752506309252">La protección mejorada está activada</translation>
 <translation id="1317821187353201763">Cerrar pestaña</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Seguir este paquete}other{Seguir todos los paquetes}}</translation>
 <translation id="1321993286294231467">No se ha podido guardar la imagen.</translation>
 <translation id="1322735045095424339">Tu organización requiere que uses el modo Incógnito</translation>
 <translation id="1323735185997015385">Eliminar</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
 <translation id="1709916727352927457">Eliminar llave de acceso</translation>
 <translation id="1712341189152602203">Los datos de navegación actuales se vincularán a <ph name="USER_EMAIL" />. Es posible que tu organización pueda verlos.</translation>
-<translation id="1713777106376424209">Entregado por</translation>
 <translation id="1715515772563243997">Si confías en <ph name="SITE" />, puedes usar una contraseña guardada para iniciar sesión.</translation>
 <translation id="1718835860248848330">Última hora</translation>
 <translation id="1728549374069268714">Pegar y acceder</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Seguimiento de precios y estadísticas</translation>
 <translation id="1820195936249950412">Inicia sesión con una cuenta válida</translation>
 <translation id="1820259098641718022">Añadida a Lista de lectura</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Se te avisará cuando recibas pestañas de tus otros dispositivos.</translation>
 <translation id="1827529786398596735">Mantén pulsada la pantalla de inicio</translation>
 <translation id="1832848789136765277">Verifica tu identidad para asegurarte de que siempre puedas acceder a tus datos sincronizados</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Selector de unidades</translation>
 <translation id="2330607597130465898">Sin protección</translation>
 <translation id="233375395665273385">Eliminar y cerrar sesión</translation>
-<translation id="2348630484974447747">Paquete</translation>
 <translation id="2351097562818989364">Se han restablecido tus ajustes de traducción.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Puedes guardar tu contraseña de {DOMAIN_ONE} en tu cuenta de Google ({EMAIL}).}=2{Puedes guardar tus contraseñas de {DOMAIN_ONE} y {DOMAIN_TWO} en tu cuenta de Google ({EMAIL}).}=3{Puedes guardar tus contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL}).}other{Puedes guardar tus contraseñas de {DOMAIN_ONE}, {DOMAIN_TWO} y {OTHER_DOMAINS_COUNT} más en tu cuenta de Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Vista predeterminada de los sitios</translation>
@@ -797,7 +792,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compra, traduce e identifica lo que ves con tu cámara o con fotos.</translation>
 <translation id="4469324811108161144">Las notas pueden guardar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
-<translation id="4469834037720363704">Número de paquete</translation>
 <translation id="4471472356135655769">No se pueden exportar las contraseñas</translation>
 <translation id="4473608001744970767">Ocultar Seguir precio</translation>
 <translation id="4474142134969976028">No hay resultados que coincidan</translation>
@@ -1289,7 +1283,6 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="647867789226964031">Cambia tus contraseñas</translation>
 <translation id="6494931198667773526">A</translation>
 <translation id="6495521251906266731">Elige qué hacer con los datos de navegación que hay en este dispositivo, como contraseñas, el historial y más.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Dejar de seguir este paquete}other{Dejar de seguir todos los paquetes}}</translation>
 <translation id="6503077044568424649">Más visitado</translation>
 <translation id="6503763061813913607">Notificaciones de Comprobación de tu estado</translation>
 <translation id="6505334220040167806">Contraer grupo de pestañas.</translation>
@@ -1761,7 +1754,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8481184073299279701">Toca el botón Iniciar registro para recopilar futuros registros y errores de la consola de JavaScript en todas las pestañas. Los registros se recopilarán (y solo se almacenarán en la memoria) hasta que cierres la página o toques Detener registro.</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sin conexión</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">No se puede crear el enlace</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8505361906966222822">Guardar en…</translation>

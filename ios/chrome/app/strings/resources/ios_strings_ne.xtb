@@ -10,7 +10,6 @@
 <translation id="102916930470544692">पासकी</translation>
 <translation id="1030376737535466765">पासवर्ड म्यानेजर खोल्नुहोस्</translation>
 <translation id="1035980983510608210">तपाईंले सबै ट्याबहरू बन्द गर्नुभयो भने पिन गरिएका ट्याबहरू पनि बन्द हुने छन्।</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">अफ गर्नुहोस्</translation>
 <translation id="1041322626941363065">डेटा चोरीको घटनामा पासवर्डको खुलासा हुँदा मलाई चेतावनी दिइयोस्</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">कुकी, साइट डेटा</translation>
 <translation id="1312721752506309252">"उन्नत सुरक्षा" अन गरिएको छ</translation>
 <translation id="1317821187353201763">ट्याब बन्द गर्नुहोस्</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{यो प्याकेज ट्र्याक गर्नुहोस्}other{सबै प्याकेजहरू ट्र्याक गर्नुहोस्}}</translation>
 <translation id="1321993286294231467">फोटो सुरक्षित गर्ने क्रममा त्रुटि भयो।</translation>
 <translation id="1322735045095424339">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले इन्कोग्निटो मोड प्रयोग गर्नु पर्ने हुन्छ</translation>
 <translation id="1323735185997015385">मेट्नुहोस्</translation>
@@ -175,7 +173,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> चयन गरियो</translation>
 <translation id="1709916727352927457">पासकी मेटाउनुहोस्</translation>
 <translation id="1712341189152602203">हालको ब्राउजिङ डेटा <ph name="USER_EMAIL" /> सँग लिंक गरिने छ। तपाईंको सङ्गठनले यो डेटा हेर्न सक्ने सम्भावना हुन्छ।</translation>
-<translation id="1713777106376424209">डेलिभर गर्ने सेवा प्रदायक</translation>
 <translation id="1715515772563243997">तपाईंलाई <ph name="SITE" /> माथि विश्वास छ भने तपाईं सेभ गरिएको पासवर्ड प्रयोग गरेर साइन इन गर्न सक्नुहुन्छ।</translation>
 <translation id="1718835860248848330">पछिल्लो घन्टा</translation>
 <translation id="1728549374069268714">पेस्ट गर्नुहोस् र अघि बढ्नुहोस्</translation>
@@ -201,7 +198,6 @@
 <translation id="1818687879307252150">{count,plural, =0{अरूले कुनै पनि पासवर्ड देखेका छैनन्}=1{अरूले देखेका {count} पासवर्ड}other{अरूले देखेका {count} वटा पासवर्ड}}</translation>
 <translation id="1820195936249950412">कुनै वैध खातामार्फत साइन इन गर्नुहोस्</translation>
 <translation id="1820259098641718022">पाठ्य सूचीमा थपियो</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">आफ्ना अन्य डिभाइसमा ट्याबहरू प्रयोग गरिँदा अलर्ट प्राप्त गर्नुहोस्।</translation>
 <translation id="1827529786398596735">होम स्क्रिन टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="1832848789136765277">तपाईं आफूले सिंक गरेका डेटा जुनसुकै बेला हेर्न तथा प्रयोग गर्न सक्नुहुन्छ भन्ने कुरा सुनिश्चित गर्न साइन इन गर्ने व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
@@ -330,7 +326,6 @@
 <translation id="2326302612031521902">युनिट सेलेक्टर</translation>
 <translation id="2330607597130465898">सुरक्षारहित मोड</translation>
 <translation id="233375395665273385">मेटाउनुहोस् र साइन आउट गर्नुहोस्</translation>
-<translation id="2348630484974447747">प्याकेज</translation>
 <translation id="2351097562818989364">तपाईंका अनुवाद सेटिङहरू रिसेट गरिएका छन्।</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} को पासवर्ड सेभ गर्न सक्नुहुन्छ।}=2{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} र {DOMAIN_TWO} का पासवर्डहरू सेभ गर्न सक्नुहुन्छ।}=3{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ।}other{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ।}}</translation>
 <translation id="2353953000228441783">साइटको डिफल्ट भ्यू</translation>
@@ -788,7 +783,6 @@
 <translation id="4460014764210899310">समूह विघटन गर्नुहोस्</translation>
 <translation id="446314443268698477">क्यामेरा वा फोटोमा देखिएका कुराहरू किनमेल, अनुवाद तथा पहिचान गर्नुहोस्।</translation>
 <translation id="4469324811108161144">टिपोटहरूमा बढीमा <ph name="CHARACTER_LIMIT" /> वटा वर्ण समावेश गर्न सकिन्छ।</translation>
-<translation id="4469834037720363704">प्याकेज नम्बर</translation>
 <translation id="4471472356135655769">पासवर्डहरू एक्स्पोर्ट गर्न सकिएन</translation>
 <translation id="4473608001744970767">"मूल्य ट्र्याक गर्नुहोस्" लुकाउनुहोस्</translation>
 <translation id="4474142134969976028">कुनै पनि मिल्दोजुल्दो परिणाम भेटिएन</translation>
@@ -1277,7 +1271,6 @@
 <translation id="647867789226964031">आफ्ना पासवर्डहरू बदल्नुहोस्</translation>
 <translation id="6494931198667773526">सकिने मिति</translation>
 <translation id="6495521251906266731">हाल यो डिभाइसमा भएका पासवर्ड र हिस्ट्रीलगायतका ब्राउजिङ डेटा के गर्ने भन्ने कुरा चयन गर्नुहोस्।</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{यो प्याकेज ट्र्याक गर्न छाड्नुहोस्}other{सबै प्याकेज ट्र्याक गर्न छाड्नुहोस्}}</translation>
 <translation id="6503077044568424649">सबैभन्दा धेरै भ्रमण गरिएको</translation>
 <translation id="6503763061813913607">सुरक्षा जाँच गर्ने सुविधासम्बन्धी नोटिफिकेसनहरू</translation>
 <translation id="6505334220040167806">ट्याब समूह कोल्याप्स गर्नुहोस्।</translation>
@@ -1743,7 +1736,6 @@
 <translation id="8481184073299279701">सबै ट्याबहरूबाट JavaScript कन्सोलका भावी लग तथा त्रुटिहरू सङ्कलन गर्न "लग गर्न सुरु गर्नुहोस्" मा ट्याप गर्नुहोस्। यो पेज बन्द नगरेसम्म वा "लग गर्न छाड्नुहोस्" बटन ट्याप नगरेसम्म लगहरू सङ्कलन गरिने छ (र मेमोरीमा मात्र भण्डारण गरिने छ)।</translation>
 <translation id="8487667956631253959">अन छ</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">लिंक बनाउन सकिएन</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8505361906966222822">यहाँ सेभ गर्नुहोस्…</translation>

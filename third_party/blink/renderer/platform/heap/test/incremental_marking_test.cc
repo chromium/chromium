@@ -693,9 +693,9 @@ TEST_F(IncrementalMarkingTest, HeapHashCountedSetSwap) {
 TEST_F(IncrementalMarkingTest, HeapHashMapInsertMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   map->insert(obj1.Get(), obj2.Get());
@@ -707,9 +707,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapInsertMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapInsertWeakMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map =
-      MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>();
+  GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map =
+      MakeGarbageCollected<GCedHeapHashMap<WeakMember<LinkedObject>,
+                                           WeakMember<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   map->insert(obj1.Get(), obj2.Get());
@@ -721,9 +721,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapInsertWeakMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapInsertMemberWeakMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   map->insert(obj1.Get(), obj2.Get());
@@ -735,9 +735,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapInsertMemberWeakMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapInsertWeakMemberMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   map->insert(obj1.Get(), obj2.Get());
@@ -749,9 +749,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapInsertWeakMemberMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapSetMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   map->Set(obj1.Get(), obj2.Get());
@@ -764,9 +764,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapSetMemberUpdateValue) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj3 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
@@ -783,9 +783,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapIteratorChangeKey) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj3 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
@@ -802,9 +802,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapIteratorChangeValue) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj3 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
@@ -820,16 +820,16 @@ TEST_F(IncrementalMarkingTest, HeapHashMapIteratorChangeValue) {
 TEST_F(IncrementalMarkingTest, HeapHashMapCopyMemberMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map1 =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map1 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   EXPECT_TRUE(map1->Contains(obj1));
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map2 =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map2 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>(*map1);
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>(*map1);
   EXPECT_TRUE(map1->Contains(obj1));
   EXPECT_TRUE(map2->Contains(obj1));
   driver.FinishGC();
@@ -840,17 +840,17 @@ TEST_F(IncrementalMarkingTest, HeapHashMapCopyMemberMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapCopyWeakMemberWeakMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map1 =
-      MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>();
+  GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map1 =
+      MakeGarbageCollected<GCedHeapHashMap<WeakMember<LinkedObject>,
+                                           WeakMember<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   EXPECT_TRUE(map1->Contains(obj1));
   // Weak references are strongified for the current cycle.
-  HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map2 =
+  GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map2 =
       MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>(
+          GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>(
           *map1);
   EXPECT_TRUE(map1->Contains(obj1));
   EXPECT_TRUE(map2->Contains(obj1));
@@ -862,17 +862,18 @@ TEST_F(IncrementalMarkingTest, HeapHashMapCopyWeakMemberWeakMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapCopyMemberWeakMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map1 =
+  GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map1 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   EXPECT_TRUE(map1->Contains(obj1));
   // Weak references are strongified for the current cycle.
-  HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map2 =
+  GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map2 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>(*map1);
+          GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>(
+          *map1);
   EXPECT_TRUE(map1->Contains(obj1));
   EXPECT_TRUE(map2->Contains(obj1));
   driver.FinishGC();
@@ -883,17 +884,18 @@ TEST_F(IncrementalMarkingTest, HeapHashMapCopyMemberWeakMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapCopyWeakMemberMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map1 =
+  GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map1 =
       MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   EXPECT_TRUE(map1->Contains(obj1));
   // Weak references are strongified for the current cycle.
-  HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map2 =
+  GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map2 =
       MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>(*map1);
+          GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>(
+          *map1);
   EXPECT_TRUE(map1->Contains(obj1));
   EXPECT_TRUE(map2->Contains(obj1));
   driver.FinishGC();
@@ -904,13 +906,14 @@ TEST_F(IncrementalMarkingTest, HeapHashMapCopyWeakMemberMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapMoveMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  MakeGarbageCollected<HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>(
+  MakeGarbageCollected<
+      GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>(
       std::move(*map));
   driver.FinishGC();
   EXPECT_TRUE(obj1);
@@ -920,14 +923,14 @@ TEST_F(IncrementalMarkingTest, HeapHashMapMoveMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapMoveWeakMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map =
-      MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>();
+  GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map =
+      MakeGarbageCollected<GCedHeapHashMap<WeakMember<LinkedObject>,
+                                           WeakMember<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   MakeGarbageCollected<
-      HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>(
+      GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>(
       std::move(*map));
   driver.FinishGC();
   EXPECT_TRUE(obj1);
@@ -937,14 +940,14 @@ TEST_F(IncrementalMarkingTest, HeapHashMapMoveWeakMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapMoveMemberWeakMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   MakeGarbageCollected<
-      HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>(
+      GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>(
       std::move(*map));
   driver.FinishGC();
   EXPECT_TRUE(obj1);
@@ -954,14 +957,14 @@ TEST_F(IncrementalMarkingTest, HeapHashMapMoveMemberWeakMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapMoveWeakMemberMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
   MakeGarbageCollected<
-      HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>(
+      GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>(
       std::move(*map));
   driver.FinishGC();
   EXPECT_TRUE(obj1);
@@ -973,17 +976,17 @@ TEST_F(IncrementalMarkingTest, HeapHashMapSwapMemberMember) {
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj3 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj4 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map1 =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map1 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map2 =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map2 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map2->insert(obj3.Get(), obj4.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  std::swap(*map1, *map2);
+  map1->swap(*map2);
   driver.FinishGC();
   EXPECT_TRUE(obj1);
   EXPECT_TRUE(obj2);
@@ -996,17 +999,17 @@ TEST_F(IncrementalMarkingTest, HeapHashMapSwapWeakMemberWeakMember) {
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj3 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj4 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map1 =
-      MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>();
+  GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map1 =
+      MakeGarbageCollected<GCedHeapHashMap<WeakMember<LinkedObject>,
+                                           WeakMember<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
-  HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map2 =
-      MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>>();
+  GCedHeapHashMap<WeakMember<LinkedObject>, WeakMember<LinkedObject>>* map2 =
+      MakeGarbageCollected<GCedHeapHashMap<WeakMember<LinkedObject>,
+                                           WeakMember<LinkedObject>>>();
   map2->insert(obj3.Get(), obj4.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  std::swap(*map1, *map2);
+  map1->swap(*map2);
   driver.FinishGC();
   EXPECT_TRUE(obj1);
   EXPECT_TRUE(obj2);
@@ -1019,17 +1022,17 @@ TEST_F(IncrementalMarkingTest, HeapHashMapSwapMemberWeakMember) {
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj3 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj4 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map1 =
+  GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map1 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
-  HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map2 =
+  GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>* map2 =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, WeakMember<LinkedObject>>>();
   map2->insert(obj3.Get(), obj4.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  std::swap(*map1, *map2);
+  map1->swap(*map2);
   driver.FinishGC();
   EXPECT_TRUE(obj1);
   EXPECT_TRUE(obj2);
@@ -1042,17 +1045,17 @@ TEST_F(IncrementalMarkingTest, HeapHashMapSwapWeakMemberMember) {
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj3 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj4 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map1 =
+  GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map1 =
       MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
   map1->insert(obj1.Get(), obj2.Get());
-  HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map2 =
+  GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>* map2 =
       MakeGarbageCollected<
-          HeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<WeakMember<LinkedObject>, Member<LinkedObject>>>();
   map2->insert(obj3.Get(), obj4.Get());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
   driver.StartGC();
-  std::swap(*map1, *map2);
+  map1->swap(*map2);
   driver.FinishGC();
   EXPECT_TRUE(obj1);
   EXPECT_TRUE(obj2);
@@ -1063,9 +1066,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapSwapWeakMemberMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapCopyKeysToVectorMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   HeapVector<Member<LinkedObject>>* vec =
       MakeGarbageCollected<HeapVector<Member<LinkedObject>>>();
@@ -1082,9 +1085,9 @@ TEST_F(IncrementalMarkingTest, HeapHashMapCopyKeysToVectorMember) {
 TEST_F(IncrementalMarkingTest, HeapHashMapCopyValuesToVectorMember) {
   WeakPersistent<LinkedObject> obj1 = MakeGarbageCollected<LinkedObject>();
   WeakPersistent<LinkedObject> obj2 = MakeGarbageCollected<LinkedObject>();
-  HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
+  GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>* map =
       MakeGarbageCollected<
-          HeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
+          GCedHeapHashMap<Member<LinkedObject>, Member<LinkedObject>>>();
   map->insert(obj1.Get(), obj2.Get());
   HeapVector<Member<LinkedObject>>* vec =
       MakeGarbageCollected<HeapVector<Member<LinkedObject>>>();
@@ -1476,7 +1479,8 @@ TEST_F(IncrementalMarkingTest, MAYBE_ConservativeGCOfWeakContainer) {
   // previously traced and is not re-traced, some bucket might be deleted which
   // will make existing iterators invalid.
 
-  using WeakContainer = HeapHashMap<WeakMember<DestructedAndTraced>, size_t>;
+  using WeakContainer =
+      GCedHeapHashMap<WeakMember<DestructedAndTraced>, size_t>;
   Persistent<WeakContainer> map = MakeGarbageCollected<WeakContainer>();
   static constexpr size_t kNumObjects = 10u;
   for (size_t i = 0; i < kNumObjects; ++i) {
@@ -1510,7 +1514,8 @@ TEST_F(IncrementalMarkingTest,
   // Test ensures that weak backing stores are strongified as part of their
   // write barrier.
   using WeakMap = HeapHashMap<WeakMember<DestructedAndTraced>, size_t>;
-  Persistent<WeakMap> map = MakeGarbageCollected<WeakMap>();
+  using GCedWeakMap = GCedHeapHashMap<WeakMember<DestructedAndTraced>, size_t>;
+  Persistent<GCedWeakMap> map = MakeGarbageCollected<GCedWeakMap>();
   map->insert(MakeGarbageCollected<DestructedAndTraced>(), 0);
   DestructedAndTraced::n_destructed = 0;
   IncrementalMarkingTestDriver driver(ThreadState::Current());

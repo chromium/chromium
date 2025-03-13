@@ -29,7 +29,7 @@ import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDeboun
 import type {SettingsPrefs} from './common.js';
 import {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboard_util.js';
 import type {ColorMenuElement} from './menus/color_menu.js';
-import type {HighlightMenu} from './menus/highlight_menu.js';
+import type {HighlightMenuElement} from './menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 import type {MenuStateItem} from './menus/menu_util.js';
@@ -49,7 +49,7 @@ export interface ReadAnythingToolbarElement {
     fontSizeMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     moreOptionsMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
-    highlightMenu: HighlightMenu,
+    highlightMenu: HighlightMenuElement,
     toolbarContainer: HTMLElement,
     more: CrIconButtonElement,
   };

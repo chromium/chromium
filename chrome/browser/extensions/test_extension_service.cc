@@ -39,12 +39,6 @@ bool TestExtensionService::FinishDelayedInstallationIfReady(
   return false;
 }
 
-bool TestExtensionService::IsExtensionEnabled(
-    const std::string& extension_id) const {
-  ADD_FAILURE();
-  return false;
-}
-
 void TestExtensionService::CheckManagementPolicy() {
   ADD_FAILURE();
 }

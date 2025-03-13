@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1122068467107743258">Práca</translation>
 <translation id="1275718070701477396">Riadok bol vybratý</translation>
 <translation id="138513070655895675">Zmeniť na iný spôsob platby dostupný v rámci tejto položky ponuky.</translation>
 <translation id="2129442648318919291">Spravovať adresy.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Dodacia adresa</translation>
 <translation id="8873105120914375071">Chcete zaplatiť rýchlejšie?</translation>
 <translation id="9032876013752408138">Automaticky doplniť moje údaje</translation>
+<translation id="932327136139879170">Domov</translation>
 <translation id="984275831282074731">Spôsoby platby</translation>
 </translationbundle>

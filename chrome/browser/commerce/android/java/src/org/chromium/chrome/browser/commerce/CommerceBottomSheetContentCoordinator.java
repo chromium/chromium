@@ -42,17 +42,14 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
 
     private CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    private final Supplier<CommerceBottomSheetContentProvider>
-            mPriceTrackingContentProviderSupplier;
     private final Supplier<ScrimManager> mScrimManagerSupplier;
 
     public CommerceBottomSheetContentCoordinator(
             Context context,
             @NonNull BottomSheetController bottomSheetController,
             final Supplier<ScrimManager> scrimSupplier,
-            Supplier<CommerceBottomSheetContentProvider> priceTrackingContentProviderSupplier) {
+            List<Supplier<CommerceBottomSheetContentProvider>> contentProviderSuppliers) {
         mModelList = new ModelList();
-        mPriceTrackingContentProviderSupplier = priceTrackingContentProviderSupplier;
 
         mScrimManagerSupplier = scrimSupplier;
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
@@ -115,7 +112,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                     }
                 });
 
-        initContentProviders();
+        initContentProviders(contentProviderSuppliers);
 
         mMediator =
                 new CommerceBottomSheetContentMediator(
@@ -140,9 +137,14 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                 CONTENT_PROVIDER_TIMEOUT_MS);
     }
 
-    private void initContentProviders() {
-        // TODO(362360807): Instantiate all the CommerceBottomSheetContentProvider here.
-        mContentProviders.add(mPriceTrackingContentProviderSupplier.get());
+    private void initContentProviders(
+            List<Supplier<CommerceBottomSheetContentProvider>> contentProviderSuppliers) {
+        for (Supplier<CommerceBottomSheetContentProvider> contentProviderSupplier :
+                contentProviderSuppliers) {
+            if (contentProviderSupplier.get() != null) {
+                mContentProviders.add(contentProviderSupplier.get());
+            }
+        }
     }
 
     public RecyclerView getRecyclerViewForTesting() {

@@ -277,6 +277,7 @@ Object: {
 			columnNumber: number
 			frame: string
 			functionName: string
+			isolate: number
 			lineNumber: number
 			sampleTraceId: number
 			scriptId: string

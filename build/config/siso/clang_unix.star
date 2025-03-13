@@ -206,6 +206,19 @@ def __rules(ctx):
             "timeout": "2m",
         },
         {
+            "name": "clang/cxx_module",
+            "action": "(.*_)?cxx_module",
+            "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang++ ",
+            "inputs": [
+                "third_party/llvm-build/Release+Asserts/bin/clang++",
+            ],
+            "exclude_input_patterns": ["*.stamp"],
+            "remote": True,
+            "input_root_absolute_path": input_root_absolute_path,
+            "canonicalize_dir": canonicalize_dir,
+            "timeout": "2m",
+        },
+        {
             "name": "clang/cc",
             "action": "(.*_)?cc",
             "command_prefix": "../../third_party/llvm-build/Release+Asserts/bin/clang ",

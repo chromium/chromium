@@ -399,17 +399,6 @@ TEST(FloatRoundedRectTest, ToString) {
 
   FloatRoundedRect rect_without_radii(gfx::RectF(1, 3, 5, 7));
   EXPECT_EQ("1,3 5x7", rect_without_radii.ToString());
-
-  FloatRoundedRect rect_with_curvature(
-      gfx::RectF(1, 3, 5, 7),
-      FloatRoundedRect::Radii(corner_rect, corner_rect, corner_rect,
-                              corner_rect));
-  rect_with_curvature.SetCornerCurvature(
-      FloatRoundedRect::CornerCurvature(1, 0.2222, 0, 3000));
-  EXPECT_EQ(
-      "1,3 5x7 radii:(tl:1x2; tr:1x2; bl:1x2; br:1x2) curvature:(tl:1.00; "
-      "tr:0.22; bl:3000.00; br:0.00)",
-      rect_with_curvature.ToString());
 }
 
 }  // namespace blink

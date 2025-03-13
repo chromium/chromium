@@ -133,31 +133,16 @@ BASE_FEATURE(kForceStartupSigninPromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-BASE_FEATURE(kExplicitBrowserSigninUIOnDesktop,
-             "ExplicitBrowserSigninUIOnDesktop",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-const base::FeatureParam<bool> kInterceptBubblesDismissibleByAvatarButton{
-    &kExplicitBrowserSigninUIOnDesktop,
-    /*name=*/"bubble_dismissible_by_avatar_button",
-    /*default_value=*/true};
-
-bool IsExplicitBrowserSigninUIOnDesktopEnabled() {
-  return base::FeatureList::IsEnabled(kExplicitBrowserSigninUIOnDesktop);
-}
+BASE_FEATURE(kInterceptBubblesDismissibleByAvatarButton,
+             "InterceptBubblesDismissibleByAvatarButton",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImprovedSigninUIOnDesktop,
              "ImprovedSigninUIOnDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsImprovedSigninUIOnDesktopEnabled() {
-  return IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
+  return base::FeatureList::IsEnabled(kImprovedSigninUIOnDesktop);
 }
 
 BASE_FEATURE(kImprovedSettingsUIOnDesktop,
@@ -165,8 +150,7 @@ BASE_FEATURE(kImprovedSettingsUIOnDesktop,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsImprovedSettingsUIOnDesktopEnabled() {
-  return IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         base::FeatureList::IsEnabled(kImprovedSettingsUIOnDesktop);
+  return base::FeatureList::IsEnabled(kImprovedSettingsUIOnDesktop);
 }
 
 BASE_FEATURE(kEnableSnackbarInSettings,

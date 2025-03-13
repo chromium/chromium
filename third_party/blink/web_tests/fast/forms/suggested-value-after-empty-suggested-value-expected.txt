@@ -82,8 +82,6 @@ Input before setting suggested values:
 |       aria-hidden="true"
 |       ""
 |     <slot>
-|       id="select-options"
-|     <slot>
 |       id="select-button"
 |     <div>
 |       popover="auto"
@@ -203,8 +201,6 @@ Input after setting suggestedValue:
 |       aria-hidden="true"
 |       "TX"
 |     <slot>
-|       id="select-options"
-|     <slot>
 |       id="select-button"
 |     <div>
 |       popover="auto"
@@ -321,8 +317,6 @@ After resetting suggestedValue value:
 |     <div>
 |       aria-hidden="true"
 |       ""
-|     <slot>
-|       id="select-options"
 |     <slot>
 |       id="select-button"
 |     <div>

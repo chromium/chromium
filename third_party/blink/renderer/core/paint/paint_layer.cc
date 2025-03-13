@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/core/paint/box_reflection_utils.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/cull_rect_updater.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
@@ -95,7 +96,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/transform_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
@@ -1914,11 +1915,13 @@ gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
   return gfx::RectF(GetLayoutBox()->PhysicalBorderBoxRect());
 }
 
+// TODO(crbug.com/402437852) support corner-shape for backdrop filter bounds
 gfx::RRectF PaintLayer::BackdropFilterBounds() const {
   gfx::RRectF backdrop_filter_bounds(
-      SkRRect(RoundedBorderGeometry::PixelSnappedRoundedBorder(
-          GetLayoutObject().StyleRef(),
-          PhysicalRect::EnclosingRect(BackdropFilterReferenceBox()))));
+      SkRRect(ContouredBorderGeometry::PixelSnappedContouredBorder(
+                  GetLayoutObject().StyleRef(),
+                  PhysicalRect::EnclosingRect(BackdropFilterReferenceBox()))
+                  .AsRoundedRect()));
   return backdrop_filter_bounds;
 }
 

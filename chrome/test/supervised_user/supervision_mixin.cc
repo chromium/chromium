@@ -145,10 +145,6 @@ void SupervisionMixin::SetParentalControlsAccountCapability(
 
 void SupervisionMixin::SetPendingStateForPrimaryAccount() {
   CHECK_NE(sign_in_mode_, SignInMode::kSignedOut);
-  // Getting into pending state pre-Uno requires the user to sync.
-  CHECK(consent_level_ == signin::ConsentLevel::kSync ||
-        base::FeatureList::IsEnabled(
-            switches::kExplicitBrowserSigninUIOnDesktop));
 
   auto* identity_manager = GetIdentityTestEnvironment()->identity_manager();
 

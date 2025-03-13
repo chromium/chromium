@@ -10,7 +10,6 @@
 <translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1030376737535466765">فتح "مدير كلمات المرور"</translation>
 <translation id="1035980983510608210">سيؤدي إغلاق جميع علامات التبويب إلى إغلاق علامات التبويب المثبّتة أيضًا.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">إيقاف</translation>
 <translation id="1041322626941363065">التحذير في حال الكشف عن كلمات المرور عند حدوث اختراق بيانات</translation>
 <translation id="1044891598689252897">ستعمل المواقع الإلكترونية بشكلٍ طبيعي.</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">ملفات تعريف الارتباط، وبيانات الموقع الإلكتروني</translation>
 <translation id="1312721752506309252">ميزة الحماية المُحسَّنة مفعَّلة.</translation>
 <translation id="1317821187353201763">إغلاق علامة التبويب</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{تتبُّع هذا الطرد}zero{تتبّع كل الطرود}two{تتبّع كلّ الطرود}few{تتبّع كل الطرود}many{تتبّع كل الطرود}other{تتبّع كل الطرود}}</translation>
 <translation id="1321993286294231467">حدث خطأ أثناء حفظ الصورة.</translation>
 <translation id="1322735045095424339">تفرض مؤسستك استخدام "وضع التصفُّح المتخفي".</translation>
 <translation id="1323735185997015385">حذف</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">تم اختيار <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">حذف مفتاح المرور</translation>
 <translation id="1712341189152602203">سيتم ربط بيانات التصفُّح الحالية بحساب <ph name="USER_EMAIL" />. وقد تكون هذه البيانات مرئية لمؤسستك.</translation>
-<translation id="1713777106376424209">التسليم بحلول</translation>
 <translation id="1715515772563243997">إذا كنت تثق بالموقع الإلكتروني <ph name="SITE" />، يمكنك استخدام كلمة مرور محفوظة لتسجيل الدخول.</translation>
 <translation id="1718835860248848330">آخر ساعة</translation>
 <translation id="1728549374069268714">‏لصق عنوان URL والانتقال إليه</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">ميزة تتبُّع الأسعار والإحصاءات</translation>
 <translation id="1820195936249950412">تسجيل الدخول باستخدام حساب صالح</translation>
 <translation id="1820259098641718022">تمت الإضافة إلى قائمة القراءة</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">يمكنك الحصول على تنبيهات عند تلقّي علامات تبويب من أجهزتك الأخرى.</translation>
 <translation id="1827529786398596735">انقُر مع الاستمرار على الشاشة الرئيسية</translation>
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">مُحدِّد الوحدات</translation>
 <translation id="2330607597130465898">بلا حماية</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
-<translation id="2348630484974447747">الطرد</translation>
 <translation id="2351097562818989364">تم إعادة ضبط إعداداتك للترجمة.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏يمكنك حفظ كلمة المرور الخاصة بنطاق {DOMAIN_ONE} في حسابك على Google ({EMAIL}).}=2{‏يمكنك حفظ كلمتَي المرور الخاصتين بالنطاقين {DOMAIN_ONE} و{DOMAIN_TWO} في حسابك على Google ({EMAIL}).}=3{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}zero{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}few{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقات أخرى في حسابك على Google ({EMAIL}).}many{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاقًا آخر في حسابك على Google ({EMAIL}).}other{‏يمكنك حفظ كلمات المرور الخاصة بالنطاقات {DOMAIN_ONE} و{DOMAIN_TWO} و{OTHER_DOMAINS_COUNT} نطاق آخر في حسابك على Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">العرض التلقائي للمواقع الإلكترونية</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">إلغاء التجميع</translation>
 <translation id="446314443268698477">يمكنك التسوّق وترجمة النصوص والتعرّف على ما تراه إمّا باستخدام الكاميرا أو الصور.</translation>
 <translation id="4469324811108161144">الحد الأقصى لعدد الأحرف في الملاحظات هو <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">رقم الطرد</translation>
 <translation id="4471472356135655769">يتعذّر تصدير كلمات المرور</translation>
 <translation id="4473608001744970767">إخفاء ميزة "تتبُّع السعر"</translation>
 <translation id="4474142134969976028">ما مِن نتائج مطابقة</translation>
@@ -1287,7 +1281,6 @@
 <translation id="647867789226964031">تغيير كلمات المرور</translation>
 <translation id="6494931198667773526">الانتهاء</translation>
 <translation id="6495521251906266731">يمكنك اختيار ما تريد فعله ببيانات التصفّح الحالية على هذا الجهاز، مثل كلمات المرور والسجلّ وغير ذلك.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{إيقاف تتبُّع هذا الطرد}zero{إيقاف تتبُّع كل الطرود}two{إيقاف تتبُّع كلّ الطرود}few{إيقاف تتبُّع كل الطرود}many{إيقاف تتبُّع كل الطرود}other{إيقاف تتبُّع كل الطرود}}</translation>
 <translation id="6503077044568424649">الأكثر زيارة</translation>
 <translation id="6503763061813913607">إشعارات ميزة "التحقّق من الأمان"</translation>
 <translation id="6505334220040167806">تصغير مجموعة علامات التبويب</translation>
@@ -1760,7 +1753,6 @@
 <translation id="8481184073299279701">‏انقر على الزر "بدء تسجيل الدخول" لجمع سجلات وحدة تحكّم JavaScript وأخطائها المستقبلية من جميع علامات التبويب. وسيتم جمع السجلات (وتخزينها فقط في الذاكرة) حتى يتم إغلاق هذه الصفحة أو النقر على "إيقاف تسجيل الدخول".</translation>
 <translation id="8487667956631253959">مفعّل</translation>
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">تعذّر إنشاء الرابط</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8505361906966222822">الحفظ في…</translation>

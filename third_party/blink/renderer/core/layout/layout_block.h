@@ -39,8 +39,8 @@ struct PaintInfo;
 
 using TrackedLayoutBoxLinkedHashSet = GCedHeapLinkedHashSet<Member<LayoutBox>>;
 using TrackedDescendantsMap =
-    HeapHashMap<WeakMember<const LayoutBlock>,
-                Member<TrackedLayoutBoxLinkedHashSet>>;
+    GCedHeapHashMap<WeakMember<const LayoutBlock>,
+                    Member<TrackedLayoutBoxLinkedHashSet>>;
 
 // LayoutBlock is the class that is used by any LayoutObject
 // that is a containing block.

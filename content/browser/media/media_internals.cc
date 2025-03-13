@@ -677,6 +677,12 @@ void MediaInternals::SaveEvent(int process_id,
 
 void MediaInternals::EraseSavedEvents(RenderProcessHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Orderly cleanup can be expensive if there are a lot of active players, so
+  // just skip it during shutdown -- it'll be cleared up by the process kill.
+  if (GetContentClient()->browser()->IsShuttingDown()) {
+    return;
+  }
+
   // TODO(sandersd): Send a termination event before clearing the log.
   saved_events_by_process_.erase(host->GetDeprecatedID());
 }

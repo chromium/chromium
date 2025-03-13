@@ -10,16 +10,28 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "policies": {},
+        "prefs": {
+          "extensions.install.forcelist": {
+            "default_value": {}
+          }
+        }
+      },
+      {
         "policies": {
           "ExtensionInstallForcelist": [
-            "lcncmkcnkcdbbanbjakcencbaoegdjlp;https://clients2.google.com/service/update2/crx"
+            "acncmkcnkcdbbanbjakcencbaoegdjlp",
+            "bcncmkcnkcdbbanbjakcencbaoegdjlp;https://custom.url/with/path/to/update_manifest.xml"
           ]
         },
         "prefs": {
           "extensions.install.forcelist": {
             "value": {
-              "lcncmkcnkcdbbanbjakcencbaoegdjlp": {
+              "acncmkcnkcdbbanbjakcencbaoegdjlp": {
                 "external_update_url": "https://clients2.google.com/service/update2/crx"
+              },
+              "bcncmkcnkcdbbanbjakcencbaoegdjlp": {
+                "external_update_url": "https://custom.url/with/path/to/update_manifest.xml"
               }
             }
           }

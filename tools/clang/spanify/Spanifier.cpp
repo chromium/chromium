@@ -713,10 +713,39 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
-  auto* binary_operation =
-      result.Nodes.getNodeAs<clang::Expr>("binary_operation");
-  auto* binary_op_RHS = result.Nodes.getNodeAs<clang::Expr>("binary_op_rhs");
-  auto source_range = clang::SourceRange(
+  const auto* binary_operation =
+      GetNodeOrCrash<clang::Expr>(result, "binary_operation", __FUNCTION__);
+  const auto* binary_op_RHS =
+      GetNodeOrCrash<clang::Expr>(result, "binary_op_rhs", __FUNCTION__);
+  const std::string key = GetRHS(result);
+
+  // C-style arrays are rewritten to `std::array`, not `base::span`, so
+  // a binary operation on the rewritten array must explicitly construct
+  // a `base::span` of it before calling `.subspan()`.
+  //
+  // Emit a replacement to that effect:
+  // `base::span( <binary operation lhs> )`
+  const auto* rhs_array_type =
+      result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc");
+  if (rhs_array_type) {
+    const auto* concrete_binary_operation =
+        GetNodeOrCrash<clang::BinaryOperator>(
+            result, "binary_operation",
+            "C-style array should not involve `CXXOperatorCallExpr` or "
+            "`CXXRewrittenBinaryOperator`");
+    const clang::SourceRange opener_range =
+        concrete_binary_operation->getLHS()->getExprLoc();
+    EmitReplacement(
+        key, GetReplacementDirective(
+                 opener_range,
+                 llvm::formatv("base::span<{0}>(",
+                               GetTypeAsString(rhs_array_type->getInnerType(),
+                                               ast_context)),
+                 source_manager));
+    // Emit the closing `)` of `base::span(...)` below.
+  }
+
+  const auto source_range = clang::SourceRange(
       GetBinaryOperationOperatorLoc(binary_operation, result),
       getExprRange(binary_op_RHS, source_manager, lang_opts).getEnd());
 
@@ -728,10 +757,15 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
 
   // initial_text includes the binary operator as the first character.
   // We make sure to trim it from the replacement string.
-  std::string replacement_text = ".subspan(" + initial_text.substr(1) + ")";
+  //
+  // If we wrapped the span-to-be in `base::span(`, emit the closing `)`
+  // now.
   EmitReplacement(
-      GetRHS(result),
-      GetReplacementDirective(source_range, replacement_text, source_manager));
+      key, GetReplacementDirective(
+               source_range,
+               llvm::formatv("{0}.subspan({1})", rhs_array_type ? ")" : "",
+                             initial_text.substr(1)),
+               source_manager));
 }
 
 static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
@@ -2027,8 +2061,7 @@ class Spanifier {
         hasType(pointer_type),
         allOf(hasType(raw_ptr_type),
               hasDescendant(raw_ptr_type_loc.bind("rhs_raw_ptr_type_loc"))),
-        hasTypeLoc(loc(qualType(arrayType().bind("rhs_array_type")))
-                       .bind("rhs_array_type_loc")));
+        hasTypeLoc(loc(qualType(arrayType())).bind("rhs_array_type_loc")));
 
     auto lhs_field =
         fieldDecl(raw_ptr_plugin::hasExplicitFieldDecl(lhs_type_loc),

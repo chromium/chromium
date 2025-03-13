@@ -35,9 +35,15 @@
     else                                                               \
       NOTIMPLEMENTED()
 
+// The TVOS_NOT_YET_IMPLEMENTED() macro marks code paths that have not yet been
+// implemented for tvOS.
+#define TVOS_NOT_YET_IMPLEMENTED() \
+  ::logging::CheckError::NotImplemented(__PRETTY_FUNCTION__)
+
 #else
 #define NOTIMPLEMENTED() EAT_CHECK_STREAM_PARAMS()
 #define NOTIMPLEMENTED_LOG_ONCE() EAT_CHECK_STREAM_PARAMS()
+#define TVOS_NOT_YET_IMPLEMENTED() EAT_CHECK_STREAM_PARAMS()
 #endif
 
 #endif  // BASE_NOTIMPLEMENTED_H_

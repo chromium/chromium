@@ -27,8 +27,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "storage/browser/quota/quota_manager.h"
@@ -98,7 +98,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
               base_dir_.GetPath(),
               /*task_logger=*/nullptr,
               /*notification_manager=*/nullptr,
-              extensions::ExtensionSystem::Get(context)->extension_service(),
+              extensions::ExtensionRegistrar::Get(context),
               extensions::ExtensionRegistry::Get(context),
               identity_test_env_->identity_manager(),
               /*url_loader_factory=*/nullptr,

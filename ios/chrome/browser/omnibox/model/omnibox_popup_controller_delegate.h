@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-class AutocompleteResult;
 @class OmniboxPopupController;
+@protocol AutocompleteSuggestionGroup;
 
 /// Delegate for events in omnibox popup controller.
 @protocol OmniboxPopupControllerDelegate <NSObject>
@@ -19,11 +19,10 @@ class AutocompleteResult;
                              hasSuggestions:(BOOL)hasSuggestions
                                  isFocusing:(BOOL)isFocusing;
 
-/// Notifies the delegate of the new sorted suggestions.
-/// TODO(crbug.com/390410111): Change to AutocompleteSuggestion after moving the
-/// wrapping to the controller.
+/// Notifies the delegate of the updated suggestions groups.
 - (void)popupController:(OmniboxPopupController*)popupController
-         didSortResults:(const AutocompleteResult&)results;
+    didUpdateSuggestionsGroups:
+        (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups;
 
 /// Notifies the delegate of text alignment change.
 - (void)popupController:(OmniboxPopupController*)popupController
@@ -37,6 +36,12 @@ class AutocompleteResult;
 /// Notifies the delegate of thumbnail update.
 - (void)popupController:(OmniboxPopupController*)popupController
     didUpdateHasThumbnail:(BOOL)hasThumbnail;
+
+/// Notifies the delegate when pedals are invalidated.
+- (void)popupController:(OmniboxPopupController*)popupController
+    didInvalidatePedals:
+        (NSArray<id<AutocompleteSuggestionGroup>>*)suggestionGroups;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_MODEL_OMNIBOX_POPUP_CONTROLLER_DELEGATE_H_

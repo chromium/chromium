@@ -628,7 +628,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Member<TextSuggestionController> text_suggestion_controller_;
 
   // Map from isolated world IDs to their ContentSecurityPolicy instances.
-  Member<HeapHashMap<int, Member<ContentSecurityPolicy>>>
+  Member<GCedHeapHashMap<int, Member<ContentSecurityPolicy>>>
       isolated_world_csp_map_;
 
   // Tracks which features have already been potentially violated in this

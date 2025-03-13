@@ -451,6 +451,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* context) override;
   std::string GetWebUIHostnameForCodeCacheMetrics(
       const GURL& webui_url) const override;
+  bool IsWebUIBundledCodeCachingEnabled(
+      const GURL& webui_lock_url) const override;
+  base::flat_map<GURL, int> GetWebUIResourceUrlToCodeCacheMap() const override;
   void AllowCertificateError(
       content::WebContents* web_contents,
       int cert_error,

@@ -10,66 +10,70 @@ INCLUDE PERFETTO MODULE slices.with_context;
 -- be used.
 CREATE PERFETTO VIEW _startup_start_events AS
 WITH
-starts AS (
-  SELECT
-    name,
-    EXTRACT_ARG(arg_set_id, 'startup.activity_id') AS activity_id,
-    ts,
-    dur,
-    upid AS browser_upid
-  FROM thread_slice
-  WHERE name = 'Startup.ActivityStart'
-),
-times_to_first_visible_content AS (
-  SELECT
-    name,
-    EXTRACT_ARG(arg_set_id, 'startup.activity_id') AS activity_id,
-    ts,
-    dur,
-    upid AS browser_upid
-  FROM process_slice
-  WHERE name = 'Startup.TimeToFirstVisibleContent2'
-),
-all_activity_ids AS (
-  SELECT
-    DISTINCT activity_id,
-    browser_upid
-  FROM starts
-  UNION ALL
-  SELECT
-    DISTINCT activity_id,
-    browser_upid
-  FROM times_to_first_visible_content
-),
-activity_ids AS (
-  SELECT
-    DISTINCT activity_id,
-    browser_upid
-  FROM all_activity_ids
-)
+  starts AS (
+    SELECT
+      name,
+      extract_arg(arg_set_id, 'startup.activity_id') AS activity_id,
+      ts,
+      dur,
+      upid AS browser_upid
+    FROM thread_slice
+    WHERE
+      name = 'Startup.ActivityStart'
+  ),
+  times_to_first_visible_content AS (
+    SELECT
+      name,
+      extract_arg(arg_set_id, 'startup.activity_id') AS activity_id,
+      ts,
+      dur,
+      upid AS browser_upid
+    FROM process_slice
+    WHERE
+      name = 'Startup.TimeToFirstVisibleContent2'
+  ),
+  all_activity_ids AS (
+    SELECT DISTINCT
+      activity_id,
+      browser_upid
+    FROM starts
+    UNION ALL
+    SELECT DISTINCT
+      activity_id,
+      browser_upid
+    FROM times_to_first_visible_content
+  ),
+  activity_ids AS (
+    SELECT DISTINCT
+      activity_id,
+      browser_upid
+    FROM all_activity_ids
+  )
 SELECT
   activity_ids.activity_id,
   'Startup' AS name,
-  IFNULL(times_to_first_visible_content.ts, starts.ts) AS startup_begin_ts,
-  times_to_first_visible_content.ts +
-    times_to_first_visible_content.dur AS first_visible_content_ts,
+  coalesce(times_to_first_visible_content.ts, starts.ts) AS startup_begin_ts,
+  times_to_first_visible_content.ts + times_to_first_visible_content.dur AS first_visible_content_ts,
   activity_ids.browser_upid
 FROM activity_ids
-  LEFT JOIN times_to_first_visible_content using(activity_id, browser_upid)
-  LEFT JOIN starts using(activity_id, browser_upid);
+LEFT JOIN times_to_first_visible_content
+  USING (activity_id, browser_upid)
+LEFT JOIN starts
+  USING (activity_id, browser_upid);
 
 -- Chrome launch causes, not recorded at start time; use the activity id to
 -- join with the actual startup events.
 CREATE PERFETTO VIEW _launch_causes AS
 SELECT
-  EXTRACT_ARG(arg_set_id, 'startup.activity_id') AS activity_id,
-  EXTRACT_ARG(arg_set_id, 'startup.launch_cause') AS launch_cause,
+  extract_arg(arg_set_id, 'startup.activity_id') AS activity_id,
+  extract_arg(arg_set_id, 'startup.launch_cause') AS launch_cause,
   upid AS browser_upid
 FROM thread_slice
-WHERE name = 'Startup.LaunchCause';
+WHERE
+  name = 'Startup.LaunchCause';
 
 -- Chrome startups, including launch cause.
-CREATE PERFETTO TABLE chrome_startups(
+CREATE PERFETTO TABLE chrome_startups (
   -- Unique ID
   id LONG,
   -- Chrome Activity event id of the launch.
@@ -86,13 +90,13 @@ CREATE PERFETTO TABLE chrome_startups(
   browser_upid LONG
 ) AS
 SELECT
-  ROW_NUMBER() OVER (ORDER BY start_events.startup_begin_ts) AS id,
+  row_number() OVER (ORDER BY start_events.startup_begin_ts) AS id,
   start_events.activity_id,
   start_events.name,
   start_events.startup_begin_ts,
   start_events.first_visible_content_ts,
   launches.launch_cause,
   start_events.browser_upid
-FROM _startup_start_events start_events
-  LEFT JOIN _launch_causes launches
-  USING(activity_id, browser_upid);
+FROM _startup_start_events AS start_events
+LEFT JOIN _launch_causes AS launches
+  USING (activity_id, browser_upid);

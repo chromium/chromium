@@ -379,15 +379,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [self.inactiveTabsCoordinator hide];
 
-  if (_bookmarksCoordinator) {
-    [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
-  }
+  [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:YES];
   // History may be presented on top of the tab grid.
   if (self.historyCoordinator) {
     [self closeHistoryWithCompletion:completion];
   } else if (completion) {
     completion();
   }
+  [_historySyncPopupCoordinator interruptAnimated:NO];
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
@@ -1131,7 +1130,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
-  [self stopHistorySyncPopupCoordinator];
+  [_historySyncPopupCoordinator interruptAnimated:NO];
+  _historySyncPopupCoordinator = nil;
 
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;

@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Buksan ang Password Manager</translation>
 <translation id="1035980983510608210">Kapag isinara ang lahat ng tab, magsasara rin ang mga naka-pin na tab.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1041322626941363065">Babalaan ka kung Ma-expose ang mga password sa Breach sa data</translation>
 <translation id="1044891598689252897">Gagana nang normal ang mga site</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies, data ng site</translation>
 <translation id="1312721752506309252">Naka-on ang pinaigting na proteksyon</translation>
 <translation id="1317821187353201763">Isara ang tab</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Subaybayan ang package na ito}one{Subaybayan ang lahat ng package}other{Subaybayan ang lahat ng package}}</translation>
 <translation id="1321993286294231467">Nagka-error sa pag-save ng larawan.</translation>
 <translation id="1322735045095424339">Ipinag-aatas ng iyong organisasyon na mag-browse sa Incognito mode</translation>
 <translation id="1323735185997015385">I-delete</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ang napili</translation>
 <translation id="1709916727352927457">I-delete ang passkey</translation>
 <translation id="1712341189152602203">Mali-link sa <ph name="USER_EMAIL" /> ang kasalukuyang data mula sa pag-browse. Puwedeng makita ng iyong organisasyon ang data na ito.</translation>
-<translation id="1713777106376424209">Ide-deliver ng</translation>
 <translation id="1715515772563243997">Kung pinagkakatiwalaan mo ang <ph name="SITE" />, puwede kang gumamit ng naka-save na password para mag-sign in.</translation>
 <translation id="1718835860248848330">Huling oras</translation>
 <translation id="1728549374069268714">Mag-paste at umalis</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Pagsubaybay sa presyo at mga insight</translation>
 <translation id="1820195936249950412">Mag-sign in gamit ang valid na account</translation>
 <translation id="1820259098641718022">Idinagdag sa Listahan ng Mga Babasahin</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Mag-aalerto kapag nakatanggap ka ng mga tab mula sa iba mo pang device.</translation>
 <translation id="1827529786398596735">Pindutin nang matagal ang home screen</translation>
 <translation id="1832848789136765277">Para matiyak na maa-access mo anumang oras ang iyong naka-sync na data, i-verify na ikaw ito</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Selector ng unit</translation>
 <translation id="2330607597130465898">Walang proteksyon</translation>
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
-<translation id="2348630484974447747">Package</translation>
 <translation id="2351097562818989364">Na-reset ang iyong mga setting sa pag-translate.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Puwede mong i-save ang iyong password para sa {DOMAIN_ONE} sa Google Account mo na {EMAIL}.}=2{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE} at {DOMAIN_TWO} sa Google Account mo na {EMAIL}.}=3{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}one{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}other{Puwede mong i-save ang iyong mga password para sa {DOMAIN_ONE}, {DOMAIN_TWO}, at {OTHER_DOMAINS_COUNT} pang iba sa Google Account mo na {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Default na view ng site</translation>
@@ -797,7 +792,6 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4460014764210899310">I-ungroup</translation>
 <translation id="446314443268698477">Bilhin, isalin, at tukuyin ang nakikita mo sa iyong camera o mga larawan.</translation>
 <translation id="4469324811108161144">Puwedeng mag-save ng hanggang <ph name="CHARACTER_LIMIT" /> character ang mga tala.</translation>
-<translation id="4469834037720363704">Numero ng package</translation>
 <translation id="4471472356135655769">Hindi ma-export ang mga password</translation>
 <translation id="4473608001744970767">I-hide ang Subaybayan ang Presyo</translation>
 <translation id="4474142134969976028">Walang tumutugmang resulta</translation>
@@ -1289,7 +1283,6 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="647867789226964031">Palitan ang iyong mga password</translation>
 <translation id="6494931198667773526">Matatapos sa</translation>
 <translation id="6495521251906266731">Piliin kung ano ang gagawin sa kasalukuyang data mula sa pag-browse sa device na ito, tulad ng mga password, history, at higit pa.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Huwag subaybayan ang package na ito}one{Huwag subaybayan ang lahat ng package}other{Huwag subaybayan ang lahat ng package}}</translation>
 <translation id="6503077044568424649">Pinaka-nabisita</translation>
 <translation id="6503763061813913607">Mga Notification sa Pag-check sa Kaligtasan</translation>
 <translation id="6505334220040167806">I-collapse ang grupo ng tab.</translation>
@@ -1761,7 +1754,6 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8481184073299279701">I-tap ang button na "Simulan ang pag-log" para kolektahin ang mga log ng JavaScript console at error mula sa lahat ng tab sa hinaharap. Kokolektahin (at iso-store lang sa memory) ang mga log hanggang sa isara ang page na ito o i-tap ang "Huminto sa pag-log."</translation>
 <translation id="8487667956631253959">Naka-on</translation>
 <translation id="8487700953926739672">Available sa offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Hindi makagawa ng link</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8505361906966222822">I-save sa…</translation>

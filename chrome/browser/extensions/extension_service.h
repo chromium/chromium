@@ -111,14 +111,6 @@ class ExtensionServiceInterface {
   virtual bool FinishDelayedInstallationIfReady(const std::string& extension_id,
                                                 bool install_immediately) = 0;
 
-  // Returns true if the extension with the given |extension_id| is enabled.
-  // This will only return a valid answer for installed extensions (regardless
-  // of whether it is currently loaded or not).  Loaded extensions return true
-  // if they are currently loaded or terminated.  Unloaded extensions will
-  // return true if they are not blocked, disabled, blocklisted or uninstalled
-  // (for external extensions).
-  virtual bool IsExtensionEnabled(const std::string& extension_id) const = 0;
-
   // Go through each extension and unload those that are not allowed to run by
   // management policy providers (ie. network admin and Google-managed
   // blocklist).
@@ -196,7 +188,6 @@ class ExtensionService : public ExtensionServiceInterface,
   scoped_refptr<CrxInstaller> CreateUpdateInstaller(
       const CRXFileInfo& file,
       bool file_ownership_passed) override;
-  bool IsExtensionEnabled(const std::string& extension_id) const override;
   void UnloadExtension(const std::string& extension_id,
                        UnloadedExtensionReason reason) override;
   void RemoveComponentExtension(const std::string& extension_id) override;
@@ -419,13 +410,21 @@ class ExtensionService : public ExtensionServiceInterface,
   // Returns profile_ as a BrowserContext.
   content::BrowserContext* GetBrowserContext() const;
 
-  bool extensions_enabled() const { return extensions_enabled_; }
+  // TODO(crbug.com/402853513): Migrate callers to use ExtensionRegistrar
+  // directly.
+  bool extensions_enabled() const {
+    return extension_registrar_->extensions_enabled();
+  }
 
   bool block_extensions() const { return block_extensions_; }
 
-  const base::FilePath& install_directory() const { return install_directory_; }
+  // TODO(crbug.com/402825212): Migrate callers to use ExtensionRegistrar
+  // directly.
+  const base::FilePath& install_directory() const {
+    return extension_registrar_->install_directory();
+  }
   const base::FilePath& unpacked_install_directory() const {
-    return unpacked_install_directory_;
+    return extension_registrar_->unpacked_install_directory();
   }
 
   DelayedInstallManager* delayed_install_manager() {
@@ -633,16 +632,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Hold the set of pending extensions. Not owned.
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
-
-  // The full path to the directory where extensions are installed.
-  const base::FilePath install_directory_;
-
-  // The full path to the directory where unpacked (e.g. from .zip files)
-  // extensions are installed.
-  const base::FilePath unpacked_install_directory_;
-
-  // Whether or not extensions are enabled.
-  bool extensions_enabled_ = true;
 
   // Signaled when all extensions are loaded.
   const raw_ptr<base::OneShotEvent> ready_;

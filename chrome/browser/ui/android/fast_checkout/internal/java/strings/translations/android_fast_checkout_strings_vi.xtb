@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1122068467107743258">Công việc</translation>
 <translation id="1275718070701477396">Đã chọn</translation>
 <translation id="138513070655895675">Thay đổi sang phương thức thanh toán khác ở mục này trong trình đơn.</translation>
 <translation id="2129442648318919291">Quản lý địa chỉ.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Ðịa chỉ giao hàng</translation>
 <translation id="8873105120914375071">Bạn có muốn thanh toán nhanh hơn?</translation>
 <translation id="9032876013752408138">Tự động điền thông tin của tôi</translation>
+<translation id="932327136139879170">Trang chủ</translation>
 <translation id="984275831282074731">Phương thức thanh toán</translation>
 </translationbundle>

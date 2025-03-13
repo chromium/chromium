@@ -717,11 +717,10 @@ void AddressDataManager::HandleNextProfileChange(const std::string& guid) {
         OnProfileChangeDone(guid);
         return;
       }
-      // TODO(crbug.com/357074792): The change type should be passed to the
-      // `webdata_service_` once it supports `HIDE_IN_AUTOFILL`.
       webdata_service_->RemoveAutofillProfile(
-          guid, base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
-                               weak_ptr_factory_.GetWeakPtr()));
+          guid, change.type(),
+          base::BindOnce(&AddressDataManager::OnAutofillProfileChanged,
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
     }
     case AutofillProfileChange::ADD: {

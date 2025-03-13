@@ -81,7 +81,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
                            std::string_view debug_label,
                            gfx::BufferUsage buffer_usage);
 
-    void set_shared_image(scoped_refptr<gpu::ClientSharedImage> si) {
+    void SetSharedImageForTesting(scoped_refptr<gpu::ClientSharedImage> si) {
       shared_image_ = std::move(si);
     }
     void clear_shared_image() { shared_image_.reset(); }

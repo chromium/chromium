@@ -144,7 +144,6 @@
 - (void)closeHistorySyncCoordinator:
             (HistorySyncCoordinator*)historySyncCoordinator
                      declinedByUser:(BOOL)declined {
-  CHECK(_navigationController);
   [self stopHistorySyncCoordinator];
   SigninCoordinatorResult result = declined
                                        ? SigninCoordinatorResultCanceledByUser

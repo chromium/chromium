@@ -10,10 +10,8 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/strings/cstring_view.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/types/zip.h"
 #include "png.h"
 #include "skia/buildflags.h"
 #include "skia/rusty_png_feature.h"
@@ -90,69 +88,6 @@ void TestSize(const char* png_file, gfx::Size expected_size) {
   EXPECT_TRUE(decoder->IsSizeAvailable());
   EXPECT_EQ(expected_size, decoder->Size());
 }
-
-void TestSupportDecodedSizes(const char* png_file, bool is_supported_scale) {
-  auto decoder = CreatePNGDecoderWithPngData(png_file);
-  ASSERT_TRUE(decoder->IsSizeAvailable());
-  Vector<SkISize> decoded_sizes = decoder->GetSupportedDecodeSizes();
-
-  if (!is_supported_scale) {
-    EXPECT_TRUE(decoder->GetSupportedDecodeSizes().empty());
-    return;
-  }
-
-  ASSERT_GE(decoded_sizes.size(), 2u);
-
-  SkISize origin_size =
-      SkISize::Make(decoder->Size().width(), decoder->Size().height());
-  auto current_size_span =
-      base::span(decoded_sizes).first(decoded_sizes.size() - 1);
-  auto next_size_span = base::span(decoded_sizes).subspan<1>();
-
-  for (auto [current_size, next_size] :
-       base::zip(current_size_span, next_size_span)) {
-    EXPECT_LT(current_size.width(), next_size.width());
-    EXPECT_LT(current_size.height(), next_size.height());
-    EXPECT_LT(current_size.width(), origin_size.width());
-    EXPECT_LT(current_size.height(), origin_size.height());
-    float current_ratio = static_cast<float>(current_size.width()) /
-                          static_cast<float>(current_size.height());
-    float origin_ratio = static_cast<float>(origin_size.width()) /
-                         static_cast<float>(origin_size.height());
-    float delta = std::abs(current_ratio - origin_ratio) / origin_ratio;
-    // Delta 0.2 here arises from napkin math suggesting the worst-case error
-    // should be around 14%; feel free to revise if this turns out to have been
-    // wrong.
-    EXPECT_LT(delta, 0.2);
-  }
-}
-
-void TestScaledDecode(base::cstring_view png_file, float factor) {
-  auto decoder_without_scale = CreatePNGDecoderWithPngData(png_file.c_str());
-  ASSERT_TRUE(decoder_without_scale->IsSizeAvailable());
-
-  wtf_size_t max_decoded_bytes =
-      decoder_without_scale->Size().GetArea() *
-      decoder_without_scale->GetDecodedBytesPerPixel() * factor;
-
-  auto decoder = CreatePngImageDecoder(
-      ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTransformToSRGB, max_decoded_bytes);
-  scoped_refptr<SharedBuffer> data =
-      ReadFileToSharedBuffer("/images/resources/png-simple.png");
-  ASSERT_FALSE(data->empty());
-  decoder->SetData(data.get(), true);
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_TRUE(frame);
-  EXPECT_EQ(frame->GetStatus(), ImageFrame::kFrameComplete);
-  SkISize frame_size = frame->Bitmap().bounds().size();
-  EXPECT_LE(frame_size.area(), max_decoded_bytes);
-}
-
-struct DecodedSizeTestElement {
-  wtf_size_t max_decoded_bytes;
-  gfx::Size expected_decoded_size;
-};
 
 // Test whether querying for the size of the image works if we present the
 // data byte by byte.
@@ -1354,38 +1289,6 @@ TEST_P(StaticPNGTests, repetitionCountTest) {
 
 TEST_P(StaticPNGTests, sizeTest) {
   TestSize("/images/resources/png-simple.png", gfx::Size(111, 29));
-}
-
-TEST_P(StaticPNGTests, SupportedDecodedSizeTest) {
-  if (skia::IsRustyPngEnabled()) {
-    // TODO(crbug.com/401979811): Support downscaling in RustyPng.
-    GTEST_SKIP() << "SkPngRustCodec doesn't yet support scaling decode";
-  }
-
-  Vector<std::pair<const char*, bool>> Suites = {
-      {"/images/resources/png-8x8-normal.png", true},
-      {"/images/resources/png-simple.png", true},
-      {"/images/resources/rgb-png-with-cmyk-color-profile.png", true},
-      // TODO(crbug.com/381913638): Support interlaced PNG.
-      {"/images/resources/png-600x600-interlace.png", false},
-      // TODO(crbug.com/381969445): Support APNG.
-      {"/images/resources/apng18.png", false}};
-
-  for (const auto& suite : Suites) {
-    TestSupportDecodedSizes(suite.first, suite.second);
-  }
-}
-
-TEST_P(StaticPNGTests, ScaledDecodeTest) {
-  Vector<std::pair<const base::cstring_view, float>> Suites = {
-      {"/images/resources/png-simple.png", 0.5f},
-      {"/images/resources/rgb-png-with-cmyk-color-profile.png", 0.25f},
-      {"/images/resources/rgb-png-with-cmyk-color-profile.png", 0.125f},
-
-  };
-  for (const auto& suite : Suites) {
-    TestScaledDecode(suite.first, suite.second);
-  }
 }
 
 TEST_P(StaticPNGTests, MetaDataTest) {

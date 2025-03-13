@@ -78,13 +78,9 @@ using autofill::LoggingScope;
 using autofill::LogMessage;
 using autofill::SuggestionType;
 
-bool CheckIfEntitySatisfiesConstraints(const EntityInstance& entity) {
-  DenseSet<AttributeType> attribute_types;
-  for (const autofill::AttributeInstance& attribute_instance :
-       entity.attributes()) {
-    attribute_types.insert(attribute_instance.type());
-  }
-
+bool EntitySatisfiesConstraints(const EntityInstance& entity) {
+  DenseSet<AttributeType> attribute_types =
+      DenseSet(entity.attributes(), &AttributeInstance::type);
   return std::ranges::any_of(entity.type().import_constraints(),
                              [&](const DenseSet<AttributeType>& constraint) {
                                return attribute_types.contains_all(constraint);
@@ -150,7 +146,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
               &std::pair<const AttributeType, AttributeInstance>::second),
           base::Uuid::GenerateRandomV4(),
           /*nickname=*/std::string(""), base::Time::Now());
-      if (!CheckIfEntitySatisfiesConstraints(entity)) {
+      if (!EntitySatisfiesConstraints(entity)) {
         continue;
       }
       entities_found_in_form.push_back(std::move(entity));

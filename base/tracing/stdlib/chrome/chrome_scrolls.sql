@@ -3,15 +3,19 @@
 -- found in the LICENSE file.
 
 INCLUDE PERFETTO MODULE chrome.event_latency;
+
 INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
+
 INCLUDE PERFETTO MODULE chrome.input;
+
 INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_offsets;
+
 INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
 
 -- Ties together input (`LatencyInfo.Flow`) and frame (`Graphics.Pipeline`)
 -- trace events. Only covers input events of the `GESTURE_SCROLL_UPDATE_EVENT`
 -- type.
-CREATE PERFETTO TABLE chrome_scroll_update_refs(
+CREATE PERFETTO TABLE chrome_scroll_update_refs (
   -- Id of the Chrome input pipeline (`LatencyInfo.Flow`).
   scroll_update_latency_id LONG,
   -- Id of the touch move input corresponding to this scroll update.
@@ -22,39 +26,29 @@ CREATE PERFETTO TABLE chrome_scroll_update_refs(
   surface_frame_id LONG,
   -- Id of the frame pipeline (`Graphics.Pipeline`), post-surface aggregation.
   display_trace_id LONG
-)
-AS
+) AS
 SELECT
   scroll_update.latency_id AS scroll_update_latency_id,
   chrome_touch_move_to_scroll_update.touch_move_latency_id,
-  COALESCE(
-    chrome_coalesced_inputs.presented_latency_id,
-    scroll_update.latency_id
-  ) AS presentation_latency_id,
-  chrome_graphics_pipeline_inputs_to_surface_frames.surface_frame_trace_id
-    AS surface_frame_id,
+  coalesce(chrome_coalesced_inputs.presented_latency_id, scroll_update.latency_id) AS presentation_latency_id,
+  chrome_graphics_pipeline_inputs_to_surface_frames.surface_frame_trace_id AS surface_frame_id,
   chrome_surface_frame_id_to_first_display_id.display_trace_id
-FROM
-  chrome_inputs scroll_update
+FROM chrome_inputs AS scroll_update
 LEFT JOIN chrome_graphics_pipeline_inputs_to_surface_frames
   USING (latency_id)
 LEFT JOIN chrome_surface_frame_id_to_first_display_id
-  ON
-    chrome_surface_frame_id_to_first_display_id.surface_frame_trace_id
-    = chrome_graphics_pipeline_inputs_to_surface_frames.surface_frame_trace_id
+  ON chrome_surface_frame_id_to_first_display_id.surface_frame_trace_id = chrome_graphics_pipeline_inputs_to_surface_frames.surface_frame_trace_id
 LEFT JOIN chrome_touch_move_to_scroll_update
-  ON
-    chrome_touch_move_to_scroll_update.scroll_update_latency_id
-    = scroll_update.latency_id
+  ON chrome_touch_move_to_scroll_update.scroll_update_latency_id = scroll_update.latency_id
 LEFT JOIN chrome_coalesced_inputs
   ON chrome_coalesced_inputs.coalesced_latency_id = scroll_update.latency_id
-WHERE scroll_update.input_type = 'GESTURE_SCROLL_UPDATE_EVENT';
+WHERE
+  scroll_update.input_type = 'GESTURE_SCROLL_UPDATE_EVENT';
 
 -- Timestamps and other related information for events during the
 -- input-associated (before inputs are coalesced into a frame) stages of a
 -- scroll.
-CREATE PERFETTO TABLE _scroll_update_input_timestamps_and_metadata
-AS
+CREATE PERFETTO TABLE _scroll_update_input_timestamps_and_metadata AS
 SELECT
   refs.scroll_update_latency_id AS id,
   refs.presentation_latency_id AS presented_in_frame_id,
@@ -62,10 +56,8 @@ SELECT
   chrome_event_latency.scroll_id,
   chrome_event_latency.is_presented,
   chrome_event_latency.is_janky,
-  chrome_event_latency.event_type
-    = 'INERTIAL_GESTURE_SCROLL_UPDATE' AS is_inertial,
-  chrome_event_latency.event_type
-    = 'FIRST_GESTURE_SCROLL_UPDATE' AS is_first_scroll_update_in_scroll,
+  chrome_event_latency.event_type = 'INERTIAL_GESTURE_SCROLL_UPDATE' AS is_inertial,
+  chrome_event_latency.event_type = 'FIRST_GESTURE_SCROLL_UPDATE' AS is_first_scroll_update_in_scroll,
   chrome_event_latency.ts AS generation_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   touch_move_received_step.slice_id AS touch_move_received_slice_id,
@@ -77,67 +69,50 @@ SELECT
   scroll_update_created_step.slice_id AS scroll_update_created_slice_id,
   scroll_update_created_step.utid AS browser_utid,
   scroll_update_created_step.ts AS scroll_update_created_ts,
-  scroll_update_created_step.ts + scroll_update_created_step.dur
-    AS scroll_update_created_end_ts,
+  scroll_update_created_step.ts + scroll_update_created_step.dur AS scroll_update_created_end_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   compositor_dispatch_step.slice_id AS compositor_dispatch_slice_id,
-  compositor_dispatch_step.task_start_time_ts
-    AS compositor_dispatch_task_ts,
+  compositor_dispatch_step.task_start_time_ts AS compositor_dispatch_task_ts,
   compositor_dispatch_step.ts AS compositor_dispatch_ts,
-  compositor_dispatch_step.ts + compositor_dispatch_step.dur
-    AS compositor_dispatch_end_ts,
+  compositor_dispatch_step.ts + compositor_dispatch_step.dur AS compositor_dispatch_end_ts,
   compositor_dispatch_step.utid AS compositor_utid,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  compositor_coalesced_input_handled_step.slice_id
-    AS compositor_coalesced_input_handled_slice_id,
-  compositor_coalesced_input_handled_step.ts
-    AS compositor_coalesced_input_handled_ts,
-  compositor_coalesced_input_handled_step.ts
-    + compositor_coalesced_input_handled_step.dur
-    AS compositor_coalesced_input_handled_end_ts
-FROM chrome_scroll_update_refs refs
+  compositor_coalesced_input_handled_step.slice_id AS compositor_coalesced_input_handled_slice_id,
+  compositor_coalesced_input_handled_step.ts AS compositor_coalesced_input_handled_ts,
+  compositor_coalesced_input_handled_step.ts + compositor_coalesced_input_handled_step.dur AS compositor_coalesced_input_handled_end_ts
+FROM chrome_scroll_update_refs AS refs
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_gesture_scroll_updates chrome_event_latency
+LEFT JOIN chrome_gesture_scroll_updates AS chrome_event_latency
   ON chrome_event_latency.scroll_update_id = refs.scroll_update_latency_id
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_input_pipeline_steps touch_move_received_step
-  ON
-    refs.touch_move_latency_id = touch_move_received_step.latency_id
-    AND touch_move_received_step.step = 'STEP_SEND_INPUT_EVENT_UI'
-    AND touch_move_received_step.input_type = 'TOUCH_MOVE_EVENT'
+LEFT JOIN chrome_input_pipeline_steps AS touch_move_received_step
+  ON refs.touch_move_latency_id = touch_move_received_step.latency_id
+  AND touch_move_received_step.step = 'STEP_SEND_INPUT_EVENT_UI'
+  AND touch_move_received_step.input_type = 'TOUCH_MOVE_EVENT'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_input_pipeline_steps touch_move_processed_step
-  ON
-    touch_move_processed_step.latency_id = refs.touch_move_latency_id
-    AND touch_move_processed_step.step = 'STEP_TOUCH_EVENT_HANDLED'
-    AND touch_move_processed_step.input_type = 'TOUCH_MOVE_EVENT'
+LEFT JOIN chrome_input_pipeline_steps AS touch_move_processed_step
+  ON touch_move_processed_step.latency_id = refs.touch_move_latency_id
+  AND touch_move_processed_step.step = 'STEP_TOUCH_EVENT_HANDLED'
+  AND touch_move_processed_step.input_type = 'TOUCH_MOVE_EVENT'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_input_pipeline_steps scroll_update_created_step
-  ON
-    scroll_update_created_step.latency_id = refs.scroll_update_latency_id
-    AND scroll_update_created_step.step = 'STEP_SEND_INPUT_EVENT_UI'
-    AND scroll_update_created_step.input_type
-      = 'GESTURE_SCROLL_UPDATE_EVENT'
+LEFT JOIN chrome_input_pipeline_steps AS scroll_update_created_step
+  ON scroll_update_created_step.latency_id = refs.scroll_update_latency_id
+  AND scroll_update_created_step.step = 'STEP_SEND_INPUT_EVENT_UI'
+  AND scroll_update_created_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_input_pipeline_steps compositor_dispatch_step
-  ON
-    compositor_dispatch_step.latency_id = refs.scroll_update_latency_id
-    AND compositor_dispatch_step.step = 'STEP_HANDLE_INPUT_EVENT_IMPL'
-    AND compositor_dispatch_step.input_type
-      = 'GESTURE_SCROLL_UPDATE_EVENT'
+LEFT JOIN chrome_input_pipeline_steps AS compositor_dispatch_step
+  ON compositor_dispatch_step.latency_id = refs.scroll_update_latency_id
+  AND compositor_dispatch_step.step = 'STEP_HANDLE_INPUT_EVENT_IMPL'
+  AND compositor_dispatch_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_input_pipeline_steps compositor_coalesced_input_handled_step
-  ON
-    compositor_coalesced_input_handled_step.latency_id
-      = refs.scroll_update_latency_id
-    AND compositor_coalesced_input_handled_step.step
-      = 'STEP_DID_HANDLE_INPUT_AND_OVERSCROLL'
-    AND compositor_coalesced_input_handled_step.input_type
-      = 'GESTURE_SCROLL_UPDATE_EVENT';
+LEFT JOIN chrome_input_pipeline_steps AS compositor_coalesced_input_handled_step
+  ON compositor_coalesced_input_handled_step.latency_id = refs.scroll_update_latency_id
+  AND compositor_coalesced_input_handled_step.step = 'STEP_DID_HANDLE_INPUT_AND_OVERSCROLL'
+  AND compositor_coalesced_input_handled_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT';
 
 -- Timestamps and durations for the input-associated (before coalescing inputs
 -- into a frame) stages of a scroll.
-CREATE PERFETTO TABLE chrome_scroll_update_input_pipeline(
+CREATE PERFETTO TABLE chrome_scroll_update_input_pipeline (
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
   -- Id of the scroll this scroll update belongs to.
@@ -205,57 +180,54 @@ CREATE PERFETTO TABLE chrome_scroll_update_input_pipeline(
   compositor_coalesced_input_handled_end_ts TIMESTAMP
 ) AS
 WITH
-processed_timestamps_and_metadata AS (
-  SELECT
-    id,
-    scroll_id,
-    presented_in_frame_id,
-    is_presented,
-    is_janky,
-    is_inertial,
-    is_first_scroll_update_in_scroll,
-    ROW_NUMBER()
-      OVER (PARTITION BY presented_in_frame_id ORDER BY generation_ts ASC) = 1
-      AS is_first_scroll_update_in_frame,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    browser_utid,
-    touch_move_received_slice_id,
-    -- Timestamps
-    generation_ts,
-    touch_move_received_ts,
-    -- TODO(b:385160424): this is a workaround for cases when
-    -- generation time is later than the input time.
-    MAX(
-      IIF(
-        is_inertial AND touch_move_received_ts IS NULL,
-        scroll_update_created_ts,
-        touch_move_received_ts
-      ),
-      generation_ts)
-    AS browser_main_received_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    scroll_update_created_slice_id,
-    -- Timestamps
-    scroll_update_created_ts,
-    scroll_update_created_end_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    compositor_utid,
-    compositor_dispatch_slice_id,
-    -- Timestamps
-    COALESCE(compositor_dispatch_task_ts, compositor_dispatch_ts)
-      AS compositor_dispatch_ts,
-    compositor_dispatch_end_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    compositor_coalesced_input_handled_slice_id,
-    -- Timestamps
-    compositor_coalesced_input_handled_ts,
-    compositor_coalesced_input_handled_end_ts
-  FROM _scroll_update_input_timestamps_and_metadata
-)
+  processed_timestamps_and_metadata AS (
+    SELECT
+      id,
+      scroll_id,
+      presented_in_frame_id,
+      is_presented,
+      is_janky,
+      is_inertial,
+      is_first_scroll_update_in_scroll,
+      row_number() OVER (PARTITION BY presented_in_frame_id ORDER BY generation_ts ASC) = 1 AS is_first_scroll_update_in_frame,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      browser_utid,
+      touch_move_received_slice_id,
+      -- Timestamps
+      generation_ts,
+      touch_move_received_ts,
+      -- TODO(b:385160424): this is a workaround for cases when
+      -- generation time is later than the input time.
+      max(
+        iif(
+          is_inertial AND touch_move_received_ts IS NULL,
+          scroll_update_created_ts,
+          touch_move_received_ts
+        ),
+        generation_ts
+      ) AS browser_main_received_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      scroll_update_created_slice_id,
+      -- Timestamps
+      scroll_update_created_ts,
+      scroll_update_created_end_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      compositor_utid,
+      compositor_dispatch_slice_id,
+      -- Timestamps
+      coalesce(compositor_dispatch_task_ts, compositor_dispatch_ts) AS compositor_dispatch_ts,
+      compositor_dispatch_end_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      compositor_coalesced_input_handled_slice_id,
+      -- Timestamps
+      compositor_coalesced_input_handled_ts,
+      compositor_coalesced_input_handled_end_ts
+    FROM _scroll_update_input_timestamps_and_metadata
+  )
 SELECT
   id,
   scroll_id,
@@ -276,14 +248,12 @@ SELECT
   browser_utid,
   touch_move_received_slice_id,
   touch_move_received_ts,
-  scroll_update_created_ts - MAX(touch_move_received_ts, generation_ts)
-    AS touch_move_processing_dur,
+  scroll_update_created_ts - max(touch_move_received_ts, generation_ts) AS touch_move_processing_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `browser_utid`.
   scroll_update_created_slice_id,
   scroll_update_created_ts,
-  scroll_update_created_end_ts - scroll_update_created_ts
-    AS scroll_update_processing_dur,
+  scroll_update_created_end_ts - scroll_update_created_ts AS scroll_update_processing_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
@@ -291,29 +261,23 @@ SELECT
   -- TODO(b:385161677): use the start
   -- of the STEP_SEND_DISPATCH_EVENT_MOJO_MESSAGE step
   -- instead of scroll_update_created_end_ts.
-  MAX(compositor_dispatch_ts, scroll_update_created_end_ts)
-    - scroll_update_created_end_ts
-    AS browser_to_compositor_delay_dur,
+  max(compositor_dispatch_ts, scroll_update_created_end_ts) - scroll_update_created_end_ts AS browser_to_compositor_delay_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   compositor_utid,
   compositor_dispatch_slice_id,
   compositor_dispatch_ts,
-  compositor_dispatch_end_ts - compositor_dispatch_ts
-    AS compositor_dispatch_dur,
+  compositor_dispatch_end_ts - compositor_dispatch_ts AS compositor_dispatch_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
   -- No applicable slice id (duration between two slices).
   compositor_dispatch_end_ts,
   -- TODO(b:380868337): This is sometimes negative; check/fix this.
-  compositor_coalesced_input_handled_ts - compositor_dispatch_end_ts
-    AS compositor_dispatch_to_coalesced_input_handled_dur,
+  compositor_coalesced_input_handled_ts - compositor_dispatch_end_ts AS compositor_dispatch_to_coalesced_input_handled_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
   compositor_coalesced_input_handled_slice_id,
   compositor_coalesced_input_handled_ts,
-  compositor_coalesced_input_handled_end_ts
-    - compositor_coalesced_input_handled_ts
-    AS compositor_coalesced_input_handled_dur,
+  compositor_coalesced_input_handled_end_ts - compositor_coalesced_input_handled_ts AS compositor_coalesced_input_handled_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   compositor_coalesced_input_handled_end_ts
 FROM processed_timestamps_and_metadata;
@@ -321,8 +285,7 @@ FROM processed_timestamps_and_metadata;
 -- Timestamps and other related information for events during the
 -- frame-associated (after inputs are coalesced into a frame) stages of a
 -- scroll.
-CREATE PERFETTO TABLE _scroll_update_frame_timestamps_and_metadata
-AS
+CREATE PERFETTO TABLE _scroll_update_frame_timestamps_and_metadata AS
 SELECT
   refs.scroll_update_latency_id AS id,
   refs.display_trace_id,
@@ -330,132 +293,88 @@ SELECT
   chrome_event_latency.vsync_interval_ms AS vsync_interval_ms,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   compositor_resample_step.slice_id AS compositor_resample_slice_id,
-  compositor_resample_step.task_start_time_ts
-    AS compositor_resample_task_ts,
+  compositor_resample_step.task_start_time_ts AS compositor_resample_task_ts,
   compositor_resample_step.ts AS compositor_resample_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  compositor_receive_begin_frame_step.id
-    AS compositor_receive_begin_frame_slice_id,
-  compositor_receive_begin_frame_step.task_start_time_ts
-    AS compositor_receive_begin_frame_task_ts,
-  compositor_receive_begin_frame_step.ts
-    AS compositor_receive_begin_frame_ts,
+  compositor_receive_begin_frame_step.id AS compositor_receive_begin_frame_slice_id,
+  compositor_receive_begin_frame_step.task_start_time_ts AS compositor_receive_begin_frame_task_ts,
+  compositor_receive_begin_frame_step.ts AS compositor_receive_begin_frame_ts,
   --
-  compositor_generate_compositor_frame_step.id
-    AS compositor_generate_compositor_frame_slice_id,
-  compositor_generate_compositor_frame_step.task_start_time_ts
-    AS compositor_generate_compositor_frame_task_ts,
-  compositor_generate_compositor_frame_step.ts
-    AS compositor_generate_compositor_frame_ts,
+  compositor_generate_compositor_frame_step.id AS compositor_generate_compositor_frame_slice_id,
+  compositor_generate_compositor_frame_step.task_start_time_ts AS compositor_generate_compositor_frame_task_ts,
+  compositor_generate_compositor_frame_step.ts AS compositor_generate_compositor_frame_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  compositor_submit_compositor_frame_step.id
-    AS compositor_submit_compositor_frame_slice_id,
-  compositor_submit_compositor_frame_step.ts
-    AS compositor_submit_compositor_frame_ts,
-  compositor_submit_compositor_frame_step.ts
-    + compositor_submit_compositor_frame_step.dur
-    AS compositor_submit_compositor_frame_end_ts,
+  compositor_submit_compositor_frame_step.id AS compositor_submit_compositor_frame_slice_id,
+  compositor_submit_compositor_frame_step.ts AS compositor_submit_compositor_frame_ts,
+  compositor_submit_compositor_frame_step.ts + compositor_submit_compositor_frame_step.dur AS compositor_submit_compositor_frame_end_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-  viz_receive_compositor_frame_step.id
-    AS viz_receive_compositor_frame_slice_id,
-  viz_receive_compositor_frame_step.task_start_time_ts
-    AS viz_receive_compositor_frame_task_ts,
+  viz_receive_compositor_frame_step.id AS viz_receive_compositor_frame_slice_id,
+  viz_receive_compositor_frame_step.task_start_time_ts AS viz_receive_compositor_frame_task_ts,
   viz_receive_compositor_frame_step.ts AS viz_receive_compositor_frame_ts,
-  viz_receive_compositor_frame_step.ts
-    + viz_receive_compositor_frame_step.dur
-    AS viz_receive_compositor_frame_end_ts,
+  viz_receive_compositor_frame_step.ts + viz_receive_compositor_frame_step.dur AS viz_receive_compositor_frame_end_ts,
   viz_receive_compositor_frame_step.utid AS viz_compositor_utid,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   viz_draw_and_swap_step.id AS viz_draw_and_swap_slice_id,
-  viz_draw_and_swap_step.task_start_time_ts
-    AS viz_draw_and_swap_task_ts,
+  viz_draw_and_swap_step.task_start_time_ts AS viz_draw_and_swap_task_ts,
   viz_draw_and_swap_step.ts AS viz_draw_and_swap_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   viz_send_buffer_swap_step.id AS viz_send_buffer_swap_slice_id,
-  viz_send_buffer_swap_step.ts + viz_send_buffer_swap_step.dur
-    AS viz_send_buffer_swap_end_ts,
+  viz_send_buffer_swap_step.ts + viz_send_buffer_swap_step.dur AS viz_send_buffer_swap_end_ts,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   viz_swap_buffers_step.id AS viz_swap_buffers_slice_id,
   viz_swap_buffers_step.task_start_time_ts AS viz_swap_buffers_task_ts,
   viz_swap_buffers_step.ts AS viz_swap_buffers_ts,
-  viz_swap_buffers_step.ts + viz_swap_buffers_step.dur
-    AS viz_swap_buffers_end_ts,
+  viz_swap_buffers_step.ts + viz_swap_buffers_step.dur AS viz_swap_buffers_end_ts,
   viz_swap_buffers_step.utid AS viz_gpu_thread_utid,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   chrome_event_latency.buffer_available_timestamp,
   chrome_event_latency.buffer_ready_timestamp,
   chrome_event_latency.latch_timestamp,
   chrome_event_latency.presentation_timestamp
-FROM chrome_scroll_update_refs refs
-LEFT JOIN chrome_event_latencies chrome_event_latency
+FROM chrome_scroll_update_refs AS refs
+LEFT JOIN chrome_event_latencies AS chrome_event_latency
   ON chrome_event_latency.scroll_update_id = refs.presentation_latency_id
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_input_pipeline_steps compositor_resample_step
-  ON
-    compositor_resample_step.latency_id = refs.presentation_latency_id
-    AND compositor_resample_step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
-    AND compositor_resample_step.input_type
-      = 'GESTURE_SCROLL_UPDATE_EVENT'
+LEFT JOIN chrome_input_pipeline_steps AS compositor_resample_step
+  ON compositor_resample_step.latency_id = refs.presentation_latency_id
+  AND compositor_resample_step.step = 'STEP_RESAMPLE_SCROLL_EVENTS'
+  AND compositor_resample_step.input_type = 'GESTURE_SCROLL_UPDATE_EVENT'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN
-  chrome_graphics_pipeline_surface_frame_steps
-    compositor_receive_begin_frame_step
-  ON
-    compositor_receive_begin_frame_step.surface_frame_trace_id
-      = refs.surface_frame_id
-    AND compositor_receive_begin_frame_step.step
-      = 'STEP_RECEIVE_BEGIN_FRAME'
+LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS compositor_receive_begin_frame_step
+  ON compositor_receive_begin_frame_step.surface_frame_trace_id = refs.surface_frame_id
+  AND compositor_receive_begin_frame_step.step = 'STEP_RECEIVE_BEGIN_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN
-  chrome_graphics_pipeline_surface_frame_steps
-    compositor_generate_compositor_frame_step
-  ON
-    compositor_generate_compositor_frame_step.surface_frame_trace_id
-      = refs.surface_frame_id
-    AND compositor_generate_compositor_frame_step.step
-      = 'STEP_GENERATE_COMPOSITOR_FRAME'
+LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS compositor_generate_compositor_frame_step
+  ON compositor_generate_compositor_frame_step.surface_frame_trace_id = refs.surface_frame_id
+  AND compositor_generate_compositor_frame_step.step = 'STEP_GENERATE_COMPOSITOR_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN
-  chrome_graphics_pipeline_surface_frame_steps
-    compositor_submit_compositor_frame_step
-  ON
-    compositor_submit_compositor_frame_step.surface_frame_trace_id
-      = refs.surface_frame_id
-    AND compositor_submit_compositor_frame_step.step
-      = 'STEP_SUBMIT_COMPOSITOR_FRAME'
+LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS compositor_submit_compositor_frame_step
+  ON compositor_submit_compositor_frame_step.surface_frame_trace_id = refs.surface_frame_id
+  AND compositor_submit_compositor_frame_step.step = 'STEP_SUBMIT_COMPOSITOR_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN
-  chrome_graphics_pipeline_surface_frame_steps
-    viz_receive_compositor_frame_step
-  ON
-    viz_receive_compositor_frame_step.surface_frame_trace_id
-      = refs.surface_frame_id
-    AND viz_receive_compositor_frame_step.step
-      = 'STEP_RECEIVE_COMPOSITOR_FRAME'
+LEFT JOIN chrome_graphics_pipeline_surface_frame_steps AS viz_receive_compositor_frame_step
+  ON viz_receive_compositor_frame_step.surface_frame_trace_id = refs.surface_frame_id
+  AND viz_receive_compositor_frame_step.step = 'STEP_RECEIVE_COMPOSITOR_FRAME'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN
-  chrome_graphics_pipeline_display_frame_steps viz_draw_and_swap_step
-  ON
-    viz_draw_and_swap_step.display_trace_id = refs.display_trace_id
-    AND viz_draw_and_swap_step.step = 'STEP_DRAW_AND_SWAP'
+LEFT JOIN chrome_graphics_pipeline_display_frame_steps AS viz_draw_and_swap_step
+  ON viz_draw_and_swap_step.display_trace_id = refs.display_trace_id
+  AND viz_draw_and_swap_step.step = 'STEP_DRAW_AND_SWAP'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN
-  chrome_graphics_pipeline_display_frame_steps viz_send_buffer_swap_step
-  ON
-    viz_send_buffer_swap_step.display_trace_id = refs.display_trace_id
-    AND viz_send_buffer_swap_step.step = 'STEP_SEND_BUFFER_SWAP'
+LEFT JOIN chrome_graphics_pipeline_display_frame_steps AS viz_send_buffer_swap_step
+  ON viz_send_buffer_swap_step.display_trace_id = refs.display_trace_id
+  AND viz_send_buffer_swap_step.step = 'STEP_SEND_BUFFER_SWAP'
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-LEFT JOIN chrome_graphics_pipeline_display_frame_steps viz_swap_buffers_step
-  ON
-    viz_swap_buffers_step.display_trace_id = refs.display_trace_id
-    AND viz_swap_buffers_step.step = 'STEP_BUFFER_SWAP_POST_SUBMIT'
+LEFT JOIN chrome_graphics_pipeline_display_frame_steps AS viz_swap_buffers_step
+  ON viz_swap_buffers_step.display_trace_id = refs.display_trace_id
+  AND viz_swap_buffers_step.step = 'STEP_BUFFER_SWAP_POST_SUBMIT'
 -- Filter out inputs which were coalesced into a different frame (so that rows
 -- of this table correspond to frames).
-WHERE refs.scroll_update_latency_id = refs.presentation_latency_id;
+WHERE
+  refs.scroll_update_latency_id = refs.presentation_latency_id;
 
 -- Timestamps and durations for the frame-associated (after coalescing inputs
 -- into a frame) stages of a scroll.
-CREATE PERFETTO TABLE chrome_scroll_update_frame_pipeline(
+CREATE PERFETTO TABLE chrome_scroll_update_frame_pipeline (
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
   -- Id of the aggregated frame this scroll update was presented in.
@@ -535,74 +454,65 @@ CREATE PERFETTO TABLE chrome_scroll_update_frame_pipeline(
   presentation_timestamp TIMESTAMP
 ) AS
 WITH
-processed_timestamps_and_metadata AS (
-  SELECT
-    id,
-    display_trace_id,
-    vsync_interval_ms,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    compositor_resample_slice_id,
-    -- Timestamps
-    COALESCE(
-      compositor_resample_task_ts,
-      compositor_resample_ts) AS compositor_resample_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    compositor_receive_begin_frame_slice_id,
-    -- Timestamps
-    COALESCE(
-      compositor_receive_begin_frame_task_ts,
-      compositor_receive_begin_frame_ts)
-      AS compositor_receive_begin_frame_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    compositor_generate_compositor_frame_slice_id,
-    -- Timestamps
-    COALESCE(
-      compositor_generate_compositor_frame_task_ts,
-      compositor_generate_compositor_frame_ts)
-      AS compositor_generate_compositor_frame_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    compositor_submit_compositor_frame_slice_id,
-    -- Timestamps
-    compositor_submit_compositor_frame_ts,
-    compositor_submit_compositor_frame_end_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    viz_compositor_utid,
-    viz_receive_compositor_frame_slice_id,
-    -- Timestamps
-    COALESCE(
-      viz_receive_compositor_frame_task_ts, viz_receive_compositor_frame_ts)
-      AS viz_receive_compositor_frame_ts,
-    viz_receive_compositor_frame_end_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    viz_draw_and_swap_slice_id,
-    -- Timestamps
-    COALESCE(viz_draw_and_swap_task_ts, viz_draw_and_swap_ts)
-      AS viz_draw_and_swap_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    viz_send_buffer_swap_slice_id,
-    -- Timestamps
-    viz_send_buffer_swap_end_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Ids
-    viz_gpu_thread_utid,
-    viz_swap_buffers_slice_id,
-    -- Timestamps
-    COALESCE(viz_swap_buffers_task_ts, viz_swap_buffers_ts)
-      AS viz_swap_buffers_ts,
-    viz_swap_buffers_end_ts,
-    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    -- Timestamps
-    latch_timestamp,
-    presentation_timestamp
-  FROM _scroll_update_frame_timestamps_and_metadata
-)
+  processed_timestamps_and_metadata AS (
+    SELECT
+      id,
+      display_trace_id,
+      vsync_interval_ms,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      compositor_resample_slice_id,
+      -- Timestamps
+      coalesce(compositor_resample_task_ts, compositor_resample_ts) AS compositor_resample_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      compositor_receive_begin_frame_slice_id,
+      -- Timestamps
+      coalesce(compositor_receive_begin_frame_task_ts, compositor_receive_begin_frame_ts) AS compositor_receive_begin_frame_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      compositor_generate_compositor_frame_slice_id,
+      -- Timestamps
+      coalesce(
+        compositor_generate_compositor_frame_task_ts,
+        compositor_generate_compositor_frame_ts
+      ) AS compositor_generate_compositor_frame_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      compositor_submit_compositor_frame_slice_id,
+      -- Timestamps
+      compositor_submit_compositor_frame_ts,
+      compositor_submit_compositor_frame_end_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      viz_compositor_utid,
+      viz_receive_compositor_frame_slice_id,
+      -- Timestamps
+      coalesce(viz_receive_compositor_frame_task_ts, viz_receive_compositor_frame_ts) AS viz_receive_compositor_frame_ts,
+      viz_receive_compositor_frame_end_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      viz_draw_and_swap_slice_id,
+      -- Timestamps
+      coalesce(viz_draw_and_swap_task_ts, viz_draw_and_swap_ts) AS viz_draw_and_swap_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      viz_send_buffer_swap_slice_id,
+      -- Timestamps
+      viz_send_buffer_swap_end_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Ids
+      viz_gpu_thread_utid,
+      viz_swap_buffers_slice_id,
+      -- Timestamps
+      coalesce(viz_swap_buffers_task_ts, viz_swap_buffers_ts) AS viz_swap_buffers_ts,
+      viz_swap_buffers_end_ts,
+      -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+      -- Timestamps
+      latch_timestamp,
+      presentation_timestamp
+    FROM _scroll_update_frame_timestamps_and_metadata
+  )
 SELECT
   id,
   display_trace_id,
@@ -620,34 +530,28 @@ SELECT
   compositor_generate_compositor_frame_slice_id,
   -- TODO(b:380868337): This is sometimes unexpectedly null; check/fix this.
   compositor_generate_compositor_frame_ts,
-  compositor_submit_compositor_frame_ts
-    - compositor_generate_compositor_frame_ts
-    AS compositor_generate_frame_to_submit_frame_dur,
+  compositor_submit_compositor_frame_ts - compositor_generate_compositor_frame_ts AS compositor_generate_frame_to_submit_frame_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
   compositor_submit_compositor_frame_slice_id,
   compositor_submit_compositor_frame_ts,
-  compositor_submit_compositor_frame_end_ts
-    - compositor_submit_compositor_frame_ts AS compositor_submit_frame_dur,
+  compositor_submit_compositor_frame_end_ts - compositor_submit_compositor_frame_ts AS compositor_submit_frame_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
   compositor_submit_compositor_frame_end_ts,
   -- TODO(b:380868337): This is sometimes negative; check/fix this.
-  viz_receive_compositor_frame_ts - compositor_submit_compositor_frame_end_ts
-    AS compositor_to_viz_delay_dur,
+  viz_receive_compositor_frame_ts - compositor_submit_compositor_frame_end_ts AS compositor_to_viz_delay_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   viz_compositor_utid,
   viz_receive_compositor_frame_slice_id,
   viz_receive_compositor_frame_ts,
-  viz_receive_compositor_frame_end_ts - viz_receive_compositor_frame_ts
-    AS viz_receive_compositor_frame_dur,
+  viz_receive_compositor_frame_end_ts - viz_receive_compositor_frame_ts AS viz_receive_compositor_frame_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `viz_compositor_utid`.
   -- No applicable slice id (duration between two slices).
   viz_receive_compositor_frame_end_ts,
-  viz_draw_and_swap_ts - viz_receive_compositor_frame_end_ts
-    AS viz_wait_for_draw_dur,
+  viz_draw_and_swap_ts - viz_receive_compositor_frame_end_ts AS viz_wait_for_draw_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `viz_compositor_utid`.
   viz_draw_and_swap_slice_id,
@@ -683,7 +587,7 @@ FROM processed_timestamps_and_metadata;
 -- WebView instances. Currently gesture_scroll_id unique within an instance, but
 -- is not unique across multiple instances. Switching to an EventLatency based
 -- definition of scrolls should resolve this.
-CREATE PERFETTO TABLE chrome_scrolls(
+CREATE PERFETTO TABLE chrome_scrolls (
   -- The unique identifier of the scroll.
   id LONG,
   -- The start timestamp of the scroll.
@@ -700,13 +604,14 @@ CREATE PERFETTO TABLE chrome_scrolls(
 ) AS
 SELECT
   scroll_id AS id,
-  MIN(ts) AS ts,
+  min(ts) AS ts,
   cast_int!(MAX(ts + dur) - MIN(ts)) AS dur,
   -- TODO(b:389055670): Remove this once the UI doesn't rely on it.
   NULL AS gesture_scroll_begin_ts,
   NULL AS gesture_scroll_end_ts
 FROM chrome_gesture_scroll_updates
-GROUP BY scroll_id;
+GROUP BY
+  scroll_id;
 
 -- Timestamps and durations for the critical path stages during scrolling.
 -- This table covers both the input-associated (before coalescing inputs into a
@@ -735,7 +640,7 @@ GROUP BY scroll_id;
 --                 +---------------------------+
 --                 | chrome_scroll_update_info |
 --                 +---------------------------+
-CREATE PERFETTO TABLE chrome_scroll_update_info(
+CREATE PERFETTO TABLE chrome_scroll_update_info (
   -- Id of the `LatencyInfo.Flow` slices corresponding to this scroll event.
   id LONG,
   -- Id (`LatencyInfo.ID`) of the previous input in this scroll.
@@ -875,13 +780,11 @@ CREATE PERFETTO TABLE chrome_scroll_update_info(
   -- step.
   viz_latch_to_presentation_dur DURATION,
   -- Presentation timestamp for the frame.
-  presentation_timestamp TIMESTAMP)
-AS
+  presentation_timestamp TIMESTAMP
+) AS
 SELECT
   input.id,
-  LAG(input.id) OVER (
-    PARTITION BY input.scroll_id ORDER BY input.generation_ts)
-    AS previous_input_id,
+  lag(input.id) OVER (PARTITION BY input.scroll_id ORDER BY input.generation_ts) AS previous_input_id,
   frame.display_trace_id AS frame_display_id,
   -- TODO(b:381062412): This is sometimes unexpectedly 0; check/fix this.
   frame.vsync_interval_ms,
@@ -890,15 +793,12 @@ SELECT
   input.is_inertial,
   input.is_first_scroll_update_in_scroll,
   input.is_first_scroll_update_in_frame,
-  generation_ts - browser_process.start_ts
-    AS browser_uptime_dur,
+  generation_ts - browser_process.start_ts AS browser_uptime_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- No applicable utid (duration between two threads).
   -- No applicable slice id (duration between two threads).
   input.generation_ts,
-  input.generation_ts - LAG(input.generation_ts) OVER (
-    PARTITION BY input.scroll_id ORDER BY input.generation_ts)
-    AS since_previous_generation_dur,
+  input.generation_ts - lag(input.generation_ts) OVER (PARTITION BY input.scroll_id ORDER BY input.generation_ts) AS since_previous_generation_dur,
   input.generation_to_browser_main_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   input.browser_utid,
@@ -928,30 +828,19 @@ SELECT
   -- TODO(b:380868337): This is sometimes negative; check/fix this.
   -- TODO(b:381273884): use frame.compositor_receive_begin_frame_ts instead of
   -- input.compositor_dispatch_end_ts.
-  COALESCE(
-    frame.compositor_resample_ts,
-    input.compositor_coalesced_input_handled_ts
-  ) - input.compositor_dispatch_end_ts
-    AS compositor_dispatch_to_on_begin_frame_delay_dur,
+  coalesce(frame.compositor_resample_ts, input.compositor_coalesced_input_handled_ts) - input.compositor_dispatch_end_ts AS compositor_dispatch_to_on_begin_frame_delay_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
   -- `compositor_on_begin_frame_dur` can depend on two slices.
   frame.compositor_resample_slice_id,
   input.compositor_coalesced_input_handled_slice_id,
-  COALESCE(
-    frame.compositor_resample_ts,
-    input.compositor_coalesced_input_handled_ts
-  ) AS compositor_on_begin_frame_ts,
-  input.compositor_coalesced_input_handled_end_ts - COALESCE(
-    frame.compositor_resample_ts,
-    input.compositor_coalesced_input_handled_ts
-  ) AS compositor_on_begin_frame_dur,
+  coalesce(frame.compositor_resample_ts, input.compositor_coalesced_input_handled_ts) AS compositor_on_begin_frame_ts,
+  input.compositor_coalesced_input_handled_end_ts - coalesce(frame.compositor_resample_ts, input.compositor_coalesced_input_handled_ts) AS compositor_on_begin_frame_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
   -- No applicable slice id (duration between two slices).
   input.compositor_coalesced_input_handled_end_ts AS compositor_on_begin_frame_end_ts,
-  frame.compositor_generate_compositor_frame_ts - input.compositor_coalesced_input_handled_end_ts
-    AS compositor_on_begin_frame_to_generation_delay_dur,
+  frame.compositor_generate_compositor_frame_ts - input.compositor_coalesced_input_handled_end_ts AS compositor_on_begin_frame_to_generation_delay_dur,
   -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
   -- On `compositor_utid`.
   frame.compositor_generate_compositor_frame_slice_id,
@@ -1004,24 +893,27 @@ SELECT
   frame.presentation_timestamp
 FROM chrome_scroll_update_input_pipeline AS input
 LEFT JOIN chrome_scroll_update_frame_pipeline AS frame
-ON input.presented_in_frame_id = frame.id
+  ON input.presented_in_frame_id = frame.id
 LEFT JOIN thread AS browser_main_thread
-ON browser_utid = browser_main_thread.utid
+  ON browser_utid = browser_main_thread.utid
 LEFT JOIN process AS browser_process
-ON browser_process.upid = browser_main_thread.upid;
+  ON browser_process.upid = browser_main_thread.upid;
 
 -- Helper macro to compute the stage delta.
 -- Should be used only as a part of `chrome_scroll_frame_info`.
-CREATE PERFETTO MACRO _chrome_scroll_frame_stage_delta(name ColumnName)
+CREATE PERFETTO MACRO _chrome_scroll_frame_stage_delta(
+    name ColumnName
+)
 RETURNS Expr AS
-IIF(info.is_first_scroll_update_in_scroll,
+iif(
+  info.is_first_scroll_update_in_scroll,
   NULL,
-  $name - LAG($name) OVER (ORDER BY generation_ts)
+  $name - lag($name) OVER (ORDER BY generation_ts)
 );
 
 -- A list of all presented Chrome frames which contain scroll updates and associated
 -- metadata.
-CREATE PERFETTO TABLE chrome_scroll_frame_info(
+CREATE PERFETTO TABLE chrome_scroll_frame_info (
   -- Id (frame's display_trace_id) for the given frame.
   id LONG,
   -- Id (LatencyInfo.ID) of the last input before this frame.
@@ -1158,82 +1050,68 @@ SELECT
   is_janky,
   is_inertial,
   (
-    SELECT SUM(delta_y)
+    SELECT
+      sum(delta_y)
     FROM chrome_scroll_input_offsets AS input
-    JOIN chrome_scroll_update_info AS update_info ON input.scroll_update_id = update_info.id
-    WHERE update_info.frame_display_id = info.frame_display_id
-  ) as total_input_delta_y,
-  delta.delta_y as presented_scrolled_delta_y,
+    JOIN chrome_scroll_update_info AS update_info
+      ON input.scroll_update_id = update_info.id
+    WHERE
+      update_info.frame_display_id = info.frame_display_id
+  ) AS total_input_delta_y,
+  delta.delta_y AS presented_scrolled_delta_y,
   browser_uptime_dur,
   info.generation_ts AS first_input_generation_ts,
   info.since_previous_generation_dur AS previous_last_input_to_first_input_generation_dur,
   info.browser_utid,
   info.generation_to_browser_main_dur AS first_input_generation_to_browser_main_dur,
   presentation_timestamp AS presentation_ts,
-  _chrome_scroll_frame_stage_delta!(generation_to_browser_main_dur)
-    AS first_input_generation_to_browser_main_delta_dur,
+  _chrome_scroll_frame_stage_delta!(generation_to_browser_main_dur) AS first_input_generation_to_browser_main_delta_dur,
   info.touch_move_processing_dur AS first_input_touch_move_processing_dur,
-  _chrome_scroll_frame_stage_delta!(touch_move_processing_dur)
-    AS first_input_touch_move_processing_delta_dur,
+  _chrome_scroll_frame_stage_delta!(touch_move_processing_dur) AS first_input_touch_move_processing_delta_dur,
   info.compositor_utid,
-  info.browser_to_compositor_delay_dur
-    AS first_input_browser_to_compositor_delay_dur,
-  _chrome_scroll_frame_stage_delta!(browser_to_compositor_delay_dur)
-    AS first_input_browser_to_compositor_delay_delta_dur,
+  info.browser_to_compositor_delay_dur AS first_input_browser_to_compositor_delay_dur,
+  _chrome_scroll_frame_stage_delta!(browser_to_compositor_delay_dur) AS first_input_browser_to_compositor_delay_delta_dur,
   info.compositor_dispatch_dur AS first_input_compositor_dispatch_dur,
-  _chrome_scroll_frame_stage_delta!(compositor_dispatch_dur)
-    AS first_input_compositor_dispatch_delta_dur,
-  info.compositor_dispatch_to_on_begin_frame_delay_dur
-    AS first_input_compositor_dispatch_to_on_begin_frame_delay_dur,
-  _chrome_scroll_frame_stage_delta!(compositor_dispatch_to_on_begin_frame_delay_dur)
-    AS first_input_compositor_dispatch_to_on_begin_frame_delay_delta_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_dispatch_dur) AS first_input_compositor_dispatch_delta_dur,
+  info.compositor_dispatch_to_on_begin_frame_delay_dur AS first_input_compositor_dispatch_to_on_begin_frame_delay_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_dispatch_to_on_begin_frame_delay_dur) AS first_input_compositor_dispatch_to_on_begin_frame_delay_delta_dur,
   info.compositor_on_begin_frame_dur,
-  _chrome_scroll_frame_stage_delta!(compositor_on_begin_frame_dur)
-    AS compositor_on_begin_frame_delta_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_on_begin_frame_dur) AS compositor_on_begin_frame_delta_dur,
   info.compositor_on_begin_frame_to_generation_delay_dur,
-  _chrome_scroll_frame_stage_delta!(compositor_on_begin_frame_to_generation_delay_dur)
-    AS compositor_on_begin_frame_to_generation_delay_delta_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_on_begin_frame_to_generation_delay_dur) AS compositor_on_begin_frame_to_generation_delay_delta_dur,
   info.compositor_generate_frame_to_submit_frame_dur,
-  _chrome_scroll_frame_stage_delta!(compositor_generate_frame_to_submit_frame_dur)
-    AS compositor_generate_frame_to_submit_frame_delta_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_generate_frame_to_submit_frame_dur) AS compositor_generate_frame_to_submit_frame_delta_dur,
   info.compositor_submit_frame_dur,
-  _chrome_scroll_frame_stage_delta!(compositor_submit_frame_dur)
-    AS compositor_submit_frame_delta_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_submit_frame_dur) AS compositor_submit_frame_delta_dur,
   viz_compositor_utid,
   info.compositor_to_viz_delay_dur,
-  _chrome_scroll_frame_stage_delta!(compositor_to_viz_delay_dur)
-    AS compositor_to_viz_delay_delta_dur,
+  _chrome_scroll_frame_stage_delta!(compositor_to_viz_delay_dur) AS compositor_to_viz_delay_delta_dur,
   info.viz_receive_compositor_frame_dur,
-  _chrome_scroll_frame_stage_delta!(viz_receive_compositor_frame_dur)
-    AS viz_receive_compositor_frame_delta_dur,
+  _chrome_scroll_frame_stage_delta!(viz_receive_compositor_frame_dur) AS viz_receive_compositor_frame_delta_dur,
   info.viz_wait_for_draw_dur,
-  _chrome_scroll_frame_stage_delta!(viz_wait_for_draw_dur)
-    AS viz_wait_for_draw_delta_dur,
+  _chrome_scroll_frame_stage_delta!(viz_wait_for_draw_dur) AS viz_wait_for_draw_delta_dur,
   info.viz_draw_and_swap_dur,
-  _chrome_scroll_frame_stage_delta!(viz_draw_and_swap_dur)
-    AS viz_draw_and_swap_delta_dur,
+  _chrome_scroll_frame_stage_delta!(viz_draw_and_swap_dur) AS viz_draw_and_swap_delta_dur,
   viz_gpu_thread_utid,
   info.viz_to_gpu_delay_dur,
-  _chrome_scroll_frame_stage_delta!(viz_to_gpu_delay_dur)
-    AS viz_to_gpu_delay_delta_dur,
+  _chrome_scroll_frame_stage_delta!(viz_to_gpu_delay_dur) AS viz_to_gpu_delay_delta_dur,
   info.viz_swap_buffers_dur,
-  _chrome_scroll_frame_stage_delta!(viz_swap_buffers_dur)
-    AS viz_swap_buffers_delta_dur,
+  _chrome_scroll_frame_stage_delta!(viz_swap_buffers_dur) AS viz_swap_buffers_delta_dur,
   info.viz_swap_buffers_to_latch_dur,
-  _chrome_scroll_frame_stage_delta!(viz_swap_buffers_to_latch_dur)
-    AS viz_swap_buffers_to_latch_delta_dur,
+  _chrome_scroll_frame_stage_delta!(viz_swap_buffers_to_latch_dur) AS viz_swap_buffers_to_latch_delta_dur,
   info.viz_latch_to_presentation_dur,
-  _chrome_scroll_frame_stage_delta!(viz_latch_to_presentation_dur)
-    AS viz_latch_to_presentation_delta_dur
-FROM chrome_scroll_update_info info
-LEFT JOIN chrome_presented_scroll_offsets delta ON info.id = delta.scroll_update_id
-WHERE is_first_scroll_update_in_frame
--- TODO(b:380286381, b:393051057): remove this when dropped frames are handled.
-AND info.frame_display_id IS NOT NULL;
+  _chrome_scroll_frame_stage_delta!(viz_latch_to_presentation_dur) AS viz_latch_to_presentation_delta_dur
+FROM chrome_scroll_update_info AS info
+LEFT JOIN chrome_presented_scroll_offsets AS delta
+  ON info.id = delta.scroll_update_id
+WHERE
+  is_first_scroll_update_in_frame
+  -- TODO(b:380286381, b:393051057): remove this when dropped frames are handled.
+  AND info.frame_display_id IS NOT NULL;
 
 -- Source of truth for the definition of the stages of a scroll. Mainly intended
 -- for visualization purposes (e.g. in Chrome Scroll Jank plugin).
-CREATE PERFETTO TABLE chrome_scroll_update_info_step_templates(
+CREATE PERFETTO TABLE chrome_scroll_update_info_step_templates (
   -- The name of a stage of a scroll.
   step_name STRING,
   -- The name of the column in `chrome_scroll_update_info` which contains the
@@ -1243,104 +1121,81 @@ CREATE PERFETTO TABLE chrome_scroll_update_info_step_templates(
   -- duration of the stage. NULL if the stage doesn't have a duration.
   dur_column_name STRING
 ) AS
-WITH steps(step_name, ts_column_name, dur_column_name)
-AS (
-  VALUES
-  (
-    'GenerationToBrowserMain',
-    'generation_ts',
-    'generation_to_browser_main_dur'
-  ),
-  (
-    'TouchMoveProcessing',
-    'touch_move_received_ts',
-    'touch_move_processing_dur'
-  ),
-  (
-    'ScrollUpdateProcessing',
-    'scroll_update_created_ts',
-    'scroll_update_processing_dur'
-  ),
-  (
-    'BrowserMainToRendererCompositor',
-    'scroll_update_created_end_ts',
-    'browser_to_compositor_delay_dur'
-  ),
-  (
-    'RendererCompositorDispatch',
-    'compositor_dispatch_ts',
-    'compositor_dispatch_dur'
-  ),
-  (
-    'RendererCompositorDispatchToOnBeginFrame',
-    'compositor_dispatch_end_ts',
-    'compositor_dispatch_to_on_begin_frame_delay_dur'
-  ),
-  (
-    'RendererCompositorBeginFrame',
-    'compositor_on_begin_frame_ts',
-    'compositor_on_begin_frame_dur'
-  ),
-  (
-    'RendererCompositorBeginToGenerateFrame',
-    'compositor_on_begin_frame_end_ts',
-    'compositor_on_begin_frame_to_generation_delay_dur'
-  ),
-  (
-    'RendererCompositorGenerateToSubmitFrame',
-    'compositor_generate_compositor_frame_ts',
-    'compositor_generate_frame_to_submit_frame_dur'
-  ),
-  (
-    'RendererCompositorSubmitFrame',
-    'compositor_submit_compositor_frame_ts',
-    'compositor_submit_frame_dur'
-  ),
-  (
-    'RendererCompositorToViz',
-    'compositor_submit_compositor_frame_end_ts',
-    'compositor_to_viz_delay_dur'
-  ),
-  (
-    'VizReceiveFrame',
-    'viz_receive_compositor_frame_ts',
-    'viz_receive_compositor_frame_dur'
-  ),
-  (
-    'VizReceiveToDrawFrame',
-    'viz_receive_compositor_frame_end_ts',
-    'viz_wait_for_draw_dur'
-  ),
-  (
-    'VizDrawToSwapFrame',
-    'viz_draw_and_swap_ts',
-    'viz_draw_and_swap_dur'
-  ),
-  (
-    'VizToGpu',
-    'viz_send_buffer_swap_end_ts',
-    'viz_to_gpu_delay_dur'
-  ),
-  (
-    'VizSwapBuffers',
-    'viz_swap_buffers_ts',
-    'viz_swap_buffers_dur'
-  ),
-  (
-    'VizSwapBuffersToLatch',
-    'viz_swap_buffers_end_ts',
-    'viz_swap_buffers_to_latch_dur'
-  ),
-  (
-    'VizLatchToPresentation',
-    'latch_timestamp',
-    'viz_latch_to_presentation_dur'
-  ),
-  (
-    'Presentation',
-    'presentation_timestamp',
-    NULL
+WITH
+  steps(step_name, ts_column_name, dur_column_name) AS (
+    SELECT
+      *
+    FROM (VALUES
+      ('GenerationToBrowserMain', 'generation_ts', 'generation_to_browser_main_dur'),
+      ('TouchMoveProcessing', 'touch_move_received_ts', 'touch_move_processing_dur'),
+      (
+        'ScrollUpdateProcessing',
+        'scroll_update_created_ts',
+        'scroll_update_processing_dur'
+      ),
+      (
+        'BrowserMainToRendererCompositor',
+        'scroll_update_created_end_ts',
+        'browser_to_compositor_delay_dur'
+      ),
+      (
+        'RendererCompositorDispatch',
+        'compositor_dispatch_ts',
+        'compositor_dispatch_dur'
+      ),
+      (
+        'RendererCompositorDispatchToOnBeginFrame',
+        'compositor_dispatch_end_ts',
+        'compositor_dispatch_to_on_begin_frame_delay_dur'
+      ),
+      (
+        'RendererCompositorBeginFrame',
+        'compositor_on_begin_frame_ts',
+        'compositor_on_begin_frame_dur'
+      ),
+      (
+        'RendererCompositorBeginToGenerateFrame',
+        'compositor_on_begin_frame_end_ts',
+        'compositor_on_begin_frame_to_generation_delay_dur'
+      ),
+      (
+        'RendererCompositorGenerateToSubmitFrame',
+        'compositor_generate_compositor_frame_ts',
+        'compositor_generate_frame_to_submit_frame_dur'
+      ),
+      (
+        'RendererCompositorSubmitFrame',
+        'compositor_submit_compositor_frame_ts',
+        'compositor_submit_frame_dur'
+      ),
+      (
+        'RendererCompositorToViz',
+        'compositor_submit_compositor_frame_end_ts',
+        'compositor_to_viz_delay_dur'
+      ),
+      (
+        'VizReceiveFrame',
+        'viz_receive_compositor_frame_ts',
+        'viz_receive_compositor_frame_dur'
+      ),
+      (
+        'VizReceiveToDrawFrame',
+        'viz_receive_compositor_frame_end_ts',
+        'viz_wait_for_draw_dur'
+      ),
+      ('VizDrawToSwapFrame', 'viz_draw_and_swap_ts', 'viz_draw_and_swap_dur'),
+      ('VizToGpu', 'viz_send_buffer_swap_end_ts', 'viz_to_gpu_delay_dur'),
+      ('VizSwapBuffers', 'viz_swap_buffers_ts', 'viz_swap_buffers_dur'),
+      (
+        'VizSwapBuffersToLatch',
+        'viz_swap_buffers_end_ts',
+        'viz_swap_buffers_to_latch_dur'
+      ),
+      ('VizLatchToPresentation', 'latch_timestamp', 'viz_latch_to_presentation_dur'),
+      ('Presentation', 'presentation_timestamp', NULL)) AS _values
   )
-)
-SELECT step_name, ts_column_name, dur_column_name
+SELECT
+  step_name,
+  ts_column_name,
+  dur_column_name
 FROM steps;

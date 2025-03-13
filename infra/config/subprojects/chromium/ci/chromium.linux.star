@@ -423,6 +423,7 @@ ci.builder(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "checkout_mutter",
                 "use_clang_coverage",
             ],
         ),

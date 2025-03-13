@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Adgangsnøgle</translation>
 <translation id="1030376737535466765">Åbn Adgangskodeadministrator</translation>
 <translation id="1035980983510608210">Hvis du lukker alle faner, lukkes de fastgjorte faner også.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1041322626941363065">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies, websitedata</translation>
 <translation id="1312721752506309252">Forbedret beskyttelse er aktiveret</translation>
 <translation id="1317821187353201763">Luk fane</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Spor denne pakke}one{Spor denne pakke}other{Spor alle pakker}}</translation>
 <translation id="1321993286294231467">Billedet kunne ikke gemmes.</translation>
 <translation id="1322735045095424339">Din organisation kræver inkognitotilstand</translation>
 <translation id="1323735185997015385">Slet</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valgt</translation>
 <translation id="1709916727352927457">Slet adgangsnøgle</translation>
 <translation id="1712341189152602203">Eksisterende browserdata knyttes til <ph name="USER_EMAIL" />. Disse data kan muligvis ses af din organisation.</translation>
-<translation id="1713777106376424209">Leveret af</translation>
 <translation id="1715515772563243997">Hvis du har tillid til <ph name="SITE" />, kan du bruge en gemt adgangskode til at logge ind.</translation>
 <translation id="1718835860248848330">Den seneste time</translation>
 <translation id="1728549374069268714">Indsæt og fortsæt</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Prissporing og -info</translation>
 <translation id="1820195936249950412">Log ind med en gyldig konto</translation>
 <translation id="1820259098641718022">Føjet til læseliste</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Underretninger, når du modtager faner fra dine andre enheder.</translation>
 <translation id="1827529786398596735">Hold fingeren på startskærmen</translation>
 <translation id="1832848789136765277">Verificer din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Enhedsvælger</translation>
 <translation id="2330607597130465898">Ingen beskyttelse</translation>
 <translation id="233375395665273385">Slet, og log ud</translation>
-<translation id="2348630484974447747">Pakke</translation>
 <translation id="2351097562818989364">Dine oversættelsesindstillinger er nulstillet.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Du kan gemme din adgangskode til {DOMAIN_ONE} på din Google-konto, {EMAIL}.}=2{Du kan gemme dine adgangskoder til {DOMAIN_ONE} og {DOMAIN_TWO} på din Google-konto, {EMAIL}.}=3{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}one{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} anden på din Google-konto, {EMAIL}.}other{Du kan gemme dine adgangskoder til {DOMAIN_ONE}, {DOMAIN_TWO} og {OTHER_DOMAINS_COUNT} andre på din Google-konto, {EMAIL}}}</translation>
 <translation id="2353953000228441783">Websitets standardvisning</translation>
@@ -797,7 +792,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4460014764210899310">Ophæv gruppering</translation>
 <translation id="446314443268698477">Køb, oversæt og identificer det, du ser, ved hjælp af dit kamera eller dine billeder.</translation>
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
-<translation id="4469834037720363704">Pakkenummer</translation>
 <translation id="4471472356135655769">Der kan ikke eksporteres adgangskoder</translation>
 <translation id="4473608001744970767">Skjul Overvåg pris</translation>
 <translation id="4474142134969976028">Der er ingen matchende resultater</translation>
@@ -1289,7 +1283,6 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="647867789226964031">Skift dine adgangskoder</translation>
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6495521251906266731">Vælg, hvad der skal ske med de eksisterende browserdata på denne enhed, f.eks. adgangskoder, historik m.m.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Fjern sporing af denne pakke}one{Fjern sporing af denne pakke}other{Fjern sporing af alle pakker}}</translation>
 <translation id="6503077044568424649">Mest besøgte</translation>
 <translation id="6503763061813913607">Notifikationer om Sikkerhedstjek</translation>
 <translation id="6505334220040167806">Skjul fanegruppe.</translation>
@@ -1761,7 +1754,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8481184073299279701">Tryk på knappen "Start logføring" for at indsamle fremtidige JavaScript-konsollogs og -fejl fra alle faner. Logs indsamles (og gemmes kun i hukommelsen), indtil denne side lukkes, eller der trykkes på "Stop logføring".</translation>
 <translation id="8487667956631253959">Til</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Der kunne ikke oprettes et link</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8505361906966222822">Gem i…</translation>

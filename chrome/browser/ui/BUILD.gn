@@ -1352,6 +1352,8 @@ static_library("ui") {
       "user_education/show_promo_in_page.h",
       "user_education/start_tutorial_in_page.cc",
       "user_education/start_tutorial_in_page.h",
+      "user_education/user_education_types.cc",
+      "user_education/user_education_types.h",
       "views/eye_dropper/eye_dropper.cc",
       "views/eye_dropper/eye_dropper.h",
       "views/file_system_access/file_system_access_scroll_panel.cc",
@@ -1864,6 +1866,7 @@ static_library("ui") {
       "//ui/color/dynamic_color",
       "//ui/events",
       "//ui/web_dialogs",
+      "//ui/webui:buildflags",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
       "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
       "//ui/webui/resources/cr_components/history:mojo_bindings",
@@ -5696,6 +5699,13 @@ static_library("ui") {
 
   if (enable_reporting) {
     deps += [ "//components/tpcd/enterprise_reporting" ]
+  }
+
+  if (enable_webui_generate_code_cache) {
+    deps += [
+      "//ui/webui:buildflags",
+      "//ui/webui/resources:code_cache_resources",
+    ]
   }
 }
 

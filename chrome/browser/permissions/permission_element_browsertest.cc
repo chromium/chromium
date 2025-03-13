@@ -69,6 +69,7 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
   }
 
   void WaitForResolveEvent(const std::string& id) {
+    ExpectConsoleMessage(id + "-promptaction");
     ExpectConsoleMessage(id + "-resolve");
   }
 
@@ -77,6 +78,7 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
   }
 
   void WaitForDismissEvent(const std::string& id) {
+    ExpectConsoleMessage(id + "-promptdismiss");
     ExpectConsoleMessage(id + "-dismiss");
   }
 
@@ -647,11 +649,20 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
 
     // The event is reported by the parent element, then the grandparent
     // element.
-    WaitForDismissEvent(base::StrCat({"parent-", id}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-promptdismiss"}));
     ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
     ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
 
-    WaitForDismissEvent(base::StrCat({"grandparent-", id}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-promptdismiss"}));
+    ExpectConsoleMessage(
+        base::StrCat({"grandparent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
+
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-dismiss"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
+
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-dismiss"}));
     ExpectConsoleMessage(
         base::StrCat({"grandparent-", id, "-cancelable-true"}));
     ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
@@ -667,11 +678,20 @@ IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
 
     // The event is reported by the parent element, then the grandparent
     // element.
-    WaitForResolveEvent(base::StrCat({"parent-", id}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-promptaction"}));
     ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
     ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
 
-    WaitForResolveEvent(base::StrCat({"grandparent-", id}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-promptaction"}));
+    ExpectConsoleMessage(
+        base::StrCat({"grandparent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
+
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-resolve"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
+
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-resolve"}));
     ExpectConsoleMessage(
         base::StrCat({"grandparent-", id, "-cancelable-true"}));
     ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));

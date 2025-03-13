@@ -58,10 +58,10 @@ public class DisplayAndroidTest {
         // Put DisplayAndroid in a known initial state.
         mDisplay.addObserver(mObserver);
         List<Display.Mode> defaultDisplayModes = Lists.newArrayList(mMode);
-        updateDisplayWithSupportedModes(defaultDisplayModes);
+        updateDisplayWithSupportedModes(defaultDisplayModes, /* arrInfo= */ null);
         reset(mObserver);
 
-        updateDisplayWithSupportedModes(null);
+        updateDisplayWithSupportedModes(null, /* arrInfo= */ null);
 
         verifyNoInteractions(mObserver);
     }
@@ -71,11 +71,11 @@ public class DisplayAndroidTest {
         // Put DisplayAndroid in a known initial state.
         mDisplay.addObserver(mObserver);
         List<Display.Mode> defaultDisplayModes = Lists.newArrayList(mMode);
-        updateDisplayWithSupportedModes(defaultDisplayModes);
+        updateDisplayWithSupportedModes(defaultDisplayModes, /* arrInfo= */ null);
         reset(mObserver);
 
         List<Display.Mode> equalDisplayModes = Lists.newArrayList(mMode);
-        updateDisplayWithSupportedModes(equalDisplayModes);
+        updateDisplayWithSupportedModes(equalDisplayModes, /* arrInfo= */ null);
 
         verifyNoInteractions(mObserver);
     }
@@ -85,17 +85,32 @@ public class DisplayAndroidTest {
         // Put DisplayAndroid in a known initial state.
         mDisplay.addObserver(mObserver);
         List<Display.Mode> defaultDisplayModes = Lists.newArrayList(mMode);
-        updateDisplayWithSupportedModes(defaultDisplayModes);
+        updateDisplayWithSupportedModes(defaultDisplayModes, /* arrInfo= */ null);
         reset(mObserver);
 
         List<Display.Mode> differentDisplayModes = Lists.newArrayList(mMode, mMode);
-        updateDisplayWithSupportedModes(differentDisplayModes);
+        updateDisplayWithSupportedModes(differentDisplayModes, /* arrInfo= */ null);
 
         verify(mObserver).onDisplayModesChanged(differentDisplayModes);
         verifyNoMoreInteractions(mObserver);
     }
 
-    private void updateDisplayWithSupportedModes(@Nullable List<Display.Mode> supportedModes) {
+    @Test
+    public void testUpdate_arrInfo() {
+        // Put DisplayAndroid in a known initial state.
+        mDisplay.addObserver(mObserver);
+        DisplayAndroid.AdaptiveRefreshRateInfo arrInfo =
+                new DisplayAndroid.AdaptiveRefreshRateInfo(
+                        true, 60.0f, 120.0f, new float[] {60.0f, 120.0f});
+        updateDisplayWithSupportedModes(null, arrInfo);
+
+        verify(mObserver).onAdaptiveRefreshRateInfoChanged(arrInfo);
+        verifyNoMoreInteractions(mObserver);
+    }
+
+    private void updateDisplayWithSupportedModes(
+            @Nullable List<Display.Mode> supportedModes,
+            @Nullable DisplayAndroid.AdaptiveRefreshRateInfo arrInfo) {
         mDisplay.update(
                 /* name= */ null,
                 /* bounds= */ null,
@@ -113,6 +128,7 @@ public class DisplayAndroidTest {
                 supportedModes,
                 /* isHdr= */ null,
                 /* hdrMaxLuminanceRatio= */ null,
-                /* isInternal= */ null);
+                /* isInternal= */ null,
+                arrInfo);
     }
 }

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,10 +23,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
@@ -137,8 +134,12 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // Returns the instance for the given |browser_context|.
   static ExtensionRegistrar* Get(content::BrowserContext* browser_context);
 
-  // The provided Delegate should outlive this object.
-  void SetDelegate(Delegate* delegate);
+  // The provided `delegate` should outlive this object. May be called multiple
+  // times, for example to reset the delegate in tests.
+  void Init(Delegate* delegate,
+            bool extensions_enabled,
+            const base::FilePath& install_directory,
+            const base::FilePath& unpacked_install_directory);
 
   // Returns a weak pointer to `this`.
   base::WeakPtr<ExtensionRegistrar> GetWeakPtr();
@@ -313,6 +314,13 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // extension.
   void GrantPermissionsAndEnableExtension(const Extension& extension);
 
+  // Simple accessors.
+  bool extensions_enabled() const { return extensions_enabled_; }
+  const base::FilePath& install_directory() const { return install_directory_; }
+  const base::FilePath& unpacked_install_directory() const {
+    return unpacked_install_directory_;
+  }
+
  private:
   // Adds the extension to the appropriate registry set, based on ExtensionPrefs
   // and our |delegate_|. Activates the extension if it's added to the enabled
@@ -350,6 +358,16 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
 
   // Delegate provided by SetDelegate. Should outlive this object.
   raw_ptr<Delegate> delegate_;
+
+  // Whether or not extensions are enabled.
+  bool extensions_enabled_ = true;
+
+  // The full path to the directory where extensions are installed.
+  base::FilePath install_directory_;
+
+  // The full path to the directory where unpacked (e.g. from .zip files)
+  // extensions are installed.
+  base::FilePath unpacked_install_directory_;
 
   // Keyed services we depend on. Cached here for repeated access.
   // TODO(crbug.com/398014892): Figure out a way to break the dependency

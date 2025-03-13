@@ -60,18 +60,18 @@ void ResourcePool::Backing::CreateSharedImage(
     gpu::SharedImageInterface* sii,
     const gpu::SharedImageUsageSet& usage,
     std::string_view debug_label) {
-  set_shared_image(sii->CreateSharedImage(
+  shared_image_ = sii->CreateSharedImage(
       {format(), size(), color_space(), usage, debug_label},
-      gpu::kNullSurfaceHandle));
+      gpu::kNullSurfaceHandle);
   CHECK(shared_image());
 }
 
 void ResourcePool::Backing::CreateSharedImageForSoftwareCompositor(
     gpu::SharedImageInterface* sii,
     std::string_view debug_label) {
-  set_shared_image(sii->CreateSharedImageForSoftwareCompositor(
+  shared_image_ = sii->CreateSharedImageForSoftwareCompositor(
       {format(), size(), color_space(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-       debug_label}));
+       debug_label});
   CHECK(shared_image());
 }
 
@@ -80,9 +80,9 @@ bool ResourcePool::Backing::CreateSharedImage(
     const gpu::SharedImageUsageSet& usage,
     std::string_view debug_label,
     gfx::BufferUsage buffer_usage) {
-  set_shared_image(sii->CreateSharedImage(
+  shared_image_ = sii->CreateSharedImage(
       {format(), size(), color_space(), usage, debug_label},
-      gpu::kNullSurfaceHandle, buffer_usage));
+      gpu::kNullSurfaceHandle, buffer_usage);
   return !!shared_image();
 }
 

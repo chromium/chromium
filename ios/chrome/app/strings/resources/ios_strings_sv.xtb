@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Nyckel</translation>
 <translation id="1030376737535466765">Öppna Lösenordshantering</translation>
 <translation id="1035980983510608210">Om du stänger alla flikar stängs även fästa flikar.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
 <translation id="1041322626941363065">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>
 <translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies, webbplatsdata</translation>
 <translation id="1312721752506309252">Förbättrat skydd är aktiverat</translation>
 <translation id="1317821187353201763">Stäng flik</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Spåra den här försändelsen}other{Spåra alla försändelser}}</translation>
 <translation id="1321993286294231467">Ett fel uppstod när bilden skulle sparas.</translation>
 <translation id="1322735045095424339">Organisationen kräver att du använder inkognitoläge</translation>
 <translation id="1323735185997015385">Radera</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valda</translation>
 <translation id="1709916727352927457">Radera nyckel</translation>
 <translation id="1712341189152602203">Befintlig webbinformation kopplas till <ph name="USER_EMAIL" />. Denna data kan vara synlig för organisationen.</translation>
-<translation id="1713777106376424209">Levereras av</translation>
 <translation id="1715515772563243997">Om du litar på <ph name="SITE" /> kan du använda ett sparat lösenord när du loggar in.</translation>
 <translation id="1718835860248848330">Senaste timmen</translation>
 <translation id="1728549374069268714">Klistra in och öppna</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Prisbevakning och insikter</translation>
 <translation id="1820195936249950412">Logga in med ett giltigt konto</translation>
 <translation id="1820259098641718022">Har lagts till i läslistan</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Aviseringar när du tar emot flikar från dina andra enheter.</translation>
 <translation id="1827529786398596735">Tryck länge på startskärmen</translation>
 <translation id="1832848789136765277">Verifiera din identitet så att du alltid får åtkomst till din synkroniserade data</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Enhetsväljare</translation>
 <translation id="2330607597130465898">Inget skydd</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
-<translation id="2348630484974447747">Försändelse</translation>
 <translation id="2351097562818989364">Översättningsinställningarna har återställts.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Du kan spara lösenordet för {DOMAIN_ONE} i Google-kontot {EMAIL}.}=2{Du kan spara lösenorden för {DOMAIN_ONE} och {DOMAIN_TWO} i Google-kontot {EMAIL}.}=3{Du kan spara lösenorden för {DOMAIN_ONE}, {DOMAIN_TWO} och {OTHER_DOMAINS_COUNT} till i Google-kontot {EMAIL}.}other{Du kan spara lösenorden för {DOMAIN_ONE}, {DOMAIN_TWO} och {OTHER_DOMAINS_COUNT} till i Google-kontot {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Standardvy för webbplats</translation>
@@ -797,7 +792,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="4460014764210899310">Ta bort gruppering</translation>
 <translation id="446314443268698477">Köp, översätt och identifiera det du ser med kameran eller foton.</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
-<translation id="4469834037720363704">Paketnummer</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
 <translation id="4473608001744970767">Dölj Bevaka pris</translation>
 <translation id="4474142134969976028">Det finns inga matchande resultat</translation>
@@ -1289,7 +1283,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="647867789226964031">Ändra dina lösenord</translation>
 <translation id="6494931198667773526">Slutar</translation>
 <translation id="6495521251906266731">Välj vad du vill göra med befintlig webbinformation på den här enheten, till exempel lösenord, historik med mera.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Sluta spåra den här försändelsen}other{Sluta spåra alla försändelser}}</translation>
 <translation id="6503077044568424649">Mest besökta</translation>
 <translation id="6503763061813913607">Aviseringar från säkerhetskontroll</translation>
 <translation id="6505334220040167806">Komprimera flikgruppen.</translation>
@@ -1761,7 +1754,6 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8481184073299279701">Tryck på Starta loggning för att registrera loggar och fel från JavaScript-konsoler från alla flikar. Loggar registreras (och sparas bara i minnet) tills den här sidan stängs eller du trycker på Avbryt loggning.</translation>
 <translation id="8487667956631253959">På</translation>
 <translation id="8487700953926739672">Tillgänglig offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Det gick inte att skapa länken</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8505361906966222822">Spara i …</translation>

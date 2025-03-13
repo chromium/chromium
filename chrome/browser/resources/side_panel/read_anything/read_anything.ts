@@ -17,7 +17,7 @@ export {getNewIndex, isArrow, isForwardArrow, isHorizontalArrow} from './keyboar
 export type {LanguageMenuElement} from './language_menu.js';
 export type {LanguageToastElement} from './language_toast.js';
 export type {ColorMenuElement} from './menus/color_menu.js';
-export type {HighlightMenu} from './menus/highlight_menu.js';
+export type {HighlightMenuElement} from './menus/highlight_menu.js';
 export type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 export type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
 export {MenuStateItem} from './menus/menu_util.js';
@@ -26,6 +26,7 @@ export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, R
 export {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
 export type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 export {IMAGES_DISABLED_ICON, IMAGES_ENABLED_ICON, IMAGES_TOGGLE_BUTTON_ID, LINK_TOGGLE_BUTTON_ID, LINKS_DISABLED_ICON, LINKS_ENABLED_ICON, moreOptionsClass} from './read_anything_toolbar.js';
+export {SpeechBrowserProxy, SpeechBrowserProxyImpl} from './speech_browser_proxy.js';
 export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getFilteredVoiceList, getNotification, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
 export {VoiceNotificationListener, VoiceNotificationManager} from './voice_notification_manager.js';
 export type {VoiceSelectionMenuElement} from './voice_selection_menu.js';

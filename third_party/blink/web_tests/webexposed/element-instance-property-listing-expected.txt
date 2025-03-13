@@ -965,6 +965,8 @@ html element permission
     property invalidReason
     property isValid
     property ondismiss
+    property onpromptaction
+    property onpromptdismiss
     property onresolve
     property onvalidationstatuschange
     property permissionStatus

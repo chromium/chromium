@@ -22,8 +22,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.isNotNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -40,6 +42,7 @@ import android.view.ViewGroup;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
@@ -70,6 +73,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -101,6 +105,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -119,6 +124,7 @@ import java.util.Map;
 /** End-to-end test for the selectable TabListEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
 @Batch(Batch.PER_CLASS)
 public class SelectableTabListEditorTest {
     private static final String PAGE_WITH_HTTPS_CANONICAL_URL =
@@ -149,6 +155,8 @@ public class SelectableTabListEditorTest {
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private TabGroupCreationDialogManager mCreationDialogManager;
 
     private TabListEditorTestingRobot mRobot = new TabListEditorTestingRobot();
 
@@ -160,7 +168,6 @@ public class SelectableTabListEditorTest {
     private ViewGroup mParentView;
     private SnackbarManager mSnackbarManager;
     private BookmarkModel mBookmarkModel;
-    private TabGroupCreationDialogManager mCreationDialogManager;
     private AppHeaderCoordinator mAppHeaderStateProvider;
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
@@ -183,11 +190,6 @@ public class SelectableTabListEditorTest {
         mParentView = cta.findViewById(R.id.coordinator);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCreationDialogManager =
-                            new TabGroupCreationDialogManager(
-                                    cta,
-                                    cta.getModalDialogManager(),
-                                    /* onTabGroupCreation= */ null);
                     ViewGroup compositorViewHolder = cta.getCompositorViewHolderForTesting();
                     ViewGroup rootView =
                             DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta)
@@ -1812,6 +1814,75 @@ public class SelectableTabListEditorTest {
                 .verifyAdapterHasItemCount(1)
                 .verifyItemSelectedAtAdapterPosition(0)
                 .verifyToolbarSelectionText("1 tab");
+    }
+
+    @Test
+    @MediumTest
+    public void testAddToGroupAction_noExistingGroups() {
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        prepareBlankTab(4, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<TabListEditorAction> actions = new ArrayList<>();
+                    actions.add(
+                            TabListEditorAddToGroupAction.createAction(
+                                    cta,
+                                    mCreationDialogManager,
+                                    ShowMode.IF_ROOM,
+                                    ButtonType.TEXT,
+                                    IconPosition.START));
+
+                    showSelectionEditor(tabs, actions);
+                });
+
+        final int actionId = R.id.tab_list_editor_add_tab_to_group_menu_item;
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyToolbarActionViewDisabled(actionId);
+
+        mRobot.actionRobot
+                .clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickToolbarMenuItem("Add tabs to new group");
+
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertEquals(3, getTabsInCurrentTabGroupModelFilter().size());
+    }
+
+    @Test
+    @MediumTest
+    public void testAddToGroupAction_existingGroups() {
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
+        prepareBlankTab(4, false);
+        prepareBlankTabGroup(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<TabListEditorAction> actions = new ArrayList<>();
+                    actions.add(
+                            new TabListEditorAddToGroupAction(
+                                    cta,
+                                    mock(),
+                                    ShowMode.IF_ROOM,
+                                    ButtonType.TEXT,
+                                    IconPosition.START,
+                                    AppCompatResources.getDrawable(cta, R.drawable.ic_widgets),
+                                    (a, b, c, d, ignored, f) ->
+                                            new TabGroupListBottomSheetCoordinator(
+                                                    a, b, c, d, mBottomSheetController, f)));
+                    showSelectionEditor(tabs, actions);
+                });
+
+        final int actionId = R.id.tab_list_editor_add_tab_to_group_menu_item;
+        mRobot.resultRobot.verifyTabListEditorIsVisible().verifyToolbarActionViewDisabled(actionId);
+
+        mRobot.actionRobot
+                .clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickToolbarMenuItem("Add tabs to group");
+
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
     }
 
     private Map<View, Integer> getParentViewAccessibilityImportanceMap() {

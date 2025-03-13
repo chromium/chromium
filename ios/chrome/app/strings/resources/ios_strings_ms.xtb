@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Kunci laluan</translation>
 <translation id="1030376737535466765">Buka Password Manager</translation>
 <translation id="1035980983510608210">Penutupan semua tab akan menutup tab tersemat juga.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1041322626941363065">Berikan amaran kepada anda jika kata laluan Terdedah dalam Pelanggaran data</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Kuki, data tapak</translation>
 <translation id="1312721752506309252">Perlindungan dipertingkat dihidupkan</translation>
 <translation id="1317821187353201763">Tutup tab</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Jejak Pakej ini}other{Jejak semua pakej}}</translation>
 <translation id="1321993286294231467">Ralat menyimpan imej.</translation>
 <translation id="1322735045095424339">Organisasi anda menghendaki Mod inkognito digunakan</translation>
 <translation id="1323735185997015385">Padam</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
 <translation id="1709916727352927457">Padamkan kunci laluan</translation>
 <translation id="1712341189152602203">Data semakan imbas sedia ada akan dipautkan kepada <ph name="USER_EMAIL" />. Data ini mungkin boleh dilihat oleh organisasi anda.</translation>
-<translation id="1713777106376424209">Disampaikan oleh</translation>
 <translation id="1715515772563243997">Jika anda mempercayai <ph name="SITE" />, anda boleh menggunakan kata laluan yang disimpan untuk log masuk.</translation>
 <translation id="1718835860248848330">Jam terakhir</translation>
 <translation id="1728549374069268714">Tampal dan pergi</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Penjejakan dan cerapan harga</translation>
 <translation id="1820195936249950412">Log masuk dengan akaun yang sah</translation>
 <translation id="1820259098641718022">Ditambahkan pada Senarai Bacaan</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Memberikan makluman apabila anda menerima tab daripada peranti anda yang lain.</translation>
 <translation id="1827529786398596735">Sentuh dan tahan skrin utama</translation>
 <translation id="1832848789136765277">Untuk memastikan anda dapat mengakses data penyegerakan anda pada bila-bila masa, sahkan itu anda</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Pemilih unit</translation>
 <translation id="2330607597130465898">Tiada perlindungan</translation>
 <translation id="233375395665273385">Padamkan dan log keluar</translation>
-<translation id="2348630484974447747">Pakej</translation>
 <translation id="2351097562818989364">Tetapan terjemahan anda telah ditetapkan semula.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE} dalam Google Account, {EMAIL}.}=2{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE} dan{DOMAIN_TWO} dalam Google Account anda, {EMAIL}.}=3{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE}, {DOMAIN_TWO} dan {OTHER_DOMAINS_COUNT} yang lain dalam Google Account anda {EMAIL}.}other{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE}, {DOMAIN_TWO} dan {OTHER_DOMAINS_COUNT} yang lain dalam Google Account anda {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Paparan laman lalai</translation>
@@ -797,7 +792,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4460014764210899310">Nyahkumpulan</translation>
 <translation id="446314443268698477">Beli-belah, terjemahkan dan kenal pasti perkara yang anda lihat menggunakan kamera atau foto anda.</translation>
 <translation id="4469324811108161144">Nota boleh menyimpan hingga <ph name="CHARACTER_LIMIT" /> aksara.</translation>
-<translation id="4469834037720363704">Nombor bungkusan</translation>
 <translation id="4471472356135655769">Tidak dapat mengeksport kata laluan</translation>
 <translation id="4473608001744970767">Sembunyikan Jejak Harga</translation>
 <translation id="4474142134969976028">Tiada hasil carian yang sepadan</translation>
@@ -1289,7 +1283,6 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="647867789226964031">Tukar kata laluan anda</translation>
 <translation id="6494931198667773526">Tamat</translation>
 <translation id="6495521251906266731">Pilih perkara yang hendak dilakukan dengan data penyemakan imbas sedia ada pada peranti ini, seperti kata laluan, sejarah dan pelbagai lagi.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Nyahjejak pakej ini}other{Nyahjejak semua pakej}}</translation>
 <translation id="6503077044568424649">Paling kerap dilawati</translation>
 <translation id="6503763061813913607">Pemberitahuan Semakan Keselamatan</translation>
 <translation id="6505334220040167806">Kuncupkan kumpulan tab.</translation>
@@ -1761,7 +1754,6 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8481184073299279701">Ketik butang "Hentikan pengelogan" untuk mengumpulkan log konsol JavaScript yang akan datang dan ralat daripada semua tab. Log akan dikumpulkan (dan disimpan dalam memori sahaja) sehingga halaman ini ditutup atau "Hentikan pengelogan" diketik.</translation>
 <translation id="8487667956631253959">Hidup</translation>
 <translation id="8487700953926739672">Tersedia di luar talian</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Tidak dapat membuat pautan</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8505361906966222822">Simpan dalam…</translation>

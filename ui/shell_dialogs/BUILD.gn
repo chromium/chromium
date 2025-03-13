@@ -12,6 +12,9 @@ if (is_android) {
 if (is_mac) {
   import("//build/config/mac/rules.gni")
 }
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
 
 component("shell_dialogs") {
   sources = [
@@ -80,10 +83,14 @@ component("shell_dialogs") {
   }
 
   if (is_ios) {
-    sources += [
-      "select_file_dialog_ios.h",
-      "select_file_dialog_ios.mm",
-    ]
+    if (target_platform == "tvos") {
+      sources += [ "select_file_dialog_tvos.mm" ]
+    } else {
+      sources += [
+        "select_file_dialog_ios.h",
+        "select_file_dialog_ios.mm",
+      ]
+    }
   }
 
   if (is_win) {

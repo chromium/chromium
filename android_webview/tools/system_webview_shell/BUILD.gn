@@ -46,6 +46,7 @@ android_apk("system_webview_shell_apk") {
 android_library("system_webview_shell_apk_java") {
   testonly = true
   sources = [
+    "apk/src/org/chromium/webview_shell/EdgeToEdgeUtil.java",
     "apk/src/org/chromium/webview_shell/JankActivity.java",
     "apk/src/org/chromium/webview_shell/MultiFileSelector.java",
     "apk/src/org/chromium/webview_shell/PageCyclerTestActivity.java",

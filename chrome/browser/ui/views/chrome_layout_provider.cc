@@ -233,6 +233,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 2;
     case DISTANCE_COLLABORATION_MESSAGING_AVATAR_FALLBACK_ICON_BORDER_SIZE:
       return 1;
+    case DISTANCE_TEXTFIELD_ACCOUNT_CARD_VERTICAL:
+      return 4;
   }
   NOTREACHED();
 }

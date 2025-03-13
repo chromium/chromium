@@ -9,11 +9,12 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -201,7 +202,7 @@ FloatRoundedRect::Radii ComputeCornerRadii(
     const ComputedStyle& style,
     const PhysicalRect& reference_border_rect,
     float offset) {
-  return RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+  return ContouredBorderGeometry::PixelSnappedContouredBorderWithOutsets(
              style, reference_border_rect, PhysicalBoxStrut(LayoutUnit(offset)))
       .GetRadii();
 }

@@ -28,6 +28,9 @@ extern const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs;
 // approval request.
 BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
 
+// Whether supervised users see an updated URL filter interstitial.
+BASE_DECLARE_FEATURE(kSupervisedUserBlockInterstitialV3);
+
 // Applies the updated extension approval flow, which can skip parent-approvals
 // on extension installations.
 BASE_DECLARE_FEATURE(
@@ -93,10 +96,12 @@ BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);
 // ClassifyUrl fetches.
 BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
 
+// Returns whether the V3 version of the URL filter interstitial is
+// enabled.
+bool IsBlockInterstitialV3Enabled();
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
-// Local web approvals are only available when refreshed version of web
-// filter interstitial is enabled.
 bool IsLocalWebApprovalsEnabled();
 
 // Returns whether local parent approvals are enabled for subframe navigation.

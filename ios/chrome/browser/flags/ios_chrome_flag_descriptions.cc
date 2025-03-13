@@ -1225,6 +1225,11 @@ const char kSuggestStrongPasswordInAddPasswordDescription[] =
     "Add field suggest strong password in add password page if the user is "
     "signed in and syncing passwords to their Google Account.";
 
+const char kSupervisedUserBlockInterstitialV3Name[] =
+    "Enable URL filter interstitial V3";
+const char kSupervisedUserBlockInterstitialV3Description[] =
+    "Enables URL filter interstitial V3 for Family Link users.";
+
 const char kSupervisedUserLocalWebApprovalsName[] =
     "Enable local web approvals feature";
 const char kSupervisedUserLocalWebApprovalsDescription[] =
