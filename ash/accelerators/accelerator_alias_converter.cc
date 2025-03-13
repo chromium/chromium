@@ -735,6 +735,13 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       continue;
     }
 
+    // The Gemini launch app shortcut should not be disabled in the shortcut app
+    // and instead functions as a hidden shortcut.
+    if (accelerator.key_code() == ui::VKEY_F23 &&
+        accelerator.modifiers() == (ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)) {
+      continue;
+    }
+
     // If the accelerator is for an FKey + Search, make sure it is only shown if
     // Meta + F-Key rewrites are allowed.
     if (accelerator.key_code() > ui::VKEY_F1 &&
