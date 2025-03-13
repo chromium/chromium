@@ -1,8 +1,9 @@
-afakhry@chromium.org
 jamescook@chromium.org
 khorimoto@chromium.org
 oshima@chromium.org
 xiyuan@chromium.org
+
+afakhry@chromium.org  #{LAST_RESORT_SUGGESTION}
 
 per-file file_manager_strings.grdp=*
 # For adding or removing languages.
