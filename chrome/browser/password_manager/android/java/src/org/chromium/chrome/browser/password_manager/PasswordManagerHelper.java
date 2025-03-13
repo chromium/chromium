@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.gms.common.api.ApiException;
 
@@ -193,11 +194,7 @@ public class PasswordManagerHelper {
             // can't be shown. This is a rare corner-case.
             return;
         }
-        boolean isReferrerAFragmentActivity =
-                (referrer == ManagePasswordsReferrer.CHROME_SETTINGS
-                        || referrer == ManagePasswordsReferrer.SAFETY_CHECK);
-        if (!showPwmUnavailableOrDownloadCsvDialog(
-                context, isReferrerAFragmentActivity, modalDialogManagerSupplier)) {
+        if (!showPwmUnavailableOrDownloadCsvDialog(context, modalDialogManagerSupplier)) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(
@@ -211,11 +208,9 @@ public class PasswordManagerHelper {
     }
 
     private boolean showPwmUnavailableOrDownloadCsvDialog(
-            Context context,
-            boolean isReferrerAFragmentActivity,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         if (LoginDbDeprecationUtilBridge.hasPasswordsInCsv(mProfile)) {
-            showDownloadCsvDialog(context, isReferrerAFragmentActivity, modalDialogManagerSupplier);
+            showDownloadCsvDialog(context, modalDialogManagerSupplier);
             return true;
         }
 
@@ -233,10 +228,8 @@ public class PasswordManagerHelper {
     }
 
     private void showDownloadCsvDialog(
-            Context context,
-            boolean isReferrerAFragmentActivity,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
-        if (isReferrerAFragmentActivity) {
+            Context context, Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+        if (context instanceof FragmentActivity) {
             PasswordAccessLossDialogHelper.launchExportFlow(
                     context, mProfile, modalDialogManagerSupplier);
         } else {
@@ -645,10 +638,7 @@ public class PasswordManagerHelper {
                     // dialog to download the CSV.
                     return;
                 }
-                showPwmUnavailableOrDownloadCsvDialog(
-                        context,
-                        referrer == PasswordCheckReferrer.SAFETY_CHECK,
-                        modalDialogManagerSupplier);
+                showPwmUnavailableOrDownloadCsvDialog(context, modalDialogManagerSupplier);
                 return;
             }
             if (exception.errorCode != CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) return;

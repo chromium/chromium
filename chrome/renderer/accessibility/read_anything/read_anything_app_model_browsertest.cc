@@ -80,16 +80,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void AccessibilityEventReceived(const std::vector<ui::AXTreeUpdate>& updates,
                                   bool speech_playing = false) {
-    AccessibilityEventReceived(updates[0].tree_data.tree_id, updates,
-                               speech_playing);
-  }
-
-  void AccessibilityEventReceived(const ui::AXTreeID& tree_id,
-                                  const std::vector<ui::AXTreeUpdate>& updates,
-                                  bool speech_playing = false) {
     std::vector<ui::AXEvent> events;
     model().AccessibilityEventReceived(
-        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events,
+        updates[0].tree_data.tree_id,
+        const_cast<std::vector<ui::AXTreeUpdate>&>(updates), events,
         speech_playing);
   }
 
@@ -473,6 +467,7 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
   std::vector<int> child_ids = {2, 3, 4};
   std::vector<ui::AXTreeUpdate> updates =
       test::CreateSimpleUpdateList(child_ids, tree_id_);
+  const size_t num_pending_updates = updates.size();
 
   // Create an update which has no tree id.
   ui::AXTreeUpdate update;
@@ -480,14 +475,15 @@ TEST_F(ReadAnythingAppModelTest, ChangeActiveTreeWithPendingUpdates_UnknownID) {
   update.nodes = {std::move(node)};
   updates.push_back(std::move(update));
 
-  // Add the three updates.
+  // Add the updates.
   AccessibilityEventReceived({std::move(updates[0])});
+  updates.erase(updates.begin());
   EXPECT_EQ(0u, model().GetPendingUpdatesForTesting()[tree_id_].size());
   ASSERT_TRUE(AreAllPendingUpdatesEmpty());
   model().set_distillation_in_progress(true);
-  AccessibilityEventReceived(tree_id_,
-                             {std::move(updates[1]), std::move(updates[2])});
-  EXPECT_EQ(2u, model().GetPendingUpdatesForTesting()[tree_id_].size());
+  AccessibilityEventReceived(std::move(updates));
+  EXPECT_EQ(num_pending_updates,
+            model().GetPendingUpdatesForTesting()[tree_id_].size());
 
   // Switch to a new active tree. Should not crash.
   model().SetActiveTreeId(ui::AXTreeIDUnknown());

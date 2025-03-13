@@ -9,13 +9,17 @@
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
 namespace blink {
 
 PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {}
 
-void PlainTextPainter::Trace(Visitor* visitor) const {}
+void PlainTextPainter::Trace(Visitor* visitor) const {
+  visitor->Trace(cache_map_);
+}
 
 PlainTextPainter& PlainTextPainter::Shared() {
   DCHECK(RuntimeEnabledFeatures::PlainTextPainterEnabled());
@@ -92,6 +96,13 @@ bool PlainTextPainter::DrawWithBidiReorder(
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText;
   const FontDescription& font_desc = font.GetFontDescription();
+
+  if (!is_sub_run) [[likely]] {
+    STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
+        font_desc, node, blob_type);
+    DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
+    return true;
+  }
   for (const PlainTextItem& item : node.ItemList()) {
     if (item.EndOffset() <= from_index || to_index <= item.StartOffset()) {
       continue;
@@ -246,12 +257,34 @@ gfx::RectF PlainTextPainter::SelectionRectForTextWithoutBidi(
       height);
 }
 
+void PlainTextPainter::DidSwitchFrame() {
+  for (auto& cache : cache_map_.Values()) {
+    cache->DidSwitchFrame();
+  }
+}
+
 const PlainTextNode& PlainTextPainter::CreateNode(const TextRun& text_run,
                                                   const Font& font,
                                                   bool supports_bidi) {
   // TODO(crbug.com/389726691): Introduce a cache.
   return *MakeGarbageCollected<PlainTextNode>(text_run, mode_ == kCanvas, font,
                                               supports_bidi);
+}
+
+FrameShapeCache* PlainTextPainter::GetCacheFor(const Font& font) {
+  if (mode_ == kShared || MemoryPressureListenerRegistry::IsLowEndDevice()) {
+    return nullptr;
+  }
+  FontFallbackList* key = font.EnsureFontFallbackList();
+  auto result = cache_map_.insert(key, Member<FrameShapeCache>());
+  FrameShapeCache* cache;
+  if (result.is_new_entry) {
+    cache = MakeGarbageCollected<FrameShapeCache>();
+    result.stored_value->value = cache;
+  } else {
+    cache = result.stored_value->value;
+  }
+  return cache;
 }
 
 }  // namespace blink

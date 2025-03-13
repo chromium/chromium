@@ -263,6 +263,8 @@
   self.defaultAccountCoordinator.selectedIdentity = completionIdentity;
 
   if (hasAccounts) {
+    [self.navigationController popViewControllerAnimated:YES];
+    [self stopAccountChooserCoordinator];
     return;
   }
   [self startSignIn];

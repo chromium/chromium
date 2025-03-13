@@ -31,6 +31,9 @@ class OnTaskPodController {
   // Attempts to reload the current page.
   virtual void ReloadCurrentPage() = 0;
 
+  // Attempts to show or hide the tab strip.
+  virtual void ToggleTabStripVisibility(bool show) = 0;
+
   // Notifies pod widget when there is an update in the page navigation context
   // (tab switch, URL navigation, etc.).
   virtual void OnPageNavigationContextChanged() = 0;
@@ -40,6 +43,9 @@ class OnTaskPodController {
 
   // Whether the boca browser can navigate to the next page.
   virtual bool CanNavigateToNextPage() = 0;
+
+  // Whether the show or hide tab button should be enabled or not.
+  virtual bool CanToggleTabStripVisibility() = 0;
 
  protected:
   OnTaskPodController() = default;

@@ -119,34 +119,29 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReaderImpl(
       base::StrCat({chrome::kIsolatedAppScheme, url::kStandardSchemeSeparator,
                     web_bundle_id.id()}));
 
-  std::unique_ptr<SignedWebBundleReader> reader = SignedWebBundleReader::Create(
+  SignedWebBundleReader::Create(
       web_bundle_path, std::move(base_url),
-      /*verify_signatures=*/!flags.Has(Flag::kSkipSignatureVerification));
-
-  SignedWebBundleReader& reader_ref = *reader.get();
-  reader_ref.Start(base::BindOnce(
-      &IsolatedWebAppResponseReaderFactory::OnReaderCreated,
-      weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
-      web_bundle_id, flags, std::move(callback)));
+      /*verify_signatures=*/!flags.Has(Flag::kSkipSignatureVerification),
+      base::BindOnce(&IsolatedWebAppResponseReaderFactory::OnReaderCreated,
+                     weak_ptr_factory_.GetWeakPtr(), web_bundle_path,
+                     web_bundle_id, flags, std::move(callback)));
 }
 
 void IsolatedWebAppResponseReaderFactory::OnReaderCreated(
-    std::unique_ptr<SignedWebBundleReader> reader,
     const base::FilePath& web_bundle_path,
     const web_package::SignedWebBundleId& web_bundle_id,
     Flags flags,
     Callback callback,
-    base::expected<void, UnusableSwbnFileError> status) {
+    base::expected<std::unique_ptr<SignedWebBundleReader>,
+                   UnusableSwbnFileError> status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RETURN_IF_ERROR(status, [&](const auto& error) {
-    CHECK_EQ(reader->GetState(), SignedWebBundleReader::State::kError);
+  ASSIGN_OR_RETURN(auto reader, std::move(status), [&](const auto& error) {
     UmaLogExpectedStatus<UnusableSwbnFileError>(
         "WebApp.Isolated.SwbnFileUsability", base::unexpected(error));
     std::move(callback).Run(base::unexpected(error));
   });
 
-  CHECK_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
   RETURN_IF_ERROR(
       ValidateIntegrityBlockAndMetadata(*reader, *validator_, trust_checker_,
                                         web_bundle_id,

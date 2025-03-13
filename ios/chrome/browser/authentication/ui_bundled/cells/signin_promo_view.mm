@@ -456,15 +456,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
   // The name for Voice Control includes only
   // `self.primaryButton.titleLabel.text`.
-  NSString* buttonTitle = [self primaryButtonTitle];
-  if (!buttonTitle) {
-    // TODO(crbug.com/365995361): At M135, this `if` can be removed.
-    // Before M135, the CHECK in `-[SigninPromoView primaryButtonTitle]` is
-    // non fatal if the title was not set. So to avoid a fatal exception,
-    // this `if` is required.
-    return @[];
-  }
-  return @[ buttonTitle ];
+  return @[ [self primaryButtonTitle] ];
 }
 
 #pragma mark - Setters

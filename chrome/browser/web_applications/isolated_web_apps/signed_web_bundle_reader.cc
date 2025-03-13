@@ -96,6 +96,7 @@ web_package::SignedWebBundleSignatureVerifier*
 }  // namespace
 
 SignedWebBundleReader::SignedWebBundleReader(
+    base::PassKey<SignedWebBundleReader>,
     const base::FilePath& web_bundle_path,
     const std::optional<GURL>& base_url,
     bool verify_signatures)
@@ -110,13 +111,26 @@ SignedWebBundleReader::~SignedWebBundleReader() {
   }
 }
 
-// static
-std::unique_ptr<SignedWebBundleReader> SignedWebBundleReader::Create(
-    const base::FilePath& web_bundle_path,
-    const std::optional<GURL>& base_url,
-    bool verify_signatures) {
-  return base::WrapUnique(
-      new SignedWebBundleReader(web_bundle_path, base_url, verify_signatures));
+void SignedWebBundleReader::Create(const base::FilePath& web_bundle_path,
+                                   const std::optional<GURL>& base_url,
+                                   bool verify_signatures,
+                                   CreateCallback callback) {
+  auto reader = std::make_unique<SignedWebBundleReader>(
+      base::PassKey<SignedWebBundleReader>(), web_bundle_path, base_url,
+      verify_signatures);
+  auto* reader_ptr = reader.get();
+
+  reader_ptr->Start(
+      base::BindOnce(
+          [](std::unique_ptr<SignedWebBundleReader> reader,
+             base::expected<void, UnusableSwbnFileError> status) -> Result {
+            RETURN_IF_ERROR(status);
+            CHECK_EQ(reader->GetState(),
+                     SignedWebBundleReader::State::kInitialized);
+            return reader;
+          },
+          std::move(reader))
+          .Then(std::move(callback)));
 }
 
 void SignedWebBundleReader::Close(base::OnceClosure callback) {

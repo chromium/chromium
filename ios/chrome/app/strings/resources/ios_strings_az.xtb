@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Giriş açarı</translation>
 <translation id="1030376737535466765">Parol menecerini açın</translation>
 <translation id="1035980983510608210">Bütün tabları bağladıqda sancılmış tablar da bağlanacaq.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Deaktiv edin</translation>
 <translation id="1041322626941363065">Verilənlərin pozulması zamanı parolların ələ keçirilib-keçirilmədiyi bildirilir</translation>
 <translation id="1044891598689252897">Saytlar normal qaydada işləyəcək</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Kukilər, sayt datası</translation>
 <translation id="1312721752506309252">Qabaqcıl qoruma aktivdir</translation>
 <translation id="1317821187353201763">Tabı bağlayın</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Bu bağlamanı izləyin}other{Bütün bağlamaları izləyin}}</translation>
 <translation id="1321993286294231467">Şəkil yadda saxlanılarkən xəta.</translation>
 <translation id="1322735045095424339">Təşkilatınız Anonim rejimi tələb edir</translation>
 <translation id="1323735185997015385">Silin</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seçildi</translation>
 <translation id="1709916727352927457">Giriş açarını silin</translation>
 <translation id="1712341189152602203">Mövcud axtarış məlumatları <ph name="USER_EMAIL" /> e-poçtu ilə əlaqələndiriləcək. Təşkilatınız bu dataya baxa bilər.</translation>
-<translation id="1713777106376424209">Çatdırılıb</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> mənbəyinə etibar edirsinizsə, saxlanmış parolu giriş üçün istifadə edə bilərsiniz.</translation>
 <translation id="1718835860248848330">Son saat</translation>
 <translation id="1728549374069268714">Yerləşdirin və keçin</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Qiymət izləmə və statistik məlumatlar</translation>
 <translation id="1820195936249950412">Etibarlı hesabla daxil olun</translation>
 <translation id="1820259098641718022">Oxu Siyahısına əlavə edildi</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Digər cihazlardan tablar qəbul etdiyiniz zaman xəbərdarlıq edir.</translation>
 <translation id="1827529786398596735">Əsas ekrana toxunub saxlayın</translation>
 <translation id="1832848789136765277">Həmişə sinxronlaşdırılmış datanıza girişinizin olduğuna əmin olmaq üçün kimliyinizi doğrulayın</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Vahid seçicisi</translation>
 <translation id="2330607597130465898">Qoruma yoxdur</translation>
 <translation id="233375395665273385">Silin və çıxın</translation>
-<translation id="2348630484974447747">Bağlama</translation>
 <translation id="2351097562818989364">Tərcümə ayarlarınız sıfırlanmışdır.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}=2{{DOMAIN_ONE} və {DOMAIN_TWO} parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} və digər {OTHER_DOMAINS_COUNT} domen parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}other{{DOMAIN_ONE}, {DOMAIN_TWO} və digər {OTHER_DOMAINS_COUNT} domen parolunu Google Hesabında ({EMAIL}) yadda saxlaya bilərsiniz.}}</translation>
 <translation id="2353953000228441783">Defolt sayt görünüşü</translation>
@@ -797,7 +792,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="4460014764210899310">Qruplaşdırma olmasın</translation>
 <translation id="446314443268698477">Kamera və fotolarla alış-veriş edin, tərcümə edin və gördüklərinizi müəyyənləşdirin.</translation>
 <translation id="4469324811108161144">Qeydlər maksimum <ph name="CHARACTER_LIMIT" /> simvolu yadda saxlaya bilər.</translation>
-<translation id="4469834037720363704">Bağlama nömrəsi</translation>
 <translation id="4471472356135655769">Parolları eksport etmək alınmadı</translation>
 <translation id="4473608001744970767">Qiymətin izlənməsini gizlədin</translation>
 <translation id="4474142134969976028">Uyğun nəticə yoxdur</translation>
@@ -1289,7 +1283,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukiləri
 <translation id="647867789226964031">Parolları dəyişin</translation>
 <translation id="6494931198667773526">Bitir</translation>
 <translation id="6495521251906266731">Bu cihazdakı parollar, tarixçə və s. kimi mövcud axtarış datası ilə nə edəcəyinizi seçin.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Bu bağlamanı izləməyin}other{Heç bir bağlamanı izləməyin}}</translation>
 <translation id="6503077044568424649">Ən çox ziyarət edilən</translation>
 <translation id="6503763061813913607">Təhlükəsizlik yoxlanışı bildirişləri</translation>
 <translation id="6505334220040167806">Tab qrupunu yığcamlaşdırın.</translation>
@@ -1761,7 +1754,6 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8481184073299279701">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə başlayın" düyməsinə toxunun. Qeydlər bu səhifə bağlanana və ya "Qeydləri dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
 <translation id="8487667956631253959">Aktiv</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Link yaratmaq alınmadı</translation>
 <translation id="8503813439785031346">İstifadəçi adı</translation>
 <translation id="8505361906966222822">Burada yadda saxlayın…</translation>

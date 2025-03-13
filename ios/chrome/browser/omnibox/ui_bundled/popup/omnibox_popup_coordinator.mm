@@ -162,9 +162,9 @@
   autocompleteResultWrapper.pedalAnnotator = annotator;
   autocompleteResultWrapper.templateURLService = templateURLService;
   autocompleteResultWrapper.isIncognito = isIncognito;
-  autocompleteResultWrapper.delegate = self.mediator;
+  autocompleteResultWrapper.delegate = _omniboxPopupController;
 
-  self.mediator.autocompleteResultWrapper = autocompleteResultWrapper;
+  _omniboxPopupController.autocompleteResultWrapper = autocompleteResultWrapper;
 
   self.mediator.applicationCommandsHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);

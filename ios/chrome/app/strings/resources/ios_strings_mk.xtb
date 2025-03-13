@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Криптографски клуч</translation>
 <translation id="1030376737535466765">Отвори Password Manager</translation>
 <translation id="1035980983510608210">Ако ги затворите сите картички, ќе се затворат и сите прикачени картички.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1041322626941363065">Добијте предупредување ако лозинките се откриени при упад во податоци</translation>
 <translation id="1044891598689252897">Сајтовите ќе работат нормално</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Колачиња, податоци за локација</translation>
 <translation id="1312721752506309252">Вклучена е „Подобрената заштита“</translation>
 <translation id="1317821187353201763">Затвори ја картичката</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Следи го пакетов}one{Следи ги сите пакети}other{Следи ги сите пакети}}</translation>
 <translation id="1321993286294231467">Грешка при зачувувањето на сликата.</translation>
 <translation id="1322735045095424339">Вашата организација бара режим „Инкогнито“</translation>
 <translation id="1323735185997015385">Избриши</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> избрани</translation>
 <translation id="1709916727352927457">Избришете го криптографскиот клуч</translation>
 <translation id="1712341189152602203">Постојните податоци од прелистување ќе бидат поврзани со <ph name="USER_EMAIL" />. Податоциве може да бидат видливи за вашата организација.</translation>
-<translation id="1713777106376424209">Испорачувач:</translation>
 <translation id="1715515772563243997">Ако имате доверба во <ph name="SITE" />, може да користите зачувана лозинка за да се најавите.</translation>
 <translation id="1718835860248848330">Изминатиот час</translation>
 <translation id="1728549374069268714">Залепи и продолжи</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Следење цени и увиди</translation>
 <translation id="1820195936249950412">Најавете се со важечка сметка</translation>
 <translation id="1820259098641718022">Додаено во „Список за читање“</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Се испраќаат известувања кога ќе добиете картички од другите уреди.</translation>
 <translation id="1827529786398596735">Допрете и задржете на почетниот екран</translation>
 <translation id="1832848789136765277">За да можете секогаш да пристапувате до податоците од синхронизацијата, потврдете дека сте вие</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Избирач на единици</translation>
 <translation id="2330607597130465898">Без заштита</translation>
 <translation id="233375395665273385">Избриши и одјави се</translation>
-<translation id="2348630484974447747">Пакет</translation>
 <translation id="2351097562818989364">Вашите поставки за превод се ресетирани.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Лозинката за {DOMAIN_ONE} може да ја зачувате во вашата сметка на Google, {EMAIL}.}=2{Лозинките за {DOMAIN_ONE} и {DOMAIN_TWO} може да ги зачувате во вашата сметка на Google, {EMAIL}.}=3{Лозинките за {DOMAIN_ONE}, {DOMAIN_TWO} и уште {OTHER_DOMAINS_COUNT} може да ги зачувате во вашата сметка на Google, {EMAIL}.}one{Лозинките за {DOMAIN_ONE}, {DOMAIN_TWO} и уште {OTHER_DOMAINS_COUNT} може да ги зачувате во вашата сметка на Google, {EMAIL}.}other{Лозинките за {DOMAIN_ONE}, {DOMAIN_TWO} и уште {OTHER_DOMAINS_COUNT} може да ги зачувате во вашата сметка на Google, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Стандарден приказ на сајтот</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Одгрупирајте</translation>
 <translation id="446314443268698477">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата или фотографиите.</translation>
 <translation id="4469324811108161144">Белешките може да заштедат до <ph name="CHARACTER_LIMIT" /> знаци.</translation>
-<translation id="4469834037720363704">Број на пакет</translation>
 <translation id="4471472356135655769">Лозинките не може да се извезат</translation>
 <translation id="4473608001744970767">Скриј „Следење цени“</translation>
 <translation id="4474142134969976028">Нема резултати што се совпаѓаат</translation>
@@ -1289,7 +1283,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="647867789226964031">Променете ги вашите лозинки</translation>
 <translation id="6494931198667773526">Завршува</translation>
 <translation id="6495521251906266731">Изберете што да се направи со постојните податоци од прелистување на уредов, како лозинки, историја и друго.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Сопри со следење на пакетов}one{Сопри со следење на сите пакети}other{Сопри со следење на сите пакети}}</translation>
 <translation id="6503077044568424649">Најпосетени</translation>
 <translation id="6503763061813913607">Известувања за „Безбедносна проверка“</translation>
 <translation id="6505334220040167806">Собери ја групата картички.</translation>
@@ -1761,7 +1754,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8481184073299279701">Допрете го копчето „Започни со евидентирање“ за да се прибираат идната евиденција и грешките од сите картички во JavaScript конзолата. Евиденцијата ќе се прибира (и складира само во меморијата) сѐ додека не ја затворите страницава или не допрете „Сопри со евидентирање“.</translation>
 <translation id="8487667956631253959">Вклучено</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Линкот не можеше да се создаде</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8505361906966222822">Зачувајте во…</translation>

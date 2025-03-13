@@ -52,8 +52,8 @@ std::u16string GetExpirationMonthSelectControlValue(
   // Trim the whitespace and specific prefixes used in AngularJS from the
   // select values before attempting to convert them to months.
   std::vector<std::u16string> trimmed_values(field_options.size());
-  const std::u16string kNumberPrefix = u"number:";
-  const std::u16string kStringPrefix = u"string:";
+  static constexpr char16_t kNumberPrefix[] = u"number:";
+  static constexpr char16_t kStringPrefix[] = u"string:";
   for (size_t i = 0; i < field_options.size(); ++i) {
     base::TrimWhitespace(field_options[i].value, base::TRIM_ALL,
                          &trimmed_values[i]);

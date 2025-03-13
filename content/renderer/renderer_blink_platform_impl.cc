@@ -290,6 +290,15 @@ void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
 }
 #endif
 
+std::optional<int>
+RendererBlinkPlatformImpl::GetWebUIBundledCodeCacheResourceId(
+    const GURL& webui_resource_url) {
+  auto it = webui_resource_to_code_cache_id_map_.find(webui_resource_url);
+  return it == webui_resource_to_code_cache_id_map_.end()
+             ? std::nullopt
+             : std::optional<int>(it->second);
+}
+
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -951,7 +960,7 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> fallback_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  // TODO(crbug.com/40241479): plumb `router_rules` with the function callers
+  // TODO(crbug.com/402806160): plumb `router_rules` with the function callers
   // if there is such use case. As of 2023-06-01, only
   // `DedicatedOrSharedWorkerFetchContextImpl` calls the function, and
   // no need to allow it set the `router_rules`.

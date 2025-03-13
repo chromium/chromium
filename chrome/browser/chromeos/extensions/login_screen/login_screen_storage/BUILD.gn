@@ -14,13 +14,14 @@ static_library("login_screen_storage") {
   ]
 
   public_deps = [
-    "//chromeos/crosapi/mojom",
+    "//chromeos/ash/components/dbus/session_manager:login_manager_proto",
     "//extensions/browser",
   ]
 
   deps = [
     "//base",
     "//chrome/common/extensions/api",
+    "//chromeos/ash/components/dbus/session_manager",
   ]
 }
 

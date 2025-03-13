@@ -10,7 +10,6 @@
 <translation id="102916930470544692">পাসকী</translation>
 <translation id="1030376737535466765">Password Manager খুলুন</translation>
 <translation id="1035980983510608210">সমস্ত ট্যাব বন্ধ করে দিলে পিন করা ট্যাবও বন্ধ হয়ে যাবে।</translation>
-<translation id="1036017604683756002">ইউপিএস</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1041322626941363065">ডেটা নিরাপত্তা লঙ্ঘনের ফলে আপনার পাসওয়ার্ড সর্বজনীনভাবে প্রকাশিত হলে এটি আপনাকে জানায়</translation>
 <translation id="1044891598689252897">সাইট স্বাভাবিকভাবেই কাজ করবে</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">কুকিজ, সাইট ডেটা</translation>
 <translation id="1312721752506309252">"উন্নত সুরক্ষা" ফিচার চালু করা আছে</translation>
 <translation id="1317821187353201763">ট্যাব বন্ধ করুন</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{এই প্যাকেজটি ট্র্যাক করুন}one{সমস্ত প্যাকেজ ট্র্যাক করুন}other{সমস্ত প্যাকেজ ট্র্যাক করুন}}</translation>
 <translation id="1321993286294231467">ছবি সেভ করার সময় কোনও সমস্যা হয়েছে।</translation>
 <translation id="1322735045095424339">আপনার সংস্থা আপনাকে 'ছদ্মবেশী মোড' ব্যবহার করতে বলছে</translation>
 <translation id="1323735185997015385">মুছুন</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
 <translation id="1709916727352927457">পাসকী মুছুন</translation>
 <translation id="1712341189152602203">আগে থেকে থাকা ব্রাউজ করা ডেটা <ph name="USER_EMAIL" />-এর সাথে লিঙ্ক করা হবে। আপনার সংস্থা এই ডেটা হয়ত দেখতে পাবেন।</translation>
-<translation id="1713777106376424209">ডেলিভার করছে:</translation>
 <translation id="1715515772563243997"><ph name="SITE" />-এর উপর ভরসা থাকলে, আপনি সেভ করা পাসওয়ার্ড সাইন-ইন করার জন্য ব্যবহার করতে পারেন।</translation>
 <translation id="1718835860248848330">শেষ ঘণ্টা</translation>
 <translation id="1728549374069268714">পেস্ট করে শুরু করুন</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">দাম ট্র্যাক করা ও ইনসাইট</translation>
 <translation id="1820195936249950412">সঠিক অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="1820259098641718022">পড়ার তালিকায় যোগ করা হয়েছে</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">আপনার অন্যান্য ডিভাইস থেকে আপনি ট্যাব পাওয়ার সময় আপনাকে যে সতর্কতা মেসেজ পাঠানো হয়।</translation>
 <translation id="1827529786398596735">'হোম স্ক্রিন' টাচ করে ধরে থাকুন</translation>
 <translation id="1832848789136765277">আপনার সিঙ্ক করা ডেটা সবসময় যাতে অ্যাক্সেস করতে পারেন তা নিশ্চিত করতে, নিজের পরিচয় যাচাই করুন</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">ইউনিট বাছাইকারী</translation>
 <translation id="2330607597130465898">কোনও সুরক্ষা নেই</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
-<translation id="2348630484974447747">প্যাকেজ</translation>
 <translation id="2351097562818989364">আপনার অনুবাদ সেটিংস রিসেট করা হয়েছে৷</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=2{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE} ও {DOMAIN_TWO}-এর পাসওয়ার্ড সেভ করতে পারবেন।}=3{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}one{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}other{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির পাসওয়ার্ড সেভ করতে পারবেন।}}</translation>
 <translation id="2353953000228441783">ডিফল্ট সাইট ভিউ</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">আলাদা করুন</translation>
 <translation id="446314443268698477">আপনার ক্যামেরা বা ফটোর মাধ্যমে যা দেখছেন তা কিনুন, অনুবাদ ও শনাক্ত করুন।</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
-<translation id="4469834037720363704">প্যাকেজ নম্বর</translation>
 <translation id="4471472356135655769">পাসওয়ার্ড এক্সপোর্ট করা যাচ্ছে না</translation>
 <translation id="4473608001744970767">'দাম ট্র্যাক করুন' বিকল্পটি লুকান</translation>
 <translation id="4474142134969976028">কোনও ফলাফল মিলছে না</translation>
@@ -1290,7 +1284,6 @@
 <translation id="647867789226964031">আপনার পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="6494931198667773526">শেষ হবে</translation>
 <translation id="6495521251906266731">এই ডিভাইসে আগে থেকেই থাকা ব্রাউজ করা ডেটা, যেমন পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছুর ক্ষেত্রে কী করবেন তা বেছে নিন।</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{এই প্যাকেজ ট্র্যাক করা বন্ধ করুন}one{সমস্ত প্যাকেজ ট্র্যাক করা বন্ধ করুন}other{সমস্ত প্যাকেজ ট্র্যাক করা বন্ধ করুন}}</translation>
 <translation id="6503077044568424649">সর্বাধিক দেখা</translation>
 <translation id="6503763061813913607">নিরাপত্তা সংক্রান্ত পরীক্ষার বিজ্ঞপ্তি</translation>
 <translation id="6505334220040167806">ট্যাব গ্রুপ ছোট করুন।</translation>
@@ -1762,7 +1755,6 @@
 <translation id="8481184073299279701">সব ট্যাব থেকে ভবিষ্যতে JavaScript কনসোল লগ ও সমস্যা সংগ্রহ করতে, "লগ করা শুরু করুন" বোতামে ট্যাপ করুন। এই পৃষ্ঠা বন্ধ করা বা "লগ করা বন্ধ করুন" বোতামে ট্যাপ না করা পর্যন্ত লগ সংগ্রহ করা হবে এবং শুধুমাত্র মেমরিতে স্টোর করা থাকবে।</translation>
 <translation id="8487667956631253959">চালু করা আছে</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">লিঙ্ক তৈরি করা যাচ্ছে না</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8505361906966222822">এখানে সেভ করুন…</translation>

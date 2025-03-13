@@ -40,7 +40,11 @@ CreateContentBrowserURLLoaderThrottles(
 
 // Wrapper around `ContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive()`
 // which inserts additional content specific throttles for handling fetch
-// keepalive requests when their initiator is destroyed.
+// keepalive requests.
+// The returned throttles may still be run after request initiator is destroyed.
+//
+// See the following doc for the full picture:
+// https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit?tab=t.0#heading=h.r4lb1vfcmngx
 CONTENT_EXPORT
 std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 CreateContentBrowserURLLoaderThrottlesForKeepAlive(

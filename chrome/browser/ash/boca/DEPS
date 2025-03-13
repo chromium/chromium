@@ -43,6 +43,7 @@ include_rules = [
   "+chrome/browser/ui/tabs/tab_enums.h",
   "+chrome/browser/ui/tabs/tab_strip_model_delegate.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
+  "+chrome/browser/ui/views/frame/immersive_mode_controller.h",
   "+chrome/test/base/in_process_browser_test.h",
   "+chrome/test/base/testing_profile.h",
   "+chrome/test/base/testing_profile_manager.h",

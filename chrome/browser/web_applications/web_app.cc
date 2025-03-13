@@ -792,6 +792,10 @@ void WebApp::SetWasShortcutApp(bool was_shortcut_app) {
   was_shortcut_app_ = was_shortcut_app;
 }
 
+void WebApp::SetDiyAppIconsMaskedOnMac(bool diy_app_icons_masked_on_mac) {
+  diy_app_icons_masked_on_mac_ = diy_app_icons_masked_on_mac;
+}
+
 void WebApp::SetRelatedApplications(
     std::vector<blink::Manifest::RelatedApplication> related_applications) {
   related_applications_ = std::move(related_applications);
@@ -1005,7 +1009,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.supported_links_offer_dismiss_count_,
         app.is_diy_app_,
         app.was_shortcut_app_,
-        app.related_applications_
+        app.related_applications_,
+        app.diy_app_icons_masked_on_mac_
         // clang-format on
     );
   };
@@ -1221,6 +1226,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("is_diy_app", is_diy_app_);
 
   root.Set("was_shortcut_app", was_shortcut_app_);
+
+  root.Set("diy_app_icons_masked_on_mac", diy_app_icons_masked_on_mac_);
 
   root.Set("related_applications",
            RelatedApplicationsToDebugValue(related_applications_));

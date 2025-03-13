@@ -98,7 +98,7 @@ suite('Metrics', function() {
 
     let items = app.$.history.shadowRoot!.querySelectorAll('history-item');
     assertTrue(!!items[1]);
-    items[1].shadowRoot!.querySelector<HTMLElement>('#bookmark-star')!.click();
+    items[1].shadowRoot.querySelector<HTMLElement>('#bookmark-star')!.click();
     assertEquals(1, actionMap['BookmarkStarClicked']);
     items[1].$.link.click();
     assertEquals(1, actionMap['EntryLinkClick']);

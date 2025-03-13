@@ -42,6 +42,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -125,8 +127,8 @@ class DriveBackendSyncTest : public testing::Test,
         worker_task_runner_.get(), drive_task_runner.get(), base_dir_.GetPath(),
         nullptr,  // task_logger
         nullptr,  // notification_manager
-        nullptr,  // extension_service
-        nullptr,  // extension_registry
+        extensions::ExtensionRegistrar::Get(&profile_),
+        extensions::ExtensionRegistry::Get(&profile_),
         nullptr,  // identity_manager
         nullptr,  // url_loader_factory
         nullptr,  // drive_service

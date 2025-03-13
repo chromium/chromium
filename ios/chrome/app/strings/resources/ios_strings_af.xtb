@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Wagwoordsleutel</translation>
 <translation id="1030376737535466765">Maak Wagwoordbestuurder oop</translation>
 <translation id="1035980983510608210">As alle oortjies toegemaak word, sal vasgespelde oortjies ook toegemaak word.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Skakel af</translation>
 <translation id="1041322626941363065">Waarsku jou as wagwoorde in ’n dataskending blootgestel is</translation>
 <translation id="1044891598689252897">Werwe sal normaalweg werk</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Webkoekies, werfdata</translation>
 <translation id="1312721752506309252">Verbeterde Beskerming is aan</translation>
 <translation id="1317821187353201763">Maak oortjie toe</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Spoor hierdie pakkie na}other{Spoor alle pakkies na}}</translation>
 <translation id="1321993286294231467">Kon nie prent stoor nie.</translation>
 <translation id="1322735045095424339">Jou organisasie vereis Incognitomodus</translation>
 <translation id="1323735185997015385">Vee uit</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
 <translation id="1709916727352927457">Vee toegangsleutel uit</translation>
 <translation id="1712341189152602203">Bestaande blaaierdata sal aan <ph name="USER_EMAIL" /> gekoppel word. Hierdie data kan vir jou organisasie sigbaar wees.</translation>
-<translation id="1713777106376424209">Afgelewer deur</translation>
 <translation id="1715515772563243997">As jy <ph name="SITE" /> vertrou, kan jy ’n gestoorde wagwoord gebruik om aan te meld.</translation>
 <translation id="1718835860248848330">Afgelope uur</translation>
 <translation id="1728549374069268714">Plak en gaan</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Prysnasporing en -insigte</translation>
 <translation id="1820195936249950412">Meld met ’n geldige rekening aan</translation>
 <translation id="1820259098641718022">By Leeslys gevoeg</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Waarskuwings wanneer jy oortjies van jou ander toestelle af ontvang.</translation>
 <translation id="1827529786398596735">Raak en hou die tuisskerm</translation>
 <translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Eenheidkieser</translation>
 <translation id="2330607597130465898">Geen beskerming nie</translation>
 <translation id="233375395665273385">Vee uit en meld af</translation>
-<translation id="2348630484974447747">Pakkie</translation>
 <translation id="2351097562818989364">Jou vertaalinstellings is teruggestel.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Jy kan jou wagwoord vir {DOMAIN_ONE} in jou Google-rekening, {EMAIL}, stoor.}=2{Jy kan jou wagwoorde vir {DOMAIN_ONE} en {DOMAIN_TWO} in jou Google-rekening, {EMAIL}, stoor.}=3{Jy kan jou wagwoorde vir {DOMAIN_ONE}, {DOMAIN_TWO} en {OTHER_DOMAINS_COUNT} ander in jou Google-rekening, {EMAIL}, stoor.}other{Jy kan jou wagwoorde vir {DOMAIN_ONE}, {DOMAIN_TWO} en {OTHER_DOMAINS_COUNT} ander in jou Google-rekening, {EMAIL}, stoor.}}</translation>
 <translation id="2353953000228441783">Verstekwerfaansig</translation>
@@ -797,7 +792,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="4460014764210899310">Ongroepeer</translation>
 <translation id="446314443268698477">Koop, vertaal en identifiseer wat jy sien met jou kamera of foto’s.</translation>
 <translation id="4469324811108161144">Notas kan tot <ph name="CHARACTER_LIMIT" /> karakters stoor.</translation>
-<translation id="4469834037720363704">Pakkienommer</translation>
 <translation id="4471472356135655769">Kan nie wagwoorde uitvoer nie</translation>
 <translation id="4473608001744970767">Versteek prysnasporing</translation>
 <translation id="4474142134969976028">Geen passende resultate nie</translation>
@@ -1289,7 +1283,6 @@ Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe t
 <translation id="647867789226964031">Verander jou wagwoorde</translation>
 <translation id="6494931198667773526">Eindig</translation>
 <translation id="6495521251906266731">Kies wat om met die bestaande blaaierdata op hierdie toestel te doen, soos wagwoorde, geskiedenis en meer.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Stop nasporing van hierdie pakkie}other{Stop nasporing van hierdie pakkie}}</translation>
 <translation id="6503077044568424649">Mees besoekte</translation>
 <translation id="6503763061813913607">Kennisgewings vir veiligheidskontrole</translation>
 <translation id="6505334220040167806">Vou oortjiegroep in.</translation>
@@ -1761,7 +1754,6 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8481184073299279701">Tik op die “Begin loginskrywing”-knoppie om JavaScrip-konsole se toekomstige loglêers en foute van alle oortjies af in te samel. Loglêers sal ingesamel word (en slegs in geheue geberg word) totdat jy hierdie bladsy toemaak of op “Stop loginskrywing” tik.</translation>
 <translation id="8487667956631253959">Aan</translation>
 <translation id="8487700953926739672">Vanlyn beskikbaar</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Kan nie skakel skep nie</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="8505361906966222822">Stoor in …</translation>

@@ -13,6 +13,5 @@ mek@chromium.org
 cmp@chromium.org
 
 per-file web_app_default_offline*=finnur@chromium.org
-per-file web_app_id_constants.*=tsergeant@chromium.org
 
 per-file BUILD.gn=file://chrome/browser/web_applications/isolated_web_apps/OWNERS

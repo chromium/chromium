@@ -3,30 +3,35 @@
 // found in the LICENSE file.
 
 import './simple_action_menu.js';
-import '../toolbar_styles_shared.css.js';
 
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ToolbarEvent} from '../common.js';
-
-import {getTemplate} from './highlight_menu.html.js';
+import {getHtml} from './highlight_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem} from './menu_util.js';
 import type {SimpleActionMenu} from './simple_action_menu.js';
 
-export interface HighlightMenu {
+export interface HighlightMenuElement {
   $: {
     menu: SimpleActionMenu,
   };
 }
 
-const HighlightMenuBase = WebUiListenerMixin(PolymerElement);
+const HighlightMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the highlight menu.
-export class HighlightMenu extends HighlightMenuBase {
-  private options_: Array<MenuStateItem<number>> = [
+export class HighlightMenuElement extends HighlightMenuElementBase {
+  static get is() {
+    return 'highlight-menu';
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  protected options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('autoHighlightTitle'),
       data: chrome.readingMode.autoHighlighting,
@@ -49,30 +54,11 @@ export class HighlightMenu extends HighlightMenuBase {
     },
   ];
 
-  static get is() {
-    return 'highlight-menu';
-  }
-
-  static get template() {
-    return getTemplate();
-  }
-
-  static get properties() {
-    return {
-      options_: Array,
-      settingsPrefs: Object,
-      toolbarEventEnum_: {
-        type: Object,
-        value: ToolbarEvent,
-      },
-    };
-  }
-
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
   }
 
-  private restoredHighlightIndex_(): number {
+  protected restoredHighlightIndex_(): number {
     return getIndexOfSetting(
         this.options_, chrome.readingMode.highlightGranularity);
   }
@@ -80,8 +66,8 @@ export class HighlightMenu extends HighlightMenuBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'highlight-menu': HighlightMenu;
+    'highlight-menu': HighlightMenuElement;
   }
 }
 
-customElements.define(HighlightMenu.is, HighlightMenu);
+customElements.define(HighlightMenuElement.is, HighlightMenuElement);

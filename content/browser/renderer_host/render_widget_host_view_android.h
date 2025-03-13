@@ -526,6 +526,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     void WasEvicted();
     void WasShownAfterEviction();
 
+    // Clears flags used to throttle SurfaceSync.
+    void Unthrottle();
+
    private:
     friend class RenderWidgetHostViewAndroidRotationTest;
 
@@ -537,9 +540,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     // fullscreen, and Picture-in-Picture mode.
     bool HandleScreenStateChanges(const cc::DeadlinePolicy& deadline_policy,
                                   bool force_fullscreen_sync = false);
-
-    // Clears flags used to throttle SurfaceSync.
-    void Unthrottle();
 
     // The ScreenState of the current world, the pending visual properties, or
     // the properties from before we entered Picture-in-Picture mode.

@@ -59,13 +59,6 @@ namespace blink {
 
 namespace {
 
-// Shared function to compute the number of bytes per pixel for a given bit
-// depth.
-wtf_size_t BytesPerPixelForBitDepth(
-    ImageDecoder::HighBitDepthDecodingOption bit_depth) {
-  return (bit_depth == ImageDecoder::kHighBitDepthToHalfFloat) ? 8 : 4;
-}
-
 cc::ImageType FileExtensionToImageType(String image_extension) {
   if (image_extension == "png") {
     return cc::ImageType::kPNG;
@@ -103,23 +96,13 @@ wtf_size_t CalculateMaxDecodedBytes(
     return max_decoded_bytes;
   }
 
-  wtf_size_t width = desired_size.width();
-  wtf_size_t height = desired_size.height();
-  auto kMaxSize = std::numeric_limits<wtf_size_t>::max();
-
-  // `height` cannot be zero, or `isEmpty()` would have been true above.
-  if (width >= kMaxSize / height) {
-    return max_decoded_bytes;
+  const wtf_size_t num_pixels = desired_size.width() * desired_size.height();
+  if (high_bit_depth_decoding_option == ImageDecoder::kDefaultBitDepth) {
+    return std::min(4 * num_pixels, max_decoded_bytes);
   }
 
-  const wtf_size_t num_pixels = width * height;
-  wtf_size_t num_bytes_per_pixel =
-      BytesPerPixelForBitDepth(high_bit_depth_decoding_option);
-  if (num_pixels > kMaxSize / num_bytes_per_pixel) {
-    return max_decoded_bytes;
-  }
-
-  return std::min(num_bytes_per_pixel * num_pixels, max_decoded_bytes);
+  // ImageDecoder::kHighBitDepthToHalfFloat
+  return std::min(8 * num_pixels, max_decoded_bytes);
 }
 
 // Compute the density corrected size based on |metadata| and the physical size
@@ -478,7 +461,11 @@ bool ImageDecoder::IsSizeAvailable() {
   }
 
 #if BUILDFLAG(IS_FUCHSIA)
-  wtf_size_t decoded_bytes_per_pixel = GetDecodedBytesPerPixel();
+  unsigned decoded_bytes_per_pixel = 4;
+  if (ImageIsHighBitDepth() &&
+      high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
+    decoded_bytes_per_pixel = 8;
+  }
 
   const gfx::Size size = DecodedSize();
   const wtf_size_t decoded_size_bytes =
@@ -540,9 +527,7 @@ bool ImageDecoder::HasC2PAManifest() const {
 }
 
 gfx::Size ImageDecoder::FrameSizeAtIndex(wtf_size_t) const {
-  // Because this method is used to compute the destination buffer size,
-  // we should return the decoded size instead of the original size.
-  return DecodedSize();
+  return Size();
 }
 
 cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
@@ -557,14 +542,12 @@ cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
   return image_metadata;
 }
 
-wtf_size_t ImageDecoder::GetDecodedBytesPerPixel() {
-  return BytesPerPixelForBitDepth(ImageIsHighBitDepth()
-                                      ? high_bit_depth_decoding_option_
-                                      : kDefaultBitDepth);
-}
-
 bool ImageDecoder::SetSize(unsigned width, unsigned height) {
-  unsigned decoded_bytes_per_pixel = GetDecodedBytesPerPixel();
+  unsigned decoded_bytes_per_pixel = 4;
+  if (ImageIsHighBitDepth() &&
+      high_bit_depth_decoding_option_ == kHighBitDepthToHalfFloat) {
+    decoded_bytes_per_pixel = 8;
+  }
   if (SizeCalculationMayOverflow(width, height, decoded_bytes_per_pixel)) {
     return SetFailed();
   }
@@ -845,9 +828,8 @@ bool ImageDecoder::InitFrameBuffer(wtf_size_t frame_index) {
   wtf_size_t required_previous_frame_index =
       buffer->RequiredPreviousFrameIndex();
   if (required_previous_frame_index == kNotFound) {
-    gfx::Size decoded_size = DecodedSize();
     // This frame doesn't rely on any previous data.
-    if (!buffer->AllocatePixelData(decoded_size.width(), decoded_size.height(),
+    if (!buffer->AllocatePixelData(Size().width(), Size().height(),
                                    ColorSpaceForSkImages())) {
       return false;
     }
@@ -872,7 +854,7 @@ bool ImageDecoder::InitFrameBuffer(wtf_size_t frame_index) {
       // We want to clear the previous frame to transparent, without
       // affecting pixels in the image outside of the frame.
       const gfx::Rect& prev_rect = prev_buffer->OriginalFrameRect();
-      DCHECK(!prev_rect.Contains(gfx::Rect(DecodedSize())));
+      DCHECK(!prev_rect.Contains(gfx::Rect(Size())));
       buffer->ZeroFillFrameRect(prev_rect);
     }
   }

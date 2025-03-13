@@ -367,6 +367,10 @@ class WebApp {
 
   bool was_shortcut_app() const { return was_shortcut_app_; }
 
+  bool diy_app_icons_masked_on_mac() const {
+    return diy_app_icons_masked_on_mac_;
+  }
+
   const std::vector<blink::Manifest::RelatedApplication>& related_applications()
       const {
     return related_applications_;
@@ -470,6 +474,7 @@ class WebApp {
   void SetSupportedLinksOfferDismissCount(int dismiss_count);
   void SetIsDiyApp(bool is_diy_app);
   void SetWasShortcutApp(bool was_shortcut_app);
+  void SetDiyAppIconsMaskedOnMac(bool diy_app_icons_masked_on_mac);
   void SetRelatedApplications(
       std::vector<blink::Manifest::RelatedApplication> related_applications);
 
@@ -612,6 +617,8 @@ class WebApp {
   bool is_diy_app_ = false;
 
   bool was_shortcut_app_ = false;
+
+  bool diy_app_icons_masked_on_mac_ = false;
 
   std::vector<blink::Manifest::RelatedApplication> related_applications_;
 

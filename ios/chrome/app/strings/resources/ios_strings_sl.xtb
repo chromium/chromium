@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Ključ za dostop</translation>
 <translation id="1030376737535466765">Odpri Upravitelja gesel</translation>
 <translation id="1035980983510608210">Če zaprete vse zavihke, zaprete tudi pripete zavihke.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1041322626941363065">Posvari, če so gesla razkrita zaradi podatkovne kršitve</translation>
 <translation id="1044891598689252897">Spletna mesta bodo delovala normalno</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Piškotki, podatki spletnega mesta</translation>
 <translation id="1312721752506309252">Izboljšana zaščita je vklopljena.</translation>
 <translation id="1317821187353201763">Zapiranje zavihka</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Sledi temu paketu}one{Sledi vsem paketom}two{Sledi vsem paketom}few{Sledi vsem paketom}other{Sledi vsem paketom}}</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
 <translation id="1322735045095424339">Vaša organizacija zahteva anonimni način.</translation>
 <translation id="1323735185997015385">Izbriši</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Št. izbranih: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Brisanje gesla</translation>
 <translation id="1712341189152602203">Obstoječi podatki brskanja bodo povezani z računom <ph name="USER_EMAIL" />. Ti podatki so morda vidni vaši organizaciji.</translation>
-<translation id="1713777106376424209">Dostavljeno do</translation>
 <translation id="1715515772563243997">Če zaupate spletnemu mestu <ph name="SITE" />, lahko za prijavo uporabite shranjeno geslo.</translation>
 <translation id="1718835860248848330">Zadnja ura</translation>
 <translation id="1728549374069268714">Prilepi in nadaljuj</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Spremljanje cen in vpogledi</translation>
 <translation id="1820195936249950412">Prijavite se z veljavnim računom</translation>
 <translation id="1820259098641718022">Dodano na bralni seznam</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Opozorila, ko prejmete zavihke iz drugih naprav.</translation>
 <translation id="1827529786398596735">Pridržite začetni zaslon</translation>
 <translation id="1832848789136765277">Če želite poskrbeti, da boste vedno lahko dostopali do sinhroniziranih podatkov, potrdite, da ste to vi.</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Izbirnik enot</translation>
 <translation id="2330607597130465898">Brez zaščite</translation>
 <translation id="233375395665273385">Izbriši in se odjavi</translation>
-<translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Nastavitve za prevajanje so ponastavljene.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Geslo za {DOMAIN_ONE} lahko shranite v računu Google, {EMAIL}.}=2{Gesli za {DOMAIN_ONE} in {DOMAIN_TWO} lahko shranite v računu Google, {EMAIL}.}=3{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}one{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}two{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}few{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}other{Gesla za {DOMAIN_ONE}, {DOMAIN_TWO} in še {OTHER_DOMAINS_COUNT} lahko shranite v računu Google, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Privzeti pogled spletnega mesta</translation>
@@ -797,7 +792,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4460014764210899310">Razdruži</translation>
 <translation id="446314443268698477">Uporabite fotoaparat ali fotografije za nakupovanje, prevajanje in prepoznavanje, kar vidite.</translation>
 <translation id="4469324811108161144">Zapiski lahko shranijo do toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
-<translation id="4469834037720363704">Številka paketa</translation>
 <translation id="4471472356135655769">Gesel ni mogoče izvoziti</translation>
 <translation id="4473608001744970767">Skrij spremljanje cene</translation>
 <translation id="4474142134969976028">Ni ustreznih rezultatov</translation>
@@ -1289,7 +1283,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="647867789226964031">Spremenite gesla</translation>
 <translation id="6494931198667773526">Se konča</translation>
 <translation id="6495521251906266731">Izberite, kaj želite storiti z obstoječimi podatki brskanja v tej napravi, kot so gesla, zgodovina in drugo.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Preklic sledenja temu paketu}one{Prekliči sledenje vsem paketom}two{Prekliči sledenje vsem paketom}few{Prekliči sledenje vsem paketom}other{Prekliči sledenje vsem paketom}}</translation>
 <translation id="6503077044568424649">Najpogostejše</translation>
 <translation id="6503763061813913607">Obvestila varnostnega preverjanja</translation>
 <translation id="6505334220040167806">Strnitev skupine zavihkov.</translation>
@@ -1761,7 +1754,6 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8481184073299279701">Dotaknite se gumba »Začni zapisovanje dnevnikov«, če želite zbirati prihodnje dnevnike konzole JavaScript in napake z vseh zavihkov. Dnevniki se bodo zbirali (in shranjevali samo v pomnilniku), dokler ta stran ne bo zaprta ali dokler se ne dotaknete »Ustavi zapisovanje dnevnikov«.</translation>
 <translation id="8487667956631253959">Vklop</translation>
 <translation id="8487700953926739672">Na voljo brez povezave</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Povezave ni mogoče ustvariti</translation>
 <translation id="8503813439785031346">Uporabniško ime</translation>
 <translation id="8505361906966222822">Shrani v …</translation>

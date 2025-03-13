@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -498,7 +499,8 @@ void LensOverlayController::ShowUIWithPendingRegion(
 }
 
 void LensOverlayController::ShowUI(
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    bool should_start_focused) {
   // If UI is already showing or in the process of showing, do nothing.
   if (state_ != State::kOff) {
     return;
@@ -516,6 +518,7 @@ void LensOverlayController::ShowUI(
   }
 
   invocation_source_ = invocation_source;
+  should_start_focused_ = should_start_focused;
 
   // Request user permission before grabbing a screenshot.
   CHECK(pref_service_);
@@ -533,7 +536,8 @@ void LensOverlayController::ShowUI(
     permission_bubble_controller_->RequestPermission(
         tab_->GetContents(),
         base::BindRepeating(&LensOverlayController::ShowUI,
-                            weak_factory_.GetWeakPtr(), invocation_source));
+                            weak_factory_.GetWeakPtr(), invocation_source,
+                            should_start_focused));
     return;
   }
 
@@ -2230,8 +2234,10 @@ void LensOverlayController::ShowOverlay() {
 
   // The overlay needs to be focused on show to immediately begin
   // receiving key events.
-  CHECK(overlay_web_view_);
-  overlay_web_view_->RequestFocus();
+  if (should_start_focused_) {
+    CHECK(overlay_web_view_);
+    overlay_web_view_->RequestFocus();
+  }
 
   // Listen to the render process housing out overlay.
   overlay_web_view_->GetWebContents()
@@ -2436,7 +2442,8 @@ void LensOverlayController::InitializeOverlay(
 
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (!pending_region_) {
+  if (!pending_region_ &&
+      !search::IsOmniboxInputInProgress(tab_->GetContents())) {
     ShowPreselectionBubble();
   }
 

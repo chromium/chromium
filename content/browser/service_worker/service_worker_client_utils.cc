@@ -282,6 +282,14 @@ void AddNonWindowClient(
       blink::mojom::ServiceWorkerClientLifecycleState::kActive,
       base::TimeTicks(), service_worker_client.create_time());
   out_clients->push_back(std::move(client_info));
+
+  if (service_worker_client.GetClientType() ==
+      blink::mojom::ServiceWorkerClientType::kSharedWorker) {
+    // This is recorded per the SharedWorker client.
+    base::UmaHistogramBoolean(
+        "ServiceWorker.AddNonWindowClient.SharedWorkerScript.IsBlob",
+        url.SchemeIsBlob());
+  }
 }
 
 struct ServiceWorkerClientInfoSort {
@@ -638,6 +646,12 @@ void GetClient(ServiceWorkerClient* service_worker_client,
         base::TimeTicks(), service_worker_client->create_time());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(client_info)));
+    if (service_worker_client->GetClientType() ==
+        blink::mojom::ServiceWorkerClientType::kSharedWorker) {
+      base::UmaHistogramBoolean(
+          "ServiceWorker.GetClient.SharedWorkerScript.IsBlob",
+          url.SchemeIsBlob());
+    }
   }
 }
 

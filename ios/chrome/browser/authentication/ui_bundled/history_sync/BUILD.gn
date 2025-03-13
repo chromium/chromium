@@ -61,6 +61,7 @@ source_set("ui") {
     "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements:elements_internal",
     "//ios/chrome/browser/shared/ui/symbols",

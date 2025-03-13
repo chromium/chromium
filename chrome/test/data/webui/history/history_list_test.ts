@@ -12,7 +12,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBrowserService} from './test_browser_service.js';
 import {createHistoryEntry, createHistoryInfo, shiftClick, waitForEvent} from './test_util.js';
@@ -312,8 +312,8 @@ suite('HistoryListTest', function() {
     const item = element.shadowRoot!.querySelector('history-item')!;
     assertTrue(item.isCardStart);
     const heading =
-        item.shadowRoot!.querySelector<HTMLElement>(
-                            '#date-accessed')!.textContent!;
+        item.shadowRoot.querySelector<HTMLElement>(
+                           '#date-accessed')!.textContent!;
     const title = item.$.link;
 
     // Check that the card title displays the search term somewhere.
@@ -459,11 +459,11 @@ suite('HistoryListTest', function() {
     // Ensure the UI is correctly updated.
     items = element.shadowRoot!.querySelectorAll('history-item');
 
-    assertEquals('https://www.google.com', items[0]!.item.title);
-    assertEquals('https://www.example.com', items[1]!.item.title);
-    assertEquals('https://en.wikipedia.org', items[2]!.item.title);
-    assertEquals('https://en.wikipedia.org', items[3]!.item.title);
-    assertEquals('https://www.google.com', items[4]!.item.title);
+    assertEquals('https://www.google.com', items[0]!.item?.title);
+    assertEquals('https://www.example.com', items[1]!.item?.title);
+    assertEquals('https://en.wikipedia.org', items[2]!.item?.title);
+    assertEquals('https://en.wikipedia.org', items[3]!.item?.title);
+    assertEquals('https://www.google.com', items[4]!.item?.title);
   });
 
   test('DeleteViaMenuButton', async function() {
@@ -768,6 +768,7 @@ suite('HistoryListTest', function() {
     document.body.style.height = '300px';
     const results = [...TEST_HISTORY_RESULTS, ...ADDITIONAL_RESULTS];
     await finishSetup(results, /*finished=*/ false);
+    await microtasksFinished();
     testService.handler.reset();
     // Make scroll debounce shorter to shorten some wait times below.
     element.setScrollDebounceForTest(1);
@@ -775,10 +776,10 @@ suite('HistoryListTest', function() {
     assertTrue(!!app.scrollTarget);
     // This check ensures the line below actually scrolls.
     assertGT(
-        app.scrollTarget.scrollHeight, app.scrollTarget.offsetHeight + 600);
+        app.scrollTarget.scrollHeight, app.scrollTarget.offsetHeight + 500);
     // Scroll to just under the threshold to make sure more results don't load.
     app.scrollTarget.scrollTop =
-        app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 600;
+        app.scrollTarget.scrollHeight - app.scrollTarget.offsetHeight - 500;
     // Wait for the scroll observer to trigger.
     await eventToPromise('scroll-timeout-for-test', element);
     assertEquals(

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1122068467107743258">Feina</translation>
 <translation id="1275718070701477396">Seleccionada</translation>
 <translation id="138513070655895675">Canvia a una altra forma de pagament en aquest element de menú.</translation>
 <translation id="2129442648318919291">Gestiona les adreces.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Adreça d’enviament</translation>
 <translation id="8873105120914375071">Vols pagar més ràpidament?</translation>
 <translation id="9032876013752408138">Emplena automàticament la meva informació</translation>
+<translation id="932327136139879170">Inici</translation>
 <translation id="984275831282074731">Formes de pagament</translation>
 </translationbundle>

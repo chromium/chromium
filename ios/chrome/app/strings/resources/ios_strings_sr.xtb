@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Приступни кључ</translation>
 <translation id="1030376737535466765">Отвори Менаџер лозинки</translation>
 <translation id="1035980983510608210">Затварањем свих картица затварате и закачене картице.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Искључи</translation>
 <translation id="1041322626941363065">Упозори ме ако су лозинке откривене при повреди података</translation>
 <translation id="1044891598689252897">Сајтови ће нормално радити</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Колачићи, подаци о сајтовима</translation>
 <translation id="1312721752506309252">Побољшана заштита је укључена</translation>
 <translation id="1317821187353201763">Затварање картице</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Прати овај пакет}one{Прати све пакете}few{Прати све пакете}other{Прати све пакете}}</translation>
 <translation id="1321993286294231467">Дошло је до грешке при чувању слике.</translation>
 <translation id="1322735045095424339">Организација захтева режим без архивирања</translation>
 <translation id="1323735185997015385">Избриши</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Број изабраних ставки је <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Избришите приступни кôд</translation>
 <translation id="1712341189152602203">Постојећи подаци прегледања ће бити повезани са: <ph name="USER_EMAIL" />. Ваша организација може да види ове податке.</translation>
-<translation id="1713777106376424209">Испорука до</translation>
 <translation id="1715515772563243997">Ако веб-сајт <ph name="SITE" /> сматрате поузданим, можете да користите сачувану лозинку за пријављивање.</translation>
 <translation id="1718835860248848330">Последњих сат времена</translation>
 <translation id="1728549374069268714">Налепи и иди</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Праћење цена и увиди</translation>
 <translation id="1820195936249950412">Пријавите се помоћу важећег налога</translation>
 <translation id="1820259098641718022">Додато је на листу за читање</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Обавештава вас када примате картице са других уређаја.</translation>
 <translation id="1827529786398596735">Додирните и задржите почетни екран</translation>
 <translation id="1832848789136765277">Да бисте били сигурни да увек можете да приступате синхронизованим подацима, потврдите да сте то ви</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Бирач јединица</translation>
 <translation id="2330607597130465898">Без заштите</translation>
 <translation id="233375395665273385">Избриши и одјави ме</translation>
-<translation id="2348630484974447747">Пакет</translation>
 <translation id="2351097562818989364">Подешавања за превођење су ресетована.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Можете да сачувате лозинку за сајт {DOMAIN_ONE} на Google налогу, {EMAIL}.}=2{Можете да сачувате лозинке за сајтове {DOMAIN_ONE} и {DOMAIN_TWO} на Google налогу, {EMAIL}.}=3{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}one{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}few{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}other{Можете да сачувате лозинке за сајтове {DOMAIN_ONE}, {DOMAIN_TWO} и још {OTHER_DOMAINS_COUNT} на Google налогу, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Подразумевани приказ сајта</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">Раздвоји</translation>
 <translation id="446314443268698477">Купујте, преводите и идентификујте оно што видите помоћу камере или слика.</translation>
 <translation id="4469324811108161144">Белешке могу да сачувају највише <ph name="CHARACTER_LIMIT" /> знакова.</translation>
-<translation id="4469834037720363704">Број пакета</translation>
 <translation id="4471472356135655769">Извоз лозинки није успео</translation>
 <translation id="4473608001744970767">Сакриј опцију Прати цену</translation>
 <translation id="4474142134969976028">Нема подударних резултата</translation>
@@ -1289,7 +1283,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="647867789226964031">Промените лозинке</translation>
 <translation id="6494931198667773526">Завршава се</translation>
 <translation id="6495521251906266731">Одаберите шта желите да урадите са постојећим подацима прегледања на овом уређају, попут лозинки, историје и другог садржаја.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Опозови праћење овог пакета}one{Опозови праћење свих пакета}few{Опозови праћење свих пакета}other{Опозови праћење свих пакета}}</translation>
 <translation id="6503077044568424649">Најпосећенији</translation>
 <translation id="6503763061813913607">Обавештења Провере безбедности</translation>
 <translation id="6505334220040167806">Скупите групу картица.</translation>
@@ -1761,7 +1754,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8481184073299279701">Додирните дугме „Покрени евидентирање“ да бисте прикупљали будуће евиденције JavaScript конзоле и грешке са свих картица. Евиденције ће се прикупљати (и чувати само у меморији) све док се та страница не затвори или не додирнете дугме „Заустави евидентирање“.</translation>
 <translation id="8487667956631253959">Укључено</translation>
 <translation id="8487700953926739672">Доступно ван мреже</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Прављење линка није успело</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8505361906966222822">Сачувајте у…</translation>

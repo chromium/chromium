@@ -7,9 +7,11 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
+#import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -176,6 +178,48 @@
       performAction:grey_tap()];
   [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests to add an identity and expect the choice screen to be removed, and
+// the newly added identity to be selected in the bottom sheet.
+- (void)testAddIdentity {
+  FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Open the bottom sheet.
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsSignInRowMatcher()];
+  // Open the identity chooser screen.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityButtonControlIdentifier)]
+      performAction:grey_tap()];
+
+  // Open the fake add account dialog.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kConsistencyAccountChooserAddAccountIdentifier)]
+      performAction:grey_tap()];
+
+  // Setup the fake add account dialog to add `fakeIdentity2`.
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity2
+                                  withUnknownCapabilities:NO];
+  // Confirm the fake add account dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Sign-in.
+  [ChromeEarlGrey
+      waitForMatcher:chrome_test_util::WebSigninPrimaryButtonMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          WebSigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
 }
 
 @end

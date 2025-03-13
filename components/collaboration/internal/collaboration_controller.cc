@@ -641,7 +641,7 @@ class AddingUserToGroupState : public ControllerState {
                                        DataPreviewActionFailure::kGroupFull) {
       RecordJoinEvent(GetLogger(),
                       CollaborationServiceJoinEvent::kPreviewGroupFullError);
-      HandleError();
+      HandleErrorWithType(ErrorInfo::Type::kGroupFull);
       return;
     }
 

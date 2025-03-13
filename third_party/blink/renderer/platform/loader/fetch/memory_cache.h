@@ -167,7 +167,7 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // freshest version of objects that are currently being referenced by a Web
   // page). removeFragmentIdentifierIfNeeded() should be called for the url
   // before using it as a key for the map.
-  using ResourceMap = HeapHashMap<String, Member<MemoryCacheEntry>>;
+  using ResourceMap = GCedHeapHashMap<String, Member<MemoryCacheEntry>>;
   using ResourceMapIndex = HeapHashMap<String, Member<ResourceMap>>;
   ResourceMap* EnsureResourceMap(const String& cache_identifier);
   ResourceMapIndex resource_maps_;

@@ -239,9 +239,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableGetDisplayMedia,
            raw_ref(features::kUserMediaScreenCapturing)},
 #endif
-          {wf::EnableHTMLInterestTargetAttribute,
-           raw_ref(blink::features::kHTMLInterestTargetAttribute),
-           kSetOnlyIfOverridden},
           {wf::EnableInstalledApp, raw_ref(features::kInstalledApp)},
           {wf::EnableLazyInitializeMediaControls,
            raw_ref(features::kLazyInitializeMediaControls)},

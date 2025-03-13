@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Kunci sandi</translation>
 <translation id="1030376737535466765">Buka Pengelola Sandi</translation>
 <translation id="1035980983510608210">Menutup semua tab juga akan menutup tab tersemat.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1041322626941363065">Berikan peringatan jika sandi Anda Terekspos saat terjadi Pelanggaran data</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookie, data situs</translation>
 <translation id="1312721752506309252">Perlindungan yang ditingkatkan aktif</translation>
 <translation id="1317821187353201763">Tutup tab</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Lacak paket ini}other{Lacak semua paket}}</translation>
 <translation id="1321993286294231467">Error saat menyimpan gambar.</translation>
 <translation id="1322735045095424339">Organisasi Anda mengharuskan mode Samaran</translation>
 <translation id="1323735185997015385">Hapus</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
 <translation id="1709916727352927457">Hapus kunci sandi</translation>
 <translation id="1712341189152602203">Data penjelajahan yang ada akan ditautkan ke <ph name="USER_EMAIL" />. Data ini mungkin dapat dilihat oleh organisasi Anda.</translation>
-<translation id="1713777106376424209">Dikirim oleh</translation>
 <translation id="1715515772563243997">Jika Anda memercayai <ph name="SITE" />, Anda dapat menggunakan sandi tersimpan untuk login.</translation>
 <translation id="1718835860248848330">Sejam terakhir</translation>
 <translation id="1728549374069268714">Tempel lalu buka</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Pemantauan dan analisis harga</translation>
 <translation id="1820195936249950412">Login dengan akun yang valid</translation>
 <translation id="1820259098641718022">Ditambahkan ke Daftar Baca</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Notifikasi saat Anda menerima tab dari perangkat lainnya.</translation>
 <translation id="1827529786398596735">Sentuh lama layar utama</translation>
 <translation id="1832848789136765277">Untuk memastikan Anda selalu dapat mengakses data yang disinkronkan, verifikasi diri Anda</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Pemilih satuan</translation>
 <translation id="2330607597130465898">Tidak ada perlindungan</translation>
 <translation id="233375395665273385">Hapus dan logout</translation>
-<translation id="2348630484974447747">Paket</translation>
 <translation id="2351097562818989364">Setelan terjemah telah direset.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE} di Akun Google Anda, {EMAIL}.}=2{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE} dan {DOMAIN_TWO} di Akun Google Anda, {EMAIL}.}=3{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE}, {DOMAIN_TWO}, dan {OTHER_DOMAINS_COUNT} lainnya di Akun Google Anda, {EMAIL}.}other{Anda dapat menyimpan sandi Anda untuk {DOMAIN_ONE}, {DOMAIN_TWO}, dan {OTHER_DOMAINS_COUNT} lainnya di Akun Google Anda, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Tampilan situs default</translation>
@@ -797,7 +792,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4460014764210899310">Pisahkan</translation>
 <translation id="446314443268698477">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera atau foto.</translation>
 <translation id="4469324811108161144">Catatan dapat menyimpan hingga <ph name="CHARACTER_LIMIT" /> karakter.</translation>
-<translation id="4469834037720363704">Nomor paket</translation>
 <translation id="4471472356135655769">Tidak dapat mengekspor sandi</translation>
 <translation id="4473608001744970767">Sembunyikan Pantau Harga</translation>
 <translation id="4474142134969976028">Tidak ada hasil yang cocok</translation>
@@ -1289,7 +1283,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="647867789226964031">Ubah sandi Anda</translation>
 <translation id="6494931198667773526">Berakhir</translation>
 <translation id="6495521251906266731">Pilih tindakan yang akan dilakukan pada data penjelajahan yang ada di perangkat ini, seperti sandi, histori, dan lainnya.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Batalkan pelacakan paket ini}other{Batalkan pelacakan semua paket}}</translation>
 <translation id="6503077044568424649">Sering dibuka</translation>
 <translation id="6503763061813913607">Notifikasi Pemeriksaan Keamanan</translation>
 <translation id="6505334220040167806">Ciutkan grup tab.</translation>
@@ -1761,7 +1754,6 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8481184073299279701">Ketuk tombol "Mulai logging" untuk mengumpulkan log dan error konsol JavaScript mendatang dari semua tab. Log akan dikumpulkan (dan disimpan hanya dalam memori) hingga halaman ini ditutup atau "Hentikan logging" diketuk.</translation>
 <translation id="8487667956631253959">Aktif</translation>
 <translation id="8487700953926739672">Tersedia secara offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Tidak dapat membuat link</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8505361906966222822">Simpan di…</translation>

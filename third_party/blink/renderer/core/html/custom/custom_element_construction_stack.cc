@@ -18,9 +18,9 @@ namespace {
 // construction stack.
 
 using ConstructorToStackMap =
-    HeapHashMap<Member<V8CustomElementConstructor>,
-                Member<CustomElementConstructionStack>,
-                V8CustomElementConstructorHashTraits>;
+    GCedHeapHashMap<Member<V8CustomElementConstructor>,
+                    Member<CustomElementConstructionStack>,
+                    V8CustomElementConstructorHashTraits>;
 
 using WindowMap =
     HeapHashMap<Member<const LocalDOMWindow>, Member<ConstructorToStackMap>>;

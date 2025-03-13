@@ -430,9 +430,15 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
 
 WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
     const std::string& guid,
+    AutofillProfileChange::Type change_type,
     base::OnceCallback<void(const AutofillProfileChange&)> on_success,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(change_type == AutofillProfileChange::REMOVE ||
+        (change_type == AutofillProfileChange::HIDE_IN_AUTOFILL &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillDeduplicateAccountAddresses)));
+
   std::optional<AutofillProfile> profile =
       AddressAutofillTable::FromWebDatabase(db)->GetAutofillProfile(guid);
   if (!profile) {
@@ -448,7 +454,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
   // Send GUID-based notification.
   // TODO(crbug.com/40258814): The change event for removal operations shouldn't
   // need to include the deleted profile. The GUID should suffice.
-  AutofillProfileChange change(AutofillProfileChange::REMOVE, guid, *profile);
+  AutofillProfileChange change(change_type, guid, *profile);
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillProfileChanged(change);
 

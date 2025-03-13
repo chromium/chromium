@@ -3142,6 +3142,9 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
        delegated_frame_host_->IsPrimarySurfaceEvicted()) ||
       !local_surface_id_allocator_.HasValidLocalSurfaceId()) {
     was_evicted = true;
+    // Release any synchronisation restrictions.
+    screen_state_change_handler_.Unthrottle();
+
     ui::WindowAndroidCompositor* compositor =
         view_.GetWindowAndroid() ? view_.GetWindowAndroid()->GetCompositor()
                                  : nullptr;

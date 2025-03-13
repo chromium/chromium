@@ -2,6 +2,7 @@ include_rules = [
   "-chrome/browser/ui/android/edge_to_edge/internal",
   "+base/android",
   "+base/test/android",
+  "+cc/input/android/java/src/org/chromium/cc/input/OffsetTag.java",
   "+chrome/browser/android/lifecycle",
   "+chrome/browser/flags",
   "+chrome/test/android",

@@ -5,11 +5,12 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {LINK_TOGGLE_BUTTON_ID, PauseActionSource, SpeechBrowserProxyImpl, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, setDefaultSpeechSynthesis} from './common.js';
+import {createApp, emitEvent, setupBasicSpeech} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('LinksToggledIntegration', () => {
   let app: AppElement;
@@ -76,13 +77,10 @@ suite('LinksToggledIntegration', () => {
             '#' + LINK_TOGGLE_BUTTON_ID);
     assertTrue(!!linksToggleButton);
     chrome.readingMode.setContentForTesting(axTree, [3, 5]);
-    await microtasksFinished();
 
-    const speechSynthesis = setDefaultSpeechSynthesis(app);
-    // Read only the first sentence and then stop. This ensures we can check
-    // the state of links and highlights while playing. Otherwise, speech may
-    // finish before we can check that.
-    speechSynthesis.setMaxSegments(1);
+    const speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
+    setupBasicSpeech(app, speech);
   });
 
   test('container has links by default', () => {
@@ -110,7 +108,6 @@ suite('LinksToggledIntegration', () => {
   suite('after speech starts', () => {
     setup(() => {
       app.playSpeech();
-      return microtasksFinished();
     });
 
     test('container does not have links', () => {
@@ -134,11 +131,9 @@ suite('LinksToggledIntegration', () => {
   });
 
   suite('after speech pauses', () => {
-    setup(async () => {
+    setup(() => {
       app.playSpeech();
-      await microtasksFinished();
       app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-      await microtasksFinished();
     });
 
     test('container has links again', () => {
@@ -159,7 +154,6 @@ suite('LinksToggledIntegration', () => {
       if (chrome.readingMode.linksEnabled) {
         linksToggleButton!.click();
       }
-      return microtasksFinished();
     });
 
     test('container does not have links', () => {
@@ -169,7 +163,6 @@ suite('LinksToggledIntegration', () => {
     suite('after speech starts', () => {
       setup(() => {
         app.playSpeech();
-        return microtasksFinished();
       });
 
       test('container does not have links', () => {
@@ -184,11 +177,9 @@ suite('LinksToggledIntegration', () => {
     });
 
     suite('after speech pauses', () => {
-      setup(async () => {
+      setup(() => {
         app.playSpeech();
-        await microtasksFinished();
         app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-        await microtasksFinished();
       });
 
       test('container does not have links', () => {

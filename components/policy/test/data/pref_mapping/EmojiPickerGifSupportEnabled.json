@@ -5,11 +5,10 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "note": "Check default values (no policies set)",
+        "note": "Check default values (no policies set, override by default_for_enterprise_users)",
         "policies": {},
         "prefs": {
           "emoji_picker.gif_support_enabled": {
-            "location": "user_profile",
             "value": false
           }
         }
@@ -20,7 +19,6 @@
         },
         "prefs": {
           "emoji_picker.gif_support_enabled": {
-            "location": "user_profile",
             "value": false
           }
         }
@@ -31,7 +29,6 @@
         },
         "prefs": {
           "emoji_picker.gif_support_enabled": {
-            "location": "user_profile",
             "value": true
           }
         }

@@ -11,6 +11,8 @@
 #include "ash/boca/on_task/on_task_pod_view.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/wm/window_pin_util.h"
+#include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -61,6 +63,7 @@ OnTaskPodControllerImpl::OnTaskPodControllerImpl(Browser* browser)
   pod_widget_->SetBounds(CalculateWidgetBounds());
   OnPageNavigationContextChanged();
   pod_widget_->Show();
+  is_window_pinned_ = IsWindowPinned(browser_window);
 
   browser_window->AddObserver(this);
 }
@@ -92,6 +95,21 @@ void OnTaskPodControllerImpl::ReloadCurrentPage() {
   chrome::Reload(browser_.get(), WindowOpenDisposition::CURRENT_TAB);
 }
 
+void OnTaskPodControllerImpl::ToggleTabStripVisibility(bool show) {
+  // Hide tab strip.
+  if (!show) {
+    tab_strip_reveal_lock_.reset();
+    return;
+  }
+
+  // Acquire lock to reveal the tab strip.
+  auto* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser_.get());
+  tab_strip_reveal_lock_ =
+      browser_view->immersive_mode_controller()->GetRevealedLock(
+          ImmersiveModeController::ANIMATE_REVEAL_YES);
+}
+
 void OnTaskPodControllerImpl::SetSnapLocation(
     OnTaskPodSnapLocation snap_location) {
   pod_snap_location_ = snap_location;
@@ -105,7 +123,22 @@ void OnTaskPodControllerImpl::OnWindowBoundsChanged(
     const gfx::Rect& old_bounds,
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
+  if (!pod_widget_) {
+    return;
+  }
   pod_widget_->SetBounds(CalculateWidgetBounds());
+  views::View* const pod_widget_contents_view = pod_widget_->GetContentsView();
+  if (!pod_widget_contents_view) {
+    return;
+  }
+  OnTaskPodView* const on_task_pod_view =
+      static_cast<OnTaskPodView*>(pod_widget_contents_view);
+
+  bool is_window_pinned = IsWindowPinned(window);
+  if (is_window_pinned_ != is_window_pinned) {
+    on_task_pod_view->OnLockedModeUpdate();
+  }
+  is_window_pinned_ = is_window_pinned;
 }
 
 void OnTaskPodControllerImpl::OnPageNavigationContextChanged() {
@@ -127,6 +160,10 @@ bool OnTaskPodControllerImpl::CanNavigateToPreviousPage() {
 
 bool OnTaskPodControllerImpl::CanNavigateToNextPage() {
   return chrome::CanGoForward(browser_.get());
+}
+
+bool OnTaskPodControllerImpl::CanToggleTabStripVisibility() {
+  return browser_ && platform_util::IsBrowserLockedFullscreen(browser_.get());
 }
 
 const gfx::Rect OnTaskPodControllerImpl::CalculateWidgetBounds() {
@@ -155,6 +192,14 @@ views::Widget* OnTaskPodControllerImpl::GetPodWidgetForTesting() {
     return nullptr;
   }
   return pod_widget_.get();
+}
+
+ImmersiveRevealedLock*
+OnTaskPodControllerImpl::GetTabStripRevealLockForTesting() {
+  if (!tab_strip_reveal_lock_) {
+    return nullptr;
+  }
+  return tab_strip_reveal_lock_.get();
 }
 
 OnTaskPodSnapLocation OnTaskPodControllerImpl::GetSnapLocationForTesting()

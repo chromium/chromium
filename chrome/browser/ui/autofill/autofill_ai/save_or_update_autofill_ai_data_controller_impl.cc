@@ -100,9 +100,7 @@ bool SaveOrUpdateAutofillAiDataControllerImpl::IsSavePrompt() const {
 
 std::vector<SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
 SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
-  std::vector<
-      SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails>
-      details;
+  std::vector<EntityAttributeUpdateDetails> details;
 
   auto get_attribute_update_type = [&](const autofill::AttributeInstance&
                                            new_entity_attribute_instance) {
@@ -133,34 +131,32 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
        new_entity_->attributes()) {
     EntityAttributeUpdateType update_type =
         get_attribute_update_type(attribute_instance);
-    details.emplace_back(attribute_instance.type().GetNameForI18n(),
-                         attribute_instance.GetCompleteInfo(app_locale_),
-                         update_type);
+    std::u16string attribute_value =
+        attribute_instance.GetCompleteInfo(app_locale_);
+    if (!attribute_value.empty()) {
+      details.emplace_back(attribute_instance.type().GetNameForI18n(),
+                           std::move(attribute_value), update_type);
+    }
   }
 
   // Move new entity values that were either added or updated to the top.
-  std::ranges::stable_sort(
-      details, [](const SaveOrUpdateAutofillAiDataController::
-                      EntityAttributeUpdateDetails& a,
-                  const SaveOrUpdateAutofillAiDataController::
-                      EntityAttributeUpdateDetails& b) {
-        // Returns true if `attribute` is a new entity attribute that was either
-        // added or updated.
-        auto added_or_updated =
-            [](const SaveOrUpdateAutofillAiDataController::
-                   EntityAttributeUpdateDetails& attribute) {
-              return attribute.update_type == kNewEntityAttributeAdded ||
-                     attribute.update_type == kNewEntityAttributeUpdated;
-            };
-        if (added_or_updated(a) && !added_or_updated(b)) {
-          return true;
-        }
+  std::ranges::stable_sort(details, [](const EntityAttributeUpdateDetails& a,
+                                       const EntityAttributeUpdateDetails& b) {
+    // Returns true if `attribute` is a new entity attribute that was either
+    // added or updated.
+    auto added_or_updated = [](const EntityAttributeUpdateDetails& attribute) {
+      return attribute.update_type == kNewEntityAttributeAdded ||
+             attribute.update_type == kNewEntityAttributeUpdated;
+    };
+    if (added_or_updated(a) && !added_or_updated(b)) {
+      return true;
+    }
 
-        if (!added_or_updated(a) && added_or_updated(b)) {
-          return false;
-        }
-        return false;
-      });
+    if (!added_or_updated(a) && added_or_updated(b)) {
+      return false;
+    }
+    return false;
+  });
   return details;
 }
 

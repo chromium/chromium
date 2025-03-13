@@ -41,6 +41,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 
 using signin_util::SignedInState;
@@ -219,15 +220,17 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   if (orientation == views::LayoutOrientation::kHorizontal) {
     title->SetMaximumWidth(kTitleMaxWidth);
   } else {
-    title->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets::TLBR(
-            0, 0,
-            ChromeLayoutProvider::Get()
-                ->GetDialogInsetsForContentType(views::DialogContentType::kText,
-                                                views::DialogContentType::kText)
-                .bottom(),
-            0));
+    // Make the distance smaller if the next element will be an account card.
+    const int subtitle_margin_bottom =
+        account.IsEmpty() ? ChromeLayoutProvider::Get()
+                                ->GetDialogInsetsForContentType(
+                                    views::DialogContentType::kText,
+                                    views::DialogContentType::kText)
+                                .bottom()
+                          : ChromeLayoutProvider::Get()->GetDistanceMetric(
+                                DISTANCE_TEXTFIELD_ACCOUNT_CARD_VERTICAL);
+    title->SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(0, 0, subtitle_margin_bottom, 0));
   }
   AddChildView(std::move(title));
 

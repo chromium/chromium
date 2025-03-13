@@ -8,10 +8,11 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
+#include "base/compiler_specific.h"
 #include "base/win/sid.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/handle_closer.h"
@@ -36,11 +37,11 @@ class PolicyDiagnostic final : public PolicyInfo {
   PolicyDiagnostic& operator=(const PolicyDiagnostic&) = delete;
 
   ~PolicyDiagnostic() override;
-  const char* JsonString() override;
+  const std::string& JsonString() const LIFETIME_BOUND override;
 
  private:
   // |json_string_| is lazily constructed.
-  std::unique_ptr<std::string> json_string_;
+  mutable std::optional<std::string> json_string_;
   uint32_t process_id_;
   TokenLevel lockdown_level_ = USER_LAST;
   JobLevel job_level_ = JobLevel::kUnprotected;

@@ -336,7 +336,7 @@ base::Value::Dict GetPolicyRules(const std::vector<IpcTag>& ipcs,
 
 // `handle_config` is a set of configuration bools - only output things
 // if they are enabled.
-base::Value::List GetHandlesToClose(HandleCloserConfig& handle_config) {
+base::Value::List GetHandlesToClose(const HandleCloserConfig& handle_config) {
   base::Value::List results;
   if (!handle_config.handle_closer_enabled) {
     return results;
@@ -422,10 +422,10 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
 
 PolicyDiagnostic::~PolicyDiagnostic() = default;
 
-const char* PolicyDiagnostic::JsonString() {
+const std::string& PolicyDiagnostic::JsonString() const {
   // Lazily constructs json_string_.
   if (json_string_)
-    return json_string_->c_str();
+    return *json_string_;
 
   base::Value::Dict dict;
   dict.Set(kProcessId, base::strict_cast<double>(process_id_));
@@ -477,8 +477,8 @@ const char* PolicyDiagnostic::JsonString() {
   std::optional<std::string> json_string =
       base::WriteJson(base::Value(std::move(dict)));
   CHECK(json_string);
-  json_string_ = std::make_unique<std::string>(std::move(*json_string));
-  return json_string_->c_str();
+  json_string_ = std::move(json_string);
+  return *json_string_;
 }
 
 }  // namespace sandbox

@@ -29,10 +29,11 @@ class MEDIA_GPU_EXPORT CodecBufferWaitCoordinator
     : public base::RefCountedThreadSafe<CodecBufferWaitCoordinator>,
       public gpu::RefCountedLockHelperDrDc {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   explicit CodecBufferWaitCoordinator(
       scoped_refptr<gpu::TextureOwner> texture_owner,
       scoped_refptr<gpu::RefCountedLock> drdc_lock);
-
   CodecBufferWaitCoordinator(const CodecBufferWaitCoordinator&) = delete;
   CodecBufferWaitCoordinator& operator=(const CodecBufferWaitCoordinator&) =
       delete;
@@ -60,11 +61,10 @@ class MEDIA_GPU_EXPORT CodecBufferWaitCoordinator
   }
 
  protected:
+  friend class base::RefCountedThreadSafe<CodecBufferWaitCoordinator>;
   virtual ~CodecBufferWaitCoordinator();
 
  private:
-  friend class base::RefCountedThreadSafe<CodecBufferWaitCoordinator>;
-
   scoped_refptr<gpu::TextureOwner> texture_owner_;
 
   base::TimeTicks release_time_;

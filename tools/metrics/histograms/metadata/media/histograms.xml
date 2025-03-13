@@ -7076,7 +7076,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="MediaRouter.Cast.App.Availability" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2025-04-09">
 <!-- Name completed by histogram_suffixes name="MediaRouterSuccess" -->
 
   <owner>muyaoxu@google.com</owner>
@@ -7090,7 +7090,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaRouter.Cast.Channel.ConnectResult" enum="BooleanSuccess"
     expires_after="2025-08-03">
-  <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7101,7 +7100,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaRouter.Cast.Channel.Error"
     enum="MediaRouterCastChannelError" expires_after="2025-08-17">
-  <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7113,7 +7111,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaRouter.Cast.Discovery.ConnectedDevicesCount"
     units="devices" expires_after="2025-12-09">
-  <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7123,8 +7120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Cast.Discovery.KnownDevicesCount" units="devices"
-    expires_after="2026-03-01">
-  <owner>muyaoxu@google.com</owner>
+    expires_after="2025-05-25">
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7140,6 +7136,13 @@ chromium-metrics-reviews@google.com.
   <summary>The source of discovery for a newly-created Cast sink.</summary>
 </histogram>
 
+<histogram name="MediaRouter.Cast.Feedback.Event"
+    enum="MediaRouterCastFeedbackEvent" expires_after="2022-05-01">
+  <owner>jrw@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>Events related to the WebUI Cast feedback dialog.</summary>
+</histogram>
+
 <histogram name="MediaRouter.Cast.LaunchSessionResponse.AppType"
     enum="MediaRouterResponseReceiverAppType" expires_after="2025-05-11">
   <owner>muyaoxu@google.com</owner>
@@ -7152,7 +7155,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaRouter.Cast.Mdns.Channel.Open_Failure" units="ms"
     expires_after="2025-07-22">
-  <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7163,7 +7165,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="MediaRouter.Cast.Mdns.Channel.Open_Success" units="ms"
     expires_after="2025-07-22">
-  <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -7342,7 +7343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Dial.FetchAppInfo"
-    enum="MediaRouterDialFetchAppInfoResult" expires_after="2026-03-01">
+    enum="MediaRouterDialFetchAppInfoResult" expires_after="2025-04-09">
   <owner>muyaoxu@google.com</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>

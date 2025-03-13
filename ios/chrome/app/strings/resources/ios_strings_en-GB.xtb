@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Passkey</translation>
 <translation id="1030376737535466765">Open Password Manager</translation>
 <translation id="1035980983510608210">Closing all tabs will close pinned tabs as well.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1041322626941363065">Warn you if passwords are exposed in a data breach</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookies, site data</translation>
 <translation id="1312721752506309252">Enhanced protection is on</translation>
 <translation id="1317821187353201763">Close tab</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Track this package}other{Track all packages}}</translation>
 <translation id="1321993286294231467">Error saving image.</translation>
 <translation id="1322735045095424339">Your organisation requires Incognito mode</translation>
 <translation id="1323735185997015385">Delete</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
 <translation id="1709916727352927457">Delete passkey</translation>
 <translation id="1712341189152602203">Existing browsing data will be linked to <ph name="USER_EMAIL" />. This data may be viewable by your organisation.</translation>
-<translation id="1713777106376424209">Delivered by</translation>
 <translation id="1715515772563243997">If you trust <ph name="SITE" />, you can use a saved password to sign in.</translation>
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1728549374069268714">Paste and go</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Price tracking and insights</translation>
 <translation id="1820195936249950412">Sign in with a valid account</translation>
 <translation id="1820259098641718022">Added to Reading List</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Alerts when you receive tabs from your other devices.</translation>
 <translation id="1827529786398596735">Touch and hold the home screen</translation>
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Unit selector</translation>
 <translation id="2330607597130465898">No protection</translation>
 <translation id="233375395665273385">Delete and sign out</translation>
-<translation id="2348630484974447747">Parcel</translation>
 <translation id="2351097562818989364">Your translate settings have been reset.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{You can save your password for {DOMAIN_ONE} in your Google Account, {EMAIL}.}=2{You can save your passwords for {DOMAIN_ONE} and {DOMAIN_TWO} in your Google Account, {EMAIL}.}=3{You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO} and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}other{You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO} and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}}</translation>
 <translation id="2353953000228441783">Default site view</translation>
@@ -797,7 +792,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="446314443268698477">Shop, translate and identify what you see with your camera or photos.</translation>
 <translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
-<translation id="4469834037720363704">Parcel number</translation>
 <translation id="4471472356135655769">Can't export passwords</translation>
 <translation id="4473608001744970767">Hide Track price</translation>
 <translation id="4474142134969976028">No matching results</translation>
@@ -1289,7 +1283,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="647867789226964031">Change your passwords</translation>
 <translation id="6494931198667773526">Ends</translation>
 <translation id="6495521251906266731">Choose what to do with the existing browsing data on this device, like passwords, history and more.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Untrack this package}other{Untrack all packages}}</translation>
 <translation id="6503077044568424649">Most visited</translation>
 <translation id="6503763061813913607">Safety Check notifications</translation>
 <translation id="6505334220040167806">Collapse tab group.</translation>
@@ -1761,7 +1754,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8481184073299279701">Tap the 'Start logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop logging' is tapped.</translation>
 <translation id="8487667956631253959">On</translation>
 <translation id="8487700953926739672">Available offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Unable to create link</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8505361906966222822">Save in…</translation>

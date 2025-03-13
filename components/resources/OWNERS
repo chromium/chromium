@@ -16,6 +16,7 @@ per-file printing_resources.grdp=file://printing/OWNERS
 per-file search_engine_choice_scaled_resources.grdp=file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 per-file security_interstitials_dev_ui_resources.grdp=file://components/security_interstitials/OWNERS
 per-file security_interstitials_resources.grdp=file://components/security_interstitials/OWNERS
+per-file supervised_user_resources.grdp=file://components/supervised_user/OWNERS
 per-file sync_driver_resources.grdp=file://components/sync/OWNERS
 per-file translate_resources.grdp=file://components/translate/OWNERS
 

@@ -139,7 +139,7 @@ void GlicProfileManager::MaybeAutoOpenGlicPanel() {
   // TODO(391948342): Figure out why the FRE modal doesn't show when triggered
   // too early, and wait for that condition rather than delaying.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&AutoOpenGlicPanel), base::Seconds(5));
+      FROM_HERE, base::BindOnce(&AutoOpenGlicPanel), base::Seconds(30));
 
   did_auto_open_ = true;
 }

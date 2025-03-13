@@ -912,8 +912,7 @@ bool H264Decoder::ModifyReferencePicList(const H264SliceHeader* slice_hdr,
   size_t original_size = ref_pic_listx->size();
   ref_pic_listx->resize(num_ref_idx_lX_active_minus1 + 1);
   for (int i = original_size; i < num_ref_idx_lX_active_minus1 + 1; i++) {
-    scoped_refptr<H264Picture> nonref_pic =
-        base::WrapRefCounted(new H264Picture(nullptr));
+    auto nonref_pic = base::MakeRefCounted<H264Picture>(nullptr);
     LOG_ASSERT(InitNonexistingPicture(nonref_pic, 0, false));
     (*ref_pic_listx)[i] = nonref_pic;
   }

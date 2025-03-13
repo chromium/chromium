@@ -232,8 +232,6 @@ struct PLATFORM_EXPORT ShapeResultBloberizer::FillGlyphs
              Type);
   FillGlyphs(const FontDescription& font_description,
              const PlainTextNode& node,
-             unsigned from,
-             unsigned to,
              Type type);
 
  private:

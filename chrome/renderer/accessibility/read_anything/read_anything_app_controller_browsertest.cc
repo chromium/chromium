@@ -1774,11 +1774,11 @@ TEST_F(ReadAnythingAppControllerTest,
   update.nodes = {std::move(generic_container_node)};
   updates.push_back(std::move(update));
 
-  // Add the three updates.
+  // Add the updates.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   AccessibilityEventReceived({std::move(updates[0])});
-  controller().AccessibilityEventReceived(
-      tree_id_, {std::move(updates[1]), std::move(updates[2])}, {});
+  updates.erase(updates.begin());
+  controller().AccessibilityEventReceived(tree_id_, std::move(updates), {});
   Mock::VerifyAndClearExpectations(distiller_);
 
   // Switch to a new active tree. Should not crash.

@@ -3189,6 +3189,16 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity));
 
+  if (GetContentClient()->browser()->IsWebUIBundledCodeCachingEnabled(
+          process_lock.lock_url())) {
+    auto url_to_code_cache_map =
+        GetContentClient()->browser()->GetWebUIResourceUrlToCodeCacheMap();
+    if (!url_to_code_cache_map.empty()) {
+      GetRendererInterface()->SetWebUIResourceUrlToCodeCacheMap(
+          std::move(url_to_code_cache_map));
+    }
+  }
+
   if (!process_lock.IsASiteOrOrigin())
     return;
 

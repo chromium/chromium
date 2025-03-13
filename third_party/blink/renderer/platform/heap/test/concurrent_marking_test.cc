@@ -172,13 +172,13 @@ void SwapCollections() {
 // HeapHashMap
 
 template <typename T>
-using IdentityHashMap = HeapHashMap<T, T>;
+using IdentityHashMap = GCedHeapHashMap<T, T>;
 
 template <typename T>
-struct MethodAdapter<HeapHashMap<T, T>>
-    : public MethodAdapterBase<HeapHashMap<T, T>> {
+struct MethodAdapter<GCedHeapHashMap<T, T>>
+    : public MethodAdapterBase<GCedHeapHashMap<T, T>> {
   template <typename U>
-  static void insert(HeapHashMap<T, T>& map, U&& u) {
+  static void insert(GCedHeapHashMap<T, T>& map, U&& u) {
     map.insert(u, u);
   }
 };

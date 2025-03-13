@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1122068467107743258">Lanekoa</translation>
 <translation id="1275718070701477396">Hautatua</translation>
 <translation id="138513070655895675">Menuko aukera honetan, aldatu ordainketa-metodoa.</translation>
 <translation id="2129442648318919291">Kudeatu helbideak.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Bidaltzeko helbidea</translation>
 <translation id="8873105120914375071">Bizkorrago erosi nahi duzu?</translation>
 <translation id="9032876013752408138">Bete automatikoki nire informazioa</translation>
+<translation id="932327136139879170">Hasiera</translation>
 <translation id="984275831282074731">Ordainketa-metodoak</translation>
 </translationbundle>

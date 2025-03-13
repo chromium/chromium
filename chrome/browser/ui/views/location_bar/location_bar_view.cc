@@ -1789,7 +1789,15 @@ void LocationBarView::UpdateChipVisibility() {
     return;
   }
 
-  if (GetChipController()->chip()->GetVisible()) {
+  bool has_visible_chip = GetChipController()->chip()->GetVisible();
+  bool has_permission_prompt =
+      GetChipController()->active_permission_request_manager().has_value() &&
+      GetChipController()
+          ->active_permission_request_manager()
+          .value()
+          ->GetCurrentPrompt();
+
+  if (has_visible_chip || has_permission_prompt) {
     // If a user starts typing, a permission request should be ignored and the
     // chip finalized.
     GetChipController()->ResetPermissionPromptChip();

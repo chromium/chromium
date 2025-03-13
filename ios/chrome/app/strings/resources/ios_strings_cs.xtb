@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Přístupový klíč</translation>
 <translation id="1030376737535466765">Otevřít Správce hesel</translation>
 <translation id="1035980983510608210">Zavřením všech karet zavřete i připnuté karty.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Vypnout</translation>
 <translation id="1041322626941363065">Upozorňovat v případě vyzrazení hesel při porušení zabezpečení údajů</translation>
 <translation id="1044891598689252897">Weby budou fungovat normálně</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Soubory cookie, data webů</translation>
 <translation id="1312721752506309252">Je zapnutá vylepšená ochrana</translation>
 <translation id="1317821187353201763">Zavřít kartu</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Sledovat tuto zásilku}few{Sledovat všechny zásilky}many{Sledovat všechny zásilky}other{Sledovat všechny zásilky}}</translation>
 <translation id="1321993286294231467">Při ukládání obrázku došlo k chybě.</translation>
 <translation id="1322735045095424339">Vaše organizace vyžaduje anonymní režim</translation>
 <translation id="1323735185997015385">Smazat</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Počet vybraných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Smazat přístupový klíč</translation>
 <translation id="1712341189152602203">Stávající údaje o prohlížení budou propojeny s účtem <ph name="USER_EMAIL" />. K těmto datům může mít přístup vaše organizace.</translation>
-<translation id="1713777106376424209">Doručeno</translation>
 <translation id="1715515772563243997">Pokud webu <ph name="SITE" /> důvěřujete, můžete k přihlášení použít uložené heslo.</translation>
 <translation id="1718835860248848330">Poslední hodina</translation>
 <translation id="1728549374069268714">Vložit a přejít</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Sledování cen a informace o cenách</translation>
 <translation id="1820195936249950412">Přihlaste se pomocí platného účtu</translation>
 <translation id="1820259098641718022">Přidáno do seznamu četby</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Upozornění, když obdržíte karty z jiných zařízení.</translation>
 <translation id="1827529786398596735">Podržte plochu</translation>
 <translation id="1832848789136765277">Aby bylo zajištěno, že budete mít vždy přístup k synchronizovaným datům, ověřte svoji totožnost</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Výběr jednotek</translation>
 <translation id="2330607597130465898">Bez ochrany</translation>
 <translation id="233375395665273385">Vymazat a odhlásit se</translation>
-<translation id="2348630484974447747">Balíček</translation>
 <translation id="2351097562818989364">Nastavení překladů bylo resetováno.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Heslo pro web {DOMAIN_ONE} si můžete uložit do svého účtu Google ({EMAIL}).}=2{Hesla pro weby {DOMAIN_ONE} a {DOMAIN_TWO} si můžete uložit do svého účtu Google ({EMAIL}).}=3{Hesla pro weby {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} další si můžete uložit do svého účtu Google ({EMAIL}).}few{Hesla pro weby {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} další si můžete uložit do svého účtu Google ({EMAIL}).}many{Hesla pro weby {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} dalšího si můžete uložit do svého účtu Google ({EMAIL}).}other{Hesla pro weby {DOMAIN_ONE}, {DOMAIN_TWO} a {OTHER_DOMAINS_COUNT} dalších si můžete uložit do svého účtu Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Výchozí zobrazení webu</translation>
@@ -797,7 +792,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4460014764210899310">Zrušit seskupení</translation>
 <translation id="446314443268698477">Nakupujte, překládejte a identifikujte různé věci pomocí fotoaparátu nebo fotek.</translation>
 <translation id="4469324811108161144">Poznámky mohou uložit max. <ph name="CHARACTER_LIMIT" /> znaků.</translation>
-<translation id="4469834037720363704">Číslo zásilky</translation>
 <translation id="4471472356135655769">Hesla se nepodařilo exportovat</translation>
 <translation id="4473608001744970767">Skrýt možnost Sledovat cenu</translation>
 <translation id="4474142134969976028">Dotazu neodpovídají žádné výsledky</translation>
@@ -1289,7 +1283,6 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="647867789226964031">Změňte svá hesla</translation>
 <translation id="6494931198667773526">Končí</translation>
 <translation id="6495521251906266731">Zvolte, co chcete udělat se stávajícími údaji o prohlížení v tomhle zařízení, jako jsou hesla, historie atd.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Přestat sledovat tuto zásilku}few{Přestat sledovat tyto zásilky}many{Přestat sledovat tyto zásilky}other{Přestat sledovat tyto zásilky}}</translation>
 <translation id="6503077044568424649">Nejnavštěvovanější</translation>
 <translation id="6503763061813913607">Oznámení bezpečnostní kontroly</translation>
 <translation id="6505334220040167806">Sbalit skupinu karet.</translation>
@@ -1761,7 +1754,6 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8481184073299279701">Klepnutím na tlačítko Spustit protokolování začnete shromažďovat budoucí protokoly konzole JavaScriptu a chyby ze všech karet. Protokoly se budou shromažďovat (a ukládat jen do paměti), dokud tuto stránku nezavřete nebo neklepnete na Zastavit protokolování.</translation>
 <translation id="8487667956631253959">Zapnuto</translation>
 <translation id="8487700953926739672">Dostupné offline</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Odkaz se nepodařilo vytvořit</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8505361906966222822">Uložit do…</translation>

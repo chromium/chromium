@@ -464,11 +464,10 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
 ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     const FontDescription& font_description,
     const PlainTextNode& node,
-    unsigned from,
-    unsigned to,
     const Type type)
     : ShapeResultBloberizer(font_description, type) {
-  if (CanUseFastPath(from, to, node.TextContent().length(),
+  const unsigned to = node.TextContent().length();
+  if (CanUseFastPath(0, to, to,
                      /* has_vertical_offsets */ false)) {
     DVLOG(4) << "FillGlyphs fast path";
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kTextIntercepts);
@@ -487,8 +486,8 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     return;
   }
 
-  FillGlyphsSlow(node.TextContent(), node.BaseDirection(), node.ItemList(),
-                 from, to);
+  FillGlyphsSlow(node.TextContent(), node.BaseDirection(), node.ItemList(), 0,
+                 to);
 }
 
 template <typename ShapeList>

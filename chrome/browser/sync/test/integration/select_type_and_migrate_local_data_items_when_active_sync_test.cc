@@ -64,7 +64,6 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kImprovedSigninUIOnDesktop,
-         switches::kExplicitBrowserSigninUIOnDesktop,
          switches::kSyncEnableBookmarksInTransportMode,
          switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload},
         /*disabled_features=*/{
@@ -477,7 +476,6 @@ class
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kImprovedSigninUIOnDesktop,
-         switches::kExplicitBrowserSigninUIOnDesktop,
          syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers},
         /*disabled_features=*/{});
   }

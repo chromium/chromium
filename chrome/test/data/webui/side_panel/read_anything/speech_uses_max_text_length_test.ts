@@ -4,16 +4,16 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES, SpeechBrowserProxyImpl} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createAndSetVoices, createApp} from './common.js';
-import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechUsesMaxTextLength', () => {
   let app: AppElement;
   let maxSpeechLength: number;
-  let speechSynthesis: FakeSpeechSynthesis;
+  let speech: TestSpeechBrowserProxy;
 
   const shortSentence =
       'The snow glows white on the mountain tonight, not a footprint to be ' +
@@ -123,11 +123,11 @@ suite('SpeechUsesMaxTextLength', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
 
     app = await createApp();
     maxSpeechLength = MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES;
-    speechSynthesis = new FakeSpeechSynthesis();
-    app.synth = speechSynthesis;
   });
   // These checks ensure the text used in this test stays up to date
   // in case the maximum speech length changes.
@@ -200,7 +200,7 @@ suite('SpeechUsesMaxTextLength', () => {
         MAX_SPEECH_LENGTH_FOR_REMOTE_VOICES);
 
 
-    createAndSetVoices(app, speechSynthesis, [
+    createAndSetVoices(app, speech, [
       {lang: 'en-us', name: 'Google Elsa (Natural)', localService: true},
     ]);
     // On ChromeOS we don't care about the length of local voices because
@@ -218,7 +218,7 @@ suite('SpeechUsesMaxTextLength', () => {
   });
 
   test('correct max length used with ChromeOS', () => {
-    createAndSetVoices(app, speechSynthesis, [
+    createAndSetVoices(app, speech, [
       {lang: 'en-us', name: 'Google Kristoff (Natural)', localService: true},
     ]);
     assertGT(longSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);

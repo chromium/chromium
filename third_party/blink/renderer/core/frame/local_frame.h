@@ -1142,7 +1142,7 @@ class CORE_EXPORT LocalFrame final
   // reused among sub frames.
   Member<ClipPathPaintImageGenerator> clip_path_paint_image_generator_;
 
-  using SavedScrollOffsets = HeapHashMap<Member<Node>, ScrollOffset>;
+  using SavedScrollOffsets = GCedHeapHashMap<Member<Node>, ScrollOffset>;
   Member<SavedScrollOffsets> saved_scroll_offsets_;
 
   // Created lazily when needed, either via the browser's SharedHighlighting

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout_view.h"
 
@@ -34,8 +35,17 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   IconButton* get_forward_button_for_testing() { return forward_button_; }
   IconButton* reload_tab_button_for_testing() { return reload_tab_button_; }
   IconButton* snap_pod_button_for_testing() { return snap_pod_button_; }
+  views::LabelButton* pin_tab_strip_button_for_testing() {
+    return pin_tab_strip_button_;
+  }
 
+  // Called when the web contents navigation context is updated to update
+  // back_button_ and forward_button_ enable status.
   void OnPageNavigationContextUpdate();
+
+  // Called when the boca app locked mode state is updated to update
+  // pin_tab_strip_button_ enable status.
+  void OnLockedModeUpdate();
 
  private:
   // Adds shortcut buttons to the OnTask pod view.
@@ -43,6 +53,10 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
 
   // Toggles the snap location for the OnTask pod.
   void ToggleSnapLocation();
+
+  // Update the color and text of the pin tab strip button, and the tab strip
+  // visibility.
+  void UpdatePinTabStripButton();
 
   // Pointer to the pod controller that outlives the `OnTaskPodView`.
   const raw_ptr<OnTaskPodController> pod_controller_;
@@ -53,6 +67,11 @@ class ASH_EXPORT OnTaskPodView : public views::BoxLayoutView {
   raw_ptr<IconButton> back_button_;
   raw_ptr<IconButton> forward_button_;
   raw_ptr<IconButton> reload_tab_button_;
+  raw_ptr<views::Separator> right_separator_;
+  raw_ptr<views::LabelButton> pin_tab_strip_button_;
+
+  // Whether the tab strip should be shown or hidden.
+  bool should_show_tab_strip_ = false;
 
   base::WeakPtrFactory<OnTaskPodView> weak_ptr_factory_{this};
 };

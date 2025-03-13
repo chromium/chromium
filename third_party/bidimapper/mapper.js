@@ -197,6 +197,12 @@
             EventNames["UserPromptOpened"] = "browsingContext.userPromptOpened";
         })(BrowsingContext.EventNames || (BrowsingContext.EventNames = {}));
     })(BrowsingContext$2 || (BrowsingContext$2 = {}));
+    var Input$2;
+    (function (Input) {
+        (function (EventNames) {
+            EventNames["FileDialogOpened"] = "input.fileDialogOpened";
+        })(Input.EventNames || (Input.EventNames = {}));
+    })(Input$2 || (Input$2 = {}));
     var Network$2;
     (function (Network) {
         (function (EventNames) {
@@ -217,6 +223,7 @@
         ...Object.values(BiDiModule),
         ...Object.values(Bluetooth$2.EventNames),
         ...Object.values(BrowsingContext$2.EventNames),
+        ...Object.values(Input$2.EventNames),
         ...Object.values(Log$1.EventNames),
         ...Object.values(Network$2.EventNames),
         ...Object.values(Script$2.EventNames),
@@ -743,6 +750,15 @@
             return await context.print(params);
         }
         async setViewport(params) {
+            if (params.userContexts === undefined && params.context === undefined) {
+                throw new InvalidArgumentException('Either userContexts or context must be provided');
+            }
+            if (params.userContexts !== undefined && params.context !== undefined) {
+                throw new InvalidArgumentException('userContexts and context are mutually exclusive');
+            }
+            if (params.userContexts !== undefined) {
+                throw new UnsupportedOperationException('userContexts is not supported');
+            }
             const context = this.#browsingContextStorage.getContext(params.context);
             if (!context.isTopLevelContext()) {
                 throw new InvalidArgumentException('Emulating viewport is only supported on the top-level context');
@@ -4462,6 +4478,7 @@
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.disable');
             await context.cdpTarget.browserCdpClient.sendCommand('BluetoothEmulation.enable', {
                 state: params.state,
+                leSupported: params.leSupported ?? true,
             });
             return {};
         }
@@ -4665,6 +4682,73 @@
      */
     function inchesFromCm(cm) {
         return cm / 2.54;
+    }
+
+    /*
+     * Copyright 2023 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    const SHARED_ID_DIVIDER = '_element_';
+    function getSharedId(frameId, documentId, backendNodeId) {
+        return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
+    }
+    function parseLegacySharedId(sharedId) {
+        const match = sharedId.match(new RegExp(`(.*)${SHARED_ID_DIVIDER}(.*)`));
+        if (!match) {
+            return null;
+        }
+        const documentId = match[1];
+        const elementId = match[2];
+        if (documentId === undefined || elementId === undefined) {
+            return null;
+        }
+        const backendNodeId = parseInt(elementId ?? '');
+        if (isNaN(backendNodeId)) {
+            return null;
+        }
+        return {
+            documentId,
+            backendNodeId,
+        };
+    }
+    function parseSharedId(sharedId) {
+        const legacyFormattedSharedId = parseLegacySharedId(sharedId);
+        if (legacyFormattedSharedId !== null) {
+            return { ...legacyFormattedSharedId, frameId: undefined };
+        }
+        const match = sharedId.match(/f\.(.*)\.d\.(.*)\.e\.([0-9]*)/);
+        if (!match) {
+            return null;
+        }
+        const frameId = match[1];
+        const documentId = match[2];
+        const elementId = match[3];
+        if (frameId === undefined ||
+            documentId === undefined ||
+            elementId === undefined) {
+            return null;
+        }
+        const backendNodeId = parseInt(elementId ?? '');
+        if (isNaN(backendNodeId)) {
+            return null;
+        }
+        return {
+            frameId,
+            documentId,
+            backendNodeId,
+        };
     }
 
     class Realm {
@@ -5081,73 +5165,6 @@
                 },
             });
         }
-    }
-
-    /*
-     * Copyright 2023 Google LLC.
-     * Copyright (c) Microsoft Corporation.
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
-    const SHARED_ID_DIVIDER = '_element_';
-    function getSharedId(frameId, documentId, backendNodeId) {
-        return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
-    }
-    function parseLegacySharedId(sharedId) {
-        const match = sharedId.match(new RegExp(`(.*)${SHARED_ID_DIVIDER}(.*)`));
-        if (!match) {
-            return null;
-        }
-        const documentId = match[1];
-        const elementId = match[2];
-        if (documentId === undefined || elementId === undefined) {
-            return null;
-        }
-        const backendNodeId = parseInt(elementId ?? '');
-        if (isNaN(backendNodeId)) {
-            return null;
-        }
-        return {
-            documentId,
-            backendNodeId,
-        };
-    }
-    function parseSharedId(sharedId) {
-        const legacyFormattedSharedId = parseLegacySharedId(sharedId);
-        if (legacyFormattedSharedId !== null) {
-            return { ...legacyFormattedSharedId, frameId: undefined };
-        }
-        const match = sharedId.match(/f\.(.*)\.d\.(.*)\.e\.([0-9]*)/);
-        if (!match) {
-            return null;
-        }
-        const frameId = match[1];
-        const documentId = match[2];
-        const elementId = match[3];
-        if (frameId === undefined ||
-            documentId === undefined ||
-            elementId === undefined) {
-            return null;
-        }
-        const backendNodeId = parseInt(elementId ?? '');
-        if (isNaN(backendNodeId)) {
-            return null;
-        }
-        return {
-            frameId,
-            documentId,
-            backendNodeId,
-        };
     }
 
     /**
@@ -5773,6 +5790,29 @@
         #initListeners() {
             this.#cdpTarget.cdpClient.on('Network.loadingFailed', (params) => {
                 this.#navigationTracker.networkLoadingFailed(params.requestId, params.errorText);
+            });
+            this.#cdpTarget.cdpClient.on('Page.fileChooserOpened', (params) => {
+                if (this.id !== params.frameId) {
+                    return;
+                }
+                if (this.#loaderId === undefined) {
+                    this.#logger?.(LogType.debugError, 'LoaderId should be defined when file upload is shown', params);
+                    return;
+                }
+                const element = params.backendNodeId === undefined
+                    ? undefined
+                    : {
+                        sharedId: getSharedId(this.id, this.#loaderId, params.backendNodeId),
+                    };
+                this.#eventManager.registerEvent({
+                    type: 'event',
+                    method: Input$2.EventNames.FileDialogOpened,
+                    params: {
+                        context: this.id,
+                        multiple: params.mode === 'selectMultiple',
+                        element,
+                    },
+                }, this.id);
             });
             this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
                 if (this.id !== params.frame.id) {
@@ -7163,7 +7203,17 @@
         async #unblock() {
             try {
                 await Promise.all([
-                    this.#cdpClient.sendCommand('Page.enable'),
+                    this.#cdpClient.sendCommand('Page.enable', {
+                        enableFileChooserOpenedEvent: true,
+                    }),
+                    ...(this.#ignoreFileDialog()
+                        ? []
+                        : [
+                            this.#cdpClient.sendCommand('Page.setInterceptFileChooserDialog', {
+                                enabled: true,
+                                cancel: true,
+                            }),
+                        ]),
                     this.#cdpClient
                         .sendCommand('Page.getFrameTree')
                         .then((frameTree) => this.#restoreFrameTreeState(frameTree.frameTree)),
@@ -7433,6 +7483,12 @@
         }
         isSubscribedTo(moduleOrEvent) {
             return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.topLevelId);
+        }
+        #ignoreFileDialog() {
+            return ((this.#unhandledPromptBehavior?.file ??
+                this.#unhandledPromptBehavior?.default ??
+                "ignore" ) ===
+                "ignore" );
         }
     }
 
@@ -8928,6 +8984,9 @@
                     break;
                 case BiDiModule.BrowsingContext:
                     addEvents(Object.values(BrowsingContext$2.EventNames));
+                    break;
+                case BiDiModule.Input:
+                    addEvents(Object.values(Input$2.EventNames));
                     break;
                 case BiDiModule.Log:
                     addEvents(Object.values(Log$1.EventNames));
@@ -14006,6 +14065,7 @@
         .and(ExtensibleSchema));
     const EventDataSchema = z.lazy(() => z.union([
         BrowsingContextEventSchema,
+        InputEventSchema,
         LogEventSchema,
         NetworkEventSchema,
         ScriptEventSchema,
@@ -14177,6 +14237,7 @@
             beforeUnload: Session.UserPromptHandlerTypeSchema.optional(),
             confirm: Session.UserPromptHandlerTypeSchema.optional(),
             default: Session.UserPromptHandlerTypeSchema.optional(),
+            file: Session.UserPromptHandlerTypeSchema.optional(),
             prompt: Session.UserPromptHandlerTypeSchema.optional(),
         }));
     })(Session$1 || (Session$1 = {}));
@@ -14740,9 +14801,10 @@
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
         BrowsingContext.SetViewportParametersSchema = z.lazy(() => z.object({
-            context: BrowsingContext.BrowsingContextSchema,
+            context: BrowsingContext.BrowsingContextSchema.optional(),
             viewport: z.union([BrowsingContext.ViewportSchema, z.null()]).optional(),
             devicePixelRatio: z.union([z.number().gt(0), z.null()]).optional(),
+            userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
     (function (BrowsingContext) {
@@ -16076,6 +16138,7 @@
         Input$1.ReleaseActionsSchema,
         Input$1.SetFilesSchema,
     ]));
+    const InputEventSchema = z.lazy(() => Input$1.FileDialogOpenedSchema);
     var Input$1;
     (function (Input) {
         Input.ElementOriginSchema = z.lazy(() => z.object({
@@ -16272,6 +16335,19 @@
             context: BrowsingContext$1.BrowsingContextSchema,
             element: Script$1.SharedReferenceSchema,
             files: z.array(z.string()),
+        }));
+    })(Input$1 || (Input$1 = {}));
+    (function (Input) {
+        Input.FileDialogOpenedSchema = z.lazy(() => z.object({
+            method: z.literal('input.fileDialogOpened'),
+            params: Input.FileDialogInfoSchema,
+        }));
+    })(Input$1 || (Input$1 = {}));
+    (function (Input) {
+        Input.FileDialogInfoSchema = z.lazy(() => z.object({
+            context: BrowsingContext$1.BrowsingContextSchema,
+            element: Script$1.SharedReferenceSchema.optional(),
+            multiple: z.boolean(),
         }));
     })(Input$1 || (Input$1 = {}));
     const WebExtensionCommandSchema = z.lazy(() => z.union([WebExtension.InstallSchema, WebExtension.UninstallSchema]));

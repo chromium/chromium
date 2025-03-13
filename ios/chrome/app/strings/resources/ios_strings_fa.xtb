@@ -10,7 +10,6 @@
 <translation id="102916930470544692">گذرکلید</translation>
 <translation id="1030376737535466765">باز کردن «مدیر گذرواژه»</translation>
 <translation id="1035980983510608210">با بستن همه برگه‌ها، برگه‌های سنجاق‌شده نیز بسته خواهند شد.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1041322626941363065">اگر گذرواژه‌ها دراثر سرقت اطلاعات شبکه لو رفته باشند، به شما اطلاع داده شود</translation>
 <translation id="1044891598689252897">عملکرد سایت‌ها عادی خواهد بود</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">کوکی‌ها، داده‌های سایت</translation>
 <translation id="1312721752506309252">محافظت بهبودیافته روشن است</translation>
 <translation id="1317821187353201763">بستن برگه</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{پیگیری این بسته}one{پیگیری همه بسته‌ها}other{پیگیری همه بسته‌ها}}</translation>
 <translation id="1321993286294231467">خطایی هنگام ذخیره کردن تصویر روی داد.</translation>
 <translation id="1322735045095424339">سازمانتان استفاده از «حالت ناشناس» را الزامی کرده است</translation>
 <translation id="1323735185997015385">حذف</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> نشانک انتخاب شده است</translation>
 <translation id="1709916727352927457">حذف گذرکلید</translation>
 <translation id="1712341189152602203">داده‌های مرور موجود به <ph name="USER_EMAIL" /> پیوند داده خواهد شد. ممکن است سازمانتان بتواند این داده‌ها را مشاهده کند.</translation>
-<translation id="1713777106376424209">تحویل‌دهنده:</translation>
 <translation id="1715515772563243997">اگر به <ph name="SITE" /> اعتماد دارید، می‌توانید از گذرواژه ذخیره‌شده برای ورود به سیستم استفاده کنید.</translation>
 <translation id="1718835860248848330">ساعت قبل</translation>
 <translation id="1728549374069268714">جای‌گذاری کردن و رفتن</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">ردگیری قیمت و اطلاعات آماری</translation>
 <translation id="1820195936249950412">با حساب معتبر به سیستم وارد شوید</translation>
 <translation id="1820259098641718022">به فهرست خواندن اضافه شد</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">وقتی از دستگاه‌های دیگر برگه دریافت می‌کنید، هشدار می‌دهد.</translation>
 <translation id="1827529786398596735">صفحه اصلی را لمس کنید و نگه دارید</translation>
 <translation id="1832848789136765277">برای اینکه مطمئن شوید همیشه می‌توانید به داده‌های همگام‌سازی دسترسی داشته باشید، هویتتان را به‌تأیید برسانید</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">گزینشگر واحد</translation>
 <translation id="2330607597130465898">بدون محافظت</translation>
 <translation id="233375395665273385">حذف و خروج از سیستم</translation>
-<translation id="2348630484974447747">بسته</translation>
 <translation id="2351097562818989364">تنظیمات ترجمه شما بازنشانی شده است.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{‏می‌توانید گذرواژه {DOMAIN_ONE} را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}=2{‏می‌توانید گذرواژه‌های {DOMAIN_ONE} و {DOMAIN_TWO} را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}=3{‏می‌توانید گذرواژه‌های {DOMAIN_ONE}،‏ {DOMAIN_TWO}، و {OTHER_DOMAINS_COUNT} دامنه دیگر را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}one{‏می‌توانید گذرواژه‌های {DOMAIN_ONE}،‏ {DOMAIN_TWO}، و {OTHER_DOMAINS_COUNT} دامنه دیگر را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}other{‏می‌توانید گذرواژه‌های {DOMAIN_ONE}،‏ {DOMAIN_TWO}، و {OTHER_DOMAINS_COUNT} دامنه دیگر را در «حساب Google» خود ({EMAIL}) ذخیره کنید.}}</translation>
 <translation id="2353953000228441783">نمای پیش‌فرض سایت</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">لغو گروه‌بندی</translation>
 <translation id="446314443268698477">بااستفاده از دوربین یا عکس‌ها، آنچه را می‌بینید بخرید، ترجمه کنید، و شناسایی کنید.</translation>
 <translation id="4469324811108161144">یادداشت باید حداکثر <ph name="CHARACTER_LIMIT" /> نویسه داشته باشد.</translation>
-<translation id="4469834037720363704">شماره بسته</translation>
 <translation id="4471472356135655769">گذرواژه‌ها صادر نشد</translation>
 <translation id="4473608001744970767">پنهان کردن پیگیری قیمت</translation>
 <translation id="4474142134969976028">نتیجه منطبقی پیدا نشد</translation>
@@ -1289,7 +1283,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="647867789226964031">تغییر دادن گذرواژه‌ها</translation>
 <translation id="6494931198667773526">تاریخ پایان</translation>
 <translation id="6495521251906266731">انتخاب کنید چه اقدامی روی داده‌های مرور موجود در این دستگاه، مثل گذرواژه‌ها، سابقه، و موارد دیگر، انجام شود.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{لغو پیگیری این بسته}one{لغو پیگیری همه بسته‌ها}other{لغو پیگیری همه بسته‌ها}}</translation>
 <translation id="6503077044568424649">بیشترین موارد بازدید شده</translation>
 <translation id="6503763061813913607">اعلان‌های «بررسی ایمنی»</translation>
 <translation id="6505334220040167806">جمع کردن گروه برگه.</translation>
@@ -1761,7 +1754,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8481184073299279701">برای جمع‌آوری گزارش‌ها و خطاهای آتی کنسول جاوا اسکریپت از همه برگه‌ها، روی دکمه «شروع گزارش‌گیری» تک‌ضرب بزنید. تا وقتی این صفحه باز باشد یا روی «متوقف کردن گزارش‌گیری» تک‌ضرب نزنید، گزارش‌ها جمع‌آوری خواهد شد (و فقط در حافظه ذخیره خواهد شد).</translation>
 <translation id="8487667956631253959">فعال</translation>
 <translation id="8487700953926739672">امکان دسترسی به صورت آفلاین</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">پیوند ایجاد نشد</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8505361906966222822">ذخیره کردن در…</translation>

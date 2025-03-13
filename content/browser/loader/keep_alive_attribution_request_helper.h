@@ -17,6 +17,7 @@
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -42,6 +43,9 @@ class AttributionDataHostManager;
 // A helper instance can handle a single request chain.
 class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
  public:
+  // Tells if `request` is a fetch keepalive attribution reporting request.
+  static bool IsAttributionRequest(const network::ResourceRequest& request);
+
   // Creates a `KeepAliveAttributionRequestHelper` instance when the request is
   // eligible for attribution.
   static std::unique_ptr<KeepAliveAttributionRequestHelper> CreateIfNeeded(

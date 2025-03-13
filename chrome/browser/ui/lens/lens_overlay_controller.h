@@ -208,7 +208,13 @@ class LensOverlayController : public LensSearchboxClient,
   // is not kOff. This has no effect if the tab is not in the foreground. If the
   // overlay is successfully invoked, then the value of `invocation_source` will
   // be recorded in the relevant metrics.
-  void ShowUI(lens::LensOverlayInvocationSource invocation_source);
+  // TODO(402931381): `should_start_focused` was added to support opening the
+  // Lens Overlay while the user is typing in the omnibox. To make this easy,
+  // the param was giving a default to avoid changing all callsites. If this
+  // functionality is kept, revisit if the default should be changed in favor
+  // of an explicit param at each callsite.
+  void ShowUI(lens::LensOverlayInvocationSource invocation_source,
+              bool should_start_focused = true);
 
   // Starts the closing process of the overlay. This is an asynchronous process
   // with the following sequence:
@@ -1181,6 +1187,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Invocation source for the lens overlay.
   lens::LensOverlayInvocationSource invocation_source_ =
       lens::LensOverlayInvocationSource::kAppMenu;
+
+  // Whether the overlay should request focus when it is shown.
+  bool should_start_focused_ = false;
 
   // A pending url to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.

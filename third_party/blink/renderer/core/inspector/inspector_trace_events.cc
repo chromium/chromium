@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -1399,7 +1400,11 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("frameType", frameType);
   dict.Add("url", window->Url().GetString());
-  dict.Add("isolate", base::NumberToString(reinterpret_cast<size_t>(isolate)));
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(isolate);
+  DCHECK(thread_debugger);
+  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
+  DCHECK(inspector);
+  dict.Add("isolate", inspector->isolateId());
 
   // ExecutionContext related info
   DOMWrapperWorld& world = scriptState->World();
@@ -1514,6 +1519,11 @@ void inspector_function_call_event::Data(
     dict.Add("functionName", ToCoreString(context->GetIsolate(),
                                           function_name.As<v8::String>()));
   }
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(context->GetIsolate());
+  DCHECK(thread_debugger);
+  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
+  DCHECK(inspector);
+  dict.Add("isolate", inspector->isolateId());
   std::unique_ptr<SourceLocation> location =
       CaptureSourceLocation(context->GetIsolate(), original_function);
   dict.Add("scriptId", String::Number(location->ScriptId()));

@@ -89,7 +89,7 @@ class MODULES_EXPORT StorageController : public mojom::blink::DomStorageClient {
   // mojom::blink::DomStorageClient:
   void ResetStorageAreaAndNamespaceConnections() override;
 
-  Persistent<HeapHashMap<String, WeakMember<StorageNamespace>>> namespaces_;
+  Persistent<GCedHeapHashMap<String, WeakMember<StorageNamespace>>> namespaces_;
   Persistent<StorageNamespace> local_storage_namespace_;
   size_t total_cache_limit_;
 

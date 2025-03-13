@@ -4,8 +4,10 @@
 
 #include "ash/capture_mode/disclaimer_view.h"
 
+#include <cstddef>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -14,7 +16,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -39,6 +44,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -97,36 +103,111 @@ std::u16string GetTextDeclineButton() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-std::u16string GetBodyTextParagraphOne() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE);
-#else
-  return u"This is the disclaimer view for a capture mode feature.";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-std::u16string GetBodyTextParagraphTwo() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(
-      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO);
-#else
-  return u"Read the terms and conditions.";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-views::Builder<views::StyledLabel> GetTextBodyBuilder(
-    const std::u16string& text) {
-  views::StyledLabel::RangeStyleInfo style;
-  style.custom_font = TypographyProvider::Get()->ResolveTypographyToken(
-      TypographyToken::kCrosBody1);
-  style.override_color_id = static_cast<ui::ColorId>(ui::kColorSysOnSurface);
-
+views::Builder<views::StyledLabel> GetTextBodyBuilder() {
+  // There are various issues with using `ash::TypographyToken::kCrosBody1`:
+  //
+  // - It is using Google Sans, not Google Sans Text, which is not suitable for
+  //   body text. See b/256663656 for more details.
+  // - The only way of using it with `views::StyledLabel` is to use a
+  //   `StyledLabel::RangeStyleInfo` with a `custom_font`. Setting this font for
+  //   the entire label requires re-specifying the `custom_font` for _all_
+  //   `StyledLabel::RangeStyleInfo`s.
+  // - …excluding links, which cannot have a `custom_font`:
+  //   https://crsrc.org/s?q=%22CHECK(!style_info.custom_font)%22
+  //   Links need to use the default system font of `IDS_UI_FONT_FAMILY_CROS`,
+  //   which is Roboto.
+  //
+  // Use a text style of `views::style::TextStyle::STYLE_BODY_2` (14pt with 20pt
+  // line height) instead, which matches `kCrosBody1` but uses Roboto instead of
+  // Google Sans. This also keeps the font consistent with links.
+  //
+  // TODO: b/256663656 - Use Google Sans Text here, preferably by updating
+  // `IDS_UI_FONT_FAMILY_CROS`.
+  //
+  // Using a `views::style::TextContext` of `CONTEXT_DIALOG_BODY_TEXT` with the
+  // aforementioned text style will result in a `ui::ColorId` of
+  // `kColorLabelForeground`:
+  // https://crsrc.org/s?q=s:TypographyProvider::GetColorIdImpl%20f:%5Eui.*cc$
+  // This is the same as `kColorPrimaryForeground`:
+  // https://crsrc.org/s?q=%22mixer%5BkColorLabelForeground%5D%22
+  // which is the same as `kColorSysOnSurface`:
+  // https://crsrc.org/s?q=%22mixer%5BkColorPrimaryForeground%5D%22%20f:material
   return views::Builder<views::StyledLabel>()
-      .SetText(text)
-      .AddStyleRange(gfx::Range(0, text.length()), style)
+      .SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_2)
+      .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false);
+}
+
+views::StyledLabel::RangeStyleInfo GetLinkTextStyleInfo(
+    base::RepeatingClosure callback) {
+  auto info =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(std::move(callback));
+  // This results in a `ui::ColorId` of `kColorLinkForeground`:
+  // https://crsrc.org/s?q=s:TypographyProvider::GetColorIdImpl%20f:%5Eui.*cc$
+  // which is `kColorSysPrimary`:
+  // https://crsrc.org/s?q=%22mixer%5BkColorLinkForeground%5D%22%20f:material
+  info.text_style = views::style::STYLE_LINK_2;
+  return info;
+}
+
+views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
+  std::vector<size_t> offsets;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TERMS_LINK_TEXT);
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE, {link_text},
+      &offsets);
+#else
+  std::u16string link_text = u"terms and conditions";
+  std::u16string text = u"Read the terms and conditions.";
+  offsets = {text.find(link_text)};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  CHECK_EQ(offsets.size(), 1u);
+
+  // TODO: b/401110577 - Pass a callback here for the terms and conditions.
+  return GetTextBodyBuilder()
+      .SetText(std::move(text))
+      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
+                     GetLinkTextStyleInfo(base::DoNothing()))
+      .SetID(DisclaimerViewId::kDisclaimerViewParagraphOneId);
+}
+
+views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::u16string text = l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO);
+#else
+  std::u16string text =
+      u"This is the disclaimer view for a capture mode feature.";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return GetTextBodyBuilder()
+      .SetText(std::move(text))
+      .SetID(DisclaimerViewId::kDisclaimerViewParagraphTwoId);
+}
+
+views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
+  std::vector<size_t> offsets;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_LEARN_MORE_LINK_TEXT);
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_THREE, {link_text},
+      &offsets);
+#else
+  std::u16string link_text = u"Learn more";
+  std::u16string text = u"Learn more about the feature.";
+  offsets = {text.find(link_text)};
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  CHECK_EQ(offsets.size(), 1u);
+
+  // TODO: b/401110577 - Pass a callback here for the learn more link.
+  return GetTextBodyBuilder()
+      .SetText(std::move(text))
+      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
+                     GetLinkTextStyleInfo(base::DoNothing()))
+      .SetID(DisclaimerViewId::kDisclaimerViewParagraphThreeId);
 }
 
 }  // namespace
@@ -160,7 +241,7 @@ DisclaimerView::DisclaimerView(
               views::Builder<views::BoxLayoutView>()
                   .SetOrientation(views::LayoutOrientation::kVertical)
                   .SetBetweenChildSpacing(kTextContainerBetweenChildSpacing)
-                  .SetBorder(views::CreateEmptyBorder(kTextContainerInsets))
+                  .SetInsideBorderInsets(kTextContainerInsets)
                   .AddChildren(
                       views::Builder<views::Label>()
                           .SetFontList(
@@ -172,15 +253,15 @@ DisclaimerView::DisclaimerView(
                           .SetText(GetTextTitle())
                           .SetAccessibleRole(ax::mojom::Role::kHeading)
                           .CopyAddressTo(&title_),
-                      GetTextBodyBuilder(GetBodyTextParagraphOne()),
-                      GetTextBodyBuilder(GetBodyTextParagraphTwo())))
+                      GetParagraphOneBuilder(), GetParagraphTwoBuilder(),
+                      GetParagraphThreeBuilder()))
           .Build());
 
   AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
           .SetBetweenChildSpacing(kBetweenButtonsSpacing)
-          .SetBorder(views::CreateEmptyBorder(kButtonContainerInsets))
+          .SetInsideBorderInsets(kButtonContainerInsets)
           .AddChildren(
               views::Builder<views::MdTextButton>()
                   .SetText(GetTextDeclineButton())

@@ -71,9 +71,9 @@ class CORE_EXPORT RenderBlockingElementLinkMap
   ~RenderBlockingElementLinkMap();
 
  private:
-  using ElementLinkMap =
-      HeapHashMap<AtomicString,
-                  Member<GCedHeapHashSet<WeakMember<const HTMLLinkElement>>>>;
+  using ElementLinkMap = GCedHeapHashMap<
+      AtomicString,
+      Member<GCedHeapHashSet<WeakMember<const HTMLLinkElement>>>>;
 
   void AddToElementLinkMap(ElementLinkMap* element_link_map,
                            const AtomicString& target_element_id,

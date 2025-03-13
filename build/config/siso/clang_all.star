@@ -36,6 +36,7 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": [
                 "*.h",
+                "*.modulemap",
                 "bin/clang",
                 "bin/clang++",
                 "bin/clang-*",  # clang-cl, clang-<ver>
@@ -48,6 +49,7 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": [
                 "*.h",
+                "*.modulemap",
                 "bin/clang*",
             ],
         },

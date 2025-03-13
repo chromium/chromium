@@ -50,7 +50,8 @@ void TestMapImpl(ObjectLiveness expected_key_liveness,
 }
 
 TEST_F(WeaknessMarkingTest, WeakToWeakMap) {
-  using Map = HeapHashMap<WeakMember<IntegerObject>, WeakMember<IntegerObject>>;
+  using Map =
+      GCedHeapHashMap<WeakMember<IntegerObject>, WeakMember<IntegerObject>>;
   TestMapImpl<Map, Persistent, Persistent>(ObjectLiveness::Alive,
                                            ObjectLiveness::Alive);
   TestMapImpl<Map, WeakPersistent, Persistent>(ObjectLiveness::Dead,
@@ -62,7 +63,7 @@ TEST_F(WeaknessMarkingTest, WeakToWeakMap) {
 }
 
 TEST_F(WeaknessMarkingTest, WeakToStrongMap) {
-  using Map = HeapHashMap<WeakMember<IntegerObject>, Member<IntegerObject>>;
+  using Map = GCedHeapHashMap<WeakMember<IntegerObject>, Member<IntegerObject>>;
   TestMapImpl<Map, Persistent, Persistent>(ObjectLiveness::Alive,
                                            ObjectLiveness::Alive);
   TestMapImpl<Map, WeakPersistent, Persistent>(ObjectLiveness::Dead,
@@ -74,7 +75,7 @@ TEST_F(WeaknessMarkingTest, WeakToStrongMap) {
 }
 
 TEST_F(WeaknessMarkingTest, StrongToWeakMap) {
-  using Map = HeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
+  using Map = GCedHeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
   TestMapImpl<Map, Persistent, Persistent>(ObjectLiveness::Alive,
                                            ObjectLiveness::Alive);
   TestMapImpl<Map, WeakPersistent, Persistent>(ObjectLiveness::Alive,
@@ -86,7 +87,7 @@ TEST_F(WeaknessMarkingTest, StrongToWeakMap) {
 }
 
 TEST_F(WeaknessMarkingTest, StrongToStrongMap) {
-  using Map = HeapHashMap<Member<IntegerObject>, Member<IntegerObject>>;
+  using Map = GCedHeapHashMap<Member<IntegerObject>, Member<IntegerObject>>;
   TestMapImpl<Map, Persistent, Persistent>(ObjectLiveness::Alive,
                                            ObjectLiveness::Alive);
   TestMapImpl<Map, WeakPersistent, Persistent>(ObjectLiveness::Alive,
@@ -124,7 +125,7 @@ TEST_F(WeaknessMarkingTest, StrongSet) {
 }
 
 TEST_F(WeaknessMarkingTest, DeadValueInReverseEphemeron) {
-  using Map = HeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
+  using Map = GCedHeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
   Persistent<Map> map = MakeGarbageCollected<Map>();
   Persistent<IntegerObject> key = MakeGarbageCollected<IntegerObject>(1);
   map->insert(key.Get(), MakeGarbageCollected<IntegerObject>(2));
@@ -135,7 +136,7 @@ TEST_F(WeaknessMarkingTest, DeadValueInReverseEphemeron) {
 }
 
 TEST_F(WeaknessMarkingTest, NullValueInReverseEphemeron) {
-  using Map = HeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
+  using Map = GCedHeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
   Persistent<Map> map = MakeGarbageCollected<Map>();
   Persistent<IntegerObject> key = MakeGarbageCollected<IntegerObject>(1);
   map->insert(key.Get(), nullptr);
@@ -167,7 +168,7 @@ TEST_F(WeaknessMarkingTest, SwapIntoAlreadyProcessedWeakSet) {
 TEST_F(WeaknessMarkingTest, EmptyEphemeronCollection) {
   // Tests that an empty ephemeron collection does not crash in the GC when
   // processing a non-existent backing store.
-  using Map = HeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
+  using Map = GCedHeapHashMap<Member<IntegerObject>, WeakMember<IntegerObject>>;
   Persistent<Map> map = MakeGarbageCollected<Map>();
   TestSupportingGC::PreciselyCollectGarbage();
 }

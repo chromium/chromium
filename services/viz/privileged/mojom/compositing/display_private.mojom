@@ -66,6 +66,14 @@ interface DisplayPrivate {
   [EnableIf=is_android]
   UpdateRefreshRate(float refresh_rate);
 
+  // Updates adaptive refresh rate information of the associated Display.
+  [EnableIf=is_android]
+  SetAdaptiveRefreshRateInfo(bool has_support,
+                           float suggested_normal,
+                           float suggested_high,
+                           array<float> supported_refresh_rates,
+                           float device_scale_factor);
+
   // Updates the list of refresh rates supported by the associated Display.
   [EnableIf=can_set_refresh_rate]
   SetSupportedRefreshRates(array<float> refresh_rates);

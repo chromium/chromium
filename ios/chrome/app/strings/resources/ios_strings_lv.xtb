@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Piekļuves atslēga</translation>
 <translation id="1030376737535466765">Atvērt Paroļu pārvaldnieku</translation>
 <translation id="1035980983510608210">Aizverot visas cilnes, tiks aizvērtas arī piespraustās cilnes.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1041322626941363065">Brīdināšana, ja paroles tiek atklātas datu aizsardzības pārkāpuma dēļ</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Sīkfaili un vietņu dati</translation>
 <translation id="1312721752506309252">Uzlabota aizsardzība ir ieslēgta</translation>
 <translation id="1317821187353201763">Aizvērt cilni</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Izsekot šo sūtījumu}zero{Izsekot visus sūtījumus}one{Izsekot visus sūtījumus}other{Izsekot visus sūtījumus}}</translation>
 <translation id="1321993286294231467">Saglabājot attēlu, radās kļūda.</translation>
 <translation id="1322735045095424339">Saskaņā ar jūsu organizācijas politiku jums ir jāizmanto inkognito režīms</translation>
 <translation id="1323735185997015385">Dzēst</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">Atlasītas: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
 <translation id="1709916727352927457">Piekļuves atslēgas dzēšana</translation>
 <translation id="1712341189152602203">Esošie pārlūkošanas dati tiks saistīti ar kontu <ph name="USER_EMAIL" />. Šie dati var būt redzami jūsu organizācijai.</translation>
-<translation id="1713777106376424209">Piegādātājs:</translation>
 <translation id="1715515772563243997">Ja uzticaties vietnei <ph name="SITE" />, varat pierakstīties, izmantojot saglabātu paroli.</translation>
 <translation id="1718835860248848330">Pēdējā stunda</translation>
 <translation id="1728549374069268714">Ielīmēt un pāriet</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Cenu izsekošana un ieskati</translation>
 <translation id="1820195936249950412">Pierakstīšanās derīgā kontā</translation>
 <translation id="1820259098641718022">Pievienota lasīšanas sarakstam</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Brīdinājumi, kad saņemat cilnes no citām savām ierīcēm</translation>
 <translation id="1827529786398596735">Pieskarieties sākuma ekrānam un turiet to.</translation>
 <translation id="1832848789136765277">Lai vienmēr varētu piekļūt saviem sinhronizētajiem datiem, apstipriniet savu identitāti.</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Mērvienību atlasītājs</translation>
 <translation id="2330607597130465898">Nav aizsardzības</translation>
 <translation id="233375395665273385">Dzēst un izrakstīties</translation>
-<translation id="2348630484974447747">Sūtījums</translation>
 <translation id="2351097562818989364">Tulkošanas iestatījumi ir atiestatīti.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Savā Google kontā ({EMAIL}) varat saglabāt vietnes {DOMAIN_ONE} paroli.}=2{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE} un {DOMAIN_TWO} paroles.}=3{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietņu paroles.}zero{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietņu paroles.}one{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietnes paroles.}other{Savā Google kontā ({EMAIL}) varat saglabāt vietņu {DOMAIN_ONE}, {DOMAIN_TWO} un vēl {OTHER_DOMAINS_COUNT} vietņu paroles.}}</translation>
 <translation id="2353953000228441783">Noklusējuma vietnes skats</translation>
@@ -797,7 +792,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4460014764210899310">Atcelt grupēšanu</translation>
 <translation id="446314443268698477">Iepērcieties, tulkojiet un identificējiet redzamo saturu, izmantojot kameru vai fotoattēlus.</translation>
 <translation id="4469324811108161144">Piezīmju garums nedrīkst pārsniegt <ph name="CHARACTER_LIMIT" /> rakstzīmes.</translation>
-<translation id="4469834037720363704">Sūtījuma numurs</translation>
 <translation id="4471472356135655769">Neizdevusies paroļu eksportēšana</translation>
 <translation id="4473608001744970767">Paslēpt vienumu “Izsekot cenu”</translation>
 <translation id="4474142134969976028">Nav atbilstošu rezultātu</translation>
@@ -1289,7 +1283,6 @@ Vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbī
 <translation id="647867789226964031">Paroļu nomaiņa</translation>
 <translation id="6494931198667773526">Beigas</translation>
 <translation id="6495521251906266731">Izvēlieties, kā rīkoties ar šajā ierīcē esošajiem pārlūkošanas datiem, piemēram, parolēm, vēsturi un citiem datiem.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Atcelt šī sūtījuma izsekošanu}zero{Atcelt visu sūtījumu izsekošanu}one{Atcelt visu sūtījumu izsekošanu}other{Atcelt visu sūtījumu izsekošanu}}</translation>
 <translation id="6503077044568424649">Visapmeklētākais</translation>
 <translation id="6503763061813913607">Drošības pārbaudes paziņojumi</translation>
 <translation id="6505334220040167806">Sakļaut ciļņu grupu.</translation>
@@ -1761,7 +1754,6 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8481184073299279701">Pieskarieties pogai “Sākt reģistrēšanu”, lai vāktu turpmākus JavaScript konsoles žurnālus un kļūdas no visām cilnēm. Žurnāli tiks vākti (un uzglabāti tikai atmiņā), līdz tiks aizvērta šī lapa vai līdz pieskarsieties pogai “Pārtraukt reģistrēšanu”.</translation>
 <translation id="8487667956631253959">Ieslēgts</translation>
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">Nevarēja izveidot saiti</translation>
 <translation id="8503813439785031346">Lietotājvārds</translation>
 <translation id="8505361906966222822">Saglabāšana šajā vietā:</translation>

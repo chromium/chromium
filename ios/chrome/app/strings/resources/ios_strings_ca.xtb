@@ -10,7 +10,6 @@
 <translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1030376737535466765">Obre el gestor de contrasenyes</translation>
 <translation id="1035980983510608210">Si tanques totes les pestanyes, també es tancaran les pestanyes fixades.</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1041322626941363065">Adverteix-me si les contrasenyes queden exposades en una violació de les dades</translation>
 <translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Galetes, dades de llocs</translation>
 <translation id="1312721752506309252">La protecció millorada està activada</translation>
 <translation id="1317821187353201763">Tanca la pestanya</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{Fes el seguiment d'aquest paquet}other{Fes el seguiment de tots els paquets}}</translation>
 <translation id="1321993286294231467">Hi ha hagut un error en desar la imatge.</translation>
 <translation id="1322735045095424339">La teva organització requereix el mode d'incògnit</translation>
 <translation id="1323735185997015385">Suprimeix</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionades</translation>
 <translation id="1709916727352927457">Suprimeix la clau d'accés</translation>
 <translation id="1712341189152602203">Les dades de navegació existents s'enllaçaran a <ph name="USER_EMAIL" />. És possible que la teva organització pugui veure aquestes dades.</translation>
-<translation id="1713777106376424209">Entregat per</translation>
 <translation id="1715515772563243997">Si confies en <ph name="SITE" />, pots utilitzar una contrasenya desada per iniciar la sessió.</translation>
 <translation id="1718835860248848330">Darrera hora</translation>
 <translation id="1728549374069268714">Enganxa i ves-hi</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">Seguiment de preus i estadístiques</translation>
 <translation id="1820195936249950412">Inicia la sessió amb un compte vàlid</translation>
 <translation id="1820259098641718022">S'ha afegit a la llista de lectura</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">Alertes quan rebis pestanyes dels teus altres dispositius.</translation>
 <translation id="1827529786398596735">Mantén premuda la pantalla d'inici</translation>
 <translation id="1832848789136765277">Per assegurar-te de poder accedir a les dades sincronitzades en qualsevol moment, verifica la teva identitat</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">Selector d'unitats</translation>
 <translation id="2330607597130465898">Sense protecció</translation>
 <translation id="233375395665273385">Suprimeix i tanca la sessió</translation>
-<translation id="2348630484974447747">Paquet</translation>
 <translation id="2351097562818989364">S'ha restablert la configuració del Traductor.</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{Pots desar la contrasenya per a {DOMAIN_ONE} al teu Compte de Google ({EMAIL}).}=2{Pots desar les contrasenyes per a {DOMAIN_ONE} i {DOMAIN_TWO} al teu Compte de Google ({EMAIL}).}=3{Pots desar les contrasenyes per a {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} dominis més al teu Compte de Google ({EMAIL}).}other{Pots desar les contrasenyes per a {DOMAIN_ONE}, {DOMAIN_TWO} i {OTHER_DOMAINS_COUNT} dominis més al teu Compte de Google ({EMAIL}).}}</translation>
 <translation id="2353953000228441783">Visualització predeterminada dels llocs web</translation>
@@ -797,7 +792,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4460014764210899310">Desagrupa</translation>
 <translation id="446314443268698477">Compra, tradueix i identifica el que veus amb la càmera o les fotos.</translation>
 <translation id="4469324811108161144">Les notes poden desar fins a <ph name="CHARACTER_LIMIT" /> caràcters.</translation>
-<translation id="4469834037720363704">Número de paquet</translation>
 <translation id="4471472356135655769">No es poden exportar les contrasenyes</translation>
 <translation id="4473608001744970767">Amaga l'opció Fes un seguiment del preu</translation>
 <translation id="4474142134969976028">No hi ha cap resultat coincident</translation>
@@ -1289,7 +1283,6 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="647867789226964031">Canvia les contrasenyes</translation>
 <translation id="6494931198667773526">Finalitza</translation>
 <translation id="6495521251906266731">Tria què vols fer amb les dades de navegació que hi ha en aquest dispositiu, com ara les contrasenyes, l'historial i més.</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{Deixa de fer el seguiment d'aquest paquet}other{Deixa de fer el seguiment de tots els paquets}}</translation>
 <translation id="6503077044568424649">Els més visitats</translation>
 <translation id="6503763061813913607">Notificacions de Comprovació de seguretat</translation>
 <translation id="6505334220040167806">Replega el grup de pestanyes.</translation>
@@ -1761,7 +1754,6 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8481184073299279701">Toca el botó Inicia el registre per recollir els registres i errors futurs de la consola de JavaScript de totes les pestanyes. Els registres es recolliran (i s'emmagatzemaran només a la memòria) fins que es tanqui aquesta pàgina o es toqui Atura el registre.</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">No es pot crear l'enllaç</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8505361906966222822">Desa a…</translation>

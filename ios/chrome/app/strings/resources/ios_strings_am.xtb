@@ -10,7 +10,6 @@
 <translation id="102916930470544692">የይለፍ ቁልፍ</translation>
 <translation id="1030376737535466765">የሚስጥር ቁልፍ አስተዳዳሪ ክፈት</translation>
 <translation id="1035980983510608210">ሁሉንም ትሮች መዝጋት እንዲሁም የተሰኩ ትሮችን ይዘጋል።</translation>
-<translation id="1036017604683756002">ዩፒኤስ</translation>
 <translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1041322626941363065">የይለፍ ቃላት በውሂብ ጥሰት ተጋላጭ ከሆነ ያስጠንቅቅዎታል</translation>
 <translation id="1044891598689252897">ጣቢያዎች እንደተለመደው ሆነው ይሠራሉ</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">ኩኪዎች፣ የጣቢያ ውሂብ</translation>
 <translation id="1312721752506309252">የተሻሻለ ጥበቃ በርቷል</translation>
 <translation id="1317821187353201763">ትርን ዝጋ</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{ይህ ጥቅል ክትትል ተከታተል}one{ሁሉንም ጥቅል ተከታተል}other{ሁሉንም ጥቅሎች ተከታተል}}</translation>
 <translation id="1321993286294231467">ምስልን በማስቀመጥ ላይ ስህተት።</translation>
 <translation id="1322735045095424339">የእርስዎ ድርጅት ማንነት የማያሳውቅ ሁነታን ይፈልጋል</translation>
 <translation id="1323735185997015385">ሰርዝ</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ተመርጧል</translation>
 <translation id="1709916727352927457">የይለፍ ቁልፍን ይሰርዙ</translation>
 <translation id="1712341189152602203">ነባር የአሰሳ ውሂብ ከ<ph name="USER_EMAIL" /> ጋር ይገናኛል። ይህ ውሂብ በድርጅትዎ ሊታይ ይችላል።</translation>
-<translation id="1713777106376424209">በሚከተለው የደረሰ</translation>
 <translation id="1715515772563243997"><ph name="SITE" />ን የሚያምኑት ከሆነ ለመግባት የተቀመጠ የይለፍ ቃልን መጠቀም ይችላሉ።</translation>
 <translation id="1718835860248848330">የመጨረሻው ሰዓት</translation>
 <translation id="1728549374069268714">ለጥፍ እና ሂድ</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">የዋጋ ክትትል እና ግንዛቤዎች</translation>
 <translation id="1820195936249950412">ልክ በሆነ መለያ ይግቡ</translation>
 <translation id="1820259098641718022">ወደ የንባብ ዝርዝር ታክሏል</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">ከሌላ መሣሪያዎችዎ ትሮችን ሲቀበሉ ማንቂያዎች።</translation>
 <translation id="1827529786398596735">መነሻ ማያ ገፁን ይንኩ እና ይያዙ</translation>
 <translation id="1832848789136765277">የስምረት ውሂብዎን ሁልጊዜ መድረስ መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">የክፍል መራጭ</translation>
 <translation id="2330607597130465898">ጥበቃ የለም</translation>
 <translation id="233375395665273385">ሰርዝ እና ዘግተህ ውጣ</translation>
-<translation id="2348630484974447747">ጥቅል</translation>
 <translation id="2351097562818989364">የትርጉም ቅንብሮችዎ ዳግም እንዲጀምሩ ተደርገዋል።</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{በGoogle መለያዎ {EMAIL} ውስጥ ለ{DOMAIN_ONE} የይለፍ ቃልዎን ማስቀመጥ ይችላሉ።}=2{በGoogle መለያዎ {EMAIL} ውስጥ ለ{DOMAIN_ONE} እና ለ{DOMAIN_TWO} የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ።}=3{በGoogle መለያዎ {EMAIL} ውስጥ ለ{DOMAIN_ONE}፣ ለ{DOMAIN_TWO} እና ለ{OTHER_DOMAINS_COUNT} ሌሎች የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ።}one{በGoogle መለያዎ {EMAIL} ውስጥ ለ{DOMAIN_ONE}፣ ለ{DOMAIN_TWO} እና ለ{OTHER_DOMAINS_COUNT} ለሌሎች የይለፍ ቃልዎን ማስቀመጥ ይችላሉ።}other{በGoogle መለያዎ {EMAIL} ውስጥ ለ{DOMAIN_ONE}፣ {DOMAIN_TWO} እና {OTHER_DOMAINS_COUNT} ለሌሎች የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ።}}</translation>
 <translation id="2353953000228441783">የነባሪ ጣቢያ ዕይታ</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">ነጥል</translation>
 <translation id="446314443268698477">በካሜራዎ ወይም በፎቶዎችዎ የሚያዩትን ይሸምቱ፣ ይተርጉሙ እና ይለዩ</translation>
 <translation id="4469324811108161144">ማስታወሻዎች እስከ <ph name="CHARACTER_LIMIT" /> ቁምፊዎች ድረስ ማስቀመጥ ይችላሉ።</translation>
-<translation id="4469834037720363704">የጥቅል ቁጥር</translation>
 <translation id="4471472356135655769">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="4473608001744970767">ዋጋ ተከታተል የሚለውን ደብቅ</translation>
 <translation id="4474142134969976028">ምንም የሚዛመዱ ውጤቶች የሉም</translation>
@@ -1289,7 +1283,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="647867789226964031">የይለፍ ቃላትዎን ይለውጡ</translation>
 <translation id="6494931198667773526">ያበቃል</translation>
 <translation id="6495521251906266731">በዚህ መሣሪያ ላይ እንደ የይለፍ ቃላት፣ ታሪክ እና ሌሎች ባሉ በነባር የአሰሳ ውሂብ ምን እንደሚደረግ ይምረጡ።</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{በዚህ ጥቅል ላይ ክትትል ማድረግ አቁም}one{ሁሉም ጥቅል ላይ ክትትል ማድረግ አቁም}other{ሁሉም ጥቅሎች ላይ ክትትል ማድረግ አቁም}}</translation>
 <translation id="6503077044568424649">በይበልጥ የተጎበኙ</translation>
 <translation id="6503763061813913607">የደህንነት ፍተሻ ማሳወቂያዎች</translation>
 <translation id="6505334220040167806">የትር ቡድኑን ሰብስብ።</translation>
@@ -1761,7 +1754,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8481184073299279701">ከሁሉም ትሮች የወደፊት የጃቫስሪፕት መሥሪያ ምዝግብ ማስታወሻዎችን እና ስህተቶችን ለመሰብሰብ «መግባት ጀምር» የሚለውን አዝራር መታ ያድርጉ። ይህ ገፅ እስኪዘጋ ወይም «መግባት አቁም» ላይ መታ እስኪደረግ ድረስ ምዝግብ ማስታወሻዎች ይሰበሰባሉ (እና በማህደረ ትውስታ ላይ ብቻ ይከማቻሉ)።</translation>
 <translation id="8487667956631253959">አብራ</translation>
 <translation id="8487700953926739672">ከመስመር ውጭ ይገኛል</translation>
-<translation id="8487894141648868716">ዩኤስፒኤስ</translation>
 <translation id="8490629238792920282">አገናኝን መፍጠር አልተቻለም</translation>
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8505361906966222822">አስቀምጥ በ…</translation>

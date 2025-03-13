@@ -18,13 +18,16 @@
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
@@ -285,7 +288,47 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
       .WillOnce(SignalEvent(&done_event_));
 
   // Remove the profile.
-  wds_->RemoveAutofillProfile(profile.guid(), base::DoNothing());
+  wds_->RemoveAutofillProfile(profile.guid(), AutofillProfileChange::REMOVE,
+                              base::DoNothing());
+  done_event_.TimedWait(kWebDataServiceTimeout);
+
+  // Check that it was removed.
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetAutofillProfiles(consumer2.GetCallback());
+  EXPECT_THAT(consumer2.Get<1>(),
+              ValueOfWDResult<std::vector<AutofillProfile>>(IsEmpty()));
+}
+
+// Tests that if a profile is hidden in autofill, it is removed from the local
+// database.
+TEST_F(WebDataServiceAutofillTest, ProfileHideInAutofill) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+  AutofillProfile profile = autofill::test::GetFullProfile();
+  test_api(profile).set_record_type(AutofillProfile::RecordType::kAccount);
+
+  // Add a profile.
+  EXPECT_CALL(observer_, AutofillProfileChanged)
+      .WillOnce(SignalEvent(&done_event_));
+  wds_->AddAutofillProfile(profile, base::DoNothing());
+  done_event_.TimedWait(kWebDataServiceTimeout);
+
+  // Check that it was added.
+  WebDataServiceRequestFuture consumer;
+  wds_->GetAutofillProfiles(consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(), ValueOfWDResult<std::vector<AutofillProfile>>(
+                                     UnorderedElementsAre(profile)));
+
+  // Check that GUID-based notification was sent.
+  EXPECT_CALL(observer_, AutofillProfileChanged(AutofillProfileChange(
+                             AutofillProfileChange::HIDE_IN_AUTOFILL,
+                             profile.guid(), profile)))
+      .WillOnce(SignalEvent(&done_event_));
+
+  // Remove the profile.
+  wds_->RemoveAutofillProfile(profile.guid(),
+                              AutofillProfileChange::HIDE_IN_AUTOFILL,
+                              base::DoNothing());
   done_event_.TimedWait(kWebDataServiceTimeout);
 
   // Check that it was removed.

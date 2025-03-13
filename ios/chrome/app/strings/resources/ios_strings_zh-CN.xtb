@@ -10,7 +10,6 @@
 <translation id="102916930470544692">通行密钥</translation>
 <translation id="1030376737535466765">打开密码管理工具</translation>
 <translation id="1035980983510608210">关闭所有标签页也会关闭固定标签页。</translation>
-<translation id="1036017604683756002">UPS</translation>
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1041322626941363065">密码遭遇数据泄露时向您发出警告</translation>
 <translation id="1044891598689252897">网站将能够正常运行</translation>
@@ -76,7 +75,6 @@
 <translation id="1312168552565502328">Cookie 和网站数据</translation>
 <translation id="1312721752506309252">增强型保护已开启</translation>
 <translation id="1317821187353201763">关闭标签页</translation>
-<translation id="1320164290882380380">{COUNT,plural, =1{跟踪此包裹}other{跟踪所有包裹}}</translation>
 <translation id="1321993286294231467">保存图片时出错。</translation>
 <translation id="1322735045095424339">贵单位要求使用无痕模式</translation>
 <translation id="1323735185997015385">删除</translation>
@@ -177,7 +175,6 @@
 <translation id="1700629756560807968">已选中<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1712341189152602203">现有的浏览数据将关联到 <ph name="USER_EMAIL" />。您组织的成员或许可以查看这些数据。</translation>
-<translation id="1713777106376424209">递送方：</translation>
 <translation id="1715515772563243997">如果您信任 <ph name="SITE" />，则可使用已保存的密码登录。</translation>
 <translation id="1718835860248848330">过去一小时</translation>
 <translation id="1728549374069268714">粘贴并前往</translation>
@@ -204,7 +201,6 @@
 <translation id="1819374301217551116">价格跟踪和分析</translation>
 <translation id="1820195936249950412">请使用有效账号登录</translation>
 <translation id="1820259098641718022">已添加到阅读清单</translation>
-<translation id="1822994441903263130">FEDEX</translation>
 <translation id="1824490729233982311">当您收到来自其他设备的标签页时发出提醒。</translation>
 <translation id="1827529786398596735">轻触并按住主屏幕</translation>
 <translation id="1832848789136765277">若要确保您能随时访问自己的同步数据，请验证是您本人在操作</translation>
@@ -333,7 +329,6 @@
 <translation id="2326302612031521902">单位选择器</translation>
 <translation id="2330607597130465898">无保护</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
-<translation id="2348630484974447747">包裹</translation>
 <translation id="2351097562818989364">您的翻译设置已重置。</translation>
 <translation id="2353784052777482798">{COUNT,plural, =1{您可将用于登录 {DOMAIN_ONE} 的密码保存到您的 Google 账号 {EMAIL}。}=2{您可将用于登录 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密码保存到您的 Google 账号 {EMAIL}。}=3{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}other{您可将用于登录 {DOMAIN_ONE}、{DOMAIN_TWO} 和另外 {OTHER_DOMAINS_COUNT} 个网站的密码保存到您的 Google 账号 {EMAIL}。}}</translation>
 <translation id="2353953000228441783">默认网站视图</translation>
@@ -797,7 +792,6 @@
 <translation id="4460014764210899310">取消分组</translation>
 <translation id="446314443268698477">使用相机或照片购买、翻译和识别所见内容。</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
-<translation id="4469834037720363704">包裹编号</translation>
 <translation id="4471472356135655769">无法导出密码</translation>
 <translation id="4473608001744970767">隐藏“跟踪价格”</translation>
 <translation id="4474142134969976028">没有符合条件的结果</translation>
@@ -1289,7 +1283,6 @@
 <translation id="647867789226964031">更改密码</translation>
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6495521251906266731">选择如何处理此设备上现有的浏览数据，例如密码、历史记录等。</translation>
-<translation id="6502142762807385617">{COUNT,plural, =1{取消跟踪此包裹}other{取消跟踪所有包裹}}</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="6503763061813913607">安全检查通知</translation>
 <translation id="6505334220040167806">收起标签页分组。</translation>
@@ -1761,7 +1754,6 @@
 <translation id="8481184073299279701">点按“开始记录”按钮，即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
 <translation id="8487667956631253959">已开启</translation>
 <translation id="8487700953926739672">可离线使用</translation>
-<translation id="8487894141648868716">USPS</translation>
 <translation id="8490629238792920282">无法创建链接</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8505361906966222822">保存到…</translation>
