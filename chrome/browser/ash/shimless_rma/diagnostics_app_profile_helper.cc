@@ -363,8 +363,7 @@ void InstallExtension(
     std::unique_ptr<PrepareDiagnosticsAppProfileState> state) {
   CHECK(state->context);
 
-  auto crx_installer = extensions::CrxInstaller::CreateSilent(
-      GetExtensionService(state->context));
+  auto crx_installer = extensions::CrxInstaller::CreateSilent(state->context);
   state->crx_installer = crx_installer;
   const base::FilePath& crx_path = state->crx_path;
   crx_installer->AddInstallerCallback(

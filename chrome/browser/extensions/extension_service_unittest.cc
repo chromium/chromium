@@ -1454,7 +1454,7 @@ TEST_F(ExtensionServiceTest, UninstallExternalExtensionAndReinstallAsUser) {
   EXPECT_TRUE(prefs()->IsExternalExtensionUninstalled(good_crx));
 
   // Reinstall the extension as a user-space extension. This should succeed.
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   installer->set_allow_silent_install(true);
   base::RunLoop run_loop;
   installer->AddInstallerCallback(base::BindOnce(
@@ -1497,7 +1497,7 @@ TEST_F(ExtensionServiceTest,
 
   // Reinstall the extension as a user-space extension with a lower version.
   // This should succeed.
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   installer->set_allow_silent_install(true);
   base::RunLoop run_loop;
   installer->AddInstallerCallback(base::BindOnce(
@@ -1613,7 +1613,7 @@ TEST_F(ExtensionServiceTest, InstallUserScript) {
   base::FilePath path = data_dir().AppendASCII("user_script_basic.user.js");
 
   ASSERT_TRUE(base::PathExists(path));
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   installer->set_allow_silent_install(true);
   installer->InstallUserScript(
       path,
@@ -1636,7 +1636,7 @@ TEST_F(ExtensionServiceTest, InstallExtensionDuringShutdown) {
   InitializeEmptyExtensionService();
 
   base::FilePath path = data_dir().AppendASCII("good.crx");
-  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(service()));
+  scoped_refptr<CrxInstaller> installer(CrxInstaller::CreateSilent(profile()));
   // Simulate shutdown.
   installer->set_browser_terminating_for_test(true);
   installer->set_allow_silent_install(true);
