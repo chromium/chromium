@@ -121,6 +121,10 @@ found in the LICENSE file.
   </div>
 </div>
 <div class="section">
+  <h1>Sizing</h1>
+  <button id="enableTestSizingMode">Test Sizing</button>
+</div>
+<div class="section">
   <h1>State</h1>
   <label>panelActive
     <input id="panelActiveCheckbox" type="checkbox" disabled />
@@ -300,6 +304,29 @@ found in the LICENSE file.
 </div>
 <br />
 <div id="status"></div>
+</div>
+<div id="contentSizingTest" hidden>
+<div class="section">
+  <h1>Sizing</h1>
+  <button id="disableTestSizingMode">Exit Test Sizing</button>
+  <br />
+  <form>
+    <fieldset>
+      <legend>Sizing mode:</legend>
+      <div>
+        <input type="radio" id="fitWindow" name="resizeOption" value="fitWindow" checked>
+        <label for="fitWindow">Content fits window</label>
+      </div>
+      <div>
+        <input type="radio" id="fitContent" name="resizeOption" value="fitContent">
+        <label for="fitContent">Window fits content</label>
+      </div>
+    </fieldset>
+  </form>
+  <button id="growHeight">Grow height</button>
+  <button id="resetHeight">Reset height</button>
+  <div id="dump"></div>
+</div>
 </div>
 <script src="./test_client.js" type="module">
 </script>

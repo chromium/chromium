@@ -8,6 +8,7 @@ import {WebClientInitializeErrorReason, WebClientMode} from '/glic/glic_api/glic
 import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
 interface PageElementTypes {
+  content: HTMLElement;
   status: HTMLElement;
   pageHeader: HTMLElement;
   focusedFavicon: HTMLImageElement;
@@ -78,6 +79,14 @@ interface PageElementTypes {
   testClipboardSave: HTMLButtonElement;
   busyWork3s: HTMLButtonElement;
   busyWork8s: HTMLButtonElement;
+  contentSizingTest: HTMLElement;
+  enableTestSizingMode: HTMLButtonElement;
+  disableTestSizingMode: HTMLButtonElement;
+  growHeight: HTMLButtonElement;
+  resetHeight: HTMLButtonElement;
+  dump: HTMLElement;
+  fitWindow: HTMLInputElement;
+  fitContent: HTMLInputElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -255,6 +264,45 @@ createGlicHostRegistryOnLoad().then((registry) => {
     registry.registerWebClient(client);
   }
 });
+
+// Test Sizing:
+$.enableTestSizingMode.addEventListener('click', () => {
+  $.content.setAttribute('hidden', '');
+  $.contentSizingTest.removeAttribute('hidden');
+});
+
+$.disableTestSizingMode.addEventListener('click', () => {
+  $.content.removeAttribute('hidden');
+  $.contentSizingTest.setAttribute('hidden', '');
+});
+
+$.growHeight.addEventListener('click', () => {
+  const divElement = document.createElement('div');
+  divElement.textContent = 'Some Text';
+  for (let i = 0; i < 5; i++) {
+    $.dump.appendChild(divElement.cloneNode(true));
+  }
+});
+
+$.resetHeight.addEventListener('click', () => {
+  $.dump.innerHTML = '';
+});
+
+$.fitWindow.addEventListener('change', () => {
+  if (!$.fitWindow.checked) {
+    return;
+  }
+  document.documentElement.style.height = '100%';
+});
+
+$.fitContent.addEventListener('change', () => {
+  if (!$.fitContent.checked) {
+    return;
+  }
+  document.documentElement.style.height = 'unset';
+});
+
+// Permissions:
 
 type PermissionSwitchName = 'microphone'|'geolocation'|'tabContext';
 const permissionSwitches: Record<PermissionSwitchName, HTMLInputElement> = {
