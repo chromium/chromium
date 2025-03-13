@@ -1941,6 +1941,8 @@ void TemplateURLService::StopSyncing(syncer::DataType type) {
     // updating turl with a new TemplateURL containing only the local data
     // instead of just dropping the account data to ensure all the mappings are
     // correctly updated. Else, remove turl.
+    base::UmaHistogramBoolean("Sync.SearchEngine.HasLocalDataDuringStopSyncing",
+                              turl->GetLocalData().has_value());
     if (turl->GetLocalData()) {
       Update(turl, TemplateURL(*turl->GetLocalData()));
       ++i;
@@ -1951,6 +1953,8 @@ void TemplateURLService::StopSyncing(syncer::DataType type) {
       // search provider. And given that this case should only be reached upon a
       // user explicitly setting the default search engine to this, it should
       // be okay to leave the data (similar to the dual-write case).
+      base::UmaHistogramBoolean(
+          "Sync.SearchEngine.AccountDefaultSearchEngineCopiedToLocal", true);
       Update(turl, TemplateURL(turl->data()));
       ++i;
     }
@@ -2878,6 +2882,8 @@ TemplateURL* TemplateURLService::Add(std::unique_ptr<TemplateURL> template_url,
   AddToMaps(template_url_ptr);
 
   if (newly_adding && (template_url_ptr->type() == TemplateURL::NORMAL)) {
+    base::UmaHistogramBoolean("Sync.SearchEngine.AddedKeywordHasAccountData",
+                              template_url_ptr->GetAccountData().has_value());
     // Inform sync of the addition. Note that this will assign a GUID to
     // template_url and add it to the guid_to_turl_.
     ProcessTemplateURLChange(FROM_HERE, template_url_ptr,
@@ -3028,8 +3034,13 @@ void TemplateURLService::MergeInSyncTemplateURL(
     // resolution.
     if (base::FeatureList::IsEnabled(
             syncer::kSeparateLocalAndAccountSearchEngines)) {
+      const bool is_default_search_provider =
+          conflicting_turl == GetDefaultSearchProvider();
+      base::UmaHistogramBoolean(
+          "Sync.SearchEngine.DuplicateIsDefaultSearchProvider",
+          is_default_search_provider);
       // Skip overriding the default search provider.
-      if (conflicting_turl == GetDefaultSearchProvider()) {
+      if (is_default_search_provider) {
         ResetTemplateURLGUID(conflicting_turl, sync_turl->sync_guid());
       } else {
         Update(conflicting_turl, *UpdateExistingURLWithAccountData(
