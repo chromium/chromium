@@ -1435,6 +1435,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     return g_disable_activation_change_handling_;
   }
 
+  // Helper for Init() to handle accessibility-specific work.
+  void InitAccessibility();
+
   // Persists the window's restored position and "show" state using the
   // window delegate.
   void SaveWindowPlacement();
