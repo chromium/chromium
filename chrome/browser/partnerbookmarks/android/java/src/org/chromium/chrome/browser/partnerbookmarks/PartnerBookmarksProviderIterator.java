@@ -7,8 +7,12 @@ package org.chromium.chrome.browser.partnerbookmarks;
 import android.database.Cursor;
 import android.net.Uri;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmark.BookmarkIterator;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.NoSuchElementException;
@@ -58,12 +62,14 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
     /**
      * Creates the bookmarks iterator if possible.
      *
-     * @return Iterator over bookmarks or null.
+     * @param callback The callback to receive the result.
      */
-    public static PartnerBookmarksProviderIterator createIfAvailable() {
-        try {
-            Cursor cursor =
-                    ContextUtils.getApplicationContext()
+    public static void createIfAvailable(Callback<@Nullable BookmarkIterator> callback) {
+        new AsyncTask<@Nullable Cursor>() {
+            @Override
+            protected @Nullable Cursor doInBackground() {
+                try {
+                    return ContextUtils.getApplicationContext()
                             .getContentResolver()
                             .query(
                                     BOOKMARKS_CONTENT_URI,
@@ -71,14 +77,20 @@ public class PartnerBookmarksProviderIterator implements PartnerBookmark.Bookmar
                                     null,
                                     null,
                                     BOOKMARKS_SORT_ORDER);
-            if (cursor == null) return null;
-            return new PartnerBookmarksProviderIterator(cursor);
-        } catch (Exception ex) {
-            // Depending on the OEM version of Android query() may throw a variety of different
-            // exception types. See crbug/1466882.
-            Log.e(TAG, "Unable to read partner bookmark database", ex);
-            return null;
-        }
+                } catch (Exception ex) {
+                    // Depending on the OEM version of Android query() may throw a variety of
+                    // different exception types. See crbug.com/1466882.
+                    Log.e(TAG, "Unable to read partner bookmark database", ex);
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(@Nullable Cursor result) {
+                callback.onResult(
+                        result == null ? null : new PartnerBookmarksProviderIterator(result));
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private PartnerBookmarksProviderIterator(Cursor cursor) {
