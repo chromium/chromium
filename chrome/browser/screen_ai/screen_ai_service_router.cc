@@ -19,7 +19,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
-#include "base/task/task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "content/public/browser/network_service_instance.h"
@@ -293,7 +293,7 @@ void ScreenAIServiceRouter::OnScreenAIServiceDisconnected() {
   shutdown_handler_data_.suspended = true;
   base::TimeDelta suspense_time = base::Minutes(
       shutdown_handler_data_.crash_count * shutdown_handler_data_.crash_count);
-  base::ThreadPool::PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ScreenAIServiceRouter::ResetSuspend,
                      weak_ptr_factory_.GetWeakPtr()),
