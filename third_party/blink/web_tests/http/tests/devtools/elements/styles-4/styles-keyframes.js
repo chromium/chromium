@@ -31,7 +31,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function step1() {
     TestRunner.addResult('=== Before key modification ===');
-    await ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, false, false, true);
     var section = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.sectionBlocks[1].sections[1];
     section.startEditingSelector();
     section.selectorElement.textContent = '1%';
@@ -41,14 +41,14 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function step2() {
     TestRunner.addResult('=== After key modification ===');
-    await ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, false, false, true);
     SDK.DOMModel.DOMModelUndoStack.instance().undo();
     ElementsTestRunner.waitForStyles('element', step3, true);
   }
 
   async function step3() {
     TestRunner.addResult('=== After undo ===');
-    await ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, false, false, true);
 
     SDK.DOMModel.DOMModelUndoStack.instance().redo();
     ElementsTestRunner.waitForStyles('element', step4, true);
@@ -56,7 +56,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function step4() {
     TestRunner.addResult('=== After redo ===');
-    await ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, false, false, true);
     var section = Elements.ElementsPanel.ElementsPanel.instance().stylesWidget.sectionBlocks[1].sections[1];
     section.startEditingSelector();
     section.selectorElement.textContent = '1% /*';
@@ -66,7 +66,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   async function step5() {
     TestRunner.addResult('=== After invalid key modification ===');
-    await ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, false, false, true);
     TestRunner.completeTest();
   }
 })();
