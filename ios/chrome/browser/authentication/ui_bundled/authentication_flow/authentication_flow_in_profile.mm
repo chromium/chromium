@@ -361,9 +361,8 @@ enum class AuthenticationFlowInProfileState {
 }
 
 - (void)didClearData {
-  // TODO(crbug.com/375605482): It might be relevant to split
-  // `AuthenticationFlowPerformer` into 2 classes. This would avoid having
-  // all those NOTREACHED methods.
+  // TODO(crbug.com/403183877): Split `AuthenticationFlowPerformer` into 2
+  // classes to avoid having all those NOTREACHED methods.
   NOTREACHED();
 }
 

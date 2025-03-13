@@ -59,7 +59,7 @@ using signin_ui::SigninCompletionCallback;
 namespace {
 
 // The states of the sign-in flow state machine.
-// TODO(crbug.com/375605482): Need to remove steps from `kSignOutIfNeeded` to
+// TODO(crbug.com/403183877): Need to remove steps from `kSignOutIfNeeded` to
 // `kCompleteWithFailure` can be replaced with `AuthenticationFlowInProfile`
 // even without multi profile.
 enum class AuthenticationState {
