@@ -68,6 +68,11 @@ chromium-metrics-reviews@google.com.
   <variant name="zh-TW" summary="Chinese (Traditional) code"/>
 </variants>
 
+<variants name="TerminationStatus">
+  <variant name="Crash" summary="crashed"/>
+  <variant name="Shutdown" summary="shut down"/>
+</variants>
+
 <histogram name="Accessibility.ActiveTime" units="ms"
     expires_after="2025-09-07">
   <owner>aleventhal@chromium.org</owner>
@@ -3207,6 +3212,40 @@ even if they fit the naming pattern. -->
     Records if ScreenAI service was suspended due to crash. Recorded when a
     client asks for service availablity or for connection to the service.
   </summary>
+</histogram>
+
+<histogram
+    name="Accessibility.ScreenAI.Service.MemoryBefore.{status}.Available"
+    units="MB" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Available memory before launching ScreenAI service, when service {status}.
+    This metric is recorded only if OCR feature is initialized.
+  </summary>
+  <token key="status" variants="TerminationStatus"/>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.Service.MemoryBefore.{status}.Pressure"
+    enum="MemoryPressureLevel" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Memory pressure level before launching ScreenAI service, when service
+    {status}. This metric is recorded only if OCR feature is initialized.
+  </summary>
+  <token key="status" variants="TerminationStatus"/>
+</histogram>
+
+<histogram name="Accessibility.ScreenAI.Service.MemoryBefore.{status}.Total"
+    units="MB" expires_after="2026-03-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Total memory when ScreenAI service {status}. This metric is recorded only if
+    OCR feature is initialized.
+  </summary>
+  <token key="status" variants="TerminationStatus"/>
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.{feature}.InitializationLatency"

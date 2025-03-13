@@ -14,9 +14,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/memory_pressure_monitor.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -282,6 +284,7 @@ void ScreenAIServiceRouter::OnScreenAIServiceDisconnected() {
           shutdown_handler_data_.crash_count);
     }
     shutdown_handler_data_.crash_count = 0;
+    RecordMemoryMetrics(false);
     return;
   }
 
@@ -296,6 +299,23 @@ void ScreenAIServiceRouter::OnScreenAIServiceDisconnected() {
                      weak_ptr_factory_.GetWeakPtr()),
       suspense_time);
   VLOG(0) << "Service suspended due to crash for: " << suspense_time;
+  RecordMemoryMetrics(true);
+}
+
+void ScreenAIServiceRouter::RecordMemoryMetrics(bool crashed) {
+  if (!ocr_initialized_) {
+    return;
+  }
+  std::string prefix = "Accessibility.ScreenAI.Service.MemoryBefore.";
+  prefix += crashed ? "Crash." : "Shutdown.";
+  if (memory_stats_before_launch_.pressure_available) {
+    base::UmaHistogramEnumeration(prefix + "Pressure",
+                                  memory_stats_before_launch_.pressure_level);
+  }
+  base::UmaHistogramCounts100000(prefix + "Total",
+                                 memory_stats_before_launch_.total_memory);
+  base::UmaHistogramCounts100000(prefix + "Available",
+                                 memory_stats_before_launch_.available_memory);
 }
 
 void ScreenAIServiceRouter::CallPendingStatusRequests(Service service,
@@ -357,6 +377,22 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
     VLOG(0) << "ScreenAI service triggered while suspended.";
     return;
   }
+
+  // Keep memory stats for metrics after shutdown or crash.
+  memory_stats_before_launch_.total_memory =
+      base::SysInfo::AmountOfPhysicalMemoryMB();
+  memory_stats_before_launch_.available_memory = static_cast<int>(
+      base::SysInfo::AmountOfAvailablePhysicalMemory() / (1024 * 1024));
+
+  const auto* const memory_monitor = base::MemoryPressureMonitor::Get();
+  if (memory_monitor) {
+    memory_stats_before_launch_.pressure_available = true;
+    memory_stats_before_launch_.pressure_level =
+        memory_monitor->GetCurrentPressureLevel();
+  } else {
+    memory_stats_before_launch_.pressure_available = false;
+  }
+  ocr_initialized_ = false;
 
   base::FilePath binary_path = state_instance->get_component_binary_path();
 #if BUILDFLAG(IS_WIN)
@@ -450,6 +486,7 @@ void ScreenAIServiceRouter::InitializeOCR(
       base::BindOnce(&ScreenAIServiceRouter::SetLibraryLoadState,
                      weak_ptr_factory_.GetWeakPtr(), Service::kOCR,
                      request_start_time));
+  ocr_initialized_ = true;
 }
 
 void ScreenAIServiceRouter::InitializeMainContentExtraction(
