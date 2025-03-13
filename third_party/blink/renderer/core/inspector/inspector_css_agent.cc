@@ -127,10 +127,12 @@
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_sheet.h"
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
+#include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -148,10 +150,12 @@
 #include "third_party/blink/renderer/platform/fonts/font_custom_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -275,6 +279,49 @@ CSSSyntaxDefinition CreateCombinedSyntax() {
       CSSSyntaxDefinition::Consume(stream);
   DCHECK(syntax_definition.has_value());
   return *syntax_definition;
+}
+
+bool IsMarginPaddingProperty(CSSPropertyName property_name) {
+  return property_name.Id() == CSSPropertyID::kMarginBottom ||
+         property_name.Id() == CSSPropertyID::kMarginLeft ||
+         property_name.Id() == CSSPropertyID::kMarginRight ||
+         property_name.Id() == CSSPropertyID::kMarginTop ||
+         property_name.Id() == CSSPropertyID::kPaddingBottom ||
+         property_name.Id() == CSSPropertyID::kPaddingLeft ||
+         property_name.Id() == CSSPropertyID::kPaddingRight ||
+         property_name.Id() == CSSPropertyID::kPaddingTop;
+}
+
+bool IsInsetProperty(CSSPropertyName property_name) {
+  return property_name.Id() == CSSPropertyID::kBottom ||
+         property_name.Id() == CSSPropertyID::kLeft ||
+         property_name.Id() == CSSPropertyID::kRight ||
+         property_name.Id() == CSSPropertyID::kTop;
+}
+
+bool IsSizingProperty(CSSPropertyName property_name) {
+  return property_name.Id() == CSSPropertyID::kHeight ||
+         property_name.Id() == CSSPropertyID::kWidth ||
+         property_name.Id() == CSSPropertyID::kMinHeight ||
+         property_name.Id() == CSSPropertyID::kMinWidth ||
+         property_name.Id() == CSSPropertyID::kMaxHeight ||
+         property_name.Id() == CSSPropertyID::kMaxWidth;
+}
+
+LayoutUnit PickInlineOrBlockSize(LogicalSize value,
+                                 CSSPropertyID property_id,
+                                 WritingDirectionMode writing_direction_mode) {
+  const CSSProperty& property = CSSProperty::Get(property_id);
+  CSSPropertyID logical_property_id =
+      property.ToLogical(writing_direction_mode).PropertyID();
+  if (logical_property_id == CSSPropertyID::kInsetBlockEnd ||
+      logical_property_id == CSSPropertyID::kInsetBlockStart ||
+      logical_property_id == CSSPropertyID::kBlockSize ||
+      logical_property_id == CSSPropertyID::kMaxBlockSize ||
+      logical_property_id == CSSPropertyID::kMinBlockSize) {
+    return value.block_size;
+  }
+  return value.inline_size;
 }
 
 }  // namespace
@@ -2056,6 +2103,70 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
   return protocol::Response::Success();
 }
 
+// Resolve percentages in the context of the given element values for margin,
+// padding, inset, width and height properties, return an empty string if
+// there was an error during percentage resolution. Returns null string if the
+// value doesn't have percentages and for all other properties that don't
+// support percentage resolution.
+String InspectorCSSAgent::ResolvePercentagesValues(
+    Element* element,
+    CSSPropertyName property_name,
+    const CSSValue* value) {
+  CHECK(!element->GetDocument().View()->NeedsLayout());
+  if (!IsMarginPaddingProperty(property_name) &&
+      !IsInsetProperty(property_name) && !IsSizingProperty(property_name)) {
+    return g_null_atom;
+  }
+  auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
+  if (!primitive_value) {
+    return g_null_atom;
+  }
+
+  ElementResolveContext element_resolve_context(*element);
+  CSSToLengthConversionData::Flags ignored_flags = 0;
+  CSSToLengthConversionData length_conversion_data(
+      element->ComputedStyleRef(), element_resolve_context.ParentStyle(),
+      element_resolve_context.RootElementStyle(),
+      CSSToLengthConversionData::ViewportSize(),
+      CSSToLengthConversionData::ContainerSizes(),
+      CSSToLengthConversionData::AnchorData(),
+      element->GetComputedStyle()->EffectiveZoom(), ignored_flags, element);
+  Length length_value =
+      primitive_value->ConvertToLength(length_conversion_data);
+  if (!length_value.HasPercent()) {
+    return g_null_atom;
+  }
+
+  if (auto* box = DynamicTo<LayoutBox>(element->GetLayoutObject())) {
+    if (!box->GetLayoutResults().size()) {
+      return g_empty_string;
+    }
+    // Using the first LayoutResult is okay, as all fragments have the same
+    // percentage resolution sizes.
+    const ConstraintSpace& constraint_space =
+        box->GetLayoutResult(0)->GetConstraintSpaceForCaching();
+    LogicalSize percentage_resolution_size =
+        IsMarginPaddingProperty(property_name)
+            ? constraint_space.MarginPaddingPercentageResolutionSize()
+            : constraint_space.PercentageResolutionSize();
+    LayoutUnit percentage_resolution_value = PickInlineOrBlockSize(
+        percentage_resolution_size, property_name.Id(),
+        element->GetComputedStyle()->GetWritingDirection());
+    if (percentage_resolution_value == kIndefiniteSize) {
+      return g_empty_string;
+    }
+    LayoutUnit resolved_percentage_value =
+        MinimumValueForLength(length_value, percentage_resolution_value);
+
+    StringBuilder builder;
+    builder.AppendNumber(static_cast<double>(resolved_percentage_value));
+    builder.Append("px");
+    return builder.ToString();
+  }
+
+  return g_empty_string;
+}
+
 protocol::Response InspectorCSSAgent::resolveValues(
     std::unique_ptr<protocol::Array<String>> values,
     int node_id,
@@ -2080,6 +2191,8 @@ protocol::Response InspectorCSSAgent::resolveValues(
   }
 
   Document& document = element->GetDocument();
+  document.UpdateStyleAndLayoutForNode(element,
+                                       DocumentUpdateReason::kInspector);
   CSSParserContext* parser_context =
       MakeGarbageCollected<CSSParserContext>(document);
   ExecutionContext* execution_context = element->GetExecutionContext();
@@ -2150,6 +2263,12 @@ protocol::Response InspectorCSSAgent::resolveValues(
 
     if (!computed_value) {
       (*results)->emplace_back(String());
+      continue;
+    }
+
+    if (String resolved_value =
+            ResolvePercentagesValues(element, *property_name, computed_value)) {
+      (*results)->emplace_back(resolved_value);
       continue;
     }
 
