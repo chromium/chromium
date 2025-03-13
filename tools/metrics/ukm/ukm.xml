@@ -3833,6 +3833,12 @@ be describing additional metrics about the same event.
       or rejected).
     </summary>
   </metric>
+  <metric name="RpUrlHasPath" enum="Boolean">
+    <summary>
+      Whether the accounts dialog is shown on an RP URL which has a path.
+      Recorded each time the user is shown an accounts dialog.
+    </summary>
+  </metric>
   <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
     <summary>
       Records the status of a disconnect call to the FedCM API. Recorded once
