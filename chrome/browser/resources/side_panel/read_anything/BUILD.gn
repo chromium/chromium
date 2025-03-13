@@ -34,6 +34,7 @@ build_webui("build") {
     "metrics_browser_proxy.ts",
     "read_anything.ts",
     "read_anything_logger.ts",
+    "speech_browser_proxy.ts",
     "voice_language_util.ts",
     "voice_notification_manager.ts",
   ]

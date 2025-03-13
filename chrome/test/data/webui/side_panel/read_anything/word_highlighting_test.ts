@@ -2,17 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PauseActionSource, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+// <if expr="not is_chromeos">
+import {MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertGT} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {createAndSetVoices} from './common.js';
+// </if>
+import {PauseActionSource, SpeechBrowserProxyImpl, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createAndSetVoices, createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
-import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, playFromSelectionWithMockTimer, setSimpleAxTreeWithText} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('WordHighlighting', () => {
   let app: AppElement;
+  let speech: TestSpeechBrowserProxy;
 
   // root htmlTag='#document' id=1
   // ++link htmlTag='a' url='http://www.google.com' id=2
@@ -62,10 +67,11 @@ suite('WordHighlighting', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
 
     app = await createApp();
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
-    return microtasksFinished();
   });
 
   // TODO(b/301131238): Before enabling the feature flag, ensure we've
@@ -73,12 +79,10 @@ suite('WordHighlighting', () => {
   suite('with word boundary flag enabled after a word boundary', () => {
     setup(() => {
       app.updateBoundary(10);
-      return microtasksFinished();
     });
 
-    test('word highlight used', async () => {
+    test('word highlight used', () => {
       app.playSpeech();
-      await microtasksFinished();
 
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -92,10 +96,9 @@ suite('WordHighlighting', () => {
       assertTrue(currentHighlight!.textContent!.length < 6);
     });
 
-    test('with rate over 1 sentence highlight used', async () => {
+    test('with rate over 1 sentence highlight used', () => {
       chrome.readingMode.onSpeechRateChange(2);
       app.playSpeech();
-      await microtasksFinished();
 
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
@@ -104,9 +107,8 @@ suite('WordHighlighting', () => {
     });
   });
 
-  test('with no word boundary sentence highlight used', async () => {
+  test('with no word boundary sentence highlight used', () => {
     app.playSpeech();
-    await microtasksFinished();
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -116,13 +118,10 @@ suite('WordHighlighting', () => {
 
   test(
       'word highlighting with multiple punctuation marks skips highlight',
-      async () => {
+      () => {
         setSimpleAxTreeWithText('.?!\'\",(){}[]');
-        await microtasksFinished();
         app.updateBoundary(10);
-        await microtasksFinished();
         app.playSpeech();
-        await microtasksFinished();
 
         const currentHighlight =
             app.$.container.querySelector('.current-read-highlight');
@@ -131,13 +130,10 @@ suite('WordHighlighting', () => {
 
   test(
       'word highlighting with single alphabet character does not skip highlight',
-      async () => {
+      () => {
         setSimpleAxTreeWithText('a');
-        await microtasksFinished();
         app.updateBoundary(0);
-        await microtasksFinished();
         app.playSpeech();
-        await microtasksFinished();
 
         const currentHighlight =
             app.$.container.querySelector('.current-read-highlight');
@@ -145,34 +141,28 @@ suite('WordHighlighting', () => {
         assertEquals('a', currentHighlight.textContent);
       });
 
-  test('word highlighting skipping', async () => {
+  test('word highlighting skipping', () => {
     const toTest =
         ['[', ']', '(', ')', '.', ',', '?', '!', '{', '}', '\'', '\"'];
 
     for (const char of toTest) {
       setSimpleAxTreeWithText(char);
-      await microtasksFinished();
       app.updateBoundary(0);
-      await microtasksFinished();
       app.playSpeech();
-      await microtasksFinished();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertFalse(!!currentHighlight);
     }
   });
 
-  test('on speaking from selection, word boundary state reset', async () => {
+  test('on speaking from selection, word boundary state reset', () => {
     const anchorIndex = 1;
     const focusIndex = 2;
     const anchorOffset = 0;
     const focusOffset = 1;
     app.playSpeech();
-    await microtasksFinished();
     app.updateBoundary(2);
-    await microtasksFinished();
     app.stopSpeech(PauseActionSource.BUTTON_CLICK);
-    await microtasksFinished();
 
     // Update the selection directly on the document.
     const spans = app.$.container.querySelectorAll('span');
@@ -182,12 +172,10 @@ suite('WordHighlighting', () => {
     const range = document.createRange();
     range.setStart(anchor, anchorOffset);
     range.setEnd(focus, focusOffset);
-    await microtasksFinished();
 
     const selection = app.getSelection();
     assertTrue(!!selection);
     selection.addRange(range);
-    await microtasksFinished();
 
     playFromSelectionWithMockTimer(app);
 
@@ -202,7 +190,7 @@ suite('WordHighlighting', () => {
     assertEquals(WordBoundaryMode.NO_BOUNDARIES, app.wordBoundaryState.mode);
   });
 
-  test('sentence highlight used with espeak voice', async () => {
+  test('sentence highlight used with espeak voice', () => {
     const selectedVoice =
         createSpeechSynthesisVoice({lang: 'en', name: 'Kristi eSpeak'});
     emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
@@ -210,7 +198,6 @@ suite('WordHighlighting', () => {
     setSimpleAxTreeWithText(sentence);
     app.updateBoundary(0);
     app.playSpeech();
-    await microtasksFinished();
 
     const currentHighlight =
         app.$.container.querySelector('.current-read-highlight');
@@ -218,11 +205,9 @@ suite('WordHighlighting', () => {
     assertEquals(sentence, currentHighlight!.textContent);
   });
 
+  // <if expr="not is_chromeos">
   test('highlight index updates with too long text', () => {
-    const synth = new FakeSpeechSynthesis();
-    synth.setMaxSegments(2);
-    app.synth = synth;
-    createAndSetVoices(app, synth, [
+    createAndSetVoices(app, speech, [
       {lang: 'en-us', name: 'Google Gatsby (Natural)', localService: true},
     ]);
     const longSentence = 'Can you see through the mist- Look out this way, ' +
@@ -235,18 +220,19 @@ suite('WordHighlighting', () => {
         'Daisy Fay.';
     assertGT(longSentence.length, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES);
     setSimpleAxTreeWithText(longSentence);
-
     const lastIndex =
         longSentence.substring(0, MAX_SPEECH_LENGTH_FOR_WORD_BOUNDARIES)
             .lastIndexOf(',');
+
     app.updateBoundary(lastIndex);
     app.playSpeech();
-    app.updateBoundary(3);
+    assertEquals(1, speech.getCallCount('speak'));
+    speech.getArgs('speak')[0].onend();
 
-    //<if expr="not is_chromeos">
+    app.updateBoundary(3);
     const state = app.wordBoundaryState;
     assertEquals(lastIndex, state.tooLongTextOffset);
     assertEquals(lastIndex + 3, state.previouslySpokenIndex);
-    // </if>
   });
+  // </if>
 });
