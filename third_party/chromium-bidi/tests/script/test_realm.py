@@ -229,7 +229,7 @@ async def test_realm_cdpResolveRealm(websocket, context_id, html):
     realm = response["params"]["realm"]
 
     result = await execute_command(websocket, {
-        "method": "cdp.resolveRealm",
+        "method": "goog:cdp.resolveRealm",
         "params": {
             "realm": realm
         }

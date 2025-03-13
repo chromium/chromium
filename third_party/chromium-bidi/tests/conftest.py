@@ -451,7 +451,7 @@ def get_cdp_session_id(websocket):
     """Return the CDP session ID from the given context."""
     async def get_cdp_session_id(context_id: str) -> str:
         result = await execute_command(websocket, {
-            "method": "cdp.getSession",
+            "method": "goog:cdp.getSession",
             "params": {
                 "context": context_id
             }
@@ -489,7 +489,7 @@ def activate_main_tab(websocket, context_id, get_cdp_session_id):
         session_id = await get_cdp_session_id(context_id)
         await execute_command(
             websocket, {
-                "method": "cdp.sendCommand",
+                "method": "goog:cdp.sendCommand",
                 "params": {
                     "method": "Page.bringToFront",
                     "session": session_id
