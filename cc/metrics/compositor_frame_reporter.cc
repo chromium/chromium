@@ -1647,25 +1647,27 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
   // lead to having multiple scroll events.
-  EventMetrics* earliest_event = nullptr;
+  // TODO(crbug.com/402148798): Calculate and use earliest_event instead of
+  // latest_event.
+  ScrollUpdateEventMetrics* latest_event = nullptr;
   base::TimeTicks last_coalesced_ts = base::TimeTicks::Min();
-  for (const auto& event : events_metrics_) {
+  for (auto& event : events_metrics_) {
     TRACE_EVENT("input", "GestureType", "gesture", event->type());
-    const auto* scroll_update = event->AsScrollUpdate();
+    auto* scroll_update = event->AsScrollUpdate();
     if (!scroll_update) {
       continue;
     }
 
     total_predicted_delta += scroll_update->predicted_delta();
     if (!had_gesture_scrolls) {
-      earliest_event = event.get();
+      latest_event = scroll_update;
     }
     had_gesture_scrolls = true;
-    if (earliest_event->GetDispatchStageTimestamp(
+    if (latest_event->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated) <
         event->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated)) {
-      earliest_event = event.get();
+      latest_event = scroll_update;
     }
     last_coalesced_ts =
         std::max(last_coalesced_ts, scroll_update->last_timestamp());
@@ -1698,7 +1700,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
     if (global_trackers_.scroll_jank_ukm_reporter) {
       global_trackers_.scroll_jank_ukm_reporter->EmitScrollJankUkm();
       global_trackers_.scroll_jank_ukm_reporter->SetEarliestScrollEvent(
-          *(earliest_event->AsScrollUpdate()));
+          *latest_event);
     }
   }
 
@@ -1713,13 +1715,12 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   if (global_trackers_.predictor_jank_tracker) {
     global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
         total_predicted_delta, end_timestamp, args_.interval,
-        earliest_event->AsScrollUpdate()->trace_id());
+        latest_event->trace_id());
   }
   if (global_trackers_.scroll_jank_dropped_frame_tracker) {
     global_trackers_.scroll_jank_dropped_frame_tracker
-        ->ReportLatestPresentationData(*(earliest_event->AsScrollUpdate()),
-                                       last_coalesced_ts, end_timestamp,
-                                       args_.interval);
+        ->ReportLatestPresentationData(*latest_event, last_coalesced_ts,
+                                       end_timestamp, args_.interval);
   }
   if (global_trackers_.scroll_jank_ukm_reporter) {
     global_trackers_.scroll_jank_ukm_reporter
