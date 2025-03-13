@@ -22,7 +22,7 @@
 - (void)didCancelBottomSheetView;
 
 // Called when the user taps the bottom sheet's 'Save' button.
-- (void)didSaveProfile;
+- (void)didSaveProfile:(autofill::AutofillProfile*)profile;
 
 // Returns if the autofill profile associated with the current bottom sheet will
 // be migrated to the Google Account.
