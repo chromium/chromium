@@ -118,7 +118,13 @@ blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
 
 base::FilePath GetReferenceFilePath(
     base::FilePath::StringViewType sub_directory,
-    std::string_view test_filename) {
+    std::string_view test_filename,
+    bool use_platform_suffix) {
+  if (use_platform_suffix) {
+    return base::FilePath(sub_directory)
+        .Append(GetTestDataPathWithPlatformSuffix(test_filename));
+  }
+
   return base::FilePath(sub_directory).AppendASCII(test_filename);
 }
 
@@ -284,21 +290,8 @@ class PDFiumEngineTest : public PDFiumTestBase {
     // `progressive_paints_`.
     engine.progressive_paints_.clear();
 
-    base::FilePath expectation_path =
-        GetReferenceFilePath(sub_directory, expected_png_filename);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    // Note that the expectation files without a suffix is typically generated
-    // on Linux, so there is no code here to add a suffix for Linux.
-    if (use_platform_suffix) {
-#if BUILDFLAG(IS_WIN)
-      constexpr std::wstring_view kSuffix = L"_win";
-#else
-      constexpr std::string_view kSuffix = "_mac";
-#endif  // BUILDFLAG(IS_WIN)
-      expectation_path = expectation_path.InsertBeforeExtension(kSuffix);
-    }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    base::FilePath expectation_path = GetReferenceFilePath(
+        sub_directory, expected_png_filename, use_platform_suffix);
 
     EXPECT_TRUE(MatchesPngFile(bitmap.asImage().get(), expectation_path));
   }
