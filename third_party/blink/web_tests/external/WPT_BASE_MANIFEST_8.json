@@ -255174,6 +255174,45 @@
        {}
       ]
      ],
+     "will-change-stacking-context-z-index-2.html": [
+      "9379185048a78b031e8ac290bd7bb3e5df24fa5f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "will-change-stacking-context-z-index-3.html": [
+      "4ec40ae1a430a095ea6f703c8c27698e04792220",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "will-change-stacking-context-z-index-4.html": [
+      "d8a87b23415c3c10a6f4875f16cd63301e789152",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "will-change-transform-add-content.html": [
       "1d8568ee629e48adfe99abab2e2194a73ae1301a",
       [
