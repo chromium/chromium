@@ -2751,7 +2751,8 @@ public class ReadAloudControllerUnitTest {
         // Check readability.
         mController.maybeCheckReadability(mTab);
         // No readability request should be made.
-        verify(mHooksImpl, never()).isPageReadable(any(), any());
+        verify(mHooksImpl, never())
+                .isPageReadable(any(), any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
 
         // Try playing the tab.
         mFakeTranslateBridge.setCurrentLanguage("en");
@@ -2950,7 +2951,10 @@ public class ReadAloudControllerUnitTest {
         when(mTab.getUrl()).thenReturn(gurl);
         mController.getTabModelTabObserverforTests().didFirstVisuallyNonEmptyPaint(mTab);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        verify(mHooksImpl).isPageReadable(eq(gurl.getPossiblyInvalidSpec()), any());
+        verify(mHooksImpl)
+                .isPageReadable(
+                        eq(gurl.getPossiblyInvalidSpec()),
+                        any(ReadAloudReadabilityHooks.ReadabilityCallback.class));
     }
 
     @Test
