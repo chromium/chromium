@@ -443,11 +443,12 @@ CountCookiesAndGenerateListsForPossibleDeletionPartitionedCookies(
   return could_be_deleted;
 }
 
-// Records minutes until the expiration date of a cookie to the appropriate
-// histogram. Only histograms cookies that have an expiration date (i.e. are
-// persistent).
-void HistogramExpirationDuration(const CanonicalCookie& cookie,
+// Records whether the cookie being set is persistent. If so, this also records
+// minutes until the expiration date of a cookie to the appropriate histogram.
+void RecordPersistanceHistograms(const CanonicalCookie& cookie,
                                  base::Time creation_time) {
+  base::UmaHistogramBoolean("Cookie.IsPersistentWhenSet.Subsampled",
+                            cookie.IsPersistent());
   if (!cookie.IsPersistent())
     return;
 
@@ -1798,7 +1799,7 @@ void CookieMonster::SetCanonicalCookie(
     // was to delete the cookie which we've already done.
     if (!already_expired) {
       if (collect_metrics) {
-        HistogramExpirationDuration(*cc, creation_date);
+        RecordPersistanceHistograms(*cc, creation_date);
 
         base::UmaHistogramBoolean("Cookie.DomainSet.Subsampled",
                                   cc->IsDomainCookie());
@@ -1874,7 +1875,7 @@ void CookieMonster::SetAllCookies(CookieList list,
       continue;
 
     if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
-      HistogramExpirationDuration(cookie, creation_time);
+      RecordPersistanceHistograms(cookie, creation_time);
     }
 
     CookieAccessResult access_result;
