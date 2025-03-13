@@ -1341,33 +1341,39 @@ void PDFiumEngine::OnSingleClick(int page_index, int char_index) {
 void PDFiumEngine::OnMultipleClick(int click_count,
                                    int page_index,
                                    int char_index) {
-  DCHECK_GE(click_count, 2);
-  bool is_double_click = click_count == 2;
+  CHECK_GE(click_count, 2);
+  const bool is_double_click = click_count == 2;
+
+  const int char_count = pages_[page_index]->GetCharCount();
+  CHECK_GT(char_count, 0);
 
   // It would be more efficient if the SDK could support finding a space, but
   // now it doesn't.
   int start_index = char_index;
   do {
     uint32_t cur = pages_[page_index]->GetCharUnicode(start_index);
-    if (FindMultipleClickBoundary(is_double_click, cur))
+    if (FindMultipleClickBoundary(is_double_click, cur)) {
       break;
+    }
   } while (--start_index >= 0);
-  if (start_index)
+  if (start_index && start_index < char_count - 1) {
     start_index++;
+  }
 
   int end_index = char_index;
-  const int total = pages_[page_index]->GetCharCount();
-  for (; end_index < total; ++end_index) {
+  for (; end_index < char_count; ++end_index) {
     uint32_t cur = pages_[page_index]->GetCharUnicode(end_index);
-    if (FindMultipleClickBoundary(is_double_click, cur))
+    if (FindMultipleClickBoundary(is_double_click, cur)) {
       break;
+    }
   }
 
   selection_.push_back(PDFiumRange(pages_[page_index].get(), start_index,
                                    end_index - start_index));
 
-  if (handling_long_press_)
+  if (handling_long_press_) {
     client_->NotifyTouchSelectionOccurred();
+  }
 }
 
 bool PDFiumEngine::OnLeftMouseDown(const blink::WebMouseEvent& event) {
