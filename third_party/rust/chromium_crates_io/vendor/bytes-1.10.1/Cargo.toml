@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.39"
 name = "bytes"
-version = "1.10.0"
+version = "1.10.1"
 authors = [
     "Carl Lerche <me@carllerche.com>",
     "Sean McArthur <sean@seanmonstar.com>",

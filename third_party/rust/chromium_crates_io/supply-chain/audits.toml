@@ -601,6 +601,18 @@ Reviewed in https://crrev.com/c/6235725. Very large change in buf_impl.rs
 as well but no unsafe changes there specifically.
 """
 
+[[audits.bytes]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.10.0 -> 1.10.1"
+notes = """
+Still no crypto, and safe to run with trustworthy inputs.
+
+There are some `unsafe`-related changes in the delta, but I didn't
+evaluate those, because this is not required for `safe-to-run`
+certification.
+"""
+
 [[audits.calendrical_calculations]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]

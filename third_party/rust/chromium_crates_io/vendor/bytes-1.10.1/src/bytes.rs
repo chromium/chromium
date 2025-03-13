@@ -1141,15 +1141,15 @@ unsafe fn owned_clone(data: &AtomicPtr<()>, ptr: *const u8, len: usize) -> Bytes
     }
 }
 
-unsafe fn owned_to_vec(_data: &AtomicPtr<()>, ptr: *const u8, len: usize) -> Vec<u8> {
+unsafe fn owned_to_vec(data: &AtomicPtr<()>, ptr: *const u8, len: usize) -> Vec<u8> {
     let slice = slice::from_raw_parts(ptr, len);
-    slice.to_vec()
+    let vec = slice.to_vec();
+    owned_drop_impl(data.load(Ordering::Relaxed));
+    vec
 }
 
 unsafe fn owned_to_mut(data: &AtomicPtr<()>, ptr: *const u8, len: usize) -> BytesMut {
-    let bytes_mut = BytesMut::from_vec(owned_to_vec(data, ptr, len));
-    owned_drop_impl(data.load(Ordering::Relaxed));
-    bytes_mut
+    BytesMut::from_vec(owned_to_vec(data, ptr, len))
 }
 
 unsafe fn owned_is_unique(_data: &AtomicPtr<()>) -> bool {
@@ -1161,6 +1161,10 @@ unsafe fn owned_drop_impl(owned: *mut ()) {
     let ref_cnt = &(*lifetime).ref_cnt;
 
     let old_cnt = ref_cnt.fetch_sub(1, Ordering::Release);
+    debug_assert!(
+        old_cnt > 0 && old_cnt <= usize::MAX >> 1,
+        "expected non-zero refcount and no underflow"
+    );
     if old_cnt != 1 {
         return;
     }

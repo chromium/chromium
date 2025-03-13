@@ -1,3 +1,9 @@
+# 1.10.1 (March 5th, 2025)
+
+### Fixed
+
+- Fix memory leak when using `to_vec` with `Bytes::from_owner` (#773)
+
 # 1.10.0 (February 3rd, 2025)
 
 ### Added
