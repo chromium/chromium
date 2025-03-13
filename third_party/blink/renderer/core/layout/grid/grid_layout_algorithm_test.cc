@@ -30,10 +30,10 @@ namespace {
     EXPECT_EQ(actual_intersections[i].size(),                                  \
               expected_intersections[i].size());                               \
     for (size_t j = 0; j < actual_intersections[i].size(); ++j) {              \
-      EXPECT_EQ(actual_intersections[i][j].column_offset,                      \
-                expected_intersections[i][j].column_offset);                   \
-      EXPECT_EQ(actual_intersections[i][j].row_offset,                         \
-                expected_intersections[i][j].row_offset);                      \
+      EXPECT_EQ(actual_intersections[i][j].inline_offset,                      \
+                expected_intersections[i][j].inline_offset);                   \
+      EXPECT_EQ(actual_intersections[i][j].block_offset,                       \
+                expected_intersections[i][j].block_offset);                    \
       EXPECT_EQ(actual_intersections[i][j].is_blocked_before,                  \
                 expected_intersections[i][j].is_blocked_before);               \
       EXPECT_EQ(actual_intersections[i][j].is_blocked_after,                   \

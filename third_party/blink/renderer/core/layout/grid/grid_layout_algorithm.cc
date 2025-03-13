@@ -3970,8 +3970,8 @@ void GridLayoutAlgorithm::BuildGapIntersectionPoints(
         GapFragmentData::GapIntersection(col_tracks[0], mid_point);
     for (wtf_size_t col_index = 1; col_index < col_count - 1; ++col_index) {
       rows[row_index - 1][col_index] = GapFragmentData::GapIntersection(
-          columns[col_index - 1][0].column_offset, mid_point);
-      columns[col_index - 1][row_index].row_offset = mid_point;
+          columns[col_index - 1][0].inline_offset, mid_point);
+      columns[col_index - 1][row_index].block_offset = mid_point;
     }
     rows[row_index - 1][col_count - 1] =
         GapFragmentData::GapIntersection(col_tracks[col_count - 1], mid_point);
