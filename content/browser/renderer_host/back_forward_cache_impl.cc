@@ -1267,7 +1267,9 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
         !HasForegroundedProcess(*stored_entry)) {
       continue;
     }
-    if (!AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
+    if (reason !=
+            BackForwardCacheMetrics::NotRestoredReason::kCacheLimitPruned &&
+        !AllRenderViewHostsReceivedAckFromRenderer(*stored_entry)) {
       continue;
     }
     if (++count > limit) {
