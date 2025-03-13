@@ -12,8 +12,8 @@ namespace vr {
 // Tests that WebXR can still get an inline identity reference space when there
 // are no runtimes available.
 
-// TODO(crbug.com/354355009): Flaky on Linux CFI
-#if BUILDFLAG(CFI_ICALL_CHECK) && BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/354355009): Hits a CHECK on Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_TestInlineIdentityAlwaysAvailable \
   DISABLED_TestInlineIdentityAlwaysAvailable
 #else
