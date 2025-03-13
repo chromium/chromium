@@ -913,7 +913,8 @@ chromium-metrics-reviews@google.com.
   <token key="AuthFactorType" variants="CryptohomeAuthFactorTypes"/>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2025-03-24">
+<histogram name="CryptohomeClient{CryptohomeClientDBusMethod}" units="ms"
+    expires_after="2025-03-24">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>
   <summary>
@@ -921,7 +922,97 @@ chromium-metrics-reviews@google.com.
     client of Crypthome in Chrome side.
 
     Some data maybe missing between 2024-07 and 2024-09.
+    {CryptohomeClientDBusMethod}
   </summary>
+  <token key="CryptohomeClientDBusMethod">
+    <variant name=""/>
+    <variant name=".AddKeyEx" summary=""/>
+    <variant name=".AsyncDoesUsersExist" summary=""/>
+    <variant name=".AsyncMigrateKey" summary=""/>
+    <variant name=".AsyncMount" summary=""/>
+    <variant name=".AsyncMountGuest" summary=""/>
+    <variant name=".AsyncRemove" summary=""/>
+    <variant name=".AsyncRemoveTrackedSubdirectories" summary=""/>
+    <variant name=".AsyncTpmAttestationCreateCertRequest" summary=""/>
+    <variant name=".AsyncTpmAttestationCreateCertRequestByProfile" summary=""/>
+    <variant name=".AsyncTpmAttestationCreateEnrollRequest" summary=""/>
+    <variant name=".AsyncTpmAttestationCreateEnrollRequestNew" summary=""/>
+    <variant name=".AsyncTpmAttestationEnroll" summary=""/>
+    <variant name=".AsyncTpmAttestationEnrollNew" summary=""/>
+    <variant name=".AsyncTpmAttestationFinishCertRequest" summary=""/>
+    <variant name=".CheckKeyEx" summary=""/>
+    <variant name=".FinalizeBootLockbox" summary=""/>
+    <variant name=".FlushAndSignBootAttributes" summary=""/>
+    <variant name=".GetAccountDiskUsage" summary=""/>
+    <variant name=".GetBootAttribute" summary=""/>
+    <variant name=".GetCurrentSpaceForGid" summary=""/>
+    <variant name=".GetCurrentSpaceForUid" summary=""/>
+    <variant name=".GetEndorsementInfo" summary=""/>
+    <variant name=".GetFirmwareManagementParameters" summary=""/>
+    <variant name=".GetKeyDataEx" summary=""/>
+    <variant name=".GetLoginStatus" summary=""/>
+    <variant name=".GetSanitizedUsername" summary=""/>
+    <variant name=".GetStatusString" summary=""/>
+    <variant name=".GetSupportedKeyPolicies" summary=""/>
+    <variant name=".GetSystemSalt" summary=""/>
+    <variant name=".GetTpmStatus" summary=""/>
+    <variant name=".InstallAttributesCount" summary=""/>
+    <variant name=".InstallAttributesFinalize" summary=""/>
+    <variant name=".InstallAttributesGet" summary=""/>
+    <variant name=".InstallAttributesIsFirstInstall" summary=""/>
+    <variant name=".InstallAttributesIsInvalid" summary=""/>
+    <variant name=".InstallAttributesIsReady" summary=""/>
+    <variant name=".InstallAttributesIsSecure" summary=""/>
+    <variant name=".InstallAttributesSet" summary=""/>
+    <variant name=".IsMounted" summary=""/>
+    <variant name=".IsQuotaSupported" summary=""/>
+    <variant name=".MigrateKey" summary=""/>
+    <variant name=".MigrateKeyEx" summary=""/>
+    <variant name=".MigrateToDircrypto" summary=""/>
+    <variant name=".Mount" summary=""/>
+    <variant name=".MountEx" summary=""/>
+    <variant name=".MountGuest" summary=""/>
+    <variant name=".MountGuestEx" summary=""/>
+    <variant name=".NeedsDircryptoMigration" summary=""/>
+    <variant name=".Pkcs11GetTpmTokenInfo" summary=""/>
+    <variant name=".Pkcs11GetTpmTokenInfoForUser" summary=""/>
+    <variant name=".Pkcs11IsTpmTokenReady" summary=""/>
+    <variant name=".RemoveEx" summary=""/>
+    <variant name=".RemoveFirmwareManagementParameters" summary=""/>
+    <variant name=".RemoveKeyEx" summary=""/>
+    <variant name=".RemoveTrackedSubdirectories" summary=""/>
+    <variant name=".RenameCryptohome" summary=""/>
+    <variant name=".SetBootAttribute" summary=""/>
+    <variant name=".SetFirmwareManagementParameters" summary=""/>
+    <variant name=".SignBootLockbox" summary=""/>
+    <variant name=".TpmAttestationCreateCertRequest" summary=""/>
+    <variant name=".TpmAttestationCreateEnrollRequest" summary=""/>
+    <variant name=".TpmAttestationDeleteKeys" summary=""/>
+    <variant name=".TpmAttestationDoesKeyExist" summary=""/>
+    <variant name=".TpmAttestationEnroll" summary=""/>
+    <variant name=".TpmAttestationFinishCertRequest" summary=""/>
+    <variant name=".TpmAttestationGetCertificate" summary=""/>
+    <variant name=".TpmAttestationGetEnrollmentId" summary=""/>
+    <variant name=".TpmAttestationGetKeyPayload" summary=""/>
+    <variant name=".TpmAttestationGetPublicKey" summary=""/>
+    <variant name=".TpmAttestationRegisterKey" summary=""/>
+    <variant name=".TpmAttestationSetKeyPayload" summary=""/>
+    <variant name=".TpmAttestationSignEnterpriseChallenge" summary=""/>
+    <variant name=".TpmAttestationSignEnterpriseVaChallenge" summary=""/>
+    <variant name=".TpmAttestationSignSimpleChallenge" summary=""/>
+    <variant name=".TpmCanAttemptOwnership" summary=""/>
+    <variant name=".TpmClearStoredPassword" summary=""/>
+    <variant name=".TpmGetPassword" summary=""/>
+    <variant name=".TpmGetVersionStructured" summary=""/>
+    <variant name=".TpmIsAttestationEnrolled" summary=""/>
+    <variant name=".TpmIsAttestationPrepared" summary=""/>
+    <variant name=".TpmIsBeingOwned" summary=""/>
+    <variant name=".TpmIsEnabled" summary=""/>
+    <variant name=".TpmIsOwned" summary=""/>
+    <variant name=".TpmIsReady" summary=""/>
+    <variant name=".Unmount" summary=""/>
+    <variant name=".VerifyBootLockbox" summary=""/>
+  </token>
 </histogram>
 
 </histograms>
