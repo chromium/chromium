@@ -2633,7 +2633,6 @@ crbug.com/400781219 [ Win11-arm64 ] external/wpt/mathml/presentation-markup/oper
 crbug.com/400781219 [ Win10.20h2 ] external/wpt/mathml/presentation-markup/operators/mo-form-dynamic.html [ Failure ]
 crbug.com/400504661 [ Mac ] external/wpt/editing/plaintext-only/nested-with-contenteditable-true.html [ Failure ]
 crbug.com/399763756 [ Mac ] external/wpt/editing/whitespaces/forwarddelete-chars-following-collapsible-white-space.html [ Failure ]
-crbug.com/399769591 [ Win10.20h2 ] external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/device-with-name.https.window.html [ Failure Timeout ]
 crbug.com/399711134 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitions/navigation/root-and-nested-element-transition.html [ Failure ]
 crbug.com/398879934 [ Mac15-arm64 ] external/wpt/webrtc/legacy/simplecall_callbacks.optional.https.html [ Crash ]
 crbug.com/398879934 [ Mac15 ] external/wpt/webrtc/legacy/simplecall_callbacks.optional.https.html [ Crash ]
@@ -9047,9 +9046,6 @@ crbug.com/395503013 [ Mac ] external/wpt/soft-navigation-heuristics/first-intera
 # Gardener 2025-03-07
 crbug.com/398165466 [ Mac12 ] http/tests/inspector-protocol/tracing/screenshots.js [ Pass Timeout ]
 crbug.com/397311089 [ Debug Linux ] external/wpt/fetch/fetch-later/new-window.tentative.https.window.html [ Pass Timeout ]
-crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
-crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/state.py [ Failure ]
-crbug.com/401565283 [ Debug Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure ]
 crbug.com/396746625 [ Linux ] wpt_internal/mediacapture-extensions/MediaStreamTrack-configurationchange.https.window.html [ Failure Pass ]
 
 # Gardener 2025-03-11

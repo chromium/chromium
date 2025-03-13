@@ -1,2 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] getAvailability() resolves with true if the Bluetooth radio is powered off, but the platform that supports Bluetooth LE.
