@@ -13,17 +13,34 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 namespace {
 
-// Border radius for the OnTask pod.
+// Parameters for the OnTask pod.
 constexpr int kPodBorderRadius = 12;
+constexpr int kPodVerticalPadding = 10;
+constexpr int kPodHorizontalPadding = 12;
+
+// Parameters for the separator in the OnTask pod.
+constexpr int kSeparatorVerticalPadding = 0;
+constexpr int kSeparatorHorizontalPadding = 12;
+
+// Parameters for the label button in the OnTask pod.
+constexpr int kLabelButtonTopPadding = 0;
+constexpr int kLabelButtonLeftPadding = 12;
+constexpr int kLabelButtonButtomPadding = 0;
+constexpr int kLabelButtonRightPadding = 16;
+constexpr int kLabelButtonHeight = 32;
+constexpr int kLabelButtonWidth = 120;
+constexpr int kLabelButtonIconTextSpace = 8;
 
 std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
                                              const gfx::VectorIcon* icon,
@@ -37,6 +54,23 @@ std::unique_ptr<IconButton> CreateIconButton(base::RepeatingClosure callback,
   return button;
 }
 
+std::unique_ptr<views::LabelButton> CreateLabelButton(
+    base::RepeatingClosure callback,
+    const std::u16string& text,
+    const gfx::VectorIcon* icon) {
+  auto button = std::make_unique<views::LabelButton>(std::move(callback), text);
+  button->SetImageModel(views::Button::STATE_NORMAL,
+                        ui::ImageModel::FromVectorIcon(*icon, ui::kColorIcon));
+  button->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(kLabelButtonTopPadding, kLabelButtonLeftPadding,
+                        kLabelButtonButtomPadding, kLabelButtonRightPadding)));
+  button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  button->SetImageLabelSpacing(kLabelButtonIconTextSpace);
+  button->SetBackground(views::CreateRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBaseOpaque, kPodBorderRadius));
+  return button;
+}
+
 }  // namespace
 
 OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
@@ -46,6 +80,8 @@ OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
   SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevated, kPodBorderRadius));
+  SetInsideBorderInsets(
+      gfx::Insets::VH(kPodVerticalPadding, kPodHorizontalPadding));
 
   AddShortcutButtons();
 }
@@ -65,8 +101,10 @@ void OnTaskPodView::AddShortcutButtons() {
       cros_tokens::kCrosSysSystemPrimaryContainer);
 
   left_separator_ = AddChildView(std::make_unique<views::Separator>());
-  left_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
-  left_separator_->SetPreferredLength(GetPreferredSize().height());
+  left_separator_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(kSeparatorVerticalPadding, kSeparatorHorizontalPadding)));
+  left_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
+  left_separator_->SetPreferredLength(kLabelButtonHeight);
 
   back_button_ = AddChildView(CreateIconButton(
       base::BindRepeating(&OnTaskPodController::MaybeNavigateToPreviousPage,
@@ -83,6 +121,44 @@ void OnTaskPodView::AddShortcutButtons() {
                           base::Unretained(pod_controller_)),
       &kKsvReloadIcon, IDS_ON_TASK_POD_RELOAD_ACCESSIBLE_NAME,
       /*is_togglable=*/false));
+
+  right_separator_ = AddChildView(std::make_unique<views::Separator>());
+  right_separator_->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(kSeparatorVerticalPadding, kSeparatorHorizontalPadding)));
+  right_separator_->SetColorId(cros_tokens::kCrosSysSeparator);
+  right_separator_->SetPreferredLength(kLabelButtonHeight);
+
+  pin_tab_strip_button_ = AddChildView(CreateLabelButton(
+      base::BindRepeating(&OnTaskPodView::UpdatePinTabStripButton,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME),
+      &kUnpinnedIcon));
+  pin_tab_strip_button_->SetPreferredSize(
+      gfx::Size(kLabelButtonWidth, kLabelButtonHeight));
+  pin_tab_strip_button_->SetEnabled(
+      pod_controller_->CanToggleTabStripVisibility());
+}
+
+void OnTaskPodView::UpdatePinTabStripButton() {
+  should_show_tab_strip_ = !should_show_tab_strip_;
+  pod_controller_->ToggleTabStripVisibility(should_show_tab_strip_);
+
+  if (should_show_tab_strip_) {
+    // Button is "Hide tabs" when the tab strip is already shown.
+    pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
+        IDS_ON_TASK_POD_UNPIN_TAP_STRIP_ACCESSIBLE_NAME));
+    pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
+        cros_tokens::kCrosSysSystemPrimaryContainer, kPodBorderRadius));
+    pin_tab_strip_button_->SetEnabledTextColors(
+        cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  } else {
+    // Otherwise, button is "Show tabs" when the tab strip is already hidden.
+    pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
+        IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME));
+    pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
+        cros_tokens::kCrosSysSystemOnBaseOpaque, kPodBorderRadius));
+    pin_tab_strip_button_->SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
+  }
 }
 
 void OnTaskPodView::ToggleSnapLocation() {
@@ -97,6 +173,11 @@ void OnTaskPodView::ToggleSnapLocation() {
 void OnTaskPodView::OnPageNavigationContextUpdate() {
   back_button_->SetEnabled(pod_controller_->CanNavigateToPreviousPage());
   forward_button_->SetEnabled(pod_controller_->CanNavigateToNextPage());
+}
+
+void OnTaskPodView::OnLockedModeUpdate() {
+  pin_tab_strip_button_->SetEnabled(
+      pod_controller_->CanToggleTabStripVisibility());
 }
 
 BEGIN_METADATA(OnTaskPodView)
