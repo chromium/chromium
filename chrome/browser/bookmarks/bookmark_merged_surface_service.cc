@@ -150,7 +150,7 @@ BookmarkParentFolderChildren BookmarkMergedSurfaceService::GetChildren(
 const bookmarks::BookmarkNode*
 BookmarkMergedSurfaceService::GetDefaultParentForNewNodes(
     const BookmarkParentFolder& folder) const {
-  CHECK(model_->loaded());
+  CHECK(loaded());
   if (folder.HoldsNonPermanentFolder()) {
     return folder.as_non_permanent_folder();
   }
@@ -165,6 +165,7 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
                                         const BookmarkParentFolder& new_parent,
                                         size_t index,
                                         Browser* browser) {
+  CHECK(loaded());
   CHECK(!IsParentFolderManaged(new_parent));
 
   if (new_parent.as_permanent_folder()) {
@@ -229,6 +230,7 @@ void BookmarkMergedSurfaceService::AddNodesAsCopiesOfNodeData(
     const std::vector<bookmarks::BookmarkNodeData::Element>& elements,
     const BookmarkParentFolder& new_parent,
     size_t index) {
+  CHECK(loaded());
   CHECK(!IsParentFolderManaged(new_parent));
   if (new_parent.as_permanent_folder()) {
     CHECK(!scoped_add_new_nodes_);
