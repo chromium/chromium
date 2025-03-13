@@ -2288,7 +2288,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
 
   // Verify the visibility of strokes for in-memory PDF.
   const base::FilePath kAppliedStroke2FilePath(
-      GetInkTestDataFilePath("applied_stroke2.png"));
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke2.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke2FilePath);
   EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
       kPageIndex));
@@ -2310,7 +2310,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
   engine->UpdateStrokeActive(kPageIndex, kHighlighterStrokeId,
                              /*active=*/false);
   const base::FilePath kAppliedStroke1FilePath(
-      GetInkTestDataFilePath("applied_stroke1.png"));
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke1.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
   saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
@@ -2376,7 +2376,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
 
   // Verify the visibility of strokes for in-memory PDF.
   const base::FilePath kAppliedStroke1FilePath(
-      GetInkTestDataFilePath("applied_stroke1.png"));
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke1.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
   EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
       kPageIndex));
@@ -2416,7 +2416,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
 
   // Verify the visibility of strokes for in-memory PDF.
   const base::FilePath kAppliedStroke3FilePath(
-      GetInkTestDataFilePath("applied_stroke3.png"));
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("applied_stroke3.png")));
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke3FilePath);
   EXPECT_EQ(FPDFPage_CountObjects(page.GetPage()), 1);
   EXPECT_TRUE(engine->stroked_pages_unload_preventers_for_testing().contains(
@@ -2433,7 +2433,8 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
   // Check the initial loaded PDF.
   constexpr int kPageIndex = 0;
   constexpr gfx::Size kPageSizeInPoints(200, 200);
-  const base::FilePath kInkV2PngPath = GetInkTestDataFilePath("ink_v2.png");
+  const base::FilePath kInkV2PngPath =
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("ink_v2.png"));
   PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kInkV2PngPath);
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),

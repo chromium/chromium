@@ -108,9 +108,10 @@ TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
   std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
   ASSERT_TRUE(!saved_pdf_data.empty());
 
-  CheckPdfRendering(saved_pdf_data,
-                    /*page_index=*/0, gfx::Size(200, 200),
-                    GetInkTestDataFilePath("ink_writer_basic.png"));
+  CheckPdfRendering(
+      saved_pdf_data,
+      /*page_index=*/0, gfx::Size(200, 200),
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("ink_writer_basic.png")));
 
   // Load `saved_pdf_data` into `saved_engine` and get a handle to the one and
   // only page.
