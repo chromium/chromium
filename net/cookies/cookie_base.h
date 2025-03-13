@@ -11,16 +11,19 @@
 
 #include "base/types/pass_key.h"
 #include "net/base/net_export.h"
-#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/unique_cookie_key.h"
 
 class GURL;
 
 namespace net {
+
+class CookiePartitionKey;
+
+struct CookieAccessParams;
+struct CookieAccessResult;
 
 // A base class for cookies and cookie-like objects. Encapsulates logic for
 // determining whether a cookie could be sent/set, based on its attributes and
