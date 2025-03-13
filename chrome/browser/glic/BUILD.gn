@@ -190,6 +190,7 @@ source_set("test_support") {
     ":glic",
     ":impl",
     "//components/signin/public/identity_manager:test_support",
+    "//ui/events:test_support",
   ]
   public_deps = [ "//chrome/test:test_support" ]
 }
