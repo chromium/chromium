@@ -37,8 +37,8 @@ class DriveUploaderInterface;
 }
 
 namespace extensions {
+class ExtensionRegistrar;
 class ExtensionRegistry;
-class ExtensionServiceInterface;
 }
 
 namespace leveldb {
@@ -163,7 +163,7 @@ class SyncEngine
              const base::FilePath& sync_file_system_dir,
              TaskLogger* task_logger,
              drive::DriveNotificationManager* notification_manager,
-             extensions::ExtensionServiceInterface* extension_service,
+             extensions::ExtensionRegistrar* extension_registrar,
              extensions::ExtensionRegistry* extension_registry,
              signin::IdentityManager* identity_manager,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -195,8 +195,8 @@ class SyncEngine
   // KeyedService::DependsOn().
   raw_ptr<drive::DriveNotificationManager, DanglingUntriaged>
       notification_manager_;
-  raw_ptr<extensions::ExtensionServiceInterface, DanglingUntriaged>
-      extension_service_;
+  raw_ptr<extensions::ExtensionRegistrar, DanglingUntriaged>
+      extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry, DanglingUntriaged> extension_registry_;
   raw_ptr<signin::IdentityManager> identity_manager_;
 
