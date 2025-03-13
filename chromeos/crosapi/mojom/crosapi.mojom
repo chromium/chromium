@@ -37,7 +37,6 @@ import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
-import "chromeos/crosapi/mojom/login_screen_storage.mojom";
 import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/magic_boost.mojom";
@@ -300,9 +299,7 @@ interface Crosapi {
   // Added in M99.
   [MinVersion=63] BindLogin@67(pending_receiver<Login> receiver);
 
-  // Binds the login screen storage service.
-  [MinVersion=64] BindLoginScreenStorage@68(
-      pending_receiver<LoginScreenStorage> receiver);
+  // BindLoginScreenStorage@68 was removed.
 
   // Binds the login state service.
   [MinVersion=57] BindLoginState@61(pending_receiver<LoginState> receiver);

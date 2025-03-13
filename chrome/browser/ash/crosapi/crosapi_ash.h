@@ -69,7 +69,6 @@ class KeystoreServiceAsh;
 class KioskSessionServiceAsh;
 class LocalPrinterAsh;
 class LoginAsh;
-class LoginScreenStorageAsh;
 class LoginStateAsh;
 class MediaUIAsh;
 class MultiCaptureServiceAsh;
@@ -168,8 +167,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindLocalPrinter(
       mojo::PendingReceiver<mojom::LocalPrinter> receiver) override;
   void BindLogin(mojo::PendingReceiver<mojom::Login> receiver) override;
-  void BindLoginScreenStorage(
-      mojo::PendingReceiver<mojom::LoginScreenStorage> receiver) override;
   void BindLoginState(
       mojo::PendingReceiver<mojom::LoginState> receiver) override;
   void BindMachineLearningService(
@@ -296,10 +293,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LoginAsh* login_ash() { return login_ash_.get(); }
 
-  LoginScreenStorageAsh* login_screen_storage_ash() {
-    return login_screen_storage_ash_.get();
-  }
-
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
   MediaUIAsh* media_ui_ash() { return media_ui_ash_.get(); }
@@ -374,7 +367,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<KioskSessionServiceAsh> kiosk_session_service_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<LoginAsh> login_ash_;
-  std::unique_ptr<LoginScreenStorageAsh> login_screen_storage_ash_;
   std::unique_ptr<LoginStateAsh> login_state_ash_;
   std::unique_ptr<MediaUIAsh> media_ui_ash_;
   std::unique_ptr<MultiCaptureServiceAsh> multi_capture_service_ash_;

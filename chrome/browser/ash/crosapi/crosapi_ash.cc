@@ -40,7 +40,6 @@
 #include "chrome/browser/ash/crosapi/kiosk_session_service_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/crosapi/login_ash.h"
-#include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
 #include "chrome/browser/ash/crosapi/login_state_ash.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
 #include "chrome/browser/ash/crosapi/multi_capture_service_ash.h"
@@ -162,7 +161,6 @@ CrosapiAsh::CrosapiAsh()
       kiosk_session_service_ash_(std::make_unique<KioskSessionServiceAsh>()),
       local_printer_ash_(std::make_unique<LocalPrinterAsh>()),
       login_ash_(std::make_unique<LoginAsh>()),
-      login_screen_storage_ash_(std::make_unique<LoginScreenStorageAsh>()),
       login_state_ash_(std::make_unique<LoginStateAsh>()),
       media_ui_ash_(std::make_unique<MediaUIAsh>()),
       multi_capture_service_ash_(std::make_unique<MultiCaptureServiceAsh>()),
@@ -387,11 +385,6 @@ void CrosapiAsh::BindLocalPrinter(
 void CrosapiAsh::BindLogin(
     mojo::PendingReceiver<crosapi::mojom::Login> receiver) {
   login_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindLoginScreenStorage(
-    mojo::PendingReceiver<crosapi::mojom::LoginScreenStorage> receiver) {
-  login_screen_storage_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindLoginState(
