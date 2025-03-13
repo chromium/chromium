@@ -747,6 +747,8 @@ component("platform") {
     "fonts/shaping/case_mapping_harfbuzz_buffer_filler.h",
     "fonts/shaping/font_features.cc",
     "fonts/shaping/font_features.h",
+    "fonts/shaping/frame_shape_cache.cc",
+    "fonts/shaping/frame_shape_cache.h",
     "fonts/shaping/glyph_bounds_accumulator.h",
     "fonts/shaping/glyph_data.h",
     "fonts/shaping/han_kerning.cc",
