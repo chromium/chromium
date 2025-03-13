@@ -406,7 +406,10 @@ def blink_type_info(idl_type):
         if inner_type.has_null_value:
             return inner_type
         if inner_type.is_heap_vector_type:
-            return TypeInfo(inner_type.typename,
+            # Since the type is Member<>, we need to used GCedHeapVector<T>
+            # as inner type as we require MakeGarbageCollected() for the
+            # vector type.
+            return TypeInfo("GCed{}".format(inner_type.typename),
                             member_fmt="Member<{}>",
                             ref_fmt="{}*",
                             const_ref_fmt="const {}*",
