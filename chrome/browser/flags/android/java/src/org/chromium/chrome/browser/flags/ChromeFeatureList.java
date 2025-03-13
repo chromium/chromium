@@ -1074,6 +1074,14 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(CCT_ADAPTIVE_BUTTON, "voice", false);
     public static final IntCachedFeatureParam sAndroidAppIntegrationV2ContentTtlHours =
             newIntCachedFeatureParam(ANDROID_APP_INTEGRATION_V2, "content_ttl_hours", 168);
+
+    public static final IntCachedFeatureParam
+            sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours =
+                    newIntCachedFeatureParam(
+                            ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE,
+                            "history_content_ttl_hours",
+                            24);
+
     public static final BooleanCachedFeatureParam sAndroidAppIntegrationWithFaviconSkipDeviceCheck =
             newBooleanCachedFeatureParam(
                     ANDROID_APP_INTEGRATION_WITH_FAVICON, "skip_device_check", false);
@@ -1400,6 +1408,7 @@ public abstract class ChromeFeatureList {
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
                     sAndroidAppIntegrationV2ContentTtlHours,
+                    sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours,
                     sAndroidAppIntegrationWithFaviconSkipDeviceCheck,
                     sAndroidAppIntegrationModuleForceCardShow,
                     sAndroidAppIntegrationModuleShowThirdPartyCard,

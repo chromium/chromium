@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationV2ContentTtlHours;
 
 import android.annotation.SuppressLint;
@@ -89,7 +90,8 @@ public class AuxiliarySearchDonor {
 
     private ListenableFuture<AppSearchSession> mAppSearchSession;
     private ListenableFuture<GlobalSearchSession> mGlobalSearchSession;
-    private Long mTtlMillis;
+    private Long mTabTtlMillis;
+    private Long mHistoryTtlMillis;
     private boolean mIsSchemaSet;
     private List<WebPage> mPendingDocuments;
     private Callback<Boolean> mPendingCallback;
@@ -382,6 +384,7 @@ public class AuxiliarySearchDonor {
                     tab.getUrl().getSpec(),
                     tab.getTitle(),
                     tab.getTimestampMillis(),
+                    getTabDocumentTtlMs(),
                     favicon);
         }
 
@@ -398,14 +401,13 @@ public class AuxiliarySearchDonor {
                     auxiliarySearchEntry.getUrl(),
                     auxiliarySearchEntry.getTitle(),
                     auxiliarySearchEntry.getLastAccessTimestamp(),
+                    getTabDocumentTtlMs(),
                     favicon);
         }
 
         AuxiliarySearchDataEntry dataEntry = (AuxiliarySearchDataEntry) entry;
-        int entryId =
-                dataEntry.type == AuxiliarySearchEntryType.TAB
-                        ? dataEntry.tabId
-                        : dataEntry.visitId;
+        boolean isTab = dataEntry.type == AuxiliarySearchEntryType.TAB;
+        int entryId = isTab ? dataEntry.tabId : dataEntry.visitId;
         String documentId = getDocumentId(dataEntry.type, entryId);
         if (counts != null) {
             counts[dataEntry.type] += 1;
@@ -418,6 +420,7 @@ public class AuxiliarySearchDonor {
                 dataEntry.url.getSpec(),
                 dataEntry.title,
                 dataEntry.lastActiveTime,
+                isTab ? getTabDocumentTtlMs() : getHistoryDocumentTtlMs(),
                 favicon);
     }
 
@@ -427,6 +430,7 @@ public class AuxiliarySearchDonor {
             String url,
             String title,
             long lastAccessTimestamp,
+            long documentTtlMs,
             @Nullable Bitmap favicon) {
         byte[] faviconBytes = null;
         if (favicon != null) {
@@ -436,12 +440,12 @@ public class AuxiliarySearchDonor {
         builder.setUrl(url)
                 .setName(title)
                 .setCreationTimestampMillis(lastAccessTimestamp)
-                .setDocumentTtlMillis(getDocumentTtlMs());
+                .setDocumentTtlMillis(documentTtlMs);
 
         if (faviconBytes != null) {
             ImageObject faviconImage =
                     new ImageObject.Builder(mNamespace, documentId)
-                            .setDocumentTtlMillis(getDocumentTtlMs())
+                            .setDocumentTtlMillis(documentTtlMs)
                             .setCreationTimestampMillis(lastAccessTimestamp)
                             .setBytes(faviconBytes)
                             .build();
@@ -609,13 +613,24 @@ public class AuxiliarySearchDonor {
 
     /** Returns the donated document's TTL in MS. */
     @VisibleForTesting
-    public long getDocumentTtlMs() {
-        if (mTtlMillis == null) {
-            mTtlMillis =
+    public long getTabDocumentTtlMs() {
+        if (mTabTtlMillis == null) {
+            mTabTtlMillis =
                     TimeUnit.HOURS.toMillis(sAndroidAppIntegrationV2ContentTtlHours.getValue());
         }
 
-        return mTtlMillis;
+        return mTabTtlMillis;
+    }
+
+    @VisibleForTesting
+    public long getHistoryDocumentTtlMs() {
+        if (mHistoryTtlMillis == null) {
+            mHistoryTtlMillis =
+                    TimeUnit.HOURS.toMillis(
+                            sAndroidAppIntegrationMultiDataSourceHistoryContentTtlHours.getValue());
+        }
+
+        return mHistoryTtlMillis;
     }
 
     private static <T> void addRequestCallback(
