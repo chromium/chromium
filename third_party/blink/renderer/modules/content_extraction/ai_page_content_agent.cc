@@ -734,7 +734,12 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
     }
     auto meta = mojom::blink::AIPageContentMeta::New();
     meta->name = name;
-    meta->content = meta_element.Content();
+    auto content = meta_element.Content();
+    if (content.empty()) {
+      meta->content = "";
+    } else {
+      meta->content = content;
+    }
     meta_data.push_back(std::move(meta));
     count++;
     if (count >= max) {
