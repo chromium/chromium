@@ -9071,3 +9071,9 @@ crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-sweep-snr-sawtooth.html [ Fa
 crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-sweep-snr-sine.html [ Failure ]
 crbug.com/402796552 [ Mac ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
 crbug.com/402796552 [ Mac ] webaudio/Oscillator/start-sampling.html [ Failure ]
+
+# Gardener 2025-03-13
+crbug.com/402796552 [ Win11-arm64 ] webaudio/Analyser/realtimeanalyser-fftsize-reset.html [ Failure ]
+crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sawtooth.html [ Failure ]
+crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sine.html [ Failure ]
+crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
