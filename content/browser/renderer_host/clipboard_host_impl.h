@@ -95,6 +95,8 @@ class CONTENT_EXPORT ClipboardHostImpl
                            WriteDataTransferCustomData_Empty);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest,
                            PerformPasteIfAllowed_EmptyData);
+  FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest,
+                           NoSourceWithoutDataWrite);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, MainFrameURL);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplWriteTest, GetSourceEndpoint);
   FRIEND_TEST_ALL_PREFIXES(ClipboardHostImplAsyncWriteTest, WriteText);
@@ -187,6 +189,10 @@ class CONTENT_EXPORT ClipboardHostImpl
   // Resets `clipboard_writer_` to write its data to the clipboard, and
   // reinitialize it in preparation for the next write.
   void ResetClipboardWriter();
+
+  // Adds source-tracking metadata to `clipboard_writer_` so it can be written
+  // to the clipboard on the next `CommitWrite()` call.
+  void AddSourceDataToClipboardWriter();
 
   // Creates a `ui::DataTransferEndpoint` representing the last committed URL.
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
