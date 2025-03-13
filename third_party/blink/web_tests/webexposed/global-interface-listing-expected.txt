@@ -13166,7 +13166,6 @@ namespace console
     method moveBy
     method moveTo
     method open
-    method openDatabase
     method popinContextType
     method popinContextTypesSupported
     method postMessage

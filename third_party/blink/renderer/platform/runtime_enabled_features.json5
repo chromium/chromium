@@ -1440,13 +1440,8 @@
       depends_on: ["CustomizableSelect"],
     },
     {
+      // https://chromestatus.com/feature/5134293578285056
       name: "Database",
-      public: true,
-      status: "experimental",
-      base_feature: "none",
-      origin_trial_feature_name: "WebSQL",
-      origin_trial_allows_third_party: true,
-      origin_trial_type: "deprecation",
     },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
