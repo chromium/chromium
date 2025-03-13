@@ -108,7 +108,8 @@ class ExtensionRegistrarTest : public ExtensionsTest {
     extensions_browser_client()->set_extension_system_factory(&factory_);
     extension_ = ExtensionBuilder("extension").Build();
     registrar_ = std::make_unique<ExtensionRegistrar>(browser_context());
-    registrar_->Init(delegate(), base::FilePath(), base::FilePath());
+    registrar_->Init(delegate(), /*extensions_enabled=*/true, base::FilePath(),
+                     base::FilePath());
 
     // Mock defaults.
     ON_CALL(delegate_, CanAddExtension(extension_.get()))

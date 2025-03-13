@@ -395,6 +395,9 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // completely. We need to perform some cleanup if that happens.
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
+  // Cached for convenience.
+  raw_ptr<ExtensionRegistrar> registrar_;
+
   // The extension being installed.
   scoped_refptr<const Extension> extension_;
 

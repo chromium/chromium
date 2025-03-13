@@ -67,7 +67,8 @@ ShellExtensionLoader::ShellExtensionLoader(
       extension_registrar_(ExtensionRegistrar::Get(browser_context)),
       keep_alive_requester_(browser_context) {
   extension_registrar_->Init(
-      this, browser_context_->GetPath().AppendASCII(kInstallDirectoryName),
+      this, /*extensions_enabled=*/true,
+      browser_context_->GetPath().AppendASCII(kInstallDirectoryName),
       browser_context_->GetPath().AppendASCII(kUnpackedInstallDirectoryName));
 }
 

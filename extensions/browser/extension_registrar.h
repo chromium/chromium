@@ -137,6 +137,7 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   // The provided `delegate` should outlive this object. May be called multiple
   // times, for example to reset the delegate in tests.
   void Init(Delegate* delegate,
+            bool extensions_enabled,
             const base::FilePath& install_directory,
             const base::FilePath& unpacked_install_directory);
 
@@ -314,6 +315,7 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   void GrantPermissionsAndEnableExtension(const Extension& extension);
 
   // Simple accessors.
+  bool extensions_enabled() const { return extensions_enabled_; }
   const base::FilePath& install_directory() const { return install_directory_; }
   const base::FilePath& unpacked_install_directory() const {
     return unpacked_install_directory_;
@@ -356,6 +358,9 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
 
   // Delegate provided by SetDelegate. Should outlive this object.
   raw_ptr<Delegate> delegate_;
+
+  // Whether or not extensions are enabled.
+  bool extensions_enabled_ = true;
 
   // The full path to the directory where extensions are installed.
   base::FilePath install_directory_;

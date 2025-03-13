@@ -568,8 +568,8 @@ class ExtensionUpdaterTest : public testing::Test {
         base::SingleThreadTaskRunner::GetCurrentDefault());
     // The registrar needs a delegate in order to call certain methods on it.
     ExtensionRegistrar::Get(prefs_->profile())
-        ->Init(&stub_extension_registrar_delegate_, base::FilePath(),
-               base::FilePath());
+        ->Init(&stub_extension_registrar_delegate_,
+               /*extensions_enabled=*/true, base::FilePath(), base::FilePath());
   }
 
   void TearDown() override {
@@ -579,7 +579,8 @@ class ExtensionUpdaterTest : public testing::Test {
     RunUntilIdle();
     // Reset the ExtensionRegistrar delegate.
     ExtensionRegistrar::Get(prefs_->profile())
-        ->Init(/*delegate=*/nullptr, base::FilePath(), base::FilePath());
+        ->Init(/*delegate=*/nullptr, /*extensions_enabled=*/true,
+               base::FilePath(), base::FilePath());
     prefs_.reset();
   }
 

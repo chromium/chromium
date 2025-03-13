@@ -419,7 +419,11 @@ class ExtensionService : public ExtensionServiceInterface,
   // Returns profile_ as a BrowserContext.
   content::BrowserContext* GetBrowserContext() const;
 
-  bool extensions_enabled() const { return extensions_enabled_; }
+  // TODO(crbug.com/402853513): Migrate callers to use ExtensionRegistrar
+  // directly.
+  bool extensions_enabled() const {
+    return extension_registrar_->extensions_enabled();
+  }
 
   bool block_extensions() const { return block_extensions_; }
 
@@ -637,9 +641,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Hold the set of pending extensions. Not owned.
   raw_ptr<PendingExtensionManager> pending_extension_manager_ = nullptr;
-
-  // Whether or not extensions are enabled.
-  bool extensions_enabled_ = true;
 
   // Signaled when all extensions are loaded.
   const raw_ptr<base::OneShotEvent> ready_;

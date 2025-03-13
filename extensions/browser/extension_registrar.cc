@@ -75,9 +75,11 @@ ExtensionRegistrar* ExtensionRegistrar::Get(content::BrowserContext* context) {
 
 void ExtensionRegistrar::Init(
     Delegate* delegate,
+    bool extensions_enabled,
     const base::FilePath& install_directory,
     const base::FilePath& unpacked_install_directory) {
   delegate_ = delegate;
+  extensions_enabled_ = extensions_enabled;
   install_directory_ = install_directory;
   unpacked_install_directory_ = unpacked_install_directory;
 }

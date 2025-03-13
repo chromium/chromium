@@ -409,7 +409,6 @@ ExtensionService::ExtensionService(
           this),
       registry_(ExtensionRegistry::Get(profile)),
       pending_extension_manager_(PendingExtensionManager::Get(profile)),
-      extensions_enabled_(extensions_enabled),
       ready_(ready),
       component_loader_(std::make_unique<ComponentLoader>(system_, profile_)),
       error_controller_(error_controller),
@@ -432,13 +431,14 @@ ExtensionService::ExtensionService(
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
   extension_registrar_delegate_->Init(extension_registrar_,
                                       &delayed_install_manager_);
-  extension_registrar_->Init(extension_registrar_delegate_.get(),
-                             install_directory, unpacked_install_directory);
   // Figure out if extension installation should be enabled.
   if (ExtensionsBrowserClient::Get()->AreExtensionsDisabled(*command_line,
                                                             profile)) {
-    extensions_enabled_ = false;
+    extensions_enabled = false;
   }
+  extension_registrar_->Init(extension_registrar_delegate_.get(),
+                             extensions_enabled, install_directory,
+                             unpacked_install_directory);
 
   on_app_terminating_subscription_ =
       browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
@@ -467,7 +467,7 @@ ExtensionService::ExtensionService(
                             profile));
   }
 
-  if (extensions_enabled_) {
+  if (extensions_enabled) {
     ExternalProviderImpl::CreateExternalProviders(
         this, profile_, &external_extension_providers_);
   }
@@ -542,7 +542,8 @@ void ExtensionService::Init() {
 
   component_loader_->LoadAll();
   bool load_saved_extensions = true;
-  bool load_command_line_extensions = extensions_enabled_;
+  bool load_command_line_extensions =
+      extension_registrar_->extensions_enabled();
 #if BUILDFLAG(IS_CHROMEOS)
   if (!ash::ProfileHelper::IsUserProfile(profile_)) {
     load_saved_extensions = false;
