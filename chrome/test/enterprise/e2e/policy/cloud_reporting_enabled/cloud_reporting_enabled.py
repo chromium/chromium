@@ -75,7 +75,7 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
 
     # Get the device id of the browser
     index = output.find('DEVICE_ID=')
-    self.assertTrue(index > 0)
+    self.assertGreater(index, 0)
     device_id = output[index + len('DEVICE_ID='):].split()[0]
 
     # Get OAuth2 access token
@@ -91,7 +91,7 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
     logging.info('Querying CBCM API for browser data...')
     logging.info('server response = %s' % response)
     json_object = response.json()
-    logging.info(json_object)
+    logging.info(json.dumps(json_object, indent=2))
 
     last_registration_time = datetime.fromisoformat(
         json_object['browsers'][0]['lastRegistrationTime'])
@@ -100,6 +100,6 @@ class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
     last_status_report_time = datetime.fromisoformat(
         json_object['browsers'][0]['lastStatusReportTime'])
 
-    self.assertTrue(int(json_object['browsers'][0]['policyCount']) > 0)
-    self.assertTrue(last_policy_fetch_time > last_registration_time)
-    self.assertTrue(last_status_report_time > last_registration_time)
+    self.assertGreater(int(json_object['browsers'][0]['policyCount']), 0)
+    self.assertGreater(last_policy_fetch_time, last_registration_time)
+    self.assertGreater(last_status_report_time, last_registration_time)
