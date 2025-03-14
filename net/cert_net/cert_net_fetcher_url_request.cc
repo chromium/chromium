@@ -635,7 +635,7 @@ bool Job::ConsumeBytesRead(URLRequest* request, int num_bytes) {
 
   // Append the data to |response_body_|.
   response_body_.reserve(response_body_.size() + num_bytes_s);
-  base::Extend(response_body_, read_buffer_->span().first(num_bytes_s));
+  base::Extend(response_body_, read_buffer_->first(num_bytes_s));
   return true;
 }
 

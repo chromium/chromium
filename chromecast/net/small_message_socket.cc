@@ -55,7 +55,7 @@ void SmallMessageSocket::BufferWrapper::SetUnderlyingBuffer(
   buffer_ = std::move(buffer);
   used_ = 0;
   capacity_ = capacity;
-  SetSpan(buffer_->span().first(capacity_));
+  SetSpan(buffer_->first(capacity_));
 }
 
 scoped_refptr<net::IOBuffer>
@@ -84,7 +84,7 @@ char* SmallMessageSocket::BufferWrapper::StartOfBuffer() const {
 
 base::span<const uint8_t> SmallMessageSocket::BufferWrapper::used_span() const {
   CHECK(buffer_);
-  return buffer_->span().first(used_);
+  return buffer_->first(used_);
 }
 
 SmallMessageSocket::SmallMessageSocket(Delegate* delegate,

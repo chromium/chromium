@@ -83,7 +83,7 @@ StringIOBuffer::~StringIOBuffer() {
 }
 
 DrainableIOBuffer::DrainableIOBuffer(scoped_refptr<IOBuffer> base, size_t size)
-    : IOBuffer(base->span().first(size)), base_(std::move(base)) {}
+    : IOBuffer(base->first(size)), base_(std::move(base)) {}
 
 void DrainableIOBuffer::DidConsume(int bytes) {
   SetOffset(used_ + bytes);

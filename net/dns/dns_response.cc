@@ -462,7 +462,7 @@ bool DnsResponse::InitParse(size_t nbytes, const DnsQuery& query) {
   // Construct the parser. Only allow parsing up to `num_records` records. If
   // more records are present in the buffer, it's just garbage extra data after
   // the formal end of the response and should be ignored.
-  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes),
+  parser_ = DnsRecordParser(io_buffer_->first(nbytes),
                             kHeaderSize + question.size(), num_records);
   return true;
 }
@@ -483,8 +483,8 @@ bool DnsResponse::InitParseWithoutQuery(size_t nbytes) {
   // Only allow parsing up to `num_records` records. If more records are present
   // in the buffer, it's just garbage extra data after the formal end of the
   // response and should be ignored.
-  parser_ = DnsRecordParser(io_buffer_->span().first(nbytes), kHeaderSize,
-                            num_records);
+  parser_ =
+      DnsRecordParser(io_buffer_->first(nbytes), kHeaderSize, num_records);
 
   unsigned qdcount = base::NetToHost16(header()->qdcount);
   for (unsigned i = 0; i < qdcount; ++i) {
