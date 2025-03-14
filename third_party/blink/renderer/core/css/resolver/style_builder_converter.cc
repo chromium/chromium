@@ -230,9 +230,9 @@ DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
         /*constrained_high_mix=*/constrained_high_mix_sum / fraction_sum);
   } else if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
-      case CSSValueID::kHigh:
+      case CSSValueID::kNoLimit:
         return DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh);
-      case CSSValueID::kConstrainedHigh:
+      case CSSValueID::kConstrained:
         return DynamicRangeLimit(
             cc::PaintFlags::DynamicRangeLimit::kConstrainedHigh);
       case CSSValueID::kStandard:

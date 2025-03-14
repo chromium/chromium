@@ -3827,9 +3827,10 @@ const CSSValue* DynamicRangeLimit::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  if (const CSSValue* const keyword_value = css_parsing_utils::ConsumeIdent<
-          CSSValueID::kStandard, CSSValueID::kHigh,
-          CSSValueID::kConstrainedHigh>(stream)) {
+  if (const CSSValue* const keyword_value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kStandard,
+                                          CSSValueID::kNoLimit,
+                                          CSSValueID::kConstrained>(stream)) {
     return keyword_value;
   }
 
@@ -3903,11 +3904,11 @@ const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kStandard);
   }
   if (limit.constrained_high_mix == 1.f) {
-    return CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh);
+    return CSSIdentifierValue::Create(CSSValueID::kConstrained);
   }
   float high_mix = 1.f - limit.standard_mix - limit.constrained_high_mix;
   if (high_mix == 1.f) {
-    return CSSIdentifierValue::Create(CSSValueID::kHigh);
+    return CSSIdentifierValue::Create(CSSValueID::kNoLimit);
   }
   HeapVector<Member<const CSSValue>> limits;
   HeapVector<Member<const CSSPrimitiveValue>> percentages;
@@ -3917,13 +3918,13 @@ const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
         100 * limit.standard_mix, CSSPrimitiveValue::UnitType::kPercentage));
   }
   if (limit.constrained_high_mix != 0.f) {
-    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh));
+    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kConstrained));
     percentages.push_back(CSSNumericLiteralValue::Create(
         100 * limit.constrained_high_mix,
         CSSPrimitiveValue::UnitType::kPercentage));
   }
   if (high_mix != 0.f) {
-    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kHigh));
+    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kNoLimit));
     percentages.push_back(CSSNumericLiteralValue::Create(
         100 * high_mix, CSSPrimitiveValue::UnitType::kPercentage));
   }

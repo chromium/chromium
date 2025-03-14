@@ -1780,7 +1780,8 @@
     // ([video]-dynamic-range) media feature, and dynamic-range-limit property
     "standard",
     "high",
-    "constrained-high",
+    "no-limit",
+    "constrained",
     "dynamic-range-limit-mix",
 
     // Layered @import rule
