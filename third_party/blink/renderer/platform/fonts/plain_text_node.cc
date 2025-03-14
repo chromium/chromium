@@ -168,6 +168,9 @@ void PlainTextNode::SegmentText(const TextRun& run,
         bidi.GetVisualRuns(original_text, &bidi_runs);
         item_list_.reserve(bidi_runs.size());
         for (const BidiParagraph::Run& bidi_run : bidi_runs) {
+          if (IsRtl(bidi_run.Direction())) {
+            contains_rtl_items_ = true;
+          }
           if (!bidi_overridden) {
             SegmentWord(bidi_run.start, bidi_run.Length(), bidi_run.Direction(),
                         font);

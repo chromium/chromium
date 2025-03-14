@@ -466,6 +466,7 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     const PlainTextNode& node,
     const Type type)
     : ShapeResultBloberizer(font_description, type) {
+  DCHECK(!node.ContainsRtlItems());
   const unsigned to = node.TextContent().length();
   if (CanUseFastPath(0, to, to,
                      /* has_vertical_offsets */ false)) {
@@ -473,14 +474,8 @@ ShapeResultBloberizer::FillGlyphs::FillGlyphs(
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kTextIntercepts);
     DCHECK_NE(type_, ShapeResultBloberizer::Type::kEmitText);
     float advance = 0;
-    if (IsLtr(node.BaseDirection())) {
-      for (const auto& item : node.ItemList()) {
-        advance = FillFastHorizontalGlyphs(item.GetShapeResult(), advance);
-      }
-    } else {
-      for (const auto& item : base::Reversed(node.ItemList())) {
-        advance = FillFastHorizontalGlyphs(item.GetShapeResult(), advance);
-      }
+    for (const auto& item : node.ItemList()) {
+      advance = FillFastHorizontalGlyphs(item.GetShapeResult(), advance);
     }
     advance_ = advance;
     return;
