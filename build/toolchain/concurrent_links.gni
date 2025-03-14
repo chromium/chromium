@@ -110,7 +110,7 @@ if (concurrent_links == -1) {
   # freqneutly cause bot died issue for unknown reason. Reducing concurrency to
   # see if it helps.
   if (is_android) {
-    _args += [ "--secondary_mem_per_link=8" ]
+    _args += [ "--secondary_mem_per_link=6" ]
   }
 
   # TODO(crbug.com/41257258) Pass more build configuration info to the script
