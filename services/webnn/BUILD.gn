@@ -231,6 +231,7 @@ source_set("tests") {
     "//services/webnn/public/mojom",
     "//testing/gtest",
     "//third_party/fp16",
+    "//third_party/onnxruntime_headers",
   ]
 
   if (is_win) {
