@@ -34,7 +34,6 @@
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/common/skia_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -48,6 +47,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
@@ -225,11 +225,6 @@ int RendererMain(MainFunctionParams parameters) {
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
       blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
           CreateMainThreadMessagePump());
-  bool input_scenario_priority_boost_enabled =
-      base::FeatureList::IsEnabled(features::kInputScenarioPriorityBoost);
-  if (input_scenario_priority_boost_enabled) {
-    main_thread_scheduler->EnableInputScenarioPriorityBoost();
-  }
 
   platform.PlatformInitialize();
 
@@ -281,9 +276,11 @@ int RendererMain(MainFunctionParams parameters) {
     // overall this improves user-perceived performance.
     // If kInputScenarioPriorityBoost is enabled, the main thread will only be
     // display critical when user input is detected.
-    base::ThreadType thread_type = input_scenario_priority_boost_enabled
-                                       ? base::ThreadType::kDefault
-                                       : base::ThreadType::kDisplayCritical;
+    base::ThreadType thread_type =
+        base::FeatureList::IsEnabled(
+            blink::features::kInputScenarioPriorityBoost)
+            ? base::ThreadType::kDefault
+            : base::ThreadType::kDisplayCritical;
     base::PlatformThread::SetCurrentThreadType(thread_type);
 
     std::unique_ptr<RenderProcess> render_process = RenderProcessImpl::Create();
