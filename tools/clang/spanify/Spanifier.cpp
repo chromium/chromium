@@ -2260,14 +2260,15 @@ class Spanifier {
             .bind("deref_expr"));
     Match(deref_expression, DecaySpanToPointer);
 
-    auto rhs_expr_variations_ignoring_non_spelled_nodes = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource, expr(rhs_expr_variations));
+    auto rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 expr(rhs_exprs_without_size_nodes));
     auto raw_ptr_op_bool = cxxMemberCallExpr(
         on(expr().bind("boolean_op_operand")),
         callee(cxxMethodDecl(hasName("operator bool"),
                              ofClass(hasName("raw_ptr")))),
         has(memberExpr(has(expr(ignoringParenCasts(
-            rhs_expr_variations_ignoring_non_spelled_nodes))))));
+            rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes))))));
     // Handles boolean operations that need to be adapted after a span rewrite.
     //   if(expr) => if(!expr.empty())
     //   if(!expr) => if(expr.empty())
@@ -2278,15 +2279,17 @@ class Spanifier {
     // `clang::TK_IgnoreUnlessSpelledInSource`, while very useful in simplifying
     // the matchers, wouldn't detect boolean operations on pointers hence the
     // need for a hybrid traversal mode in this matcher.
-    auto boolean_op =
-        expr(anyOf(implicitCastExpr(
-                       hasCastKind(clang::CastKind::CK_PointerToBoolean),
-                       hasSourceExpression(
-                           expr(rhs_expr_variations_ignoring_non_spelled_nodes)
-                               .bind("boolean_op_operand"))),
-                   raw_ptr_op_bool),
-             optionally(hasParent(
-                 unaryOperator(hasOperatorName("!")).bind("logical_not_op"))));
+    auto boolean_op = expr(
+        anyOf(
+            implicitCastExpr(
+                hasCastKind(clang::CastKind::CK_PointerToBoolean),
+                hasSourceExpression(
+                    expr(
+                        rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes)
+                        .bind("boolean_op_operand"))),
+            raw_ptr_op_bool),
+        optionally(hasParent(
+            unaryOperator(hasOperatorName("!")).bind("logical_not_op"))));
     Match(boolean_op, DecaySpanToBooleanOp);
 
     // This is needed to remove the `.get()` call on raw_ptr from rewritten
