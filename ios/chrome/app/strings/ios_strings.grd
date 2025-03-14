@@ -1232,7 +1232,7 @@ See your search engine’s instructions for deleting your search history, if app
         Pin Tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY" desc="The iOS context menu item for showing the recent activity in a shared tab group. [iOS only]">
-        Recent activity
+        Recent Activity
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP" desc="The iOS context menu item for removing a tab from a group. [iOS only]">
         Remove From Group
