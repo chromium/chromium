@@ -1258,7 +1258,7 @@ def _make_overload_dispatcher_per_arg_size(cg_context, items):
     typed_array_types = ("Int8Array", "Int16Array", "Int32Array",
                          "BigInt64Array", "Uint8Array", "Uint16Array",
                          "Uint32Array", "BigUint64Array", "Uint8ClampedArray",
-                         "Float32Array", "Float64Array")
+                         "Float16Array", "Float32Array", "Float64Array")
     for typed_array_type in typed_array_types:
         func_like = find(lambda t, u: u.keyword_typename == typed_array_type)
         if func_like:
