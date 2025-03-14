@@ -83,6 +83,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         ],
         "peopleSuggestions": [
           {
+            "suggestion": "john@example.com",
             "document": {
               "name": "sundar",
               "derivedStructData": {
@@ -93,7 +94,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                   "given_name_lower": "john",
                   "family_name_lower": "doe",
                   "displayName": "John Doe",
-                  "userName": "john@example.com"
+                  "userName": "john"
                 },
                 "emails": [
                   {
@@ -152,10 +153,11 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
         ],
         "peopleSuggestions": [
           {
+            "suggestion": "missingDisplayName@example.com",
             "document": {
               "derivedStructData": {
                 "name": {
-                  "userName": "missingDisplayName@example.com"
+                  "userName": "missingDisplayName"
                 }
               }
             }
@@ -164,17 +166,18 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
             "document": {
               "derivedStructData": {
                 "name": {
-                  "displayName": "Missing user name"
+                  "displayName": "Missing suggestion / user name"
                 }
               }
             }
           },
           {
+            "suggestion": "john@example.com",
             "document": {
               "derivedStructData": {
                 "name": {
                   "displayName": "John Doe",
-                  "userName": "john@example.com"
+                  "userName": "john"
                 }
               }
             }
@@ -226,11 +229,11 @@ std::string CreatePeopleResult(const std::string& displayName,
   return base::StringPrintf(
       R"(
         {
+          "suggestion": "%s",
           "document": {
             "derivedStructData": {
               "name": {
                 "displayName": "%s",
-                "userName": "%s",
                 "givenName": "%s",
                 "familyName": "%s"
               }
@@ -238,7 +241,7 @@ std::string CreatePeopleResult(const std::string& displayName,
           }
         }
             )",
-      displayName, userName, givenName, familyName);
+      userName, displayName, givenName, familyName);
 }
 std::string CreateContentResult(const std::string& title,
                                 const std::string& owner_email,
