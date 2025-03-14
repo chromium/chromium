@@ -1247,6 +1247,7 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(true);
   GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
+  GetGlicWidget()->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
 }
 
