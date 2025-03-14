@@ -227,13 +227,33 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
            mojo::PendingAssociatedReceiver<
                blink::mojom::SharedStorageDocumentService> receiver) {
           if (SharedStorageDocumentServiceImpl::GetForCurrentDocument(impl)) {
-            // The renderer somehow requested two shared storage worklets
-            // associated with the same document. This could indicate a
-            // compromised renderer, so let's terminate it.
-            mojo::ReportBadMessage(
-                "Attempted to request two shared storage worklets associated "
-                "with the same document.");
-            return;
+            // TODO(crbug.com/401559926): The renderer somehow requested two
+            // SharedStorageDocumentServiceImpl associated with the same
+            // document. In theory, this shouldn't be possible, but in practice
+            // it does happen. We add diagnostics to help diagnose why.
+            SCOPED_CRASH_KEY_BOOL("RFHI", "IsInPrimaryMainFrame",
+                                  impl->IsInPrimaryMainFrame());
+            SCOPED_CRASH_KEY_BOOL(
+                "RFHI", "IsSameOriginToMainFrame",
+                impl->GetLastCommittedOrigin().IsSameOriginWith(
+                    impl->GetMainFrame()->GetLastCommittedOrigin()));
+            SCOPED_CRASH_KEY_BOOL("RFHI", "IsCrossProcessSubframe",
+                                  impl->IsCrossProcessSubframe());
+            SCOPED_CRASH_KEY_BOOL("RFHI", "HasPendingCommitNavigation",
+                                  impl->HasPendingCommitNavigation());
+            SCOPED_CRASH_KEY_BOOL(
+                "RFHI", "HasPendingCommitForXDocNav",
+                impl->HasPendingCommitForCrossDocumentNavigation());
+            SCOPED_CRASH_KEY_BOOL("RFHI", "IsPendingDeletion",
+                                  impl->IsPendingDeletion());
+            SCOPED_CRASH_KEY_BOOL("RFHI", "IsInBackForwardCache",
+                                  impl->IsInBackForwardCache());
+            SCOPED_CRASH_KEY_BOOL("RFHI", "BeforeUnloadTimedOut",
+                                  impl->BeforeUnloadTimedOut());
+            SCOPED_CRASH_KEY_BOOL("RFHI", "IsWaitingForUnloadACK",
+                                  impl->IsWaitingForUnloadACK());
+            base::debug::DumpWithoutCrashing();
+            SharedStorageDocumentServiceImpl::DeleteForCurrentDocument(impl);
           }
 
           SharedStorageDocumentServiceImpl::GetOrCreateForCurrentDocument(impl)
