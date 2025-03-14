@@ -163,6 +163,9 @@ def destination_files_for_channel(import_channel):
   # These files are manually maintained in the destination and do not
   # exist in the origin.
   destination_files_to_exclude_per_channel = [
+      "METADATA",
+      "MODULE_LICENSE_BSD",
+
       "third_party/zlib/**",
       # TODO: https://crbug.com/387975197 - we shouldn't have to manually
       # maintain this list; ideally Copybara should handle this automatically
