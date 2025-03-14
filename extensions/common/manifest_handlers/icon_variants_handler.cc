@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "extensions/common/api/icon_variants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/icons/extension_icon_variants.h"
 #include "extensions/common/manifest_constants.h"
 #include "ui/gfx/color_utils.h"
@@ -79,19 +80,31 @@ ExtensionIconVariants GetIconVariants(Extension& extension) {
 // static
 bool IconVariantsInfo::HasIconVariants(const Extension* extension) {
   DCHECK(extension);
+  if (!IconVariantsInfo::SupportsIconVariants(*extension)) {
+    return false;
+  }
   const IconVariantsInfo* info = IconVariantsInfo::GetIconVariants(*extension);
   return info && info->icon_variants && !info->icon_variants->IsEmpty();
 }
 
+// static
 const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
     const Extension& extension) {
+  if (!IconVariantsInfo::SupportsIconVariants(extension)) {
+    return nullptr;
+  }
   return static_cast<IconVariantsInfo*>(
       extension.GetManifestData(ManifestKeys::kIconVariants));
 }
 
 // static
 bool IconVariantsInfo::SupportsIconVariants(const Extension& extension) {
-  return extension.manifest_version() >= 3 && extension.is_extension();
+  if (extension.manifest_version() < 3 || !extension.is_extension()) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      extensions_features::kExtensionIconVariants);
 }
 
 void IconVariantsInfo::InitializeIconSets() {
@@ -131,6 +144,11 @@ const ExtensionIconSet& IconVariantsInfo::Get(
 
 bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   DCHECK(extension);
+
+  if (!IconVariantsInfo::SupportsIconVariants(*extension)) {
+    AddInstallWarningForId(*extension, Id::kIconVariantsNotEnabled);
+    return true;
+  }
 
   // The `icon_variants` key should be able to be parsed from generated .idl.
   // This only verifies the limited subset of keys supported by

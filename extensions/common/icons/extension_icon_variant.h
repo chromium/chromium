@@ -20,8 +20,8 @@ namespace extensions {
 class ExtensionIconVariant {
  public:
   ExtensionIconVariant();
-  ExtensionIconVariant(const ExtensionIconVariant& other) = delete;
   ExtensionIconVariant(ExtensionIconVariant&& other);
+  ExtensionIconVariant(const ExtensionIconVariant& other);
   ~ExtensionIconVariant();
 
   // Options for `"color_scheme"` in the `"icon_variants"` manifest key.
