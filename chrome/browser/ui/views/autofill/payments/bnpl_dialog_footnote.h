@@ -9,13 +9,18 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 
+namespace autofill {
+struct TextLinkInfo;
+}
+
 namespace autofill::payments {
 
 // Footnote view banner across the bottom of the BNPL Issuer selection dialog.
 class BnplDialogFootnote : public views::BoxLayoutView {
   METADATA_HEADER(BnplDialogFootnote, views::BoxLayoutView)
  public:
-  BnplDialogFootnote();
+  BnplDialogFootnote(const std::u16string& footnote_text,
+                     const TextLinkInfo& text_link_info);
   BnplDialogFootnote(const BnplDialogFootnote&) = delete;
   BnplDialogFootnote& operator=(const BnplDialogFootnote&) = delete;
   ~BnplDialogFootnote() override;
