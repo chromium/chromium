@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.reload_button;
 
 import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -14,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -24,6 +26,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
     private final PropertyModel mModel;
+    private final Resources mResources;
     private boolean mIsShiftDownForReload;
 
     /**
@@ -32,8 +35,10 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      * @param model a properties model that encapsulates reload button state.
      * @param delegate a callback to stop or reload current tab
      */
-    ReloadButtonMediator(PropertyModel model, ReloadButtonCoordinator.Delegate delegate) {
+    ReloadButtonMediator(
+            PropertyModel model, ReloadButtonCoordinator.Delegate delegate, Resources resources) {
         mModel = model;
+        mResources = resources;
 
         Callback<MotionEvent> onTouchListener =
                 (event) ->
@@ -65,7 +70,29 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      *
      * @param isReloading indicates whether current page is reloading.
      */
-    public void setReloading(boolean isReloading) {}
+    public void setReloading(boolean isReloading) {
+        final int level;
+        final String contentDescription;
+        if (isReloading) {
+            level = mResources.getInteger(R.integer.reload_button_level_stop);
+            contentDescription = mResources.getString(R.string.accessibility_btn_stop_loading);
+        } else {
+            level = mResources.getInteger(R.integer.reload_button_level_reload);
+            contentDescription = mResources.getString(R.string.accessibility_btn_refresh);
+        }
+
+        mModel.set(ReloadButtonProperties.DRAWABLE_LEVEL, level);
+        mModel.set(ReloadButtonProperties.CONTENT_DESCRIPTION, contentDescription);
+    }
+
+    /**
+     * Changes reload button enabled state.
+     *
+     * @param isEnabled indicates whether the button should be enabled or disabled.
+     */
+    public void setEnabled(boolean isEnabled) {
+        mModel.set(ReloadButtonProperties.IS_ENABLED, isEnabled);
+    }
 
     /**
      * Sets reload button visibility.

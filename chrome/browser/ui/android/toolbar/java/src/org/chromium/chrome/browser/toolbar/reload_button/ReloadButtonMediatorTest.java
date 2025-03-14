@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.reload_button;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.content.res.Resources;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -14,28 +17,43 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
 public class ReloadButtonMediatorTest {
+    private static final String STOP_LOADING_DESCRIPTION = "Stop loading";
+    private static final String RELOAD_DESCRIPTION = "Reload";
+    private static final int RELOAD_LEVEL = 0;
+    private static final int STOP_LEVEL = 1;
 
     @Rule public MockitoRule mockitoTestRule = MockitoJUnit.rule();
 
     @Spy public ReloadButtonCoordinator.Delegate mDelegate;
+
+    @Mock public Resources mResources;
     private PropertyModel mModel;
     private ReloadButtonMediator mMediator;
 
     @Before
     public void setup() {
+        when(mResources.getString(R.string.accessibility_btn_stop_loading))
+                .thenReturn(STOP_LOADING_DESCRIPTION);
+        when(mResources.getString(R.string.accessibility_btn_refresh))
+                .thenReturn(RELOAD_DESCRIPTION);
+        when(mResources.getInteger(R.integer.reload_button_level_stop)).thenReturn(STOP_LEVEL);
+        when(mResources.getInteger(R.integer.reload_button_level_reload)).thenReturn(RELOAD_LEVEL);
+
         mModel = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
-        mMediator = new ReloadButtonMediator(mModel, mDelegate);
+        mMediator = new ReloadButtonMediator(mModel, mDelegate, mResources);
     }
 
     @Test
@@ -55,6 +73,34 @@ public class ReloadButtonMediatorTest {
 
         mModel.get(ReloadButtonProperties.CLICK_LISTENER).run();
         verify(mDelegate).stopOrReloadCurrentTab(true);
+    }
+
+    @Test
+    public void testReloadingActive_setButtonToStop() {
+        mMediator.setReloading(true);
+
+        assertEquals(
+                "Reload icon should be stop reloading",
+                STOP_LEVEL,
+                mModel.get(ReloadButtonProperties.DRAWABLE_LEVEL));
+        assertEquals(
+                "Content description should be stop reloading",
+                STOP_LOADING_DESCRIPTION,
+                mModel.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    public void testStopReloading_setButtonToReload() {
+        mMediator.setReloading(false);
+
+        assertEquals(
+                "Reload icon should be reload",
+                RELOAD_LEVEL,
+                mModel.get(ReloadButtonProperties.DRAWABLE_LEVEL));
+        assertEquals(
+                "Content description should be reload",
+                RELOAD_DESCRIPTION,
+                mModel.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
     }
 
     @Test

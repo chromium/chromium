@@ -36,10 +36,29 @@ public class ReloadButtonCoordinator {
      */
     public ReloadButtonCoordinator(ImageButton view, ReloadButtonCoordinator.Delegate delegate) {
         final var model = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
-        mMediator = new ReloadButtonMediator(model, delegate);
+        mMediator = new ReloadButtonMediator(model, delegate, view.getResources());
         PropertyModelChangeProcessor.create(model, view, ReloadButtonViewBinder::bind);
     }
 
+    /**
+     * Changes button reloading state.
+     *
+     * @param isReloading indicated whether current web page is reloading.
+     */
+    public void setReloading(boolean isReloading) {
+        mMediator.setReloading(isReloading);
+    }
+
+    /**
+     * Changes reload button enabled state.
+     *
+     * @param isEnabled indicates whether the button should be enabled or disabled.
+     */
+    public void setEnabled(boolean isEnabled) {
+        mMediator.setEnabled(isEnabled);
+    }
+
+    /** Destroys current object instance. It can't be used after this call. */
     public void destroy() {
         mMediator.destroy();
     }

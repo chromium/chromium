@@ -33,6 +33,14 @@ class ReloadButtonViewBinder {
         } else if (key == ReloadButtonProperties.TOUCH_LISTENER) {
             final Callback<MotionEvent> listener = model.get(ReloadButtonProperties.TOUCH_LISTENER);
             setTouchListener(button, listener);
+        } else if (key == ReloadButtonProperties.CONTENT_DESCRIPTION) {
+            button.setContentDescription(model.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
+        } else if (key == ReloadButtonProperties.DRAWABLE_LEVEL) {
+            button.getDrawable().setLevel(model.get(ReloadButtonProperties.DRAWABLE_LEVEL));
+        } else if (key == ReloadButtonProperties.IS_ENABLED) {
+            button.setEnabled(model.get(ReloadButtonProperties.IS_ENABLED));
+        } else {
+            assert false : String.format("Unsupported property key %s", key.toString());
         }
     }
 

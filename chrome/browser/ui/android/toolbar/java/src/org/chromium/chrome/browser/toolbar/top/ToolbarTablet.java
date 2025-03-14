@@ -518,24 +518,6 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    void updateReloadButtonVisibility(boolean isReloading) {
-        if (isReloading) {
-            mReloadButton
-                    .getDrawable()
-                    .setLevel(getResources().getInteger(R.integer.reload_button_level_stop));
-            mReloadButton.setContentDescription(
-                    getContext().getString(R.string.accessibility_btn_stop_loading));
-        } else {
-            mReloadButton
-                    .getDrawable()
-                    .setLevel(getResources().getInteger(R.integer.reload_button_level_reload));
-            mReloadButton.setContentDescription(
-                    getContext().getString(R.string.accessibility_btn_refresh));
-        }
-        mReloadButton.setEnabled(!mIsInTabSwitcherMode);
-    }
-
-    @Override
     void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {
         if (isBookmarked) {
             mBookmarkButtonImageRes = R.drawable.btn_star_filled;
