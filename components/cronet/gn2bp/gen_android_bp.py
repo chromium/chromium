@@ -57,7 +57,7 @@ CPP_VERSION = 'c++17'
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
 
-# TODO: crbug.com/xxx - Relying on (and modifying this) this global variable is bad. Refactor it and proper inject it on what's depending on it.
+# TODO: crbug.com/xxx - Relying on (and modifying this) this global variable is bad. Refactor and properly inject this into what requires it.
 IMPORT_CHANNEL = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
 # All module names are prefixed with this string to avoid collisions.
 MODULE_PREFIX = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
@@ -242,7 +242,7 @@ BLUEPRINTS_EXTRAS = {"": ["build = [\"Android.extras.bp\"]"]}
 # that all targets which should live in relative_path_A/Android.bp will live
 # inside relative_path_B/Android.bp.
 BLUEPRINTS_MAPPING = {
-    # BoringSSL's Android.bp is manually mantained and generated via a template,
+    # BoringSSL's Android.bp is manually maintained and generated via a template,
     # see run_gen2bp.py's _gen_boringssl.
     "third_party/boringssl": "",
     # Moving is undergoing, see crbug/40273848
@@ -3242,6 +3242,7 @@ def main():
       '--channel',
       help='The channel this Android.bp generation is being performed for.',
       type=str,
+      choices=['tot', 'stable'],
       default='tot')
   group = parser.add_mutually_exclusive_group()
   group.add_argument(

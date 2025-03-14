@@ -39,25 +39,25 @@ package {
 build = ["sources.bp"]
 
 cc_defaults {
-    name: "${MODULE_PREFIX}cronet_defaults",
+    name: "${GN2BP_MODULE_PREFIX}cronet_defaults",
     stl: "none",
     apex_available: [
         "com.android.tethering",
     ],
     min_sdk_version: "30",
     include_dirs: [
-        "external/cronet/${IMPORT_CHANNEL}/buildtools/third_party/libc++/",
-        "external/cronet/${IMPORT_CHANNEL}/third_party/libc++/src/include",
-        "external/cronet/${IMPORT_CHANNEL}/third_party/libc++abi/src/include",
+        "external/cronet/${GN2BP_IMPORT_CHANNEL}/buildtools/third_party/libc++/",
+        "external/cronet/${GN2BP_IMPORT_CHANNEL}/third_party/libc++/src/include",
+        "external/cronet/${GN2BP_IMPORT_CHANNEL}/third_party/libc++abi/src/include",
     ],
     static_libs: [
-        "${MODULE_PREFIX}buildtools_third_party_libc___libc__",
-        "${MODULE_PREFIX}buildtools_third_party_libc__abi_libc__abi"
+        "${GN2BP_MODULE_PREFIX}buildtools_third_party_libc___libc__",
+        "${GN2BP_MODULE_PREFIX}buildtools_third_party_libc__abi_libc__abi"
     ],
 }
 
 cc_defaults {
-    name: "${MODULE_PREFIX}boringssl_flags",
+    name: "${GN2BP_MODULE_PREFIX}boringssl_flags",
     cflags: [
         "-fvisibility=hidden",
         "-DBORINGSSL_SHARED_LIBRARY",
@@ -75,7 +75,7 @@ cc_defaults {
 }
 
 cc_defaults {
-    name: "${MODULE_PREFIX}boringssl_defaults",
+    name: "${GN2BP_MODULE_PREFIX}boringssl_defaults",
     local_include_dirs: ["src/include"],
     export_include_dirs: ["src/include"],
     cflags: [
@@ -84,7 +84,7 @@ cc_defaults {
 }
 
 cc_defaults {
-    name: "${MODULE_PREFIX}libcrypto_defaults",
+    name: "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
     target: {
         android: {
             // On FIPS builds (i.e. Android only) prevent other libraries
@@ -97,13 +97,13 @@ cc_defaults {
 }
 
 cc_object {
-    name: "${MODULE_PREFIX}bcm_object",
+    name: "${GN2BP_MODULE_PREFIX}bcm_object",
     defaults: [
-        "${MODULE_PREFIX}boringssl_defaults",
-        "${MODULE_PREFIX}boringssl_flags",
-        "${MODULE_PREFIX}cronet_defaults",
-        "${MODULE_PREFIX}libcrypto_bcm_sources",
-        "${MODULE_PREFIX}libcrypto_defaults",
+        "${GN2BP_MODULE_PREFIX}boringssl_defaults",
+        "${GN2BP_MODULE_PREFIX}boringssl_flags",
+        "${GN2BP_MODULE_PREFIX}cronet_defaults",
+        "${GN2BP_MODULE_PREFIX}libcrypto_bcm_sources",
+        "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
     ],
     sanitize: {
         address: false,
@@ -146,17 +146,17 @@ cc_object {
 }
 
 cc_library_shared {
-    name: "${MODULE_PREFIX}libcrypto",
+    name: "${GN2BP_MODULE_PREFIX}libcrypto",
     defaults: [
-        "${MODULE_PREFIX}boringssl_defaults",
-        "${MODULE_PREFIX}boringssl_flags",
-        "${MODULE_PREFIX}cronet_defaults",
-        "${MODULE_PREFIX}libcrypto_defaults",
-        "${MODULE_PREFIX}libcrypto_sources",
+        "${GN2BP_MODULE_PREFIX}boringssl_defaults",
+        "${GN2BP_MODULE_PREFIX}boringssl_flags",
+        "${GN2BP_MODULE_PREFIX}cronet_defaults",
+        "${GN2BP_MODULE_PREFIX}libcrypto_defaults",
+        "${GN2BP_MODULE_PREFIX}libcrypto_sources",
     ],
     unique_host_soname: true,
     srcs: [
-        ":${MODULE_PREFIX}bcm_object",
+        ":${GN2BP_MODULE_PREFIX}bcm_object",
     ],
     target: {
         android: {
@@ -175,26 +175,26 @@ cc_library_shared {
 }
 
 cc_library_shared {
-    name: "${MODULE_PREFIX}libssl",
+    name: "${GN2BP_MODULE_PREFIX}libssl",
     defaults: [
-        "${MODULE_PREFIX}boringssl_defaults",
-        "${MODULE_PREFIX}boringssl_flags",
-        "${MODULE_PREFIX}cronet_defaults",
-        "${MODULE_PREFIX}libssl_sources",
+        "${GN2BP_MODULE_PREFIX}boringssl_defaults",
+        "${GN2BP_MODULE_PREFIX}boringssl_flags",
+        "${GN2BP_MODULE_PREFIX}cronet_defaults",
+        "${GN2BP_MODULE_PREFIX}libssl_sources",
     ],
     unique_host_soname: true,
-    shared_libs: ["${MODULE_PREFIX}libcrypto"],
+    shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto"],
 }
 
 cc_library_shared {
-    name: "${MODULE_PREFIX}libpki",
+    name: "${GN2BP_MODULE_PREFIX}libpki",
     defaults: [
-        "${MODULE_PREFIX}boringssl_defaults",
-        "${MODULE_PREFIX}boringssl_flags",
-        "${MODULE_PREFIX}cronet_defaults",
-        "${MODULE_PREFIX}libpki_sources",
+        "${GN2BP_MODULE_PREFIX}boringssl_defaults",
+        "${GN2BP_MODULE_PREFIX}boringssl_flags",
+        "${GN2BP_MODULE_PREFIX}cronet_defaults",
+        "${GN2BP_MODULE_PREFIX}libpki_sources",
     ],
     unique_host_soname: true,
     cflags: ["-D_BORINGSSL_LIBPKI_"],
-    shared_libs: ["${MODULE_PREFIX}libcrypto"],
+    shared_libs: ["${GN2BP_MODULE_PREFIX}libcrypto"],
 }

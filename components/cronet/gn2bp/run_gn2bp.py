@@ -123,41 +123,37 @@ def _write_desc_json(gn_out_dir: str,
                           stdout=temp_file)
 
 
-def _gen_extras(import_channel: str) -> None:
+def _gen_extras_bp(import_channel: str) -> None:
   """Generate Android.extras.bp."""
   extras_androidbp_template_path = os.path.join(REPOSITORY_ROOT, 'components',
                                                 'cronet', 'gn2bp',
                                                 'Android.extras.bp.template')
-  module_prefix = f'{import_channel}_cronet_'
-  with open(extras_androidbp_template_path,
-            'r') as extras_androidbp_template_file:
-    extras_androidbp_contents = string.Template(
-        extras_androidbp_template_file.read()).substitute(
-            MODULE_PREFIX=module_prefix)
-    with open(os.path.join(REPOSITORY_ROOT, 'Android.extras.bp.gn2bp'),
-              'w') as extras_android_bp_file:
-      extras_android_bp_file.write(extras_androidbp_contents)
+  extras_androidbp_template_contents = cronet_utils.read_file(
+      extras_androidbp_template_path)
+  extras_androidbp_path = os.path.join(REPOSITORY_ROOT,
+                                       'Android.extras.bp.gn2bp')
+  cronet_utils.write_file(
+      extras_androidbp_path,
+      string.Template(extras_androidbp_template_contents).substitute(
+          GN2BP_MODULE_PREFIX=f'{import_channel}_cronet_'))
 
 
 def _gen_boringssl(import_channel: str) -> int:
   """Generate boringssl Android build files."""
+  module_prefix = f'{import_channel}_cronet_'
   boringssl_androidbp_template_path = os.path.join(
       REPOSITORY_ROOT, 'components', 'cronet', 'gn2bp',
       'boringssl_Android.bp.template')
-  module_prefix = f'{import_channel}_cronet_'
-  with open(boringssl_androidbp_template_path,
-            'r') as boringssl_androidbp_template_file:
-    boringssl_androidbp_contents = string.Template(
-        boringssl_androidbp_template_file.read()).substitute(
-            IMPORT_CHANNEL=import_channel, MODULE_PREFIX=module_prefix)
-    with open(os.path.join(_BORINGSSL_PATH, 'Android.bp.gn2bp'),
-              'w') as boringssl_android_bp_file:
-      boringssl_android_bp_file.write(boringssl_androidbp_contents)
-    cmd = 'cd {boringssl_path} && python3 {boringssl_script} --target-prefix={module_prefix} android'.format(
-        boringssl_path=_BORINGSSL_PATH,
-        boringssl_script=_BORINGSSL_SCRIPT,
-        module_prefix=module_prefix)
-    return cronet_utils.run(cmd, shell=True)
+  boringssl_androidbp_template_contents = cronet_utils.read_file(
+      boringssl_androidbp_template_path)
+  boringssl_androidbp_path = os.path.join(_BORINGSSL_PATH, 'Android.bp.gn2bp')
+  cronet_utils.write_file(
+      boringssl_androidbp_path,
+      string.Template(boringssl_androidbp_template_contents).substitute(
+          GN2BP_IMPORT_CHANNEL=import_channel,
+          GN2BP_MODULE_PREFIX=module_prefix))
+  cmd = f'cd {_BORINGSSL_PATH} && python3 {_BORINGSSL_SCRIPT} --target-prefix={module_prefix} android'
+  return cronet_utils.run(cmd, shell=True)
 
 
 def _run_copybara_to_aosp(config: str, copybara_binary: str,
@@ -190,7 +186,6 @@ def _run_copybara_to_aosp(config: str, copybara_binary: str,
       is None else f'{import_channel}_import_cronet_to_git_branch',
       REPOSITORY_ROOT,
       '--ignore-noop',
-      '--git-no-verify',
       *(('--change-request-parent', parent_commit, '--git-push-option',
          'nokeycheck', '--git-push-option', 'uploadvalidator~skip',
          '--gerrit-change-id', change_id) if git_url_and_branch is None else
@@ -271,6 +266,7 @@ def main():
   parser.add_argument('--channel',
                       help='The channel this execution of gn2bp is targeting.',
                       type=str,
+                      choices=['tot', 'stable'],
                       default='tot')
   args = parser.parse_args()
   run_copybara = not args.skip_copybara
@@ -300,7 +296,7 @@ def main():
                            delete_temporary_files=delete_temporary_files,
                            channel=args.channel)
     res_boringssl = _gen_boringssl(args.channel)
-    _gen_extras(args.channel)
+    _gen_extras_bp(args.channel)
 
     res_copybara = 1
     if run_copybara and res_gn2bp == 0 and res_boringssl == 0 and res_license_generation == 0:
