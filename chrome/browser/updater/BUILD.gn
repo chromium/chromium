@@ -12,7 +12,14 @@ if (is_win || is_mac) {
       "browser_updater_client.h",
       "browser_updater_client_util.cc",
       "browser_updater_client_util.h",
+      "check_updater_health_task.h",
     ]
+
+    if (enable_updater) {
+      sources += [ "check_updater_health_task.cc" ]
+    } else {
+      sources += [ "check_updater_health_task_no_updater.cc" ]
+    }
 
     deps = [
       "//base",

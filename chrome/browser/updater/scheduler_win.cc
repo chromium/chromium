@@ -4,16 +4,20 @@
 
 #include "chrome/browser/updater/scheduler.h"
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/check_updater_health_task.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
 void DoPeriodicTasks(base::OnceClosure callback) {
-  BrowserUpdaterClient::Create(::GetUpdaterScope())
-      ->RunPeriodicTasks(std::move(callback));
+  base::MakeRefCounted<CheckUpdaterHealthTask>(::GetUpdaterScope())
+      ->Run(base::BindOnce(&BrowserUpdaterClient::RunPeriodicTasks,
+                           BrowserUpdaterClient::Create(::GetUpdaterScope()),
+                           std::move(callback)));
 }
 
 }  // namespace updater
