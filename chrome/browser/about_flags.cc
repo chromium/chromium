@@ -11765,6 +11765,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSupervisedUserBlockInterstitialV3Description, kOsAll,
      FEATURE_VALUE_TYPE(supervised_user::kSupervisedUserBlockInterstitialV3)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"web-serial-api", flag_descriptions::kWebSerialAPIName,
+     flag_descriptions::kWebSerialAPIDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kWebSerialAPI)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -9341,6 +9341,11 @@
     "expiry_milestone": 138
   },
   {
+    "name": "web-serial-api",
+    "owners": ["ovn@google.com", "cros-web-apps-team@google.com"],
+    "expiry_milestone": 146
+  },
+  {
     "name": "web-share",
     "owners": [ "mhochk@microsoft.com", "ericwilligers@google.com", "hatalat@microsoft.com" ],
     "expiry_milestone": 135

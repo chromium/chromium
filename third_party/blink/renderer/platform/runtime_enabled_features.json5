@@ -4012,8 +4012,8 @@
     },
     {
       name: "Serial",
-      status: {"Android": "", "default": "stable"},
-      base_feature: "none",
+      status: {"Android": "test", "default": "stable"},
+      base_feature: "WebSerialAPI",
     },
     {
       name: "SerializeViewTransitionStateInSPA",

@@ -4754,6 +4754,9 @@ extern const char kSupervisedUserLocalWebApprovalsDescription[];
 extern const char kHistoryOptInEntryPointsName[];
 extern const char kHistoryOptInEntryPointsDescription[];
 
+extern const char kWebSerialAPIName[];
+extern const char kWebSerialAPIDescription[];
+
 extern const char kSupervisedUserForceSigninWithCapabilitiesName[];
 extern const char kSupervisedUserForceSigninWithCapabilitiesDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
