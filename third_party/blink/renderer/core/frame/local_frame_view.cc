@@ -1716,33 +1716,6 @@ float LocalFrameView::InputEventsScaleFactor() const {
          frame_->GetPage()->GetChromeClient().InputEventsScaleForEmulation();
 }
 
-void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
-  Page* page = frame_->GetPage();
-  if (!page)
-    return;
-
-  if (RuntimeEnabledFeatures::
-          ScrollableAreasWithScrollNodeOptimizationEnabled()) {
-    for (const auto& scrollable_area : scrollable_areas_with_scroll_node_) {
-      // TODO(pdr): This check is the same for all areas and can be moved out of
-      // the loop.
-      if (!scrollable_area->ScrollbarsCanBeActive()) {
-        continue;
-      }
-      scrollable_area->ContentAreaWillPaint();
-    }
-  } else {
-    for (const auto& scrollable_area : scrollable_areas_.Values()) {
-      // TODO(pdr): This check is the same for all areas and can be moved out of
-      // the loop.
-      if (!scrollable_area->ScrollbarsCanBeActive()) {
-        continue;
-      }
-      scrollable_area->ContentAreaWillPaint();
-    }
-  }
-}
-
 void LocalFrameView::UpdateDocumentDraggableRegions() const {
   Document* document = frame_->GetDocument();
   if (!document->HasDraggableRegions() ||
