@@ -155,6 +155,10 @@ class BocaAppHandler : public mojom::PageHandler,
                              base::expected<std::unique_ptr<::boca::Session>,
                                             google_apis::ApiErrorCode> result);
 
+  void UpdateCaptionConfigInternal(mojom::CaptionConfigPtr config,
+                                   UpdateCaptionConfigCallback callback,
+                                   bool can_proceed);
+
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
   std::string base_url_;
