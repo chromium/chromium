@@ -27,7 +27,9 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
     private final PropertyModel mModel;
     private final Resources mResources;
+    private final Callback<String> mShowToastCallback;
     private boolean mIsShiftDownForReload;
+    private boolean mIsReloading;
 
     /**
      * Create an instance of {@link ReloadButtonMediator}.
@@ -36,9 +38,13 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      * @param delegate a callback to stop or reload current tab
      */
     ReloadButtonMediator(
-            PropertyModel model, ReloadButtonCoordinator.Delegate delegate, Resources resources) {
+            PropertyModel model,
+            ReloadButtonCoordinator.Delegate delegate,
+            Callback<String> showToast,
+            Resources resources) {
         mModel = model;
         mResources = resources;
+        mShowToastCallback = showToast;
 
         Callback<MotionEvent> onTouchListener =
                 (event) ->
@@ -48,6 +54,15 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(
                 ReloadButtonProperties.CLICK_LISTENER,
                 () -> delegate.stopOrReloadCurrentTab(mIsShiftDownForReload));
+        mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, this::showActionToastOnReloadButton);
+    }
+
+    private void showActionToastOnReloadButton() {
+        if (mIsReloading) {
+            mShowToastCallback.onResult(mResources.getString(R.string.menu_stop_refresh));
+        } else {
+            mShowToastCallback.onResult(mResources.getString(R.string.refresh));
+        }
     }
 
     @Override
@@ -71,6 +86,8 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      * @param isReloading indicates whether current page is reloading.
      */
     public void setReloading(boolean isReloading) {
+        mIsReloading = isReloading;
+
         final int level;
         final String contentDescription;
         if (isReloading) {
@@ -111,5 +128,6 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     public void destroy() {
         mModel.set(ReloadButtonProperties.TOUCH_LISTENER, null);
         mModel.set(ReloadButtonProperties.CLICK_LISTENER, null);
+        mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, null);
     }
 }

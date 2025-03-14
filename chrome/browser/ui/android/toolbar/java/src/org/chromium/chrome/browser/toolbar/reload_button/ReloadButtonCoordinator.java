@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Root component for the reload button. Exposes public API to change button's state and allows
@@ -36,7 +37,12 @@ public class ReloadButtonCoordinator {
      */
     public ReloadButtonCoordinator(ImageButton view, ReloadButtonCoordinator.Delegate delegate) {
         final var model = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
-        mMediator = new ReloadButtonMediator(model, delegate, view.getResources());
+        mMediator =
+                new ReloadButtonMediator(
+                        model,
+                        delegate,
+                        (text) -> Toast.showAnchoredToast(view.getContext(), view, text),
+                        view.getResources());
         PropertyModelChangeProcessor.create(model, view, ReloadButtonViewBinder::bind);
     }
 

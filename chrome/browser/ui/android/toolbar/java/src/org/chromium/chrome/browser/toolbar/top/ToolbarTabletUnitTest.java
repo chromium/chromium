@@ -359,7 +359,6 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void testOnLongClick() {
-        longClickAndVerifyToast(R.id.refresh_button, R.string.refresh);
         longClickAndVerifyToast(R.id.bookmark_button, R.string.menu_bookmark);
         longClickAndVerifyToast(R.id.save_offline_button, R.string.menu_download);
     }

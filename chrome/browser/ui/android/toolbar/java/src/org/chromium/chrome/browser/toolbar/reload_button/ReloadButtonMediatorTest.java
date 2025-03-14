@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,13 +32,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 @LooperMode(LooperMode.Mode.PAUSED)
 public class ReloadButtonMediatorTest {
     private static final String STOP_LOADING_DESCRIPTION = "Stop loading";
+    private static final String STOP_TOAST_MSG = "Stop";
     private static final String RELOAD_DESCRIPTION = "Reload";
+    private static final String RELOAD_TOAST_MSG = "Reload";
     private static final int RELOAD_LEVEL = 0;
     private static final int STOP_LEVEL = 1;
 
     @Rule public MockitoRule mockitoTestRule = MockitoJUnit.rule();
 
     @Spy public ReloadButtonCoordinator.Delegate mDelegate;
+    @Spy public Callback<String> mShowToastCallback;
 
     @Mock public Resources mResources;
     private PropertyModel mModel;
@@ -51,9 +55,11 @@ public class ReloadButtonMediatorTest {
                 .thenReturn(RELOAD_DESCRIPTION);
         when(mResources.getInteger(R.integer.reload_button_level_stop)).thenReturn(STOP_LEVEL);
         when(mResources.getInteger(R.integer.reload_button_level_reload)).thenReturn(RELOAD_LEVEL);
+        when(mResources.getString(R.string.refresh)).thenReturn(RELOAD_TOAST_MSG);
+        when(mResources.getString(R.string.menu_stop_refresh)).thenReturn(STOP_TOAST_MSG);
 
         mModel = new PropertyModel.Builder(ReloadButtonProperties.ALL_KEYS).build();
-        mMediator = new ReloadButtonMediator(mModel, mDelegate, mResources);
+        mMediator = new ReloadButtonMediator(mModel, mDelegate, mShowToastCallback, mResources);
     }
 
     @Test
@@ -101,6 +107,22 @@ public class ReloadButtonMediatorTest {
                 "Content description should be reload",
                 RELOAD_DESCRIPTION,
                 mModel.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
+    }
+
+    @Test
+    public void testLongClickReloading_showStopToast() {
+        mMediator.setReloading(true);
+
+        mModel.get(ReloadButtonProperties.LONG_CLICK_LISTENER).run();
+        verify(mShowToastCallback).onResult(STOP_TOAST_MSG);
+    }
+
+    @Test
+    public void testLongClickIdle_showReloadToast() {
+        mMediator.setReloading(false);
+
+        mModel.get(ReloadButtonProperties.LONG_CLICK_LISTENER).run();
+        verify(mShowToastCallback).onResult(RELOAD_TOAST_MSG);
     }
 
     @Test
