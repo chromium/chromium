@@ -25,15 +25,17 @@ namespace ash {
 namespace {
 
 // Parameters for the OnTask pod.
-constexpr int kPodBorderRadius = 12;
+constexpr int kPodBorderRadius = 26;
 constexpr int kPodVerticalPadding = 10;
 constexpr int kPodHorizontalPadding = 12;
+constexpr int kPodElementSpace = 8;
 
 // Parameters for the separator in the OnTask pod.
 constexpr int kSeparatorVerticalPadding = 0;
-constexpr int kSeparatorHorizontalPadding = 12;
+constexpr int kSeparatorHorizontalPadding = 4;
 
 // Parameters for the label button in the OnTask pod.
+constexpr int kLabelButtonRadius = 16;
 constexpr int kLabelButtonTopPadding = 0;
 constexpr int kLabelButtonLeftPadding = 12;
 constexpr int kLabelButtonButtomPadding = 0;
@@ -67,7 +69,7 @@ std::unique_ptr<views::LabelButton> CreateLabelButton(
   button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   button->SetImageLabelSpacing(kLabelButtonIconTextSpace);
   button->SetBackground(views::CreateRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBaseOpaque, kPodBorderRadius));
+      cros_tokens::kCrosSysSystemOnBaseOpaque, kLabelButtonRadius));
   return button;
 }
 
@@ -82,6 +84,7 @@ OnTaskPodView::OnTaskPodView(OnTaskPodController* pod_controller)
       cros_tokens::kCrosSysSystemBaseElevated, kPodBorderRadius));
   SetInsideBorderInsets(
       gfx::Insets::VH(kPodVerticalPadding, kPodHorizontalPadding));
+  SetBetweenChildSpacing(kPodElementSpace);
 
   AddShortcutButtons();
 }
@@ -148,7 +151,7 @@ void OnTaskPodView::UpdatePinTabStripButton() {
     pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
         IDS_ON_TASK_POD_UNPIN_TAP_STRIP_ACCESSIBLE_NAME));
     pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemPrimaryContainer, kPodBorderRadius));
+        cros_tokens::kCrosSysSystemPrimaryContainer, kLabelButtonRadius));
     pin_tab_strip_button_->SetEnabledTextColors(
         cros_tokens::kCrosSysSystemOnPrimaryContainer);
   } else {
@@ -156,7 +159,7 @@ void OnTaskPodView::UpdatePinTabStripButton() {
     pin_tab_strip_button_->SetText(l10n_util::GetStringUTF16(
         IDS_ON_TASK_POD_PIN_TAP_STRIP_ACCESSIBLE_NAME));
     pin_tab_strip_button_->SetBackground(views::CreateRoundedRectBackground(
-        cros_tokens::kCrosSysSystemOnBaseOpaque, kPodBorderRadius));
+        cros_tokens::kCrosSysSystemOnBaseOpaque, kLabelButtonRadius));
     pin_tab_strip_button_->SetEnabledTextColors(cros_tokens::kCrosSysOnSurface);
   }
 }
@@ -172,7 +175,13 @@ void OnTaskPodView::ToggleSnapLocation() {
 
 void OnTaskPodView::OnPageNavigationContextUpdate() {
   back_button_->SetEnabled(pod_controller_->CanNavigateToPreviousPage());
+  if (!back_button_->GetEnabled()) {
+    back_button_->SetBackground(nullptr);
+  }
   forward_button_->SetEnabled(pod_controller_->CanNavigateToNextPage());
+  if (!forward_button_->GetEnabled()) {
+    forward_button_->SetBackground(nullptr);
+  }
 }
 
 void OnTaskPodView::OnLockedModeUpdate() {
