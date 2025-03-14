@@ -2969,6 +2969,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 
   paint_artifact_compositor_->SetLCDTextPreference(
       page->GetSettings().GetLCDTextPreference());
+  paint_artifact_compositor_->SetDevicePixelRatio(
+      frame_->GetDocument()->DevicePixelRatio());
 
   SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                            LocalFrameUkmAggregator::kCompositingCommit);
