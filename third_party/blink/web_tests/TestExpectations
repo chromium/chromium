@@ -158,6 +158,11 @@ crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Skip Timeout ]
 crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Skip Timeout ]
 
+# Slow tests that timeout often. The same tests run on the V8 CQ, so we can skip
+# them here without losing coverage.
+external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Skip Timeout ]
+external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Skip Timeout ]
+
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
 # ====== Timed HTML parser budget tests from here ========================
@@ -1423,6 +1428,9 @@ crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-002.html [ Failure 
 crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-003.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-scoping/slotted-has-004.html [ Failure ]
 
+# css-will-change
+crbug.com/403372462 external/wpt/css/css-will-change/will-change-stacking-context-z-index-4.html [ Failure ]
+
 # ====== Style team owned tests to here ======
 
 # Failing WPT html/semantics/* tests. Not all have been investigated.
@@ -2613,13 +2621,13 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/403364345 [ Win11-arm64 ] external/wpt/css/css-page/monolithic-overflow-022-print.html [ Failure ]
-crbug.com/403364345 [ Linux ] external/wpt/css/css-page/monolithic-overflow-022-print.html [ Failure ]
-crbug.com/403340566 [ Win11-arm64 ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
+[ Linux ] external/wpt/css/css-page/monolithic-overflow-029-print.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-020.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-021.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-022.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-023.html [ Failure ]
 crbug.com/403340566 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
-crbug.com/403358035 [ Win11-arm64 ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Timeout ]
-crbug.com/403358035 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Timeout ]
-crbug.com/402853477 external/wpt/css/css-will-change/will-change-stacking-context-z-index-4.html [ Failure ]
+crbug.com/403340566 [ Win11-arm64 ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
 crbug.com/402195188 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Crash ]
 crbug.com/401111779 [ Mac15-arm64 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
 crbug.com/401111779 [ Mac15 ] external/wpt/webrtc-stats/getStats-remote-candidate-ufrag.html [ Timeout ]
@@ -2778,8 +2786,6 @@ crbug.com/385918134 [ Linux ] external/wpt/wasm/core/imports.wast.js.html [ Cras
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_grow.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/memory_trap.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_address.wast.js.html [ Crash ]
-crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.htm [ Pass Timeout ]
-crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.htm [ Pass Timeout ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_extend.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_splat.wast.js.html [ Crash ]
 crbug.com/385918134 [ Linux ] external/wpt/wasm/core/simd/simd_load_zero.wast.js.html [ Crash ]
@@ -8796,12 +8802,9 @@ crbug.com/339041663 external/wpt/mediacapture-insertable-streams/legacy/MediaStr
 crbug.com/339041663 external/wpt/mediacapture-insertable-streams/tentative/VideoTrackGenerator.https.html [ Crash Failure Timeout ]
 # failure from enabling swiftshader on headless shell, combined with a preexisting flaky Crash/Timeout
 crbug.com/626703 crbug.com/339041663 external/wpt/css/css-grid/subgrid/scrollbar-gutter-002.html [ Crash Failure Pass Timeout ]
-# More tests that exhibit antialiasing differences only on headless shell, not on content_shell, when run under Fontations
-crbug.com/397880053 external/wpt/css/css-multicol/multicol-height-002-print.xht [ Failure ]
-crbug.com/397880053 external/wpt/css/css-page/margin-boxes/auto-margins-001-print.html [ Failure ]
-crbug.com/397880053 external/wpt/css/css-page/margin-boxes/auto-margins-002-print.html [ Failure ]
-crbug.com/397880053 external/wpt/css/css-page/page-box-009-print.html [ Failure ]
-crbug.com/397880053 external/wpt/css/css-page/page-size-010-print.html [ Failure ]
+
+# Gardener 2025-03-14
+crbug.com/403505389 external/wpt/css/css-page/page-size-005-print.html [ Failure ]
 
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
@@ -9077,5 +9080,5 @@ crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sine.html 
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
 crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-sideways-lr.html [ Failure ]
 crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Failure ]
-crbug.com/391006701 [ Mac Debug ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
-crbug.com/391006701 [ Mac Debug ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
+crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
+crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]

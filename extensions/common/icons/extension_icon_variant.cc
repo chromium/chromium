@@ -36,6 +36,9 @@ ExtensionIconVariant::~ExtensionIconVariant() = default;
 ExtensionIconVariant::ExtensionIconVariant(ExtensionIconVariant&& other) =
     default;
 
+ExtensionIconVariant::ExtensionIconVariant(const ExtensionIconVariant& other) =
+    default;
+
 // Add color schemes if the input value is valid and has valid color_schemes.
 void ExtensionIconVariant::MaybeAddColorSchemes(const base::Value& value) {
   // `value` should be a list. Otherwise add a warning and return.

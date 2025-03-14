@@ -228,8 +228,14 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
                                  metadata_change_list.get());
       break;
     case AutofillProfileChange::HIDE_IN_AUTOFILL:
-      // TODO(crbug.com/357074792): Implement.
-      NOTIMPLEMENTED();
+      auto entity_data = CreateContactInfoEntityDataFromAutofillProfile(
+              change.data_model(),
+              GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
+                  change.key()));
+      entity_data->specifics.mutable_contact_info()->set_invisible_in_autofill(
+        true);
+      change_processor()->Put(
+          change.key(), std::move(entity_data), metadata_change_list.get());
       break;
   }
 

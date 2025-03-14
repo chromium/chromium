@@ -321,7 +321,11 @@ struct HistoryGraph: View {
   /// Updates the selected data when the given `location` is selected inside the given
   /// `geometry` and `chart`.
   private func updateSelectionData(location: CGPoint, geometry: GeometryProxy, chart: ChartProxy) {
-    let startX = geometry[chart.plotAreaFrame].origin.x
+    let frame = getFrameFrom(chart: chart)
+    if frame == nil {
+      return
+    }
+    let startX = geometry[frame!].origin.x
     let currentX = location.x - startX
     if let index: Date = chart.value(atX: currentX) {
       selectedDate = closestDate(to: index, in: history)
@@ -340,7 +344,11 @@ struct HistoryGraph: View {
   /// and chart geometry.
   private func updateTooltipPosition(geometry: GeometryProxy, chart: ChartProxy) {
     if let selectedDate = selectedDate {
-      let startX = geometry[chart.plotAreaFrame].origin.x
+      let frame = getFrameFrom(chart: chart)
+      if frame == nil {
+        return
+      }
+      let startX = geometry[frame!].origin.x
       if let xPosition = chart.position(forX: selectedDate) {
         selectedXPosition = xPosition + startX
       }
@@ -396,5 +404,17 @@ struct HistoryGraph: View {
 
     let rangeTail = (ticks.last ?? 0.0) + (tickInterval / 2)
     return (ticks, (ticks.first ?? 0.0)...rangeTail)
+  }
+
+  /// This function encapsulates the mechanism used to the frame for the plot contained
+  /// within the ChartProxy object.
+  /// TODO: (crbug.com/403260493 ) Remove and inline the content of this function once
+  /// the minimum deployment target is raised to iOS 17.
+  private func getFrameFrom(chart: ChartProxy) -> Anchor<CGRect>? {
+    if #available(iOS 17, *) {
+      return chart.plotFrame
+    } else {
+      return chart.plotAreaFrame
+    }
   }
 }

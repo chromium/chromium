@@ -29,15 +29,10 @@ declare_args() {
 
 use_reclient_default = false
 if (use_remoteexec) {
-  if (path_exists(rebase_path(".reproxy_tmp", ".", root_build_dir))) {
-    # Use reclient if build dir used reclient before (.reproxy_tmp exists).
-    use_reclient_default = true
-  } else if (use_remoteexec) {
-    if (use_siso) {
-      use_reclient_default = use_reclient_on_siso
-    } else {
-      use_reclient_default = use_reclient_on_ninja
-    }
+  if (use_siso) {
+    use_reclient_default = use_reclient_on_siso
+  } else {
+    use_reclient_default = use_reclient_on_ninja
   }
 }
 

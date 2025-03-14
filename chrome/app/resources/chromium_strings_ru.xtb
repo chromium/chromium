@@ -31,6 +31,7 @@
 <translation id="1478370723027452770">Справка о Chrome для тестирования</translation>
 <translation id="1497802159252041924">Ошибка установки: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="1524282610922162960">Откройте доступ к вкладке Chromium</translation>
+<translation id="1547469039832541117">Завершить выбранную задачу.</translation>
 <translation id="1553461853655228091">Chromium запрашивает доступ к камере, чтобы создавать 3D-карты места, в котором вы находитесь.</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Это расширение больше не поддерживается. Chromium рекомендует удалить его.}one{Эти расширения больше не поддерживаются. Chromium рекомендует удалить их.}few{Эти расширения больше не поддерживаются. Chromium рекомендует удалить их.}many{Эти расширения больше не поддерживаются. Chromium рекомендует удалить их.}other{Эти расширения больше не поддерживаются. Chromium рекомендует удалить их.}}</translation>
 <translation id="1574377791422810894">Инструменты безопасности Chromium</translation>
@@ -221,6 +222,7 @@
 <translation id="4148957013307229264">Установка...</translation>
 <translation id="419998258129752635">"<ph name="PAGE_TITLE" />" – вход в сеть – Chromium</translation>
 <translation id="421369550622382712">Широкий выбор приложений, игр, расширений и тем для Chromium.</translation>
+<translation id="4217080900579554343">Чтобы пользоваться этим и другими расширениями на всех компьютерах, войдите в Chromium.</translation>
 <translation id="4217972271355023382">Чтобы тебе было безопаснее пользоваться интернетом благодаря родительским настройкам, переключись на свой профиль Chromium, где уже выполнен вход в аккаунт <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4222932583846282852">Отмена…</translation>
 <translation id="4224210481850767180">Установка отменена.</translation>

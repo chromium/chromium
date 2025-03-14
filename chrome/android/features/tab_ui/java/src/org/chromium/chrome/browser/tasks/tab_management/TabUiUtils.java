@@ -234,8 +234,7 @@ public class TabUiUtils {
         String title = savedTabGroup.title;
         @Nullable Tab tab = tabModel.getTabById(tabId);
         if (tab != null) {
-            int rootId = tab.getRootId();
-            title = TabGroupTitleUtils.getDisplayableTitle(context, filter, rootId);
+            title = TabGroupTitleUtils.getDisplayableTitle(context, filter, tab.getTabGroupId());
         }
 
         if (memberRole == MemberRole.OWNER) {

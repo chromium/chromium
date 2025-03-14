@@ -103,14 +103,6 @@ std::optional<PreloadingEligibility>& GetForceIneligibilityForTesting() {
   return prefetch_force_ineligibility_for_testing;
 }
 
-PrefetchService::PrefetchResponseCompletedCallbackForTesting&
-GetPrefetchResponseCompletedCallbackForTesting() {
-  static base::NoDestructor<
-      PrefetchService::PrefetchResponseCompletedCallbackForTesting>
-      prefetch_response_completed_callback_for_testing;
-  return *prefetch_response_completed_callback_for_testing;
-}
-
 bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
   switch (eligibility) {
     case PreloadingEligibility::kUserHasCookies:
@@ -1667,11 +1659,6 @@ void PrefetchService::OnPrefetchResponseCompleted(
 
   prefetch_container->OnPrefetchComplete(completion_status);
 
-  if (GetPrefetchResponseCompletedCallbackForTesting()) {
-    GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
-        prefetch_container);
-  }
-
   Prefetch();
 }
 
@@ -1801,13 +1788,6 @@ void PrefetchService::SetForceIneligibilityForTesting(
     PreloadingEligibility eligibility) {
   GetForceIneligibilityForTesting() =  // IN-TEST
       eligibility;
-}
-
-// static
-void PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
-    PrefetchResponseCompletedCallbackForTesting callback) {
-  GetPrefetchResponseCompletedCallbackForTesting() =  // IN-TEST
-      std::move(callback);
 }
 
 base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {

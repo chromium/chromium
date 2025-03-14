@@ -2799,7 +2799,6 @@
 <translation id="2921081876747860777">Введите пароль, чтобы защитить свои локальные данные</translation>
 <translation id="2923006468155067296">Устройство <ph name="DEVICE_TYPE" /> будет заблокировано.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задача: <ph name="OTHER_TASKS" />.}few{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задачи: <ph name="OTHER_TASKS" />.}many{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задач: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задачи: <ph name="OTHER_TASKS" />.}}</translation>
 <translation id="2923234477033317484">Удалить этот аккаунт</translation>
 <translation id="2923644930701689793">Доступ к фотографиям с камеры телефона</translation>
 <translation id="292371311537977079">Настройки Chrome</translation>
@@ -6904,6 +6903,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" />: работа скоро будет приостановлена</translation>
 <translation id="586567932979200359">Вы запускаете <ph name="PRODUCT_NAME" /> с образа на диске. Установка его на компьютере позволит запускать браузер без использования образа и обеспечит его регулярное обновление.</translation>
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
+<translation id="5866363217037791319">Завершить задачу</translation>
 <translation id="5868434909835797817">На устройстве отключен микрофон</translation>
 <translation id="5868479397518301468">Время ожидания входа истекло</translation>
 <translation id="5868822853313956582">Использовать настройки цветопередачи устройства</translation>
@@ -10635,7 +10635,6 @@
 <translation id="8524841856047224176">Персонализируйте фон для камеры при видеовызовах и не только.</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="8525461909394569609">В этом приложении есть веб-контент из других источников</translation>
-<translation id="8526313996927074827">Вставляйте ссылки, эмодзи и не только, а также пишите тексты с помощью ИИ от Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527257351549797148">Вам может потребоваться зарегистрировать устройство, чтобы получить доступ к приложениям, расширениям и другим возможностям. Это позволит вашей организации управлять настройками устройства и параметрами безопасности.</translation>
@@ -11094,6 +11093,7 @@
 <translation id="883924185304953854">Поиск по картинке</translation>
 <translation id="8841786407272321022">Пароли сохраняются только на устройстве. Чтобы добавлять их в аккаунт Google, обновите сервисы Google Play.</translation>
 <translation id="8841843049738266382">Читать и изменять список разрешенных пользователей</translation>
+<translation id="8841884135319684422">Завершить задачу</translation>
 <translation id="8842594465773264717">Удалить этот отпечаток пальца</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8846132060409673887">Доступ к информации о производителе и модели компьютера</translation>

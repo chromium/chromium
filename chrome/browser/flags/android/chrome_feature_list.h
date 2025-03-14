@@ -104,6 +104,7 @@ BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
 BASE_DECLARE_FEATURE(kControlsVisibilityFromNavigations);
 BASE_DECLARE_FEATURE(kCrossDeviceTabPaneAndroid);
 BASE_DECLARE_FEATURE(kDeviceAuthenticatorAndroidx);
+BASE_DECLARE_FEATURE(kDisableCompositedProgressBar);
 BASE_DECLARE_FEATURE(kDisableInstanceLimit);
 BASE_DECLARE_FEATURE(kDisableListTabSwitcher);
 BASE_DECLARE_FEATURE(kDontPrefetchLibraries);
@@ -214,6 +215,7 @@ BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUpdateCompositorForSurfaceControl);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
+BASE_DECLARE_FEATURE(kAndroidWebAppLaunchHandler);
 
 // For FeatureParam, Alphabetical:
 constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(

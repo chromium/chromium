@@ -13,24 +13,24 @@ cargo_crate("lib") {
   epoch = "0.8"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/ascii.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/asciibyte.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/databake.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/int_ops.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/ule.rs",
-    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.0/src/unvalidated.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/ascii.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/asciibyte.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/databake.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/int_ops.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/ule.rs",
+    "//third_party/rust/chromium_crates_io/vendor/tinystr-0.8.1/src/unvalidated.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.0"
+  cargo_pkg_version = "0.8.1"
   cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "tinystr"
   cargo_pkg_description =

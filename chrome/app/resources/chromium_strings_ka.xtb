@@ -34,6 +34,7 @@
 <translation id="1478370723027452770">დახმარების მიღება Chrome for Testing-თან დაკავშირებით</translation>
 <translation id="1497802159252041924">შეცდომა ინსტალაციისას: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium ჩანართის გაზიარება</translation>
+<translation id="1547469039832541117">დაასრულებს მონიშნულ ამოცანას.</translation>
 <translation id="1553461853655228091">Chromium საჭიროებს თქვენს კამერაზე წვდომის ნებართვას, თქვენი გარემოს 3-განზომილებიანი რუკის შექმნა რომ შეძლოს</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{ეს გაფართოება აღარ არის მხარდაჭერილი. Chromium გირჩევთ მის ამოშლას.}other{ეს გაფართოებები აღარ არის მხარდაჭერილი. Chromium გირჩევთ, ამოშალოთ ისინი.}}</translation>
 <translation id="1574377791422810894">Chromium-ის უსაფრთხოების ხელსაწყოები</translation>
@@ -226,6 +227,7 @@
 <translation id="4148957013307229264">ინსტალაცია…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> — ქსელში შესვლა — Chromium</translation>
 <translation id="421369550622382712">აღმოაჩინეთ შესანიშნავი აპები, თამაშები, გაფართოებები და თემები Chromium-ისთვის.</translation>
+<translation id="4217080900579554343">ამ გაფართოების და სხვა ერთეულების თქვენს კომპიუტერზე მისაღებად შედით Chromium-ში</translation>
 <translation id="4217972271355023382">ონლაინ უსაფრთხოების დასაცავად, თქვენი მშობლის არჩევანით, გადართეთ Chromium პროფილზე, რომელშიც უკვე შესული ხართ, როგორც <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">მიმდინარეობს გაუქმება…</translation>
 <translation id="4224210481850767180">ინსტალაცია გაუქმდა.</translation>

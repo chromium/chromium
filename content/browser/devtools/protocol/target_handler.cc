@@ -1240,7 +1240,7 @@ Response TargetHandler::CreateTarget(
           ? content::DevToolsManagerDelegate::kTab
           : content::DevToolsManagerDelegate::kFrame;
   scoped_refptr<content::DevToolsAgentHost> agent_host =
-      delegate->CreateNewTarget(gurl, target_type);
+      delegate->CreateNewTarget(gurl, target_type, new_window.value_or(false));
   if (!agent_host)
     return Response::ServerError("Not supported");
   *out_target_id = agent_host->GetId();

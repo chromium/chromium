@@ -2333,7 +2333,9 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
   document.getElementById(AtomicString("nullcontent"))
       ->setAttribute(html_names::kContentAttr, WTF::g_null_atom);
 
-  auto content = GetAIPageContent();
+  mojom::blink::AIPageContentOptions options;
+  options.max_meta_elements = 32;
+  auto content = GetAIPageContent(options);
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 

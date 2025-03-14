@@ -19,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
@@ -31,6 +32,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** A utility class for querying information about the default browser setting. */
+@NullMarked
 public final class DefaultBrowserInfo {
     static final String CHROME_STABLE_PACKAGE_NAME = "com.android.chrome";
 
@@ -100,7 +102,7 @@ public final class DefaultBrowserInfo {
         }
     }
 
-    private static DefaultInfoTask sDefaultInfoTask;
+    private static @Nullable DefaultInfoTask sDefaultInfoTask;
 
     /** A lock to synchronize background tasks to retrieve browser information. */
     private static final Object sDirCreationLock = new Object();
@@ -155,9 +157,10 @@ public final class DefaultBrowserInfo {
     }
 
     private static class DefaultInfoTask extends AsyncTask<DefaultInfo> {
-        private static AtomicReference<DefaultInfo> sTestInfo;
+        private static @Nullable AtomicReference<DefaultInfo> sTestInfo;
 
-        private final ObserverList<Callback<DefaultInfo>> mObservers = new ObserverList<>();
+        private final ObserverList<Callback<@Nullable DefaultInfo>> mObservers =
+                new ObserverList<>();
 
         public static void setDefaultInfoForTests(DefaultInfo info) {
             sTestInfo = new AtomicReference<DefaultInfo>(info);
@@ -283,8 +286,10 @@ public final class DefaultBrowserInfo {
             flushCallbacks(null);
         }
 
-        private void flushCallbacks(DefaultInfo info) {
-            for (Callback<DefaultInfo> callback : mObservers) callback.onResult(info);
+        private void flushCallbacks(@Nullable DefaultInfo info) {
+            for (Callback<@Nullable DefaultInfo> callback : mObservers) {
+                callback.onResult(info);
+            }
             mObservers.clear();
         }
     }

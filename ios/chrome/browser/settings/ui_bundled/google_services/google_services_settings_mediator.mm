@@ -19,8 +19,6 @@
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
-#import "ios/chrome/browser/parcel_tracking/features.h"
-#import "ios/chrome/browser/parcel_tracking/parcel_tracking_opt_in_status.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/account_sign_in_item.h"
@@ -34,7 +32,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -62,7 +59,6 @@ NSString* const kTrackPricesOnTabsItemAccessibilityID =
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   NonPersonalizedSectionIdentifier = kSectionIdentifierEnumZero,
-  ParcelTrackingSectionIdentifier
 };
 
 // List of items. For implementation details in
@@ -79,7 +75,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ImproveSearchSuggestionsItemType,
   ImproveSearchSuggestionsManagedItemType,
   TrackPricesOnTabsItemType,
-  ParcelTrackingItemType,
 };
 
 // TODO(crbug.com/40788009): Use the Authentication Service sign-in status API
@@ -286,8 +281,6 @@ bool GetStatusForSigninPolicy() {
         base::apple::ObjCCast<SyncSwitchItem>(item).on =
             self.trackPricesOnTabsPreference.value;
         break;
-      case ParcelTrackingItemType:
-        break;
     }
   }
   if (notifyConsumer) {
@@ -448,43 +441,6 @@ bool GetStatusForSigninPolicy() {
     (GoogleServicesSettingsViewController*)controller {
   DCHECK_EQ(self.consumer, controller);
   [self loadNonPersonalizedSection];
-
-  if (IsIOSParcelTrackingEnabled()) {
-    TableViewModel* model = self.consumer.tableViewModel;
-    [model addSectionWithIdentifier:ParcelTrackingSectionIdentifier];
-
-    TableViewDetailIconItem* parcelTrackingItem =
-        [[TableViewDetailIconItem alloc] initWithType:ParcelTrackingItemType];
-    parcelTrackingItem.text = l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
-    parcelTrackingItem.accessoryType =
-        UITableViewCellAccessoryDisclosureIndicator;
-    parcelTrackingItem.accessibilityTraits |= UIAccessibilityTraitButton;
-    [model addItem:parcelTrackingItem
-        toSectionWithIdentifier:ParcelTrackingSectionIdentifier];
-
-    IOSParcelTrackingOptInStatus optInStatus =
-        static_cast<IOSParcelTrackingOptInStatus>(
-            self.userPrefService->GetInteger(
-                prefs::kIosParcelTrackingOptInStatus));
-    NSString* currentOptInStatusString = nil;
-    switch (optInStatus) {
-      case IOSParcelTrackingOptInStatus::kAlwaysTrack:
-        currentOptInStatusString = l10n_util::GetNSString(
-            IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_ALL);
-        break;
-      case IOSParcelTrackingOptInStatus::kAskToTrack:
-      case IOSParcelTrackingOptInStatus::kStatusNotSet:
-        currentOptInStatusString = l10n_util::GetNSString(
-            IDS_IOS_PARCEL_TRACKING_OPT_IN_TERTIARY_ACTION);
-        break;
-      case IOSParcelTrackingOptInStatus::kNeverTrack:
-        currentOptInStatusString = l10n_util::GetNSString(
-            IDS_IOS_GOOGLE_SERVICES_SETTINGS_AUTO_TRACK_PACKAGES_NEVER);
-        break;
-    }
-    parcelTrackingItem.detailText = currentOptInStatusString;
-  }
 }
 
 - (BOOL)isAllowChromeSigninItem:(int)type {
@@ -493,14 +449,6 @@ bool GetStatusForSigninPolicy() {
 
 - (BOOL)isViewControllerSubjectToParentalControls {
   return [self isSubjectToParentalControls];
-}
-
-- (void)googleServicesSettingsViewControllerDidSelectItemAtIndexPath:
-    (NSIndexPath*)indexPath {
-  if ([self.consumer.tableViewModel itemAtIndexPath:indexPath].type ==
-      ParcelTrackingItemType) {
-    [self.commandHandler showParcelTrackingSettingsPage];
-  }
 }
 
 #pragma mark - GoogleServicesSettingsServiceDelegate
@@ -551,8 +499,6 @@ bool GetStatusForSigninPolicy() {
     case ImproveChromeManagedItemType:
     case ImproveSearchSuggestionsManagedItemType:
       NOTREACHED();
-    case ParcelTrackingItemType:
-      break;
   }
 }
 

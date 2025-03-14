@@ -67,6 +67,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   }
 
   bool IsComputationallyIndependent() const;
+  bool IsElementDependent() const;
 
   // TODO(crbug.com/979895): The semantics of this function is still not very
   // clear. Do not add new callers before further refactoring and cleanups.

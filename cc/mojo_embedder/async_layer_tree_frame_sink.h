@@ -19,6 +19,7 @@
 #include "cc/mojo_embedder/mojo_embedder_export.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -146,6 +147,8 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   }
 
  private:
+  friend class AsyncLayerTreeFrameSinkSimpleTest;
+
   // mojom::CompositorFrameSinkClient implementation:
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override;
@@ -211,6 +214,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   gfx::Size last_submitted_size_in_pixels_;
 
   bool use_begin_frame_presentation_feedback_ = false;
+  viz::FrameTimingDetailsMap timing_details_;
 
   base::WeakPtrFactory<AsyncLayerTreeFrameSink> weak_factory_{this};
 };

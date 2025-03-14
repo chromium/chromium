@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/google_services_settings_mediator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/parcel_tracking_settings_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -64,9 +63,7 @@ using signin_metrics::PromoAction;
     SignoutActionSheetCoordinator* signoutActionSheetCoordinator;
 @end
 
-@implementation GoogleServicesSettingsCoordinator {
-  ParcelTrackingSettingsCoordinator* _parcelTrackingSettingsCoordinator;
-}
+@implementation GoogleServicesSettingsCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -118,8 +115,6 @@ using signin_metrics::PromoAction;
 
 - (void)stop {
   _signOutCoordinator = nil;
-  [_parcelTrackingSettingsCoordinator stop];
-  _parcelTrackingSettingsCoordinator = nil;
   [self dismissSignoutCoordinator];
 }
 
@@ -234,14 +229,6 @@ using signin_metrics::PromoAction;
                                      }
                                       style:UIAlertActionStyleCancel];
   [self.signOutCoordinator start];
-}
-
-- (void)showParcelTrackingSettingsPage {
-  _parcelTrackingSettingsCoordinator =
-      [[ParcelTrackingSettingsCoordinator alloc]
-          initWithBaseNavigationController:_baseNavigationController
-                                   browser:self.browser];
-  [_parcelTrackingSettingsCoordinator start];
 }
 
 // Signs the user out of Chrome, only clears data for managed accounts.

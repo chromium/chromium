@@ -43,7 +43,13 @@ class AIWriter final : public ScriptWrappable, public ExecutionContextClient {
                                  const String& writing_task,
                                  const AIWriterWriteOptions* options,
                                  ExceptionState& exception_state);
+  ScriptPromise<IDLDouble> measureInputUsage(
+      ScriptState* script_state,
+      const String& input,
+      const AIWriterWriteOptions* options,
+      ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
+
   String sharedContext() const {
     return options_->getSharedContextOr(g_empty_string);
   }
@@ -64,6 +70,10 @@ class AIWriter final : public ScriptWrappable, public ExecutionContextClient {
   }
   String outputLanguage() const {
     return options_->getOutputLanguageOr(String());
+  }
+  double inputQuota() const {
+    return static_cast<double>(
+        mojom::blink::kWritingAssistanceMaxInputTokenSize);
   }
 
  private:

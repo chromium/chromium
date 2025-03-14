@@ -724,6 +724,7 @@
     {
       // crbug.com/389726691.
       name: "CanvasTextNg",
+      status: "experimental",
     },
     {
       // Kill switch for https://crbug.com/330506337.
@@ -2274,6 +2275,10 @@
         "ChromeOS": "stable",
         "default": "experimental",
       },
+    },
+    {
+      name: "HarfBuzzBufferPool",
+      status: "stable",
     },
     {
       name: "HasUAVisualTransition",
@@ -4007,8 +4012,8 @@
     },
     {
       name: "Serial",
-      status: {"Android": "", "default": "stable"},
-      base_feature: "none",
+      status: {"Android": "test", "default": "stable"},
+      base_feature: "WebSerialAPI",
     },
     {
       name: "SerializeViewTransitionStateInSPA",

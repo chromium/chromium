@@ -316,7 +316,6 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
       .disable_metal = is_enabled(DISABLE_METAL),
       .disable_es3gl_context = is_enabled(DISABLE_ES3_GL_CONTEXT),
 #if BUILDFLAG(IS_WIN)
-      .disable_direct_composition = is_enabled(DISABLE_DIRECT_COMPOSITION),
       .disable_direct_composition_video_overlays =
           is_enabled(DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS),
       .disable_vp_auto_hdr = is_enabled(DISABLE_VP_AUTO_HDR),

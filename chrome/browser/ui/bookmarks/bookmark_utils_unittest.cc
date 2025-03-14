@@ -47,6 +47,8 @@ class BookmarkUtilsGetBookmarkDropOperationTest : public testing::Test {
                 .Set("name", "managed_bookmark")
                 .Set("url", GURL("http://google.com/").spec()))));
     model()->LoadEmptyForTest();
+    BookmarkMergedSurfaceServiceFactory::GetForProfile(profile_.get())
+        ->LoadForTesting({});
   }
 
   TestingProfile* profile() { return profile_.get(); }

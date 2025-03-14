@@ -25,6 +25,7 @@ mojom("mojom_ad_auction") {
         {
           mojom = "network.mojom.AdAuctionEventRecord"
           cpp = "::network::AdAuctionEventRecord"
+          move_only = true
         },
       ]
       traits_headers = [
@@ -636,6 +637,7 @@ mojom("url_loader_base") {
 
   public_deps = [
     ":cookies_mojom",
+    ":mojom_ad_auction",
     ":mojom_attribution",
     ":mojom_content_security_policy",
     ":mojom_integrity_algorithm",

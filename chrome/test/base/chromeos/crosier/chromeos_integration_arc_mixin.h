@@ -62,6 +62,7 @@ class ChromeOSIntegrationArcMixin : public InProcessBrowserTestMixin {
   // InProcessBrowserTestMixin:
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void TearDown() override;
 
  private:
   const ChromeOSIntegrationLoginMixin& login_mixin_;

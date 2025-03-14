@@ -7,6 +7,7 @@ include_rules = [
   "+components/embedder_support/android/web_contents_delegate_jni_headers",
   "+components/keyed_service",
   "+components/url_formatter/android/java",
+  "+components/input",
   "+content/public/browser",
   "+content/public/common",
   "+net/android/java/src/org/chromium/net",

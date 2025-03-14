@@ -282,3 +282,45 @@ TEST_F(ReauthenticationCoordinatorTest,
   // Reauth view controller should be gone.
   CheckReauthenticationViewControllerNotPresented();
 }
+
+// Tests that ReauthenticationCoordinator dismissed its view controller after a
+// successful reauthentication before the scene is foregrounded.
+TEST_F(
+    ReauthenticationCoordinatorTest,
+    ReauthViewControllerNotDismissedAfterBackgroundedWithPendingAuthentication) {
+  CheckReauthenticationViewControllerNotPresented();
+  mock_reauth_module_.shouldSkipReAuth = NO;
+  mock_reauth_module_.expectedResult = ReauthenticationResult::kSuccess;
+
+  // Simulate transition to inactive state before background state.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  CheckReauthenticationViewControllerIsPresented();
+
+  // Simulate transition to background.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  CheckReauthenticationViewControllerIsPresented();
+  ASSERT_FALSE(delegate_.successfulReauth);
+
+  // Simulate transition to foreground. This will trigger a reauthentication
+  // request.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  CheckReauthenticationViewControllerIsPresented();
+  ASSERT_FALSE(delegate_.successfulReauth);
+
+  // Transition back to background.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  CheckReauthenticationViewControllerIsPresented();
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Then back to foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  // Reauth controller should be there as there is a pending reauth request.
+  CheckReauthenticationViewControllerIsPresented();
+
+  // Delivering successful reauth result should remove the reauth view
+  // controller.
+  [mock_reauth_module_ returnMockedReauthenticationResult];
+  ASSERT_TRUE(delegate_.successfulReauth);
+  CheckReauthenticationViewControllerNotPresented();
+}

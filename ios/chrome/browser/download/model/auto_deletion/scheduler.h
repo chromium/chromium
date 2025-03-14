@@ -40,6 +40,9 @@ class Scheduler {
   // Schedules the file for deletion.
   void ScheduleFile(ScheduledFile file);
 
+  // Removes all the ScheduledFiles regardless of deletion date.
+  void Clear();
+
  private:
   // Returns whether the file is older than one month.
   bool IsFileReadyForDeletion(base::Time instant, const ScheduledFile& file);

@@ -32,7 +32,6 @@ content::WebContents* GetWebContentsToUse(
 }
 
 void MaybeShowFeaturePromo(content::WebContents* contents) {
-  VLOG(0) << "Getting user education interface for PDF Searchify...";
   BrowserUserEducationInterface* user_education_interface =
       BrowserUserEducationInterface::MaybeGetForWebContentsInTab(contents);
   if (user_education_interface) {

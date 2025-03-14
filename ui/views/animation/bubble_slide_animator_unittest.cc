@@ -33,19 +33,6 @@ constexpr gfx::Size kTestViewSize(100, 100);
 // mirroring should happen.
 constexpr gfx::Rect kAnchorWidgetRect(50, 50, 400, 250);
 
-class TestBubbleView : public BubbleDialogDelegateView {
- public:
-  explicit TestBubbleView(View* anchor_view)
-      : BubbleDialogDelegateView(anchor_view,
-                                 BubbleBorder::TOP_LEFT,
-                                 BubbleBorder::DIALOG_SHADOW,
-                                 true) {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-    SetLayoutManager(std::make_unique<FillLayout>());
-    AddChildView(std::make_unique<View>())->SetPreferredSize(kTestViewSize);
-  }
-};
-
 class TestBubbleSlideAnimator : public BubbleSlideAnimator {
  public:
   using BubbleSlideAnimator::BubbleSlideAnimator;
@@ -69,6 +56,19 @@ class TestBubbleSlideAnimator : public BubbleSlideAnimator {
 };
 
 }  // namespace
+
+class TestBubbleView : public BubbleDialogDelegateView {
+ public:
+  explicit TestBubbleView(View* anchor_view)
+      : BubbleDialogDelegateView(anchor_view,
+                                 BubbleBorder::TOP_LEFT,
+                                 BubbleBorder::DIALOG_SHADOW,
+                                 true) {
+    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+    SetLayoutManager(std::make_unique<FillLayout>());
+    AddChildView(std::make_unique<View>())->SetPreferredSize(kTestViewSize);
+  }
+};
 
 class BubbleSlideAnimatorTest : public test::WidgetTest {
  public:

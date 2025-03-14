@@ -4,6 +4,7 @@
 
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 // <if expr="not is_android">
 import {html as polymerHtml, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // </if>
@@ -546,5 +547,110 @@ suite('CrLitElement', function() {
     element.toggleAttribute('prop3', true);
     await microtasksFinished();
     assertTrue(element.prop3);
+  });
+
+  test('Properties defined with accessor keyword', async function() {
+    class CrDummyPropertiesWithAccessorElement extends CrLitElement {
+      static get is() {
+        return 'cr-dummy-properties-with-accessor' as const;
+      }
+
+      static override get properties() {
+        return {
+          propReflected: {
+            type: Boolean,
+            reflect: true,
+          },
+
+          propNonReflected: {type: Boolean},
+        };
+      }
+
+      // Simulate the code emitted by TS when 'accessor' is used as follows:
+      // accessor propReflected: boolean = true;
+      // accessor propNonReflected: boolean = true;
+      // along with the config at
+      // tools/typescript/tsconfig_base_lit_389737066.json. To ensure that such
+      // properties are initialized as expected.
+
+      #propReflected_accessor_storge: boolean = true;
+      get propReflected() {
+        return this.#propReflected_accessor_storge;
+      }
+      set propReflected(value: boolean) {
+        this.#propReflected_accessor_storge = value;
+      }
+
+      #propNonReflected_accessor_storge: boolean = true;
+      get propNonReflected() {
+        return this.#propNonReflected_accessor_storge;
+      }
+      set propNonReflected(value: boolean) {
+        this.#propNonReflected_accessor_storge = value;
+      }
+
+      override willUpdate(changedProperties: PropertyValues<this>) {
+        super.willUpdate(changedProperties);
+        willUpdateCalls.push(changedProperties);
+      }
+    }
+
+    customElements.define(
+        CrDummyPropertiesWithAccessorElement.is,
+        CrDummyPropertiesWithAccessorElement);
+
+    const willUpdateCalls:
+        Array<PropertyValues<CrDummyPropertiesWithAccessorElement>> = [];
+
+    const element =
+        document.createElement(CrDummyPropertiesWithAccessorElement.is) as
+        CrDummyPropertiesWithAccessorElement;
+    document.body.appendChild(element);
+
+    function assertChangedProperties(
+        changedProperties: PropertyValues<CrDummyPropertiesWithAccessorElement>,
+        propReflected: boolean|undefined, propNonReflected: boolean|undefined) {
+      assertTrue(changedProperties.has('propReflected'));
+      assertEquals(propReflected, changedProperties.get('propReflected'));
+      assertTrue(changedProperties.has('propNonReflected'));
+      assertEquals(propNonReflected, changedProperties.get('propNonReflected'));
+    }
+
+    // Check initial state.
+    assertTrue(element.propReflected);
+    assertTrue(element.propNonReflected);
+
+    // Check `changedProperties` in initial willUpdate call.
+    assertEquals(1, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[0]!, undefined, undefined);
+    // Check that initial value is reflected correctly.
+    assertTrue(element.hasAttribute('prop-reflected'));
+    assertFalse(element.hasAttribute('prop-non-reflected'));
+
+
+    element.propReflected = false;
+    element.propNonReflected = false;
+    await microtasksFinished();
+
+    // Check `changedProperties` in 2nd willUpdate call.
+    assertEquals(2, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[1]!, true, true);
+    // Check property -> attribute
+    assertFalse(element.hasAttribute('prop-reflected'));
+    assertFalse(element.hasAttribute('prop-non-reflected'));
+
+    element.toggleAttribute('prop-reflected', true);
+    element.toggleAttribute('prop-non-reflected', true);
+    await microtasksFinished();
+
+    // Check `changedProperties` in 3rd willUpdate call.
+    assertEquals(3, willUpdateCalls.length);
+    assertChangedProperties(willUpdateCalls[2]!, false, false);
+
+    // Check attribute -> property
+    assertTrue(element.propReflected);
+    // Non-reflected property changes don't update the attribute, but the
+    // property updates when the attribute changes.
+    assertTrue(element.propNonReflected);
   });
 });

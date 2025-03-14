@@ -232,6 +232,7 @@ ah.no, 0
 ai, 0
 ai.in, 0
 ai.jo, 0
+ai.kr, 0
 ai.vn, 0
 aibetsu.hokkaido.jp, 0
 aichi.jp, 0
@@ -305,6 +306,7 @@ alesund.no, 0
 algard.no, 0
 aliases121.com, 4
 alibaba, 0
+alibabacloudcs.com, 4
 alipay, 0
 allfinanz, 0
 allstate, 0
@@ -946,6 +948,8 @@ br.it, 0
 bradesco, 0
 brand.se, 0
 brasilia.me, 4
+brave.app, 4
+brave.io, 4
 bremanger.no, 0
 brescia.it, 0
 bridgestone, 0
@@ -969,6 +973,7 @@ bss.design, 4
 bt, 0
 bt.it, 0
 bu.no, 0
+bubbleapps.io, 4
 budejju.no, 0
 build, 0
 build.run, 6
@@ -1006,6 +1011,7 @@ c.bg, 0
 c.cdn77.org, 4
 c.se, 0
 c.ts.net, 6
+c01.kr, 4
 c66.me, 4
 ca, 0
 ca-central-1.airflow.amazonaws.com, 6
@@ -1151,6 +1157,7 @@ cci.fr, 0
 cd, 0
 cd.eu.org, 4
 cdn-edges.net, 4
+cdn.bubble.io, 4
 cdn.cloudflare.net, 4
 cdn.cloudflareanycast.net, 4
 cdn.cloudflarecn.net, 4
@@ -1637,6 +1644,7 @@ courses, 0
 coz.br, 0
 cpa, 0
 cpa.pro, 0
+cpanel.site, 4
 cprapid.com, 4
 cpserver.com, 4
 cq.cn, 0
@@ -1786,6 +1794,7 @@ democrat, 0
 demon.nl, 4
 deno-staging.dev, 4
 deno.dev, 4
+deno.net, 4
 dental, 0
 dentist, 0
 dep.no, 0
@@ -1798,6 +1807,7 @@ design.aero, 0
 det.br, 0
 deta.app, 4
 deta.dev, 4
+deus-canvas.com, 4
 dev, 0
 dev-builder.code.com, 6
 dev-myqnapcloud.com, 4
@@ -2130,6 +2140,7 @@ edu.tr, 0
 edu.tt, 0
 edu.tw, 0
 edu.ua, 0
+edu.ug, 0
 edu.uy, 0
 edu.vc, 0
 edu.ve, 0
@@ -2166,6 +2177,7 @@ elb.amazonaws.com.cn, 6
 elblag.pl, 0
 elementor.cloud, 4
 elementor.cool, 4
+eliv-dns.kr, 4
 elk.pl, 0
 elverum.no, 0
 email, 0
@@ -2177,6 +2189,7 @@ emergency.aero, 0
 emilia-romagna.it, 0
 emiliaromagna.it, 0
 emp.br, 0
+emprende.ve, 0
 empresa.bo, 0
 emr.it, 0
 emrappui-prod.af-south-1.amazonaws.com, 4
@@ -3090,6 +3103,7 @@ gov.tr, 0
 gov.tt, 0
 gov.tw, 0
 gov.ua, 0
+gov.ug, 0
 gov.uk, 0
 gov.vc, 0
 gov.ve, 0
@@ -3647,6 +3661,8 @@ inashiki.ibaraki.jp, 0
 inatsuki.fukuoka.jp, 0
 inawashiro.fukushima.jp, 0
 inazawa.aichi.jp, 0
+inbrowser.dev, 6
+inbrowser.link, 6
 inc, 0
 inc.hk, 4
 incheon.kr, 0
@@ -3746,6 +3762,7 @@ investments, 0
 inzai.chiba.jp, 0
 io, 0
 io.in, 0
+io.kr, 0
 io.noc.ruhr-uni-bochum.de, 4
 io.vn, 0
 iobb.net, 4
@@ -3882,6 +3899,7 @@ it, 0
 it.ao, 0
 it.com, 4
 it.eu.org, 4
+it.kr, 0
 it1.eur.aruba.jenv-aruba.cloud, 4
 it1.jenv-aruba.cloud, 4
 itabashi.tokyo.jp, 0
@@ -4242,7 +4260,6 @@ kembuchi.hokkaido.jp, 0
 kep.tr, 0
 kepno.pl, 0
 kerryhotels, 0
-kerrylogistics, 0
 kerryproperties, 0
 ketrzyn.pl, 0
 keymachine.de, 4
@@ -4548,6 +4565,7 @@ lanxess, 0
 laocai.vn, 0
 lapy.pl, 0
 laquila.it, 0
+laravel.cloud, 4
 lardal.no, 0
 larvik.no, 0
 lasalle, 0
@@ -4696,7 +4714,6 @@ link, 0
 linkyard-cloud.ch, 4
 linkyard.cloud, 4
 linodeobjects.com, 6
-lipsy, 0
 littlestar.jp, 4
 live, 0
 live-on.net, 4
@@ -4715,6 +4732,8 @@ loans, 0
 localcert.net, 4
 localhostcert.net, 4
 localplayer.dev, 4
+localto.net, 6
+localtonet.com, 4
 locker, 0
 locus, 0
 lodi.it, 0
@@ -4754,6 +4773,8 @@ loseyourip.com, 4
 loten.no, 0
 lotte, 0
 lotto, 0
+lovable.app, 4
+lovableproject.com, 4
 love, 0
 lovepop.jp, 4
 lovesick.jp, 4
@@ -4923,6 +4944,7 @@ me.eu.org, 4
 me.in, 0
 me.it, 0
 me.ke, 0
+me.kr, 0
 me.so, 0
 me.ss, 0
 me.tz, 0
@@ -5071,6 +5093,7 @@ mil.tr, 0
 mil.tt, 0
 mil.tw, 0
 mil.tz, 0
+mil.ug, 0
 mil.uy, 0
 mil.vc, 0
 mil.ve, 0
@@ -5985,6 +6008,7 @@ obanazawa.yamagata.jp, 0
 obi, 0
 obihiro.hokkaido.jp, 0
 obira.hokkaido.jp, 0
+obj.ag, 4
 objects.lpg.cloudscale.ch, 4
 objects.rma.cloudscale.ch, 4
 obl.ong, 4
@@ -6123,6 +6147,7 @@ onfabrica.com, 4
 ong, 0
 ong.br, 0
 onga.fukuoka.jp, 0
+oninferno.net, 4
 onion, 0
 onjuku.chiba.jp, 0
 onl, 0
@@ -6983,6 +7008,7 @@ ryuoh.shiga.jp, 0
 rzeszow.pl, 0
 rzgw.gov.pl, 0
 s.bg, 0
+s.brave.app, 6
 s.brave.io, 6
 s.se, 0
 s3-1.amazonaws.com, 4
@@ -7849,6 +7875,7 @@ sport.eg, 0
 sport.hu, 0
 spot, 0
 spydeberg.no, 0
+square.site, 4
 square7.ch, 4
 square7.de, 4
 square7.net, 4
@@ -8662,6 +8689,7 @@ us.ngrok.io, 4
 us.org, 4
 us.platform.sh, 4
 us.reclaim.cloud, 4
+us.ug, 0
 usa.oita.jp, 0
 user.aseinet.ne.jp, 4
 user.fm, 6
@@ -9709,6 +9737,7 @@ zarow.pl, 0
 zeabur.app, 4
 zentsuji.kagawa.jp, 0
 zero, 0
+zerops.app, 6
 zgierz.pl, 4
 zgora.pl, 0
 zgorzelec.pl, 0
@@ -9720,6 +9749,7 @@ zlg.br, 0
 zm, 0
 zombie.jp, 4
 zone, 0
+zone.id, 4
 zp.gov.pl, 0
 zp.ua, 0
 zpisdn.gov.pl, 0

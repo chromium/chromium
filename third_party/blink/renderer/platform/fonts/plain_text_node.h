@@ -93,6 +93,7 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   //  - No BiDi override controls
   const String& TextContent() const { return text_content_; }
   TextDirection BaseDirection() const { return base_direction_; }
+  bool ContainsRtlItems() const { return contains_rtl_items_; }
   const PlainTextItemList& ItemList() const { return item_list_; }
 
  private:
@@ -121,6 +122,7 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   PlainTextItemList item_list_;
   bool normalize_space_ = false;
   TextDirection base_direction_ = TextDirection::kLtr;
+  bool contains_rtl_items_ = false;
 };
 
 }  // namespace blink

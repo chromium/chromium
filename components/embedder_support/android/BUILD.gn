@@ -162,6 +162,7 @@ android_library("content_view_java") {
 android_library("view_java") {
   deps = [
     "//build/android:build_java",
+    "//components/input/android:java",
     "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",

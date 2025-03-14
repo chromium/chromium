@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import android.content.Intent;
+import android.provider.Browser;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -71,7 +72,15 @@ public class ReparentingTabGroupTask {
             ReparentingTask.from(tab).detach();
         }
 
-        // 4. Store tab group metadata into intent and add trusted intent extras.
+        // 4. Add extra flag for incognito.
+        if (mTabGroupMetadata.isIncognito) {
+            intent.putExtra(
+                    Browser.EXTRA_APPLICATION_ID,
+                    ContextUtils.getApplicationContext().getPackageName());
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        }
+
+        // 5. Store tab group metadata into intent and add trusted intent extras.
         IntentHandler.setTabGroupMetadata(intent, mTabGroupMetadata);
         IntentUtils.addTrustedIntentExtras(intent);
     }

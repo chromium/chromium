@@ -362,6 +362,8 @@ remoting::ChromeOsEnterpriseParams GetEnterpriseParameters(
   params.connection_dialog_required = parameters.show_confirmation_dialog;
   params.connection_auto_accept_timeout =
       parameters.connection_auto_accept_timeout.value_or(base::TimeDelta());
+  params.maximum_session_duration =
+      parameters.maximum_session_duration.value_or(base::TimeDelta());
 
   return params;
 }

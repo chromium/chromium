@@ -39,7 +39,7 @@ function drawSRGBImageOnP3Canvas(source)
                {x: 15, y: 5, color: p3OpaqueGreen},
                {x: 5, y: 15, color: p3OpaqueBlue},
                {x: 15, y: 15, color: p3OpaqueBlack}];
-  testPixels(ctx, tests, {colorSpace: 'display-p3', storageFormat:'float32'});
+  testPixels(ctx, tests, {colorSpace: 'display-p3', pixelFormat:'rgba-float32'});
 }
 
 promise_test(function() {

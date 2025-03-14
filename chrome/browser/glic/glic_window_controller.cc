@@ -503,7 +503,12 @@ bool GlicWindowController::AcceleratorPressed(
       return true;
     }
   }
-
+#if BUILDFLAG(IS_WIN)
+  if (accelerator.key_code() == ui::VKEY_SPACE &&
+      accelerator.modifiers() == ui::EF_ALT_DOWN) {
+    ShowTitleBarContextMenuAt(gfx::Point());
+  }
+#endif  //  BUILDFLAG(IS_WIN)
   return false;
 }
 
@@ -521,6 +526,9 @@ void GlicWindowController::AddAccelerators() {
   glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
   glic_view->AddAccelerator(
       ui::Accelerator(ui::VKEY_A, kFocusToggleAcceleratorModifiers));
+#if BUILDFLAG(IS_WIN)
+  glic_view->AddAccelerator(ui::Accelerator(ui::VKEY_SPACE, ui::EF_ALT_DOWN));
+#endif
 }
 
 void GlicWindowController::Show(Browser* browser,
@@ -1239,6 +1247,7 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent() {
 #if BUILDFLAG(IS_MAC)
   GetGlicWidget()->SetActivationIndependence(true);
   GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
+  GetGlicWidget()->SetCanAppearInExistingFullscreenSpaces(true);
 #endif
 }
 

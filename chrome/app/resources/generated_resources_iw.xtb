@@ -2809,7 +2809,6 @@
 <translation id="2921081876747860777">יצירת סיסמה להגנה על הנתונים המקומיים שלך.</translation>
 <translation id="2923006468155067296">ה-<ph name="DEVICE_TYPE" /> שלך יינעל עכשיו.
 כדי לעבוד עם הדומיין <ph name="DOMAIN" />, צריך להשאיר את הכרטיס החכם בפנים.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{‫<ph name="TASK_ROW" />. יש עוד <ph name="OTHER_TASK_NUM" /> משימות באותה קבוצה: <ph name="OTHER_TASKS" />}two{‫<ph name="TASK_ROW" />. יש עוד <ph name="OTHER_TASK_NUM" /> משימות באותה קבוצה: <ph name="OTHER_TASKS" />}other{‫<ph name="TASK_ROW" />. יש עוד <ph name="OTHER_TASK_NUM" /> משימות באותה קבוצה: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">הסרת החשבון הזה</translation>
 <translation id="2923644930701689793">גישה לזיכרון המצלמה בטלפון</translation>
 <translation id="292371311537977079">‏ההגדרות של Chrome</translation>
@@ -10647,7 +10646,6 @@
 <translation id="8524841856047224176">התאמה אישית של הרקעים במצלמה לשיחות וידאו ועוד</translation>
 <translation id="8525306231823319788">מסך מלא</translation>
 <translation id="8525461909394569609">האפליקציה הזו מכילה תוכן מהאינטרנט מתוך</translation>
-<translation id="8526313996927074827">‏מוסיפים קישורים, סמלי אמוג'י ועוד. אפשר גם לקבל עזרה בכתיבה עם AI מבית Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">רמקולים</translation>
 <translation id="8527257351549797148">הארגון שלך עשוי לדרוש הרשמה כדי לגשת לאפליקציות, לתוספים ועוד. ההרשמה הזו גם מאפשרת לארגון שלך לנהל דברים כמו אבטחה והגדרות מכשיר.</translation>

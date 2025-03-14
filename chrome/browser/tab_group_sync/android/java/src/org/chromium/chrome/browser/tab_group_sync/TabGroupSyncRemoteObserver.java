@@ -80,7 +80,8 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
         if (mTabGroupSyncService.wasTabGroupClosedLocally(tabGroup.syncId)) return;
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
-        if (tabGroup.localId != null && !TextUtils.isEmpty(tabGroup.collaborationId)) {
+        boolean isCollaboration = !TextUtils.isEmpty(tabGroup.collaborationId);
+        if (tabGroup.localId != null && isCollaboration) {
             // For shared tab groups join flow, it could happen that the tab group has been already
             // opened locally and the posted onTabGroupAdded event from TabGroupSyncService arrives
             // later. Ignore it quietly.
@@ -88,9 +89,12 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
         }
 
         assert tabGroup.localId == null;
+
+        // Shared tab groups should always auto-open if supported.
         boolean isAutoOpenEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
-                        && mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
+                        && (mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)
+                                || isCollaboration);
         if (!isAutoOpenEnabled) return;
 
         mEnableLocalObserverCallback.onResult(false);

@@ -43,9 +43,6 @@ class MODULES_EXPORT CaptureController final
   void setFocusBehavior(V8CaptureStartFocusBehavior, ExceptionState&);
 
   // Captured Surface Control IDL interface - scrolling
-  // TODO(crbug.com/40276312): Remove sendWheel().
-  ScriptPromise<IDLUndefined> sendWheel(ScriptState* script_state,
-                                        CapturedWheelAction* action);
   ScriptPromise<IDLUndefined> forwardWheel(ScriptState* script_state,
                                            HTMLElement* element);
 
@@ -108,6 +105,14 @@ class MODULES_EXPORT CaptureController final
   void Trace(Visitor* visitor) const override;
 
  private:
+  // TODO(crbug.com/40276312): Rather than invoking a private method,
+  // these tests should call forwardWheel() and then produce their
+  // own scroll events.
+  FRIEND_TEST_ALL_PREFIXES(CaptureControllerScrollTest,
+                           SendWheelScalesCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(CaptureControllerScrollParametersValidationTest,
+                           ValidateCoordinates);
+
   struct ValidationResult {
     ValidationResult(DOMExceptionCode code, String message);
 
@@ -120,6 +125,19 @@ class MODULES_EXPORT CaptureController final
   ScriptPromise<IDLUndefined> UpdateZoomLevel(
       ScriptState* script_state,
       mojom::blink::ZoomLevelAction action);
+
+  // This helper scales wheel events and forwards them to the browser process
+  // for further validation, potential user-prompting for permission, and
+  // finally, for forwarding to the captured tab.
+  //
+  // That SendWheel() returns a promise is a historical artifact - it used to be
+  // Web-exposed, but was then made into an implementation detail of the
+  // JS-exposed forwardWheel(). The repeated use of a promise for each
+  // individual forwarded wheel event is wasteful.
+  //
+  // TODO(crbug.com/40276312): Drop the returned promise.
+  ScriptPromise<IDLUndefined> SendWheel(ScriptState* script_state,
+                                        CapturedWheelAction* action);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   class WheelEventListener;

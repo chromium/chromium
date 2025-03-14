@@ -395,6 +395,16 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a session ends. The duration of the session.</summary>
 </histogram>
 
+<histogram name="Glic.Session.InputModesUsed" enum="GlicInputModesUsed"
+    expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session ends. The input modes that were used during the
+    session.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Session.Open.Attached" enum="Boolean"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>

@@ -97,6 +97,16 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
       summary="Validation using MACs in the Windows Registry."/>
 </variants>
 
+<histogram name="Settings.AddSiteDialog.Incognito" enum="BooleanEnabled"
+    expires_after="2025-08-31">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records whether a content setting was submitted for incognito via the add
+    site dialog. Recorded only when the incognito checkbox is available.
+  </summary>
+</histogram>
+
 <histogram name="Settings.AdvancedSpellcheck.OnStartup2" enum="BooleanEnabled"
     expires_after="2024-10-13">
   <owner>harrisonsean@chromium.org</owner>

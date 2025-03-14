@@ -126,6 +126,12 @@ class CORE_EXPORT CSSParserContext final
 
   bool IsForMarkupSanitization() const;
 
+  // Returns true if we are in a parsing mode where the result will be used in
+  // an element context. This function is used to fail parsing of functions such
+  // as sibling-index() which do not make sense in @page or @font-face
+  // descriptors, for instance.
+  bool InElementContext() const;
+
   // Overrides |mode_| of a CSSParserContext within the scope, allowing us to
   // switching parsing mode while parsing different parts of a style sheet.
   // TODO(xiaochengh): This isn't the right approach, as it breaks the

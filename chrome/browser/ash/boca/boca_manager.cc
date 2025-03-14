@@ -81,11 +81,19 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
   auto speech_recognizer =
       std::make_unique<babelorca::BabelOrcaSpeechRecognizerImpl>(
           profile, global_prefs, application_locale);
-  return boca::BabelOrcaManager::CreateAsProducer(
+  auto babel_orca_manager = boca::BabelOrcaManager::CreateAsProducer(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetURLLoaderFactory(), std::move(caption_bubble_context),
       std::move(speech_recognizer), std::move(babel_orca_translator),
       on_caption_disabled_cb, profile->GetPrefs(), application_locale);
+  // Safe to use base::Unretained since the callback is removed in
+  // `BocaManager::Shutdown()` before `babel_orca_manager_` destruction.
+  auto session_caption_initializer =
+      base::BindRepeating(&boca::BabelOrcaManager::SigninToTachyonAndRespond,
+                          base::Unretained(babel_orca_manager.get()));
+  session_manager->SetSessionCaptionInitializer(
+      std::move(session_caption_initializer));
+  return babel_orca_manager;
 }
 
 }  // namespace
@@ -156,6 +164,7 @@ void BocaManager::Shutdown() {
   for (auto& obs : boca_session_manager_->observers()) {
     boca_session_manager_->RemoveObserver(&obs);
   }
+  boca_session_manager_->RemoveSessionCaptionInitializer();
   babel_orca_manager_.reset();
 }
 

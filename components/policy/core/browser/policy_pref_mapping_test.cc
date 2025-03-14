@@ -254,7 +254,7 @@ class SimplePolicyPrefMappingTest {
     const std::string* pref_name = test.FindString("pref_name");
     if (!pref_name) {
       ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'pref_name'";
+                    << " is missing a 'pref_name'";
       return;
     }
 
@@ -264,14 +264,14 @@ class SimplePolicyPrefMappingTest {
     const base::Value* default_value = test.Find("default_value");
     if (!default_value) {
       ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'default_value'";
+                    << " is missing a 'default_value'";
       return;
     }
 
     const base::Value::List* values_to_test = test.FindList("values_to_test");
     if (!values_to_test || values_to_test->empty()) {
       ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'values_to_test' or is empty";
+                    << " is missing a 'values_to_test' or is empty";
       return;
     }
 

@@ -22,6 +22,8 @@ BnplLinkedIssuerPill::BnplLinkedIssuerPill()
                    views::style::CONTEXT_DIALOG_BODY_TEXT,
                    views::style::STYLE_SECONDARY) {
   // TODO(kylixrd): Find appropriate metrics on ChromeLayoutProvider.
+  // TODO (crbug.com/402646513): Update color token to use a context-specific
+  // token.
   SetBackground(views::CreateRoundedRectBackground(ui::kColorBadgeBackground,
                                                    gfx::RoundedCornersF(8)));
   SetBorder(views::CreateRoundedRectBorder(0, 8, gfx::Insets::TLBR(0, 4, 0, 4),

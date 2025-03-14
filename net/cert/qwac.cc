@@ -50,6 +50,29 @@ std::optional<std::vector<QcStatement>> ParseQcStatements(
   return results;
 }
 
+std::optional<std::vector<bssl::der::Input>> ParseQcTypeInfo(
+    bssl::der::Input statement_info) {
+  // QcType::= SEQUENCE OF OBJECT IDENTIFIER (id-etsi-qct-esign |
+  //     id-etsi-qct-eseal | id-etsi-qct-web, ...)
+  bssl::der::Parser info_parser(statement_info);
+  bssl::der::Parser qctype_parser;
+  if (!info_parser.ReadSequence(&qctype_parser)) {
+    return std::nullopt;
+  }
+  std::vector<bssl::der::Input> results;
+  while (qctype_parser.HasMore()) {
+    bssl::der::Input qctype_id;
+    if (!qctype_parser.ReadTag(CBS_ASN1_OBJECT, &qctype_id)) {
+      return std::nullopt;
+    }
+    results.push_back(qctype_id);
+  }
+  if (info_parser.HasMore()) {
+    return std::nullopt;
+  }
+  return results;
+}
+
 bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
   // ETSI TS 119 411-5 - V2.1.1 - section 6.1.2:
   //   the QWAC includes QCStatements as specified in clause 4.2 of ETSI EN 319
@@ -84,19 +107,13 @@ bool HasQwacQcStatements(const std::vector<QcStatement>& qc_statements) {
     if (statement.id == bssl::der::Input(kEtsiQcsQcComplianceOid)) {
       has_qc_compliance = true;
     } else if (statement.id == bssl::der::Input(kEtsiQcsQcTypeOid)) {
-      // QcType::= SEQUENCE OF OBJECT IDENTIFIER (id-etsi-qct-esign |
-      //     id-etsi-qct-eseal | id-etsi-qct-web, ...)
-      bssl::der::Parser info_parser(statement.info);
-      bssl::der::Parser qctype_parser;
-      if (!info_parser.ReadSequence(&qctype_parser)) {
+      std::optional<std::vector<bssl::der::Input>> qc_types =
+          ParseQcTypeInfo(statement.info);
+      if (!qc_types.has_value()) {
         return false;
       }
-      while (qctype_parser.HasMore()) {
-        bssl::der::Input qctype_id;
-        if (!qctype_parser.ReadTag(CBS_ASN1_OBJECT, &qctype_id)) {
-          return false;
-        }
-        if (qctype_id == bssl::der::Input(kEtsiQctWebOid)) {
+      for (const auto& qc_type_id : qc_types.value()) {
+        if (qc_type_id == bssl::der::Input(kEtsiQctWebOid)) {
           has_qctype_web = true;
         }
       }

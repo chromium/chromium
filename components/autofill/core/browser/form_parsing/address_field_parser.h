@@ -73,6 +73,11 @@ class AddressFieldParser : public FormFieldParser {
 
   bool ParseStreetLocation(ParsingContext& context, AutofillScanner* scanner);
 
+  bool ParseDependentLocality(ParsingContext& context,
+                              AutofillScanner* scanner);
+
+  bool ParseLandmark(ParsingContext& context, AutofillScanner* scanner);
+
   bool ParseStreetName(ParsingContext& context, AutofillScanner* scanner);
 
   bool ParseHouseNumber(ParsingContext& context, AutofillScanner* scanner);
@@ -180,8 +185,10 @@ class AddressFieldParser : public FormFieldParser {
       std::optional<FormFieldParser::FieldAndMatchInfo>* match);
 
   // Return true if the form being parsed shows an indication of being a
-  // structured address form.
-  bool PossiblyAStructuredAddressForm() const;
+  // structured address form. `country_code` is currently only used for India
+  // where the `street_location_`, `dependent_locality_` and `landmark_` fields
+  // are required.
+  bool PossiblyAStructuredAddressForm(GeoIpCountryCode country_code) const;
 
   std::optional<FieldAndMatchInfo> company_;
   std::optional<FieldAndMatchInfo> street_location_;

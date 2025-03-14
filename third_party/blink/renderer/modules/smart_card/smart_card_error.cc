@@ -162,8 +162,10 @@ void SmartCardError::MaybeReject(
       break;
     // "NotAllowedError"
     case device::mojom::blink::SmartCardError::kPermissionDenied:
-      resolver->RejectWithDOMException(DOMExceptionCode::kNotAllowedError,
-                                       "The user has denied permission.");
+      resolver->RejectWithDOMException(
+          DOMExceptionCode::kNotAllowedError,
+          "The user has denied permission or the user attention requirement "
+          "was not fulfilled.");
       break;
     // "UnknownError"
     case device::mojom::blink::SmartCardError::kCommError:

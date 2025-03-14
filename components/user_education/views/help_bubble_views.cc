@@ -237,4 +237,13 @@ void HelpBubbleViews::OnElementBoundsChanged(ui::TrackedElement* element) {
   }
 }
 
+CustomHelpBubbleViews::CustomHelpBubbleViews(
+    views::BubbleDialogDelegateView* bubble,
+    CustomHelpBubbleUi& ui,
+    ui::TrackedElement* anchor_element)
+    : HelpBubbleViews(bubble, anchor_element), CustomHelpBubble(ui) {
+  // Help bubbles should not close on deactivate.
+  bubble->set_close_on_deactivate(false);
+}
+
 }  // namespace user_education

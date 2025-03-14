@@ -1374,13 +1374,12 @@ suite('EnableRelatedWebsiteSets', function() {
         clearAllButton = testElement.$.clearAllButton;
         clearLabel = testElement.$.clearLabel;
         assertTrue(relatedWebsiteSetsDescription!.hidden);
-        assertTrue(sortComponent!.hidden);
-        assertEquals(
-            loadTimeData.getString('siteSettingsDeleteAllStorageLabel'),
-            clearAllButton.innerText.trim());
+        assertFalse(sortComponent!.hidden);
+        assertFalse(isVisible(clearAllButton));
         assertEquals(
             loadTimeData.substituteString(
-                testElement.i18n('allSitesRwsFilterViewStorageDescription'),
+                testElement.i18n(
+                    'siteSettingsClearDisplayedStorageDescription'),
                 '0 B'),
             clearLabel.innerText.trim());
       });

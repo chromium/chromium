@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/zygote/zygote_linux.h"
 
 #include <errno.h>
@@ -23,6 +18,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -251,7 +247,7 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
   }
 
   base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-      base::span(buf, base::checked_cast<size_t>(len)));
+      UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -504,7 +500,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
       CHECK(recv_fds.empty());
 
       base::Pickle pickle = base::Pickle::WithUnownedBuffer(
-          base::span(buf, base::checked_cast<size_t>(len)));
+          UNSAFE_TODO(base::span(buf, base::checked_cast<size_t>(len))));
       base::PickleIterator iter(pickle);
 
       int kind;

@@ -72,6 +72,12 @@ ExtensionApiTest::~ExtensionApiTest() = default;
 
 void ExtensionApiTest::SetUpOnMainThread() {
   ExtensionApiTestBase::SetUpOnMainThread();
+
+#if BUILDFLAG(IS_ANDROID)
+  // See comment in SetUpTestDataDir().
+  SetUpTestDataDir();
+#endif
+
   DCHECK(!test_config_.get()) << "Previous test did not clear config state.";
   test_config_ = std::make_unique<base::Value::Dict>();
   test_config_->Set(kTestDataDirectory,
@@ -263,11 +269,12 @@ void ExtensionApiTest::SetCustomArg(std::string_view custom_arg) {
 void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionApiTestBase::SetUpCommandLine(command_line);
 
-  test_data_dir_ = test_data_dir_.AppendASCII("api_test");
-
   RegisterPathProvider();
-  base::PathService::Get(DIR_TEST_DATA, &shared_test_data_dir_);
-  shared_test_data_dir_ = shared_test_data_dir_.AppendASCII("api_test");
+
+#if !BUILDFLAG(IS_ANDROID)
+  // See comment in SetUpTestDataDir().
+  SetUpTestDataDir();
+#endif
 
   // Backgrounded renderer processes run at a lower priority, causing the
   // tests to take more time to complete. Disable backgrounding so that the
@@ -281,6 +288,19 @@ void ExtensionApiTest::UseHttpsTestServer() {
   https_test_server_.get()->AddDefaultHandlers(GetChromeTestDataDir());
   https_test_server_.get()->SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+}
+
+void ExtensionApiTest::SetUpTestDataDir() {
+  // Unfortunately, the timing we need to set up the test data dir differs on
+  // Android and non-Android. On Android, we don't initialize the
+  // `test_data_dir_` as soon, and so calling `test_data_dir_.AppendASCII()`
+  // won't work from SetUpCommandLine(). And on non-Android, calling it from
+  // SetUpOnMainThread() is too late for the way some tests operate. Instead,
+  // we call it from different places on the different OSes.
+  // TODO(https://crbug.com/403319676): Clean this up.
+  test_data_dir_ = test_data_dir_.AppendASCII("api_test");
+  base::PathService::Get(DIR_TEST_DATA, &shared_test_data_dir_);
+  shared_test_data_dir_ = shared_test_data_dir_.AppendASCII("api_test");
 }
 
 }  // namespace extensions

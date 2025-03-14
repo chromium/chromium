@@ -181,6 +181,17 @@ constexpr char kHostnameWithAliases[] = "www.example.test";
 
 constexpr char kHostnameWithoutAliases[] = "www.other.test";
 
+// MockWrite for requesting "http://origin.test/".
+const net::MockWrite kOriginTestWrites[] = {
+    net::MockWrite(net::SYNCHRONOUS,
+                   0,
+                   "GET / HTTP/1.1\r\n"
+                   "Host: origin.test\r\n"
+                   "Connection: keep-alive\r\n"
+                   "User-Agent: \r\n"
+                   "Accept-Encoding: gzip, deflate\r\n\r\n"),
+};
+
 static ResourceRequest CreateResourceRequest(const char* method,
                                              const GURL& url) {
   ResourceRequest request;
@@ -7040,14 +7051,6 @@ TEST_F(URLLoaderMockSocketTest, OrbDoesNotCloseSocketsWhenResourcesNotBlocked) {
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, 0,
-                     "GET / HTTP/1.1\r\n"
-                     "Host: origin.test\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
-  };
   net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, 1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7058,7 +7061,7 @@ TEST_F(URLLoaderMockSocketTest, OrbDoesNotCloseSocketsWhenResourcesNotBlocked) {
 
   net::SequencedSocketData socket_data_connect(
       kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
-  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
   socket_factory_.AddSocketDataProvider(&socket_data_connect);
   socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
@@ -7081,14 +7084,6 @@ TEST_F(URLLoaderMockSocketTest, OrbClosesSocketOnReceivingHeaders) {
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, 0,
-                     "GET / HTTP/1.1\r\n"
-                     "Host: origin.test\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
-  };
   net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, 1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7101,7 +7096,7 @@ TEST_F(URLLoaderMockSocketTest, OrbClosesSocketOnReceivingHeaders) {
 
   net::SequencedSocketData socket_data_connect(
       kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
-  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
   socket_factory_.AddSocketDataProvider(&socket_data_connect);
   socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
@@ -7125,14 +7120,6 @@ TEST_F(URLLoaderMockSocketTest,
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, 0,
-                     "GET / HTTP/1.1\r\n"
-                     "Host: origin.test\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
-  };
   net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, 1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7144,7 +7131,7 @@ TEST_F(URLLoaderMockSocketTest,
 
   net::SequencedSocketData socket_data_connect(
       kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
-  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
   socket_factory_.AddSocketDataProvider(&socket_data_connect);
   socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
@@ -7167,14 +7154,6 @@ TEST_F(URLLoaderMockSocketTest, OrbClosesSocketOnSniffingMimeType) {
   orb_enabled_ = true;
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, 0,
-                     "GET / HTTP/1.1\r\n"
-                     "Host: origin.test\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
-  };
   net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, 1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7186,7 +7165,7 @@ TEST_F(URLLoaderMockSocketTest, OrbClosesSocketOnSniffingMimeType) {
 
   net::SequencedSocketData socket_data_connect(
       kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
-  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
   socket_factory_.AddSocketDataProvider(&socket_data_connect);
   socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
@@ -7214,14 +7193,6 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
   set_factory_client_security_state(std::move(client_security_state));
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, 0,
-                     "GET / HTTP/1.1\r\n"
-                     "Host: origin.test\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
-  };
   net::MockRead kReads[] = {
       net::MockRead(net::SYNCHRONOUS, 1,
                     "HTTP/1.1 200 OK\r\n"
@@ -7233,7 +7204,7 @@ TEST_F(URLLoaderMockSocketTest, CorpClosesSocket) {
 
   net::SequencedSocketData socket_data_connect(
       kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
-  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
   socket_factory_.AddSocketDataProvider(&socket_data_connect);
   socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
@@ -7262,14 +7233,6 @@ TEST_P(URLLoaderMockSocketAuctionOnlyTest,
   set_factory_client_security_state(std::move(client_security_state));
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, 0,
-                     "GET / HTTP/1.1\r\n"
-                     "Host: origin.test\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
-  };
   const std::string first_read = base::StringPrintf(
       "HTTP/1.1 200 OK\r\n"
       "Connection: keep-alive\r\n"
@@ -7284,7 +7247,7 @@ TEST_P(URLLoaderMockSocketAuctionOnlyTest,
 
   net::SequencedSocketData socket_data_connect(
       kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
-  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
   socket_factory_.AddSocketDataProvider(&socket_data_connect);
   socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 
@@ -7310,14 +7273,6 @@ TEST_P(URLLoaderMockSocketAuctionOnlyTest,
   set_factory_client_security_state(std::move(client_security_state));
 
   net::MockConnect kConnect = net::MockConnect(net::ASYNC, net::OK);
-  const net::MockWrite kWrites[] = {
-      net::MockWrite(net::SYNCHRONOUS, 0,
-                     "GET / HTTP/1.1\r\n"
-                     "Host: origin.test\r\n"
-                     "Connection: keep-alive\r\n"
-                     "User-Agent: \r\n"
-                     "Accept-Encoding: gzip, deflate\r\n\r\n"),
-  };
   const std::string first_read = base::StringPrintf(
       "HTTP/1.1 200 OK\r\n"
       "Connection: keep-alive\r\n"
@@ -7332,7 +7287,7 @@ TEST_P(URLLoaderMockSocketAuctionOnlyTest,
 
   net::SequencedSocketData socket_data_connect(
       kConnect, base::span<net::MockRead>(), base::span<net::MockWrite>());
-  net::SequencedSocketData socket_data_reads_writes(kReads, kWrites);
+  net::SequencedSocketData socket_data_reads_writes(kReads, kOriginTestWrites);
   socket_factory_.AddSocketDataProvider(&socket_data_connect);
   socket_factory_.AddSocketDataProvider(&socket_data_reads_writes);
 

@@ -44,6 +44,8 @@ source_set("base") {
   }
 
   sources = [
+    "agtm.cc",
+    "agtm.h",
     "amplitude_peak_detector.cc",
     "amplitude_peak_detector.h",
     "android_overlay_config.cc",
@@ -579,6 +581,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "agtm_unittest.cc",
     "amplitude_peak_detector_unittest.cc",
     "audio_block_fifo_unittest.cc",
     "audio_buffer_converter_unittest.cc",

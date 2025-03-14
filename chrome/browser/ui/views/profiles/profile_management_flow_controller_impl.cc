@@ -30,20 +30,6 @@ ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
 ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
     default;
 
-void ProfileManagementFlowControllerImpl::SwitchToIdentityStepsFromPostSignIn(
-    Profile* signed_in_profile,
-    const CoreAccountInfo& account_info,
-    std::unique_ptr<content::WebContents> contents,
-    StepSwitchFinishedCallback step_switch_finished_callback) {
-  DCHECK_NE(Step::kPostSignInFlow, current_step());
-  DCHECK(!IsStepInitialized(Step::kPostSignInFlow));
-  RegisterStep(Step::kPostSignInFlow,
-               CreatePostSignInStep(signed_in_profile, account_info,
-                                    std::move(contents)));
-  SwitchToStep(Step::kPostSignInFlow,
-               /*reset_state=*/true, std::move(step_switch_finished_callback));
-}
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementFlowControllerImpl::
     SwitchToIdentityStepsFromAccountSelection(

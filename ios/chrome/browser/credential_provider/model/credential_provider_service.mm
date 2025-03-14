@@ -113,7 +113,9 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
         [ASCredentialIdentityStore.sharedStore
             replaceCredentialIdentityEntries:storeIdentities
                                   completion:replaceCompletion];
-      } else {
+      }
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+      else {
         NSMutableArray<ASPasswordCredentialIdentity*>* storeIdentities =
             [NSMutableArray arrayWithCapacity:credentials.count];
         for (id<Credential> credential in credentials) {
@@ -124,6 +126,7 @@ void SyncASIdentityStore(id<CredentialStore> credential_store) {
             replaceCredentialIdentitiesWithIdentities:storeIdentities
                                            completion:replaceCompletion];
       }
+#endif
     }
   };
   [ASCredentialIdentityStore.sharedStore

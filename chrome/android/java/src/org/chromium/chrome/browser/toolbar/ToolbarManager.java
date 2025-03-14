@@ -291,8 +291,6 @@ public class ToolbarManager
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
 
-    // TODO(vkorotkevich): suppression will be removed in follow up CLs
-    @SuppressWarnings("unused")
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
 
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
@@ -901,6 +899,17 @@ public class ToolbarManager
                             mTabModelSelectorSupplier);
         }
 
+        ImageButton reloadButton = mControlContainer.findViewById(R.id.refresh_button);
+        if (reloadButton != null) {
+            mReloadButtonCoordinator =
+                    new ReloadButtonCoordinator(
+                            reloadButton,
+                            ignoreCache -> {
+                                setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+                                mToolbarTabController.stopOrReloadCurrentTab(ignoreCache);
+                            });
+        }
+
         mToolbarLongPressMenuHandler =
                 new ToolbarLongPressMenuHandler(
                         /* context= */ mActivity,
@@ -1016,17 +1025,6 @@ public class ToolbarManager
             toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
             toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
             mLocationBar = locationBarCoordinator;
-
-            ImageButton reloadButton = mControlContainer.findViewById(R.id.refresh_button);
-            if (reloadButton != null) {
-                mReloadButtonCoordinator =
-                        new ReloadButtonCoordinator(
-                                reloadButton,
-                                ignoreCache -> {
-                                    locationBarCoordinator.clearOmniboxFocus();
-                                    mToolbarTabController.stopOrReloadCurrentTab(ignoreCache);
-                                });
-            }
         }
 
         Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
@@ -1612,7 +1610,8 @@ public class ToolbarManager
                         mDesktopWindowStateManager,
                         mTabStripTransitionDelegateSupplier,
                         onLongClickListener,
-                        progressBar);
+                        progressBar,
+                        mReloadButtonCoordinator);
 
         mHomepageStateListener =
                 () -> {

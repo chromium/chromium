@@ -7,7 +7,6 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Surface color elevations -->
-    <dimen name="dialog_elevation">@dimen/default_elevation_3</dimen>
     <dimen name="sheet_background_elev">@dimen/default_elevation_4</dimen>
     <dimen name="toolbar_text_box_elevation">@dimen/default_elevation_3</dimen>
 

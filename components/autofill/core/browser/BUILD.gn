@@ -1367,6 +1367,7 @@ source_set("unit_tests") {
     "payments/iban_manager_unittest.cc",
     "payments/iban_save_manager_unittest.cc",
     "payments/legal_message_line_unittest.cc",
+    "payments/multiple_request_payments_network_interface_base_unittest.cc",
     "payments/payments_access_token_fetcher_unittest.cc",
     "payments/payments_data_cleaner_unittest.cc",
     "payments/payments_network_interface_unittest.cc",

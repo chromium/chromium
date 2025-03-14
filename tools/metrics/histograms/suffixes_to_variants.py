@@ -103,12 +103,13 @@ def _GetBaseVariant(doc, histogram):
     histogram: The <histogram> node to check whether its base is true or not.
 
   Returns:
-     A <variant> node.
+     A <variant> node, or None if base="true" is set.
   """
-  is_base = False
   if histogram.hasAttribute('base'):
     is_base = histogram.getAttribute('base').lower() == 'true'
     histogram.removeAttribute('base')
+    if is_base:
+      return None
   base_variant = doc.createElement('variant')
   base_variant.setAttribute('name', '')
   return base_variant
@@ -201,7 +202,9 @@ def MigrateToInlinePatterenedHistogram(doc, histogram, histogram_suffixes):
   # Create an inline <token> node.
   token = doc.createElement('token')
   token.setAttribute('key', histogram_suffixes_name)
-  token.appendChild(_GetBaseVariant(doc, histogram))
+  base_variant = _GetBaseVariant(doc, histogram)
+  if base_variant:
+    token.appendChild(base_variant)
 
   # Populate <variant>s to the inline <token> node.
   if not _PopulateVariantsWithSuffixes(doc, token, histogram_suffixes):
@@ -228,11 +231,13 @@ def MigrateToOutOflinePatterenedHistogram(doc, histogram, histogram_suffixes):
   _UpdateSummary(histogram, histogram_suffixes_name)
 
   # Create a <token> node that links to an out-of-line <variants>.
-  token = doc.createElement('token')
-  token.setAttribute('key', histogram_suffixes_name)
-  token.setAttribute('variants', histogram_suffixes_name)
-  token.appendChild(_GetBaseVariant(doc, histogram))
-  histogram.appendChild(token)
+  base_variant = _GetBaseVariant(doc, histogram)
+  if base_variant:
+    token = doc.createElement('token')
+    token.setAttribute('key', histogram_suffixes_name)
+    token.setAttribute('variants', histogram_suffixes_name)
+    token.appendChild(base_variant)
+    histogram.appendChild(token)
   # Remove obsolete comments from the histogram node.
   _RemoveSuffixesComment(histogram, histogram_suffixes_name)
 

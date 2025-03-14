@@ -1864,8 +1864,6 @@ class MediaStreamManagerCapturedSurfaceControlTest
                       gdm_rfhid, captured_wc_id);
               captured_surface_controller->SetSendWheelResponse(
                   CapturedSurfaceControlResult::kSuccess);
-              captured_surface_controller->SetGetZoomLevelResponse(
-                  100, CapturedSurfaceControlResult::kSuccess);
               captured_surface_controller->SetUpdateZoomLevelResponse(
                   CapturedSurfaceControlResult::kSuccess);
               captured_surface_controller->SetRequestPermissionResponse(
@@ -1893,18 +1891,6 @@ class MediaStreamManagerCapturedSurfaceControlTest
     media_stream_manager_->SendWheel(
         gdm_rfhid, session_id.value_or(video_device_.session_id()),
         MakeCapturedWheelActionPtr(), MakeCallback());
-  }
-
-  base::OnceCallback<void(std::optional<int>, CapturedSurfaceControlResult)>
-  MakeGetZoomLevelCallback() {
-    return base::BindOnce(
-        [](std::optional<CapturedSurfaceControlResult>* result_opt,
-           std::optional<int>, CapturedSurfaceControlResult result) {
-          CHECK(result_opt);
-          EXPECT_FALSE(result_opt->has_value());
-          *result_opt = result;
-        },
-        &result_);
   }
 
   void UpdateZoomLevel(GlobalRenderFrameHostId gdm_rfhid,

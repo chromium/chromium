@@ -28,6 +28,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -43,6 +44,7 @@
 #include "components/update_client/ping_manager.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_handler.h"
+#include "components/update_client/protocol_parser_json.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/test_utils.h"
@@ -370,12 +372,12 @@ TEST_F(UpdateClientTest, OneCrxNoUpdate) {
 
       EXPECT_TRUE(component->is_foreground());
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
 
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -480,73 +482,33 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-        <app appid='abagagagagagagagagagagagagagagag'>
-          <updatecheck status='noupdate'/>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}},
+              { "appid": "abagagagagagagagagagagagagagagag",
+                "status": "ok",
+                "updatecheck": { "status": "noupdate"}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
-
-      ProtocolParser::Results results;
-      {
-        const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-        package.fingerprint = "somefingerprint";
-        package.hash_sha256 =
-            "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-        ProtocolParser::Result result;
-        result.extension_id = "jebgalgnebhfojomionfpkfelancnnkf";
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-
-        EXPECT_FALSE(context->components.at(id)->is_foreground());
-      }
-
-      {
-        const std::string id = "abagagagagagagagagagagagagagagag";
-        EXPECT_EQ(id, context->components_to_check_for_updates[1]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "noupdate";
-        results.list.push_back(result);
-
-        EXPECT_FALSE(context->components.at(id)->is_foreground());
-      }
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -738,57 +700,31 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}}
+              ]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
-
-      ProtocolParser::Results results;
-      {
-        const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-        package.fingerprint = "somefingerprint";
-        package.hash_sha256 =
-            "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-        ProtocolParser::Result result;
-        result.extension_id = "jebgalgnebhfojomionfpkfelancnnkf";
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-
-        EXPECT_FALSE(context->components.at(id)->is_foreground());
-      }
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -962,57 +898,31 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp="somefingerprint"/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      ProtocolParser::Results results;
-      {
-        const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-        package.fingerprint = "somefingerprint";
-        package.hash_sha256 =
-            "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-
-        EXPECT_FALSE(context->components.at(id)->is_foreground());
-      }
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -1275,91 +1185,44 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-        <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
-                         hash_sha256='8f5aa190311237cae00675af87ff457f278cd1a05
-                                      895470ac5d46647d4a3c2ea'
-                         fp='someotherfingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
-
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}},
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
+                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
-
-      ProtocolParser::Results results;
-      {
-        const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-        package.fingerprint = "somefingerprint";
-        package.hash_sha256 =
-            "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-      }
-
-      {
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[1]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
-        package.fingerprint = "someotherfingerprint";
-        package.hash_sha256 =
-            "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-      }
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -1559,10 +1422,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
         crx.version = base::Version("0.8");
-        crx.fingerprint = "20";
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
-        crx.fingerprint = "21";
       } else {
         ADD_FAILURE();
       }
@@ -1588,108 +1449,55 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(context->session_id.empty());
-
-      ProtocolParser::Results results;
-
+      base::expected<ProtocolParser::Results, std::string> results;
       if (num_calls_ == 1) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-              </urls>
-              <manifest version='1.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
-                           hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
-                                        3f309f156ea6d27229c0b3f9'
-                                        fp='21'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
-        package.hash_sha256 =
-            "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
-        package.fingerprint = "21";
-        auto& component = context->components[id];
-        component->set_previous_fp("20");
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
+        results = ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
+                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
+                        }]}]}}]}})");
       } else if (num_calls_ == 2) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-                <url codebasediff='http://localhost/download/'/>
-              </urls>
-              <manifest version='2.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
-                           namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
-                           hash_sha256='c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea6361
-                                        8086a7db1c5be5300e1d4d6b6'
-                           fp='22'
-                           hashdiff_sha256='0fd48a5dd87006a709756cfc47198cbc4c4
-                                            928f33ac4277d79573c15164a33eb'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
-        package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff";
-        package.hash_sha256 =
-            "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6";
-        package.hashdiff_sha256 =
-            "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2";
-        package.fingerprint = "22";
-
-        auto& component = context->components[id];
-        component->set_previous_fp("21");
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.crx_diffurls.emplace_back("http://localhost/download/");
-        result.manifest.version = "2.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
+        results = ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "2.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
+                          "out": {"sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"}},
+                        { "type": "puff",
+                          "from": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
+                        }]}]}}]}})");
       } else {
         ADD_FAILURE();
       }
-
+      EXPECT_TRUE(results.has_value()) << results.error();
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
 
    private:
@@ -2015,52 +1823,31 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='random'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-      package.fingerprint = "random";
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.packages.push_back(package);
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -2198,10 +1985,8 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
         crx.version = base::Version("0.8");
-        crx.fingerprint = "20";
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
-        crx.fingerprint = "21";
       } else {
         ADD_FAILURE();
       }
@@ -2227,105 +2012,63 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(context->session_id.empty());
-
-      ProtocolParser::Results results;
-
+      base::expected<ProtocolParser::Results, std::string> results;
       if (num_calls_ == 1) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-              </urls>
-              <manifest version='1.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
-                           hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
-                                        3f309f156ea6d27229c0b3f9'
-                           fp='21'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
-        package.hash_sha256 =
-            "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
-        package.fingerprint = "21";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
+        results = ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
+                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
+                        }]}]}}]}})");
       } else if (num_calls_ == 2) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-                <url codebasediff='http://localhost/download/'/>
-              </urls>
-              <manifest version='2.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
-                           namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
-                           hash_sha256='c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea6361
-                                        8086a7db1c5be5300e1d4d6b6'
-                           fp='22'
-                           hashdiff_sha256='0fd48a5dd87006a709756cfc47198cbc4c4
-                                            928f33ac4277d79573c15164a33eb'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
-        package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff";
-        package.hash_sha256 =
-            "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6";
-        package.hashdiff_sha256 =
-            "80811cc3ad9926d4274933ad3cb8e3c0481b8b5ecda756d47f5faf0e4f93d7b9";
-        package.fingerprint = "22";
-        auto& component = context->components[id];
-        component->set_previous_fp("21");
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.crx_diffurls.emplace_back("http://localhost/download/");
-        result.manifest.version = "2.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
+        results = ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "2.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
+                          "out": {"sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"}},
+                        { "type": "puff",
+                          "from": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
+                        }]},
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"}],
+                          "out": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
+                        }]}
+                    ]}}]}})");
       } else {
         ADD_FAILURE();
       }
-
+      EXPECT_TRUE(results.has_value()) << results.error();
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
 
    private:
@@ -2418,9 +2161,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
       EXPECT_EQ(base::Version("2.0"), ping_data[1].next_version);
       EXPECT_EQ(0, static_cast<int>(ping_data[1].error_category));
       EXPECT_EQ(0, ping_data[1].error_code);
-      EXPECT_TRUE(ping_data[1].diff_update_failed);
-      EXPECT_EQ(1, static_cast<int>(ping_data[1].diff_error_category));
-      EXPECT_EQ(-1, ping_data[1].diff_error_code);
     }
   };
 
@@ -2478,368 +2218,6 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
                          item.state == ComponentState::kUpdating;
                 })))
         .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kUpdated;
-                })));
-  }
-
-  const std::vector<std::string> ids = {"ihfokbkgjpifnbbojhneepfflplebdkc"};
-
-  {
-    std::vector<CrxUpdateItem> items;
-    auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
-    EXPECT_CALL(*receiver, Receive(_))
-        .WillRepeatedly(
-            [&items](const CrxUpdateItem& item) { items.push_back(item); });
-
-    base::RunLoop runloop;
-    update_client->Update(
-        ids, data_callback_mock,
-        base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false, ExpectErrorThenQuit(runloop, Error::NONE));
-    runloop.Run();
-    EXPECT_EQ(6u, items.size());
-    EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
-    EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
-    EXPECT_EQ(ComponentState::kUpdating, items[4].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
-    EXPECT_EQ(ComponentState::kUpdated, items[5].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
-  }
-
-  {
-    std::vector<CrxUpdateItem> items;
-    auto receiver = base::MakeRefCounted<MockCrxStateChangeReceiver>();
-    EXPECT_CALL(*receiver, Receive(_))
-        .WillRepeatedly(
-            [&items](const CrxUpdateItem& item) { items.push_back(item); });
-
-    base::RunLoop runloop;
-    update_client->Update(
-        ids, data_callback_mock,
-        base::BindRepeating(&MockCrxStateChangeReceiver::Receive, receiver),
-        false, ExpectErrorThenQuit(runloop, Error::NONE));
-    runloop.Run();
-
-    EXPECT_EQ(8u, items.size());
-    EXPECT_EQ(ComponentState::kChecking, items[0].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[0].id);
-    EXPECT_EQ(ComponentState::kCanUpdate, items[1].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[1].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[2].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[2].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[3].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[3].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[4].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[4].id);
-    EXPECT_EQ(ComponentState::kDownloading, items[5].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[5].id);
-    EXPECT_EQ(ComponentState::kUpdating, items[6].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[6].id);
-    EXPECT_EQ(ComponentState::kUpdated, items[7].state);
-    EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", items[7].id);
-  }
-}
-
-// Tests the fallback from differential to full update due to CRX missing from
-// the cache scenario for one CRX.
-TEST_F(UpdateClientTest,
-       OneCrxDiffDownloadSkippedMissingCachedCrxFullUpdateSucceeds) {
-  class DataCallbackMock : public base::RefCountedThreadSafe<DataCallbackMock> {
-   public:
-    void Callback(
-        const std::vector<std::string>& ids,
-        base::OnceCallback<
-            void(const std::vector<std::optional<CrxComponent>>&)> callback) {
-      ++num_calls_;
-
-      CrxComponent crx;
-      crx.app_id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-      crx.name = "test_ihfo";
-      crx.pk_hash.assign(std::begin(ihfo_hash), std::end(ihfo_hash));
-      crx.installer = installer_;
-      crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
-      if (num_calls_ == 1) {
-        crx.version = base::Version("0.8");
-        crx.fingerprint = "20";
-      } else if (num_calls_ == 2) {
-        crx.version = base::Version("1.0");
-        crx.fingerprint = "21";
-      } else {
-        ADD_FAILURE();
-      }
-
-      std::move(callback).Run({crx});
-    }
-
-   private:
-    friend class base::RefCountedThreadSafe<DataCallbackMock>;
-    ~DataCallbackMock() = default;
-
-    int num_calls_ = 0;
-    scoped_refptr<VersionedTestInstaller> installer_ =
-        base::MakeRefCounted<VersionedTestInstaller>();
-  };
-  auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
-
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    explicit MockUpdateChecker(int num_calls) : num_calls_(num_calls) {}
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(context->session_id.empty());
-
-      ProtocolParser::Results results;
-
-      if (num_calls_ == 1) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-              </urls>
-              <manifest version='1.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
-                           hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
-                                        3f309f156ea6d27229c0b3f9'
-                           fp='21'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
-        package.hash_sha256 =
-            "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
-        package.fingerprint = "21";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-      } else if (num_calls_ == 2) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-                <url codebasediff='http://localhost/download/'/>
-              </urls>
-              <manifest version='2.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
-                           namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
-                           hash_sha256='c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea6361
-                                        8086a7db1c5be5300e1d4d6b6'
-                           fp='22'
-                           hashdiff_sha256='0fd48a5dd87006a709756cfc47198cbc4c4
-                                            928f33ac4277d79573c15164a33eb'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
-        package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff";
-        package.hash_sha256 =
-            "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6";
-        package.hashdiff_sha256 =
-            "80811cc3ad9926d4274933ad3cb8e3c0481b8b5ecda756d47f5faf0e4f93d7b9";
-        package.fingerprint = "22";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.crx_diffurls.emplace_back("http://localhost/download/");
-        result.manifest.version = "2.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-      } else {
-        ADD_FAILURE();
-      }
-
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
-    }
-
-   private:
-    const int num_calls_;
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
-
-  class MockCrxDownloader : public CrxDownloader {
-   public:
-    MockCrxDownloader() = default;
-
-   private:
-    ~MockCrxDownloader() override = default;
-
-    base::OnceClosure DoStartDownload(const GURL& url) override {
-      DownloadMetrics download_metrics;
-      base::FilePath path;
-      Result result;
-      if (url.path() == "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 53638;
-        download_metrics.total_bytes = 53638;
-        download_metrics.download_time_ms = 2000;
-
-        EXPECT_TRUE(MakeTestFile(
-            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"), &path));
-
-        result.error = 0;
-        result.response = path;
-      } else if (url.path() ==
-                 "/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff") {
-        // A download error is injected on this execution path.
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 18;
-        download_metrics.downloaded_bytes = 0;
-        download_metrics.total_bytes = 2105;
-        download_metrics.download_time_ms = 1000;
-
-        // The response must not include a file path in the case of errors.
-        result.error = 18;
-      } else if (url.path() ==
-                 "/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx") {
-        download_metrics.url = url;
-        download_metrics.downloader = DownloadMetrics::kNone;
-        download_metrics.error = 0;
-        download_metrics.downloaded_bytes = 53855;
-        download_metrics.total_bytes = 53855;
-        download_metrics.download_time_ms = 1000;
-
-        EXPECT_TRUE(MakeTestFile(
-            GetTestFilePath("ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"), &path));
-
-        result.error = 0;
-        result.response = path;
-      }
-
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadProgress,
-                                    base::Unretained(this),
-                                    download_metrics.downloaded_bytes,
-                                    download_metrics.total_bytes));
-
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&MockCrxDownloader::OnDownloadComplete,
-                                    base::Unretained(this), true, result,
-                                    download_metrics));
-      return base::DoNothing();
-    }
-  };
-
-  class MockPingManager : public MockPingManagerImpl {
-   public:
-    explicit MockPingManager(scoped_refptr<Configurator> config)
-        : MockPingManagerImpl(config) {}
-
-   protected:
-    ~MockPingManager() override {
-      const auto ping_data = MockPingManagerImpl::ping_data();
-      EXPECT_EQ(2u, ping_data.size());
-      EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", ping_data[0].id);
-      EXPECT_EQ(base::Version("0.8"), ping_data[0].previous_version);
-      EXPECT_EQ(base::Version("1.0"), ping_data[0].next_version);
-      EXPECT_EQ(0, static_cast<int>(ping_data[0].error_category));
-      EXPECT_EQ(0, ping_data[0].error_code);
-      EXPECT_EQ("ihfokbkgjpifnbbojhneepfflplebdkc", ping_data[1].id);
-      EXPECT_EQ(base::Version("1.0"), ping_data[1].previous_version);
-      EXPECT_EQ(base::Version("2.0"), ping_data[1].next_version);
-      EXPECT_EQ(0, static_cast<int>(ping_data[1].error_category));
-      EXPECT_EQ(0, ping_data[1].error_code);
-      EXPECT_TRUE(ping_data[1].diff_update_failed);
-      EXPECT_EQ(1, static_cast<int>(ping_data[1].diff_error_category));
-      EXPECT_EQ(18, ping_data[1].diff_error_code);
-    }
-  };
-
-  SetMockCrxDownloader<MockCrxDownloader>();
-  scoped_refptr<UpdateClient> update_client =
-      base::MakeRefCounted<UpdateClientImpl>(
-          config(), base::MakeRefCounted<MockPingManager>(config()),
-          mock_update_checker_factory.GetFactory());
-
-  MockObserver observer(update_client);
-  {
-    InSequence seq;
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kChecking;
-                })));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kCanUpdate;
-                })));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kDownloading;
-                })))
-        .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kUpdating;
-                })));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kUpdated;
-                })));
-
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kChecking;
-                })));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kCanUpdate;
-                })));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kDownloading;
-                })))
-        .Times(AtLeast(1));
-    EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
-                  return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
-                         item.state == ComponentState::kUpdating;
-                })));
     EXPECT_CALL(observer, OnEvent(Truly([](const CrxUpdateItem& item) {
                   return item.id == "ihfokbkgjpifnbbojhneepfflplebdkc" &&
                          item.state == ComponentState::kUpdated;
@@ -2949,11 +2327,11 @@ TEST_F(UpdateClientTest, OneCrxNoUpdateQueuedCall) {
 
       EXPECT_FALSE(component->is_foreground());
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -3076,59 +2454,33 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'
-              run='UpdaterSetup.exe' arguments='--arg1 --arg2'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "arguments": "--arg1 --arg2",
+                          "path": "UpdaterSetup.exe",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-      package.fingerprint = "some-fingerprint";
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.run = "UpdaterSetup.exe";
-      result.manifest.arguments = "--arg1 --arg2";
-      result.manifest.packages.push_back(package);
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
-
-      // Verify that calling Install sets ondemand.
-      EXPECT_TRUE(context->components.at(id)->is_foreground());
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -3270,9 +2622,6 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
       config()->GetPrefService()->GetDict("updateclientdata");
   EXPECT_EQ("1.0", CHECK_DEREF(dict.FindStringByDottedPath(
                        "apps.jebgalgnebhfojomionfpkfelancnnkf.pv")));
-  EXPECT_EQ("some-fingerprint",
-            CHECK_DEREF(dict.FindStringByDottedPath(
-                "apps.jebgalgnebhfojomionfpkfelancnnkf.fp")));
 }
 
 // Tests the install of one CRX when no component data is provided. This
@@ -3403,12 +2752,12 @@ TEST_F(UpdateClientTest, ConcurrentInstallSameCRX) {
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
       EXPECT_EQ(1u, context->components.count(id));
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
 
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       // Verify that calling Install sets |is_foreground| for the component.
       EXPECT_TRUE(context->components.at(id)->is_foreground());
@@ -3582,60 +2931,37 @@ TEST_F(UpdateClientTest, DiskFull) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
 
       context->get_available_space = base::BindRepeating(
           [](const base::FilePath&) -> int64_t { return 0; });
 
-      ProtocolParser::Results results;
-      {
-        const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-        package.fingerprint = "somefingerprint";
-        package.hash_sha256 =
-            "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-        ProtocolParser::Result result;
-        result.extension_id = "jebgalgnebhfojomionfpkfelancnnkf";
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-
-        EXPECT_FALSE(context->components.at(id)->is_foreground());
-      }
-
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "arguments": "--arg1 --arg2",
+                          "path": "UpdaterSetup.exe",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -3743,10 +3069,8 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
       crx.crx_format_requirement = crx_file::VerifierFormat::CRX3;
       if (num_calls_ == 1) {
         crx.version = base::Version("0.8");
-        crx.fingerprint = "20";
       } else if (num_calls_ == 2) {
         crx.version = base::Version("1.0");
-        crx.fingerprint = "21";
       } else {
         ADD_FAILURE();
       }
@@ -3772,110 +3096,65 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_FALSE(context->session_id.empty());
-
-      ProtocolParser::Results results;
-
+      base::expected<ProtocolParser::Results, std::string> results;
       if (num_calls_ == 1) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-              </urls>
-              <manifest version='1.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
-                           hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
-                                        3f309f156ea6d27229c0b3f9'
-                                        fp='21'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
-        package.hash_sha256 =
-            "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
-        package.fingerprint = "21";
-        auto& component = context->components[id];
-        component->set_previous_fp("20");
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
+        results = ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
+                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
+                        }]}]}}]}})");
       } else if (num_calls_ == 2) {
-        /*
-        Mock the following response:
-        <?xml version='1.0' encoding='UTF-8'?>
-        <response protocol='3.1'>
-          <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-            <updatecheck status='ok'>
-              <urls>
-                <url codebase='http://localhost/download/'/>
-                <url codebasediff='http://localhost/download/'/>
-              </urls>
-              <manifest version='2.0'>
-                <packages>
-                  <package name='ihfokbkgjpifnbbojhneepfflplebdkc_2.crx'
-                           namediff='ihfokbkgjpifnbbojhneepfflplebdkc_1to2.crx'
-                           hash_sha256='c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea6361
-                                        8086a7db1c5be5300e1d4d6b6'
-                           fp='22'
-                           hashdiff_sha256='0fd48a5dd87006a709756cfc47198cbc4c4
-                                            928f33ac4277d79573c15164a33eb'/>
-                </packages>
-              </manifest>
-            </updatecheck>
-          </app>
-        </response>
-        */
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
         context->get_available_space = base::BindRepeating(
             [](const base::FilePath&) -> int64_t { return 0; });
 
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_2.crx";
-        package.namediff = "ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff";
-        package.hash_sha256 =
-            "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6";
-        package.hashdiff_sha256 =
-            "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2";
-        package.fingerprint = "22";
-
-        auto& component = context->components[id];
-        component->set_previous_fp("21");
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.crx_diffurls.emplace_back("http://localhost/download/");
-        result.manifest.version = "2.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
+        results = ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "2.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
+                          "out": {"sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"}},
+                        { "type": "puff",
+                          "from": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
+                        }]},
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"}],
+                          "out": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
+                        }]}]}}]}})");
       } else {
         ADD_FAILURE();
       }
-
+      EXPECT_TRUE(results.has_value()) << results.error();
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
 
    private:
@@ -4226,12 +3505,12 @@ TEST_F(UpdateClientTest, RetryAfter) {
       EXPECT_EQ(id, context->components_to_check_for_updates.front());
       EXPECT_EQ(1u, context->components.count(id));
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
 
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -4377,91 +3656,44 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-        <app appid='ihfokbkgjpifnbbojhneepfflplebdkc'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='ihfokbkgjpifnbbojhneepfflplebdkc_1.crx'
-                         hash_sha256='8f5aa190311237cae00675af87ff457f278cd1a05
-                                      895470ac5d46647d4a3c2ea'
-                         fp='someotherfingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
-
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}},
+              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
+                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(2u, context->components_to_check_for_updates.size());
-
-      ProtocolParser::Results results;
-      {
-        const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-        package.fingerprint = "somefingerprint";
-        package.hash_sha256 =
-            "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-      }
-
-      {
-        const std::string id = "ihfokbkgjpifnbbojhneepfflplebdkc";
-        EXPECT_EQ(id, context->components_to_check_for_updates[1]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "ihfokbkgjpifnbbojhneepfflplebdkc_1.crx";
-        package.fingerprint = "someotherfingerprint";
-        package.hash_sha256 =
-            "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea";
-
-        ProtocolParser::Result result;
-        result.extension_id = id;
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-      }
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -4642,56 +3874,31 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}}
+              ]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      ProtocolParser::Results results;
-      {
-        const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-        EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-        EXPECT_EQ(1u, context->components.count(id));
-
-        ProtocolParser::Result::Manifest::Package package;
-        package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-        package.fingerprint = "somefingerprint";
-        package.hash_sha256 =
-            "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-        ProtocolParser::Result result;
-        result.extension_id = "jebgalgnebhfojomionfpkfelancnnkf";
-        result.status = "ok";
-        result.crx_urls.emplace_back("http://localhost/download/");
-        result.manifest.version = "1.0";
-        result.manifest.packages.push_back(package);
-        results.list.push_back(result);
-
-        EXPECT_FALSE(context->components.at(id)->is_foreground());
-      }
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -4999,8 +4206,8 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
       const std::string update_response =
           ")]}'"
           R"({"response": {)"
-          R"( "protocol": "3.1",)"
-          R"( "app": [)"
+          R"( "protocol": "4.0",)"
+          R"( "apps": [)"
           R"({"appid": "jebgalgnebhfojomionfpkfelancnnkf",)"
           R"( "status": "error-unknownApplication"},)"
           R"({"appid": "abagagagagagagagagagagagagagagag",)"
@@ -5115,7 +4322,7 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
         .WillOnce([](const CrxUpdateItem& item) {
           EXPECT_EQ(ComponentState::kUpdateError, item.state);
           EXPECT_EQ(5, static_cast<int>(item.error_category));
-          EXPECT_EQ(-10004, item.error_code);  // UPDATE_RESPONSE_NOT_FOUND.
+          EXPECT_EQ(-10016, item.error_code);  // UNKNOWN_ERROR.
           EXPECT_EQ(0, item.extra_code1);
         });
   }
@@ -5138,57 +4345,33 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='gjpmebpgbhcamgdgjcmnjfhggjpgcimm'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='runaction_test_win.crx3'
-                         hash_sha256='89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-            <actions>"
-             <action run='ChromeRecovery.crx3'/>"
-            </actions>"
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/runaction_test_win.crx3"}],
+                          "out": {"sha256": "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea"}},
+                        { "type": "run",
+                          "path": "ChromeRecovery.crx3"
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      const std::string id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "runaction_test_win.crx3";
-      package.hash_sha256 =
-          "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea";
-      package.fingerprint = "somefingerprint";
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.packages.push_back(package);
-      result.action_run = "ChromeRecovery.crx3";
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -5321,37 +4504,28 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='gjpmebpgbhcamgdgjcmnjfhggjpgcimm'>
-          <updatecheck status='noupdate'>
-            <actions>"
-             <action run=ChromeRecovery.crx3'/>"
-            </actions>"
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "run",
+                          "path": "ChromeRecovery.crx3"
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-      const std::string id = "gjpmebpgbhcamgdgjcmnjfhggjpgcimm";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "noupdate";
-      result.action_run = "ChromeRecovery.crx3";
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -5507,13 +4681,13 @@ TEST_F(UpdateClientTest, CustomAttributeNoUpdate) {
 
       EXPECT_TRUE(component->is_foreground());
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
       result.custom_attributes["_example"] = "example_value";
 
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -5642,33 +4816,33 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-      package.fingerprint = "some-fingerprint";
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.run = "UpdaterSetup.exe";
-      result.manifest.arguments = "--arg1 --arg2";
-      result.manifest.packages.push_back(package);
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
-
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "arguments": "--arg1 --arg2",
+                          "path": "UpdaterSetup.exe",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -5777,33 +4951,33 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-      package.fingerprint = "some-fingerprint";
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.run = "UpdaterSetup.exe";
-      result.manifest.arguments = "--arg1 --arg2";
-      result.manifest.packages.push_back(package);
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
-
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "arguments": "--arg1 --arg2",
+                          "path": "UpdaterSetup.exe",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -5952,33 +5126,33 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-      package.fingerprint = "some-fingerprint";
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.run = "UpdaterSetup.exe";
-      result.manifest.arguments = "--arg1 --arg2";
-      result.manifest.packages.push_back(package);
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
-
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "arguments": "--arg1 --arg2",
+                          "path": "UpdaterSetup.exe",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
+      EXPECT_FALSE(context->session_id.empty());
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -6127,12 +5301,12 @@ TEST_F(UpdateClientTest, CheckForUpdate_NoUpdate) {
 
       EXPECT_TRUE(component->is_foreground());
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
 
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -6226,54 +5400,31 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}}
+              ]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
       EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-
-      ProtocolParser::Results results;
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.fingerprint = "somefingerprint";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-      ProtocolParser::Result result;
-      result.extension_id = "jebgalgnebhfojomionfpkfelancnnkf";
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.packages.push_back(package);
-      results.list.push_back(result);
-
-      EXPECT_FALSE(context->components.at(id)->is_foreground());
-
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -6383,12 +5534,12 @@ TEST_F(UpdateClientTest, CheckForUpdate_QueueChecks) {
 
       EXPECT_TRUE(component->is_foreground());
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
 
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -6514,12 +5665,12 @@ TEST_F(UpdateClientTest, CheckForUpdate_Stop) {
 
       EXPECT_TRUE(component->is_foreground());
 
-      ProtocolParser::Result result;
-      result.extension_id = id;
+      ProtocolParser::App result;
+      result.app_id = id;
       result.status = "noupdate";
 
       ProtocolParser::Results results;
-      results.list.push_back(result);
+      results.apps.push_back(result);
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
@@ -6721,54 +5872,31 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                         hash_sha256='7ab32f071cd9b5ef8e0d7913be161f532d98b3e9f
-                                      a284a7cd8059c3409ce0498'
-                         fp='somefingerprint'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
       EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-
-      ProtocolParser::Results results;
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.fingerprint = "somefingerprint";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.packages.push_back(package);
-      results.list.push_back(result);
-
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
@@ -6896,55 +6024,31 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
         scoped_refptr<UpdateContext> context,
         const base::flat_map<std::string, std::string>& additional_attributes,
         UpdateCheckCallback update_check_callback) override {
-      /*
-      Mock the following response:
-      <?xml version='1.0' encoding='UTF-8'?>
-      <response protocol='3.1'>
-        <app appid='jebgalgnebhfojomionfpkfelancnnkf'>
-          <updatecheck status='ok'>
-            <urls>
-              <url codebase='http://localhost/download/'/>
-            </urls>
-            <manifest version='1.0'>
-              <packages>
-                <package name='jebgalgnebhfojomionfpkfelancnnkf.crx'
-                          hash_sha256='813c59747e139a608b3b5fc49633affc6db57437
-                                      3f309f156ea6d27229c0b3f9'
-                                      fp='21'/>
-              </packages>
-            </manifest>
-          </updatecheck>
-        </app>
-      </response>
-      */
+      base::expected<ProtocolParser::Results, std::string> results =
+          ProtocolParserJSON::ParseJSON(R"()]}'
+          {"response": {
+            "protocol": "4.0",
+            "apps": [
+              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+                "status": "ok",
+                "updatecheck": {
+                  "status": "ok",
+                  "nextversion": "1.0",
+                  "pipelines": [
+                    { "operations": [
+                        { "type": "download",
+                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
+                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}},
+                        { "type": "crx3",
+                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
+                        }]}]}}]}})");
+      EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(1u, context->components_to_check_for_updates.size());
-
-      const std::string id = "jebgalgnebhfojomionfpkfelancnnkf";
-      EXPECT_EQ(id, context->components_to_check_for_updates[0]);
-      EXPECT_EQ(1u, context->components.count(id));
-
-      ProtocolParser::Result::Manifest::Package package;
-      package.name = "jebgalgnebhfojomionfpkfelancnnkf.crx";
-      package.hash_sha256 =
-          "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498";
-      package.fingerprint = "21";
-      auto& component = context->components[id];
-      component->set_previous_fp("20");
-
-      ProtocolParser::Result result;
-      result.extension_id = id;
-      result.status = "ok";
-      result.crx_urls.emplace_back("http://localhost/download/");
-      result.manifest.version = "1.0";
-      result.manifest.packages.push_back(package);
-
-      ProtocolParser::Results results;
-      results.list.push_back(result);
-
+      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(update_check_callback), results,
-                                    ErrorCategory::kNone, 0, 0));
+          FROM_HERE,
+          base::BindOnce(std::move(update_check_callback), results.value(),
+                         ErrorCategory::kNone, 0, 0));
     }
   };
   MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;

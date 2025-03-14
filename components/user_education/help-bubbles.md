@@ -16,17 +16,23 @@ Most (but not all) help bubbles also have a visible arrow that points to the
 _anchor element_ - the UI element the bubble refers to. For example, a promo for
 a new button in the toolbar would have an arrow pointing to the button.
 
-Help bubbles can be created via a
-[HelpBubbleFactory](./common/help_bubble/help_bubble_factory.h) and a
-[HelpBubbleParams](./common/help_bubble/help_bubble_params.h) object, but in nearly all
-cases you should be using the IPH or Tutorial system (or even
-[ShowPromoInPage](/chrome/browser/ui/user_education/show_promo_in_page.h))
+You should be using the Feature Promo (IPH) or Tutorial Systems,
+or [ShowPromoInPage](/chrome/browser/ui/user_education/show_promo_in_page.h)
+or [StartutorialInPage](/chrome/browser/ui/user_education/start_tutorial_in_page.h)
 to display help bubbles.
 
-> It's bad form to create your own help bubbles directly unless you are 100%
+> Help bubbles can be created directly via a
+[HelpBubbleFactory](./common/help_bubble/help_bubble_factory.h) and a
+[HelpBubbleParams](./common/help_bubble/help_bubble_params.h) object, however,
+it's bad form to create your own help bubbles directly unless you are 100%
 sure what you are doing! If you are tempted, please contact
 [Frizzle Team](mailto:frizzle-team@google.com) first and see if there's a more
 idiomatic way to achieve your goal.
+
+You can also create [help bubbles with custom UI](./custom-help-bubbles.md)
+which can be used for IPH when something other than a normal help bubble is
+required (for example, a WebUI dialog with several links the user can click);
+see that page for more information.
 
 ## Help Bubble Arrows
 

@@ -720,8 +720,11 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
     const LocalFrame& frame,
     WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const {
   int max = options_->max_meta_elements;
-  int count = 0;
+  if (max == 0) {
+    return;
+  }
 
+  int count = 0;
   const HTMLHeadElement* head = frame.GetDocument()->head();
   if (!head) {
     return;

@@ -2799,7 +2799,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2921081876747860777">Vytvorte si heslo na ochranu miestnych dát.</translation>
 <translation id="2923006468155067296">Vaše zariadenie <ph name="DEVICE_TYPE" /> bude teraz uzamknuté.
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}few{<ph name="TASK_ROW" />. Ďalšie <ph name="OTHER_TASK_NUM" /> úlohy v rovnakej skupine úloh: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Other <ph name="OTHER_TASK_NUM" /> tasks in the same task group: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ďalších <ph name="OTHER_TASK_NUM" /> úloh v rovnakej skupine úloh: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Odstrániť tento účet</translation>
 <translation id="2923644930701689793">Prístup k snímkam telefónu</translation>
 <translation id="292371311537977079">Nastavenia Chromu</translation>
@@ -10632,7 +10631,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8524841856047224176">Prispôsobte si pozadia kamery pre videohovory a ďalšie akcie</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8525461909394569609">Táto aplikácia zahŕňa webový obsah zo zdroja</translation>
-<translation id="8526313996927074827">Vkladajte odkazy, emodži a ďalšie položky. Umelá inteligencia od Googlu vám môže pomôcť s písaním.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Reproduktory</translation>
 <translation id="8527257351549797148">Vaša organizácia môže vyžadovať na prístup k aplikáciám, rozšíreniam a ďalšiemu obsahu registráciu. Umožňuje jej aj spravovať napríklad nastavenia zabezpečenia a zariadenia.</translation>

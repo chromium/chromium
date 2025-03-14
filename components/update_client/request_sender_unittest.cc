@@ -147,7 +147,7 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
 
   // Check the response post conditions.
   EXPECT_EQ(0, error_);
-  EXPECT_EQ(419ul, response_.size());
+  EXPECT_EQ(434ul, response_.size());
 
   // Check the interactivity header value.
   const auto extra_request_headers =

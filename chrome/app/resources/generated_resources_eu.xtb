@@ -2797,7 +2797,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2921081876747860777">Sortu pasahitz bat gailuko datuak babesteko.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> blokeatu egingo da.
 Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Beste <ph name="OTHER_TASK_NUM" /> zeregin daude zeregin talde berean: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Kendu kontua</translation>
 <translation id="2923644930701689793">Atzitu kamerako argazkiak</translation>
 <translation id="292371311537977079">Chrome-ren ezarpenak</translation>
@@ -10619,7 +10618,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8524841856047224176">Pertsonalizatu kameraren atzeko planoak bideodeietarako eta beste</translation>
 <translation id="8525306231823319788">Pantaila osoa</translation>
 <translation id="8525461909394569609">Aplikazio honek hauetako sareko edukia dauka:</translation>
-<translation id="8526313996927074827">Txertatu estekak, emojiak eta beste. Idazteko laguntza ere lor dezakezu Google-ren AA bidez.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Bozgorailuak</translation>
 <translation id="8527257351549797148">Aplikazioak, luzapenak eta bestelakoak erabiltzeko, agian erregistratzeko eskatuko dizu erakundeak. Segurtasuna eta gailuaren ezarpenak kudeatzeko aukera ematen dio horrek erakundeari.</translation>

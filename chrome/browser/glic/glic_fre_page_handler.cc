@@ -37,7 +37,7 @@ void GlicFrePageHandler::AcceptFre() {
 }
 
 void GlicFrePageHandler::DismissFre() {
-  GetGlicService()->window_controller().fre_controller()->DismissFre();
+  GetGlicService()->window_controller().fre_controller()->OnNoThanksClicked();
 }
 
 void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {

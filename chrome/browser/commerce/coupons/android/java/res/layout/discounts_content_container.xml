@@ -12,5 +12,4 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="@dimen/content_item_container_padding"
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>

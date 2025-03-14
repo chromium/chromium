@@ -2493,11 +2493,6 @@ Politikayı ayarlamadan bırakırsanız <ph name="BLOCK_POPUPS_POLICY_NAME" /> p
 <translation id="2812417768214606683">Bu politika, <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> ve <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" /> politikalarından muaf tutulacak USB depolama cihazlarının listesini belirtir.
 
 Girişler, belirli bir USB cihaz modelini tanımlamak için kullanılan USB Tedarikçi Tanımlayıcısı ve Ürün Tanımlayıcısı çiftlerinden oluşur.</translation>
-<translation id="2815701930753942156">Bu politika, <ph name="PRODUCT_OS_NAME" /> cihazın kullanılamayacağı haftalık aralıkların listesini belirtir. Devam eden tüm oturumlar kapatılır ve giriş yapılması engellenir.
-
-Çakışan aralıklar desteklenmez.
-
-<ph name="PRODUCT_OS_NAME" /> cihazlar, bu aralıkları uygulamak için sistem saat dilimini kullanır.</translation>
 <translation id="2816964824289752181">Üçüncü taraf <ph name="PRODUCT_OS_NAME" /> kontrolü için <ph name="DESK_API_NAME" /> öğesini etkinleştir</translation>
 <translation id="2818074121667686266">Politika, Etkin değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcılardan ses yakalama için erişim izni istenir (AudioCaptureAllowedUrls listesinde ayarlanan URL'ler hariç).
 
@@ -5790,6 +5785,11 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Bu politika ayarlanmazsa varsayılan süre olan 604800000 milisaniye (bir hafta) kullanılır.</translation>
 <translation id="5212810195096589189">Sanal makine KSA izinlerini belirleme</translation>
 <translation id="5213038356678567351">Hiçbir zaman başka bir tarayıcıya geçişi tetiklememesi gereken web siteleri.</translation>
+<translation id="5216520638921067085">Sonraki sürümlerde yeniden başlatma bildirimlerinin daha agresif olacağı minimum sürüm yaşını belirtir. Bu yaş, geçerli sürümün istemcilere en son sunulduğu zamana göre hesaplanır.
+
+Yeni bir sürüm beklemedeyse, tarayıcının ya da cihazın yeniden başlatılması gerekiyorsa ve geçerli sürüm, bu ayarda belirtilen gün sayısından daha uzun bir süre boyunca geçersiz kılınmışsa <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politikası geçersiz kılınarak 2 saat olarak ayarlanır. <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> politikası 1 ("Zorunlu") değerine ayarlanırsa kullanıcılar, sürenin sonunda yeniden başlatmaya zorlanır.
+
+Politika ayarlanmazsa veya sürüm yaşı belirlenemezse tüm güncellemelerde <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> politikası kullanılır.</translation>
 <translation id="5216815237712190041">Henüz cihazda oturum açmış kullanıcı yoksa giriş ekranında gösterilecek cihaz düzeyinde duvar kağıdı resmini yapılandırın. Politikayı ayarlamak için ChromeOS cihazın, duvar kağıdı resmini hangi URL'den indireceği ve indirme işleminin bütünlüğünü doğrulamak için kullanılacak şifreleme karması belirtilmelidir. Resim JPEG biçiminde olmalı, dosya boyutu 16 MB'tan fazla olmamalıdır. URL'ye kimlik doğrulaması yapmadan erişilebilmelidir. Duvar kağıdı resmi indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
       Cihaz duvar kağıdı politikası ayarlanırsa ChromeOS cihaz, duvar kağıdı resmini indirir ve cihazda henüz hiçbir kullanıcı oturum açmamışken giriş ekranında bu resmi kullanır. Kullanıcı giriş yaptıktan sonra, kullanıcının duvar kağıdı politikası devreye girer.
@@ -6883,6 +6883,7 @@ Politika, <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" /> (1 değeri) ola
 
       Aksi takdirde, hatalı bir sunucuyla uyumluluğun korunması gerekiyorsa bu politika, "tls1.1" değerine ayarlanabilir. Bu geçici bir tedbir olup sunucudaki sorun kısa sürede çözülmelidir.</translation>
 <translation id="5932767795525445337">Bu politika, Android uygulamalarını sabitlemek için de kullanılabilir.</translation>
+<translation id="5936192285609409992">Hesaplayıcı (136 sürümünden itibaren desteklenir)</translation>
 <translation id="5936193585187054065">Encrypted ClientHello (ECH), ClientHello'un hassas alanlarını şifrelemek ve gizliliği iyileştirmek için kullanılan bir TLS uzantısıdır.
 
       Bu politika yapılandırılmazsa veya etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" />, ECH için varsayılan kullanıma sunma işlemini uygular. Politika, devre dışı değerine ayarlanırsa <ph name="PRODUCT_NAME" />, ECH'yi etkinleştirmez.
@@ -7370,6 +7371,7 @@ Geçerli <ph name="URL_LABEL" /> kalıpları (sürüm 127'den itibaren) hakkınd
 <translation id="6287128640500683781">Tüm kullanıcıların oturum açmasına izin ver</translation>
 <translation id="6287310684159482272">Çerez ayarları</translation>
 <translation id="6287742528823584153"><ph name="PRODUCT_NAME" /> Hizmeti'ni etkinleştir ve giriş yaptıktan sonra uzaktan masayı başlat</translation>
+<translation id="6288152932495466841">Kullanıcıları geçersiz kılınan tarayıcı sürümleri hakkında bilgilendir</translation>
 <translation id="6299147100249359151">Politika kapsamını algılamaya izin ver.</translation>
 <translation id="6299554629216555326">Pencere yönetimi ayarları</translation>
 <translation id="6302021021024941085">Kiosk sorun giderme araçlarını devre dışı bırak.</translation>
@@ -7582,7 +7584,6 @@ Aşağıdakiler Geliştirici Araçları üretken yapay zeka özellikleri arasın
       hesapların varsayılan değeri etkin olur.</translation>
 <translation id="6401669939808766804">Kullanıcının oturumunu kapat</translation>
 <translation id="640244877779556713">Emoji Önerilerini Etkinleştir</translation>
-<translation id="6402928885627067154">ChromeOS cihazların kullanılamayacağı haftalık aralıkları belirt</translation>
 <translation id="6403114173011456561"><ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasının ek politikası işlevi görerek dokunmatik sanal klavyeyi kontrol eder.
 
       Erişilebilirlik sanal klavyesi etkinleştirilirse bu politika geçerliliğini yitirir.
@@ -11346,6 +11347,7 @@ Not: Cihazın yeniden başlatılması, önbelleğin temizlenmesine neden olur. G
 <translation id="9107635531763682565">Politikayı 1 değerine ayarlamak web sitelerinin masaüstü bildirimlerine izin verir. Politikayı 2 değerine ayarlamak masaüstü bildirimlerini engeller.
 
 Politikayı ayarlamadan bırakırsanız <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> politikası geçerli olur. Kullanıcılar bu ayarı değiştirebilir.</translation>
+<translation id="9107664925383184344">Dönem (gün)</translation>
 <translation id="910929592571075861">Getirme ve gezinme işlemleri sırasında blob URL'lerini bölümlendirme.</translation>
 <translation id="9110194749335632373">Kurumsal yöneticilerin bu makineye uzaktan destek bağlantıları yapmasını engelle</translation>
 <translation id="9110198768621013941">Otomatik Doldurma Tahmini Ayarlarını etkinleştirir.

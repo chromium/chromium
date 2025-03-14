@@ -2809,7 +2809,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2921081876747860777">Hozzon létre jelszót a helyi adatok védelme érdekében.</translation>
 <translation id="2923006468155067296">A rendszer most zárolja a(z) <ph name="DEVICE_TYPE" /> eszközt.
 A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens kártyát.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. További <ph name="OTHER_TASK_NUM" /> feladat ugyanabban a feladatcsoportban: <ph name="OTHER_TASKS" />.}}</translation>
 <translation id="2923234477033317484">A fiók eltávolítása</translation>
 <translation id="2923644930701689793">Hozzáférés a telefon galériájához</translation>
 <translation id="292371311537977079">Chrome-beállítások</translation>
@@ -6915,6 +6914,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> hamarosan szünetelni fog</translation>
 <translation id="586567932979200359">A <ph name="PRODUCT_NAME" /> alkalmazást jelenleg a lemezképéről futtatja. Ha telepíti a számítógépére, akkor futtathatja a lemezkép nélkül is, emellett biztosan naprakészen tartja.</translation>
 <translation id="5865733239029070421">Automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google-nak</translation>
+<translation id="5866363217037791319">Feladat befejezése</translation>
 <translation id="5868434909835797817">Eszközén ki van kapcsolva a mikrofon</translation>
 <translation id="5868479397518301468">Lejárt a bejelentkezés időkorlátja</translation>
 <translation id="5868822853313956582">Eszközszínek követése</translation>
@@ -10640,7 +10640,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8524841856047224176">Személyre szabhatja a kameraháttereket a videohívásokhoz és egyebekhez.</translation>
 <translation id="8525306231823319788">Teljes képernyő</translation>
 <translation id="8525461909394569609">Ebben az alkalmazásban innen származó webes tartalmak szerepelnek:</translation>
-<translation id="8526313996927074827">Linkeket, emojikat és még sok mást is beilleszthet. A Google AI használatával az íráshoz is segítséget kaphat.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Hangfalak</translation>
 <translation id="8527257351549797148">Előfordulhat, hogy szervezete regisztrációhoz köti az Ön alkalmazásokhoz, bővítményekhez és egyebekhez való hozzáférését. Ez lehetővé teszi a szervezet számára többek között a biztonság és az eszközbeállítások kezelését.</translation>
@@ -11096,6 +11095,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="883924185304953854">Képalapú keresés</translation>
 <translation id="8841786407272321022">A jelszó csak ezen az eszközön került mentésre. Ha az új jelszavakat szeretné elmenteni Google-fiókjába, frissítse a Google Play-szolgáltatásokat.</translation>
 <translation id="8841843049738266382">Engedélyezőlistára tett felhasználók megtekintése és módosítása</translation>
+<translation id="8841884135319684422">Feladat befejezése</translation>
 <translation id="8842594465773264717">Ennek az ujjlenyomatnak a törlése</translation>
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8846132060409673887">A számítógép gyártójának és típusának elolvasása</translation>

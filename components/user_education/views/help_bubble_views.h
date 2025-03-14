@@ -110,11 +110,14 @@ class CustomHelpBubbleViews : public HelpBubbleViews, public CustomHelpBubble {
     requires(std::derived_from<T, views::BubbleDialogDelegateView> &&
              std::derived_from<T, CustomHelpBubbleUi>)
   CustomHelpBubbleViews(T* bubble, ui::TrackedElement* anchor_element)
-      : HelpBubbleViews(bubble, anchor_element), CustomHelpBubble(*bubble) {
-    // Help bubbles should not close on deactivate.
-    bubble->set_close_on_deactivate(false);
-  }
+      : CustomHelpBubbleViews(bubble, *bubble, anchor_element) {}
+
   ~CustomHelpBubbleViews() override = default;
+
+ protected:
+  CustomHelpBubbleViews(views::BubbleDialogDelegateView* bubble,
+                        CustomHelpBubbleUi& ui,
+                        ui::TrackedElement* anchor_element);
 };
 
 }  // namespace user_education

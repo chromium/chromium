@@ -124,10 +124,10 @@ struct TypedArrayElementTraits {};
   }
 
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int8_t, IsInt8Array, IDLByte);
-// Note Uint8 array is special case due to need to account for
-// Uint8 clamped array, so not declared here.
+// Note Uint8Array and Uint8ClampedArray are special cases because they map to
+// the same type, as do Uint16Array and Float16Array, so they are not declared
+// here.
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int16_t, IsInt16Array, IDLShort);
-DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint16_t, IsUint16Array, IDLUnsignedShort);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int32_t, IsInt32Array, IDLLong);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint32_t, IsUint32Array, IDLUnsignedLong);
 DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int64_t, IsBigInt64Array, IDLLongLong);
@@ -145,6 +145,14 @@ struct TypedArrayElementTraits<uint8_t> {
     return value->IsUint8Array() || value->IsUint8ClampedArray();
   }
   using IDLType = IDLOctet;
+};
+
+template <>
+struct TypedArrayElementTraits<uint16_t> {
+  static bool IsViewOfType(v8::Local<v8::Value> value) {
+    return value->IsFloat16Array() || value->IsUint16Array();
+  }
+  using IDLType = IDLUnsignedShort;
 };
 
 }  // namespace bindings::internal

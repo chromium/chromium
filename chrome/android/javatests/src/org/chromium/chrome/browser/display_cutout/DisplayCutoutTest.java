@@ -152,6 +152,7 @@ public class DisplayCutoutTest {
     /** Test that the safe area is calculated correctly using the device's dip scale. */
     @Test
     @LargeTest
+    @DisableIf.Build(sdk_equals = 34, message = "crbug.com/403286999")
     public void testViewportFitDipScale() throws TimeoutException {
         mTestRule.enterFullscreen();
         mTestRule.setDipScale(DisplayCutoutTestRule.TEST_HIGH_DIP_SCALE);

@@ -493,6 +493,10 @@ const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+const char kFeedSwipeInProductHelpName[] = "Enable Feed Swipe IPH";
+const char kFeedSwipeInProductHelpDescription[] =
+    "Presents an in-product help on the NTP to promote swiping on the Feed";
+
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
@@ -805,6 +809,11 @@ extern const char kLensPrewarmHardStickinessInQueryFormulationName[] =
     "Lens prewarm hard stickiness in query formulation";
 extern const char kLensPrewarmHardStickinessInQueryFormulationDescription[] =
     "When enabled, query formulation prewarms hard stickiness.";
+
+extern const char kLensQRCodeParsingFixName[] =
+    "Enables the Lens QR code parding fix";
+extern const char kLensQRCodeParsingFixDescription[] =
+    "When enabled, properly parses QR codes.";
 
 extern const char kLensSingleTapTextSelectionDisabledName[] =
     "Disable Lens single tap text selection";

@@ -561,6 +561,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
+  // Set a callback for waiting for prefetch completion in tests.
+  using PrefetchResponseCompletedCallbackForTesting =
+      base::RepeatingCallback<void(base::WeakPtr<PrefetchContainer>)>;
+  static void SetPrefetchResponseCompletedCallbackForTesting(
+      PrefetchResponseCompletedCallbackForTesting callback);
+
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
     return no_vary_search_data_;
   }

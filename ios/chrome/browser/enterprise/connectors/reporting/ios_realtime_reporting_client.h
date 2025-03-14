@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/enterprise/common/proto/upload_request_response.pb.h"
+#import "components/enterprise/connectors/core/common.h"
 #import "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 
@@ -33,6 +34,21 @@ class IOSRealtimeReportingClient : public RealtimeReportingClientBase {
   base::WeakPtr<IOSRealtimeReportingClient> AsWeakPtrImpl() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  void SetBrowserCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
+  void SetProfileCloudPolicyClientForTesting(policy::CloudPolicyClient* client);
+
+  // Determines if the real-time reporting feature is enabled.
+  // Obtain settings to apply to a reporting event from ConnectorsService.
+  // std::nullopt represents that reporting should not be done.
+  // Declared virtual for tests.
+  virtual std::optional<ReportingSettings> GetReportingSettings();
+
+  // Report safe browsing event through real-time reporting channel, if enabled.
+  // Declared as virtual for tests.
+  virtual void ReportRealtimeEvent(const std::string& name,
+                                   const ReportingSettings& settings,
+                                   base::Value::Dict event);
 
  private:
   // RealtimeReportingClientBase overrides (all overrides below):

@@ -64,11 +64,6 @@ bool RenderInputRouterSupportAndroid::RequiresDoubleTapGestureEvents() const {
   return input_helper_->RequiresDoubleTapGestureEvents();
 }
 
-void RenderInputRouterSupportAndroid::NotifySiteIsMobileOptimized(
-    bool is_mobile_optimized) {
-  gesture_provider_.SetDoubleTapSupportForPageEnabled(!is_mobile_optimized);
-}
-
 void RenderInputRouterSupportAndroid::OnGestureEvent(
     const ui::GestureEventData& gesture) {
   input_helper_->OnGestureEvent(gesture);

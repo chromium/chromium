@@ -205,7 +205,7 @@ struct AIPageContentFrameData {
   AIPageContentFrameInteractionInfo frame_interaction_info;
 
   // Meta elements which are direct children of the head element. Limited to
-  // max_meta_elements in AIPageContentOptions, default is 32.
+  // max_meta_elements in AIPageContentOptions, default is 0.
   array<AIPageContentMeta> meta_data;
 };
 
@@ -369,7 +369,7 @@ struct AIPageContentOptions {
   bool include_hidden_searchable_content = true;
 
   // The maximum number of meta elements to include in the content.
-  int32 max_meta_elements = 32;
+  int32 max_meta_elements = 0;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

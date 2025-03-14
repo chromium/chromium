@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_TABS_INACTIVE_TABS_INACTIVE_TABS_SETTINGS_MEDIATOR_H_
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller_delegate.h"
 
-class Browser;
 @protocol InactiveTabsSettingsConsumer;
 class PrefService;
 
@@ -22,7 +21,6 @@ class PrefService;
 // `consumer`: consumer that will be notified when the data change.
 // `browser`: the current browser.
 - (instancetype)initWithProfilePrefService:(PrefService*)profilePrefService
-                                   browser:(Browser*)browser
                                   consumer:
                                       (id<InactiveTabsSettingsConsumer>)consumer
     NS_DESIGNATED_INITIALIZER;

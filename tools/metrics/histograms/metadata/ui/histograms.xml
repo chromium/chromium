@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".ReadingList"/>
   <variant name=".ShoppingInsightsSidePanel"/>
   <variant name=".TabSearch"/>
+  <variant name=".UserEducation"/>
   <variant name=".UserNotesSidePanel"/>
 </variants>
 

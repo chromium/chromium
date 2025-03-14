@@ -224,8 +224,14 @@ class CONTENT_EXPORT PrefetchResponseReader final
     kFailedRedirect
   };
 
+  // Always access/update through `load_state()` and
+  // `SetLoadStateAndAddEventToQueue()` below, to avoid unintentional state
+  // changes and missing related callbacks on state changes.
   LoadState load_state_{LoadState::kStarted};
+
   LoadState load_state() const { return load_state_; }
+  void SetLoadStateAndAddEventToQueue(LoadState new_load_state,
+                                      EventCallback callback);
 
   // Used for UMA recording.
   // TODO(crbug.com/40064891): we might want to adapt these flags and UMA

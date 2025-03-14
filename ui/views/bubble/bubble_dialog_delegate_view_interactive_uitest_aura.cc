@@ -72,7 +72,8 @@ TEST_F(BubbleDialogDelegateViewInteractiveTest,
   EXPECT_TRUE(anchor_widget->GetNativeWindow()->HasFocus());
 
   auto bubble = std::make_unique<BubbleDialogDelegateView>(
-      anchor_view, BubbleBorder::Arrow::TOP_CENTER);
+      BubbleDialogDelegateView::CreatePassKey(), anchor_view,
+      BubbleBorder::Arrow::TOP_CENTER);
   bubble->set_close_on_deactivate(false);
   WidgetAutoclosePtr bubble_widget(
       BubbleDialogDelegateView::CreateBubble(std::move(bubble)));

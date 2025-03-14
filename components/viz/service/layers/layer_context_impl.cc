@@ -1143,6 +1143,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
     for (auto& surface_range : *(update->surface_ranges)) {
       surface_ranges.insert(surface_range);
     }
+    layers.ClearSurfaceRanges();
     layers.SetSurfaceRanges(surface_ranges);
   }
 

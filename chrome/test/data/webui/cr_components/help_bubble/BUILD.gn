@@ -3,15 +3,23 @@
 # found in the LICENSE file.
 
 import("//chrome/test/data/webui/build_webui_tests.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(!is_android && !is_ios)
 
 build_webui_tests("build") {
+  static_files = [ "test_custom_help_bubble.html" ]
+
   files = [
     "help_bubble_mixin_lit_test.ts",
     "help_bubble_mixin_test.ts",
     "help_bubble_test.ts",
+    "test_custom_help_bubble.html.ts",
+    "test_custom_help_bubble.ts",
   ]
+
+  mojo_files_deps = [ "//ui/webui/resources/cr_components/help_bubble:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom-webui.ts" ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
@@ -19,5 +27,6 @@ build_webui_tests("build") {
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

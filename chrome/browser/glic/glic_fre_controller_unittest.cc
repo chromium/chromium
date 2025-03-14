@@ -63,6 +63,7 @@ class GlicFreControllerTest : public testing::Test {
 };
 
 TEST_F(GlicFreControllerTest, AcceptFre) {
+  base::UserActionTester tester;
   // TODO: Without this line, there's a sequence check error in
   // shell_integration::DefaultWebClientWorker::OnCheckIsDefaultComplete.
   // Likely a problem with the test environment configuration.
@@ -71,6 +72,24 @@ TEST_F(GlicFreControllerTest, AcceptFre) {
   PrefService* const profile_pref_service = profile()->GetPrefs();
   glic_fre_controller()->AcceptFre();
   EXPECT_TRUE(profile_pref_service->GetBoolean(prefs::kGlicCompletedFre));
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 1);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
+}
+
+TEST_F(GlicFreControllerTest, NoThanks) {
+  base::UserActionTester tester;
+  glic_fre_controller()->OnNoThanksClicked();
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 1);
+}
+
+TEST_F(GlicFreControllerTest, Dismiss) {
+  base::UserActionTester tester;
+  glic_fre_controller()->DismissFre();
+  // The FRE can be dismissed for many reasons that are not direct user actions.
+  // Don't expect any actions to be logged here.
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.Accept"), 0);
+  EXPECT_EQ(tester.GetActionCount("Glic.Fre.NoThanks"), 0);
 }
 
 TEST_F(GlicFreControllerTest, UpdateLauncherOnFreCompletion) {

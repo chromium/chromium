@@ -5,13 +5,13 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!-- TODO(362361187): Update padding with property model -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/item_container"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:background="@drawable/commerce_content_item_container_background"
-      android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/content_item_container_padding"
+    android:background="@drawable/commerce_content_item_container_background"
+    android:orientation="vertical">
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"

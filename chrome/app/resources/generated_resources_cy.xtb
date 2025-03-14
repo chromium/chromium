@@ -2813,7 +2813,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2921081876747860777">Crëwch gyfrinair i amddiffyn eich data lleol.</translation>
 <translation id="2923006468155067296">Bydd eich <ph name="DEVICE_TYPE" /> ar glo nawr.
 Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}zero{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tasg arall yn yr un grŵp tasg: <ph name="OTHER_TASKS" />}two{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> dasg arall yn yr un grŵp tasg: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tasg arall yn yr un grŵp tasg: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> thasg arall yn yr un grŵp tasg: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tasg arall yn yr un grŵp tasg: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Tynnu'r cyfrif hwn</translation>
 <translation id="2923644930701689793">Cael mynediad at rôl camera eich ffôn</translation>
 <translation id="292371311537977079">Gosodiadau Chrome</translation>
@@ -10652,7 +10651,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8524841856047224176">Personoleiddio cefndir eich camera ar gyfer galwadau fideo a rhagor</translation>
 <translation id="8525306231823319788">Sgrîn lawn</translation>
 <translation id="8525461909394569609">Mae gan yr ap hwn gynnwys gwe o</translation>
-<translation id="8526313996927074827">Mewnosod dolenni, emojis, a rhagor. Gallwch hefyd gael help i ysgrifennu gyda Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Seinyddion</translation>
 <translation id="8527257351549797148">Mae'n bosib y bydd angen cofrestru ar eich sefydliad er mwyn i chi allu cyrchu apiau, estyniadau a rhagor. Mae hyn hefyd yn caniatáu i'ch sefydliad reoli pethau megis gosodiadau diogelwch a dyfais.</translation>

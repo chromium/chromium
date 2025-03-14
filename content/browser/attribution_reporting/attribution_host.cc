@@ -237,21 +237,24 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     attribution_manager->UpdateLastNavigationTime(now);
   }
 
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      !navigation_handle->IsSameDocument()) {
-    if (primary_main_frame_data_.has_value()) {
-      // Resets for further client redirects.
-      primary_main_frame_data_->num_data_hosts_registered = 0;
-      primary_main_frame_data_->num_data_hosts_registered_by_reporting_origin
-          .clear();
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    if (!navigation_handle->IsSameDocument()) {
+      if (primary_main_frame_data_.has_value()) {
+        // Resets for further client redirects.
+        primary_main_frame_data_->num_data_hosts_registered = 0;
+        primary_main_frame_data_->num_data_hosts_registered_by_reporting_origin
+            .clear();
+      }
+
+      // Sets current time to detect further client redirects.
+      last_navigation_time_ = now;
+
+      if (navigation_handle->HasCommitted()) {
+        primary_main_frame_data_ = PrimaryMainFrameData();
+      }
     }
 
-    // Sets current time to detect further client redirects.
-    last_navigation_time_ = now;
-
     if (navigation_handle->HasCommitted()) {
-      primary_main_frame_data_ = PrimaryMainFrameData();
-
       // Note that we cache the UKM source ID of the most recently navigated
       // primary page as a workaround for prerendered pages.
       // `RenderFrameHost::GetPageUkmSourceId()` would return the UKM source ID
@@ -259,8 +262,9 @@ void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
       // is not associated with any URL for privacy reasons. See
       // //content/browser/preloading/prerender/README.md#ukm-source-ids for
       // more details.
-      primary_main_frame_data_->ukm_source_id =
-          navigation_handle->GetNextPageUkmSourceId();
+      last_primary_frame_ukm_source_id_ =
+          ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
+                                 ukm::SourceIdType::NAVIGATION_ID);
     }
   }
 

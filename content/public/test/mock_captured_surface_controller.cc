@@ -34,13 +34,6 @@ void MockCapturedSurfaceController::SendWheel(
   std::move(reply_callback).Run(*send_wheel_result);
 }
 
-void MockCapturedSurfaceController::SetGetZoomLevelResponse(
-    std::optional<int> get_zoom_level_value,
-    blink::mojom::CapturedSurfaceControlResult get_zoom_level_result) {
-  get_zoom_level_result_ =
-      std::make_pair(get_zoom_level_value, get_zoom_level_result);
-}
-
 void MockCapturedSurfaceController::SetUpdateZoomLevelResponse(
     blink::mojom::CapturedSurfaceControlResult update_zoom_level_result) {
   update_zoom_level_result_ = update_zoom_level_result;

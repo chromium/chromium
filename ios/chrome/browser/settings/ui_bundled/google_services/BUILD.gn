@@ -29,7 +29,6 @@ source_set("google_services") {
   deps = [
     ":constants",
     ":features",
-    ":parcel_tracking",
     ":personalize_google_services",
     "//base",
     "//components/browser_sync",
@@ -62,8 +61,6 @@ source_set("google_services") {
     "//ios/chrome/browser/commerce/model:model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
-    "//ios/chrome/browser/parcel_tracking:features",
-    "//ios/chrome/browser/parcel_tracking:opt_in_status",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/policy/ui_bundled:management_util",
@@ -112,36 +109,6 @@ source_set("google_services") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
-    "//ui/base",
-  ]
-}
-
-source_set("parcel_tracking") {
-  sources = [
-    "parcel_tracking_settings_coordinator.h",
-    "parcel_tracking_settings_coordinator.mm",
-    "parcel_tracking_settings_mediator.h",
-    "parcel_tracking_settings_mediator.mm",
-    "parcel_tracking_settings_model_consumer.h",
-    "parcel_tracking_settings_model_delegate.h",
-    "parcel_tracking_settings_view_controller.h",
-    "parcel_tracking_settings_view_controller.mm",
-  ]
-  deps = [
-    "//components/prefs",
-    "//components/prefs/ios",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/parcel_tracking:opt_in_status",
-    "//ios/chrome/browser/settings/ui_bundled:settings_root",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/ui/list_model",
-    "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/shared/ui/table_view:styler",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ui/base",
   ]
 }
@@ -240,11 +207,11 @@ source_set("eg2_tests") {
     "//components/variations",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/account_menu:constants",
     "//ios/chrome/browser/authentication/ui_bundled/views:views_constants",
     "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
     "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
-    "//ios/chrome/browser/parcel_tracking:features",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
@@ -276,14 +243,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "manage_sync_settings_mediator_unittest.mm",
-    "parcel_tracking_settings_mediator_unittest.mm",
-    "parcel_tracking_settings_view_controller_unittest.mm",
     "personalize_google_services_view_controller_unittest.mm",
   ]
   deps = [
     ":features",
     ":google_services",
-    ":parcel_tracking",
     ":personalize_google_services",
     "//base/test:test_support",
     "//components/prefs",
@@ -298,7 +262,6 @@ source_set("unit_tests") {
     "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
-    "//ios/chrome/browser/parcel_tracking:opt_in_status",
     "//ios/chrome/browser/settings/ui_bundled/cells",
     "//ios/chrome/browser/settings/ui_bundled/google_services:constants",
     "//ios/chrome/browser/shared/model/application_context",

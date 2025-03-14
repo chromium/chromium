@@ -249,24 +249,15 @@ enum class OrientationType {
   AUTO_ORIENTATION,
 };
 
-enum class MarginsType {
-  NO_MARGINS,
-  STANDARD_MARGINS,
-  CUSTOM_MARGINS,
-};
-
+// This deviates from the CDD#Margins now as the type field has been removed.
+// TODO(316999874, 308709702): update the spec to reflect this change.
 struct Margins {
   Margins();
-  Margins(MarginsType type,
-          int32_t top_um,
-          int32_t right_um,
-          int32_t bottom_um,
-          int32_t left_um);
+  Margins(int32_t top_um, int32_t right_um, int32_t bottom_um, int32_t left_um);
 
   bool operator==(const Margins& other) const;
   bool operator!=(const Margins& other) const { return !(*this == other); }
 
-  MarginsType type;
   int32_t top_um;
   int32_t right_um;
   int32_t bottom_um;
@@ -285,12 +276,14 @@ struct Dpi {
   int32_t vertical;
 };
 
+// This deviates from the CDD#Margins now as the values field have been renamed.
+// TODO(316999874, 308709702): update the spec to reflect this change.
 enum class FitToPageType {
-  NO_FITTING,
-  FIT_TO_PAGE,
-  GROW_TO_PAGE,
-  SHRINK_TO_PAGE,
-  FILL_PAGE,
+  AUTO,
+  AUTO_FIT,
+  FILL,
+  FIT,
+  NONE,
 };
 
 enum class MediaSize {

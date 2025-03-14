@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/agtm.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
@@ -113,32 +114,6 @@ static void LogDav1dMessage(void* cookie, const char* format, va_list ap) {
     log.pop_back();
 
   DLOG(ERROR) << log;
-}
-
-// Returns AGTM metadata if the ITU-T T.35 message contains some.
-static std::optional<gfx::HdrMetadataAgtm> GetHdrMetadataAgtm(
-    uint8_t t35_country_code,
-    base::span<const uint8_t> t35_payload) {
-  // itu_t_t35_terminal_provider_code (2 bytes)
-  // + itu_t_t35_terminal_provider_oriented_code (2 bytes)
-  // + application_identifier (1 byte) + application_version (1 byte)
-  static constexpr size_t kItuT35HeaderSize = 6;
-
-  const bool isAgtm = t35_country_code == 0xB5 /* United States */ &&
-                      t35_payload.size() >= kItuT35HeaderSize &&
-                      t35_payload[0] == 0x58 /* placeholder (AOM) */ &&
-                      t35_payload[1] == 0x90 /* placeholder (AOM) */ &&
-                      t35_payload[2] == 0x69 /* placeholder (AGTM) */ &&
-                      t35_payload[3] == 0x42 /* placeholder (AGTM) */ &&
-                      t35_payload[4] == 0x05 /* app identifier */ &&
-                      t35_payload[5] == 0x00 /* app version */;
-  if (!isAgtm) {
-    return std::nullopt;
-  }
-  const auto agtm_payload_span = t35_payload.subspan(kItuT35HeaderSize);
-  sk_sp<SkData> agtm_skdata =
-      SkData::MakeWithCopy(agtm_payload_span.data(), agtm_payload_span.size());
-  return gfx::HdrMetadataAgtm(std::move(agtm_skdata));
 }
 
 // Dynamically allocated Dav1dPicture opaque data.
@@ -502,7 +477,8 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
       auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
           p->itut_t35->payload, p->itut_t35->payload_size));
       const std::optional<gfx::HdrMetadataAgtm> agtm =
-          GetHdrMetadataAgtm(p->itut_t35->country_code, t35_payload_span);
+          GetHdrMetadataAgtmFromItutT35(p->itut_t35->country_code,
+                                        t35_payload_span);
       if (agtm.has_value()) {
         gfx::HDRMetadata hdr_metadata =
             config_.hdr_metadata().value_or(gfx::HDRMetadata());

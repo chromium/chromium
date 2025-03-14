@@ -39,6 +39,7 @@
 <translation id="1497802159252041924">Грешка при инсталацији: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Прилагодите нови Chrome профил</translation>
 <translation id="1547295885616600893">Chrome OС je могућ захваљујући додатном <ph name="BEGIN_LINK_CROS_OSS" />софтверу са отвореним кодом<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="1547469039832541117">Завршава истакнути задатак.</translation>
 <translation id="1553358976309200471">Ажурирај Chrome</translation>
 <translation id="1587223624401073077">Google Chrome користи камеру.</translation>
 <translation id="1587325591171447154">Датотека <ph name="FILE_NAME" /> је опасна, па ју је Chrome блокирао.</translation>
@@ -175,6 +176,7 @@
 <translation id="3140883423282498090">Промене ће ступити на снагу када следећи пут поново покренете Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome апликације</translation>
 <translation id="3161522574479303604">Сви језици</translation>
+<translation id="319199214552513804">Да би вам овај додатак и други садржај били доступни на свим рачунарима, пријавите се у Chrome</translation>
 <translation id="3196187562065225381">Chrome је блокирао ово преузимање јер је овај фајл опасан</translation>
 <translation id="3222857603094643834">Претражите било шта на овој страници помоћу Google објектива</translation>
 <translation id="3226612997184048185">Ако сачувате обележиваче и на Google налогу, можете да пратите цене производа у Chrome-у и да добијате обавештења када падне цена</translation>

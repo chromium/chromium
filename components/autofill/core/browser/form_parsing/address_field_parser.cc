@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
@@ -268,6 +269,8 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   std::optional<FieldAndMatchInfo> old_apartment_number = apartment_number_;
   std::optional<FieldAndMatchInfo> old_house_number_and_apt_ =
       house_number_and_apt_;
+  std::optional<FieldAndMatchInfo> old_dependent_locality = dependent_locality_;
+  std::optional<FieldAndMatchInfo> old_landmark = landmark_;
 
   AddressCountryCode country_code(context.client_country.value());
 
@@ -324,6 +327,14 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
       continue;
     }
 
+    if (ParseDependentLocality(context, scanner)) {
+      continue;
+    }
+
+    if (ParseLandmark(context, scanner)) {
+      continue;
+    }
+
     break;
   }
 
@@ -334,7 +345,7 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
     return false;
   }
 
-  if (PossiblyAStructuredAddressForm()) {
+  if (PossiblyAStructuredAddressForm(context.client_country)) {
     return true;
   }
 
@@ -352,6 +363,8 @@ bool AddressFieldParser::ParseAddressFieldSequence(ParsingContext& context,
   zip4_ = old_zip4;
   apartment_number_ = old_apartment_number;
   house_number_and_apt_ = old_house_number_and_apt_;
+  dependent_locality_ = old_dependent_locality;
+  landmark_ = old_landmark;
 
   scanner->RewindTo(saved_cursor_position);
   return false;
@@ -364,7 +377,7 @@ bool AddressFieldParser::ParseAddress(ParsingContext& context,
   // evidence that the current form is a structured form. If structured form
   // fields are missing, they will be discovered later via
   // AddressFieldParser::ParseAddressField.
-  if (PossiblyAStructuredAddressForm()) {
+  if (PossiblyAStructuredAddressForm(context.client_country)) {
     return false;
   }
 
@@ -509,17 +522,54 @@ bool AddressFieldParser::ParseState(ParsingContext& context,
 
 bool AddressFieldParser::ParseStreetLocation(ParsingContext& context,
                                              AutofillScanner* scanner) {
-  if (street_location_ ||
-      // TODO(crbug.com/40279279) Find a better way to gate street location
-      // support. This is easy to confuse with with an address line 1 field.
-      // This is currently allowlisted for MX which prefers pairs of
-      // street location and address overflow fields.
-      context.client_country != GeoIpCountryCode("MX")) {
+  if (street_location_) {
     return false;
   }
+  // TODO(crbug.com/40279279) Find a better way to gate street location
+  // support. This is easy to confuse with with an address line 1 field.
+  // This is currently allowlisted for MX which prefers pairs of
+  // street location and address overflow fields.
+  if (context.client_country == GeoIpCountryCode("MX")) {
+    return ParseField(context, scanner, "ADDRESS_HOME_STREET_LOCATION",
+                      &street_location_);
+  }
+  // India uses a different set of regexes to match the street location field.
+  if (context.client_country == GeoIpCountryCode("IN") &&
+      base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    return ParseField(context, scanner, "IN_STREET_LOCATION",
+                      &street_location_);
+  }
+  return false;
+}
 
-  return ParseField(context, scanner, "ADDRESS_HOME_STREET_LOCATION",
-                    &street_location_);
+bool AddressFieldParser::ParseDependentLocality(ParsingContext& context,
+                                                AutofillScanner* scanner) {
+  if (dependent_locality_) {
+    return false;
+  }
+  // Different from `ParseNameAndLabelForDependentLocality()`, by supporting
+  // only clients from India.
+  if (context.client_country == GeoIpCountryCode("IN") &&
+      base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    return ParseField(context, scanner, "IN_DEPENDENT_LOCALITY",
+                      &dependent_locality_);
+  }
+  return false;
+}
+
+bool AddressFieldParser::ParseLandmark(ParsingContext& context,
+                                       AutofillScanner* scanner) {
+  if (landmark_) {
+    return false;
+  }
+  // Different from `ParseNameAndLabelForLandmark()`, by supporting only
+  // clients from India.
+  // TODO(crbug.com/393294031): Use india specific regexes for landmark.
+  if (context.client_country == GeoIpCountryCode("IN") &&
+      base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
+    return ParseField(context, scanner, "LANDMARK", &landmark_);
+  }
+  return false;
 }
 
 bool AddressFieldParser::ParseStreetName(ParsingContext& context,
@@ -1132,7 +1182,8 @@ bool AddressFieldParser::ParseFieldSpecificsForHouseNumberAndApt(
                     &house_number_and_apt_);
 }
 
-bool AddressFieldParser::PossiblyAStructuredAddressForm() const {
+bool AddressFieldParser::PossiblyAStructuredAddressForm(
+    GeoIpCountryCode country_code) const {
   // Record success if the house number and at least one of the other
   // fields were found because that indicates a structured address form.
   if (house_number_ &&
@@ -1143,6 +1194,16 @@ bool AddressFieldParser::PossiblyAStructuredAddressForm() const {
   }
 
   if (street_name_ && house_number_and_apt_) {
+    return true;
+  }
+
+  // India has a specific set of fields that are required to be present in order
+  // to be considered a structured address form. For now only the combination
+  // where all `street_location_`, `dependent_locality_` and `landmark_` are
+  // present is supported.
+  // TODO(crbug.com/393294031): Accept combination of synthetic fields too.
+  if (country_code == GeoIpCountryCode("IN") && street_location_ &&
+      dependent_locality_ && landmark_) {
     return true;
   }
 

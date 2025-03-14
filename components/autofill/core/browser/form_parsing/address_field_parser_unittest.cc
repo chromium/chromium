@@ -438,4 +438,24 @@ TEST_F(AddressFieldParserTest, ParseStreetLocationIN) {
                     LanguageCode("IN"));
 }
 
+TEST_F(AddressFieldParserTest, ParseOnlyStreetLocationIN) {
+  AddTextFormFieldData("flat", "flat",
+                       ADDRESS_HOME_STREET_LOCATION);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("IN"),
+                    LanguageCode("IN"));
+}
+
+TEST_F(AddressFieldParserTest, ParseOnlyDependentLocalityIN) {
+  AddTextFormFieldData("area", "area",
+                       ADDRESS_HOME_DEPENDENT_LOCALITY);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("IN"),
+                    LanguageCode("IN"));
+}
+
+TEST_F(AddressFieldParserTest, ParseOnlyLandmarkIN) {
+  AddTextFormFieldData("landmark", "landmark", ADDRESS_HOME_LANDMARK);
+  ClassifyAndVerify(ParseResult::kParsed, GeoIpCountryCode("IN"),
+                    LanguageCode("IN"));
+}
+
 }  // namespace autofill

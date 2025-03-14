@@ -2811,7 +2811,6 @@
 <translation id="2921081876747860777">Создајте лозинка за да ги заштитите локалните податоци.</translation>
 <translation id="2923006468155067296">Вашиот <ph name="DEVICE_TYPE" /> ќе се заклучи сега.
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Уште <ph name="OTHER_TASK_NUM" /> задача во истата група задачи: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Уште <ph name="OTHER_TASK_NUM" /> задачи во истата група задачи: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Отстранете ја сметкава</translation>
 <translation id="2923644930701689793">Пристапете до лентата на камерата на телефонот</translation>
 <translation id="292371311537977079">Поставки за Chrome</translation>
@@ -10646,7 +10645,6 @@
 <translation id="8524841856047224176">Персонализирајте ги заднините на вашата камера за видеоповици и друго</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="8525461909394569609">Апликацијава опфаќа интернет-содржини од</translation>
-<translation id="8526313996927074827">Вметнувајте линкови, емоџија и друго. Со Google AI, може да добиете помош и при пишување.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527257351549797148">Вашата организација може да бара регистрација за да може да пристапувате до апликации, екстензии и друго. Ова ѝ овозможува на организацијата да управува со работи како безбедноста и поставките на уредот.</translation>

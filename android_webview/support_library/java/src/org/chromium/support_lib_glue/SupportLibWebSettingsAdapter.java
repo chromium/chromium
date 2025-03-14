@@ -488,4 +488,40 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
             return mAwSettings.getBackForwardCacheEnabled();
         }
     }
+
+    @Override
+    public void setPaymentRequestEnabled(boolean enabled) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_PAYMENT_REQUEST_ENABLED")) {
+            recordApiCall(ApiCall.SET_PAYMENT_REQUEST_ENABLED);
+            mAwSettings.setPaymentRequestEnabled(enabled);
+        }
+    }
+
+    @Override
+    public boolean getPaymentRequestEnabled() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_PAYMENT_REQUEST_ENABLED")) {
+            recordApiCall(ApiCall.GET_PAYMENT_REQUEST_ENABLED);
+            return mAwSettings.getBackForwardCacheEnabled();
+        }
+    }
+
+    @Override
+    public void setHasEnrolledInstrumentEnabled(boolean enabled) {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.SET_HAS_ENROLLED_INSTRUMENT_ENABLED")) {
+            recordApiCall(ApiCall.SET_HAS_ENROLLED_INSTRUMENT_ENABLED);
+            mAwSettings.setHasEnrolledInstrumentEnabled(enabled);
+        }
+    }
+
+    @Override
+    public boolean getHasEnrolledInstrumentEnabled() {
+        try (TraceEvent ignored =
+                TraceEvent.scoped("WebView.APICall.AndroidX.GET_HAS_ENROLLED_INSTRUMENT_ENABLED")) {
+            recordApiCall(ApiCall.GET_HAS_ENROLLED_INSTRUMENT_ENABLED);
+            return mAwSettings.getHasEnrolledInstrumentEnabled();
+        }
+    }
 }

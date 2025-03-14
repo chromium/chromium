@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.reload_button;
 
 import android.animation.ObjectAnimator;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -14,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -24,7 +26,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
 
     private final PropertyModel mModel;
+    private final Resources mResources;
+    private final Callback<String> mShowToastCallback;
     private boolean mIsShiftDownForReload;
+    private boolean mIsReloading;
 
     /**
      * Create an instance of {@link ReloadButtonMediator}.
@@ -32,8 +37,14 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      * @param model a properties model that encapsulates reload button state.
      * @param delegate a callback to stop or reload current tab
      */
-    ReloadButtonMediator(PropertyModel model, ReloadButtonCoordinator.Delegate delegate) {
+    ReloadButtonMediator(
+            PropertyModel model,
+            ReloadButtonCoordinator.Delegate delegate,
+            Callback<String> showToast,
+            Resources resources) {
         mModel = model;
+        mResources = resources;
+        mShowToastCallback = showToast;
 
         Callback<MotionEvent> onTouchListener =
                 (event) ->
@@ -43,6 +54,15 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
         mModel.set(
                 ReloadButtonProperties.CLICK_LISTENER,
                 () -> delegate.stopOrReloadCurrentTab(mIsShiftDownForReload));
+        mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, this::showActionToastOnReloadButton);
+    }
+
+    private void showActionToastOnReloadButton() {
+        if (mIsReloading) {
+            mShowToastCallback.onResult(mResources.getString(R.string.menu_stop_refresh));
+        } else {
+            mShowToastCallback.onResult(mResources.getString(R.string.refresh));
+        }
     }
 
     @Override
@@ -65,7 +85,31 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
      *
      * @param isReloading indicates whether current page is reloading.
      */
-    public void setReloading(boolean isReloading) {}
+    public void setReloading(boolean isReloading) {
+        mIsReloading = isReloading;
+
+        final int level;
+        final String contentDescription;
+        if (isReloading) {
+            level = mResources.getInteger(R.integer.reload_button_level_stop);
+            contentDescription = mResources.getString(R.string.accessibility_btn_stop_loading);
+        } else {
+            level = mResources.getInteger(R.integer.reload_button_level_reload);
+            contentDescription = mResources.getString(R.string.accessibility_btn_refresh);
+        }
+
+        mModel.set(ReloadButtonProperties.DRAWABLE_LEVEL, level);
+        mModel.set(ReloadButtonProperties.CONTENT_DESCRIPTION, contentDescription);
+    }
+
+    /**
+     * Changes reload button enabled state.
+     *
+     * @param isEnabled indicates whether the button should be enabled or disabled.
+     */
+    public void setEnabled(boolean isEnabled) {
+        mModel.set(ReloadButtonProperties.IS_ENABLED, isEnabled);
+    }
 
     /**
      * Sets reload button visibility.
@@ -84,5 +128,6 @@ class ReloadButtonMediator implements ThemeColorProvider.TintObserver {
     public void destroy() {
         mModel.set(ReloadButtonProperties.TOUCH_LISTENER, null);
         mModel.set(ReloadButtonProperties.CLICK_LISTENER, null);
+        mModel.set(ReloadButtonProperties.LONG_CLICK_LISTENER, null);
     }
 }

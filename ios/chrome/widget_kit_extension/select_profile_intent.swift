@@ -77,7 +77,7 @@ struct SelectProfileIntent: WidgetConfigurationIntent {
   var profile: ProfileDetail?
 
   // Returns the avatar linked to the account.
-  func avatarForAccount(account: ProfileDetail?) -> Image? {
+  func avatar() -> Image? {
     guard let gaia = profile?.gaia
     else { return nil }
 
@@ -91,7 +91,7 @@ struct SelectProfileIntent: WidgetConfigurationIntent {
   }
 
   // Returns the gaiaID linked to the account.
-  func gaiaForAccount(account: ProfileDetail?) -> String? {
+  func gaia() -> String? {
     guard let gaia = profile?.gaia
     else { return nil }
 

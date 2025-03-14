@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_view.h"
 
 namespace autofill::payments {
@@ -47,6 +48,11 @@ void SelectBnplIssuerDialogControllerImpl::OnDialogClosed() {
 const std::vector<BnplIssuer>&
 SelectBnplIssuerDialogControllerImpl::GetIssuers() const {
   return issuers_;
+}
+
+bool SelectBnplIssuerDialogControllerImpl::IssuerEligible(
+    std::string_view issuer_id) const {
+  return true;
 }
 
 }  // namespace autofill::payments

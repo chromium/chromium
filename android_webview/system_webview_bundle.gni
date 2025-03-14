@@ -34,7 +34,7 @@ template("system_webview_bundle") {
       is_multi_abi = _include_32_bit_webview && _include_64_bit_webview
       not_needed([ "_include_64_bit_webview" ])
       if (!defined(android_app_secondary_abi)) {
-        assert(!is_multi_abi)
+        assert(!is_multi_abi, "target should not be enabled: $target_name")
       }
     }
 
