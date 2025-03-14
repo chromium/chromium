@@ -233,14 +233,6 @@ public interface TabGroupModelFilter extends TabList {
             @TabId int originalRootId,
             @Nullable Token originalTabGroupId);
 
-    /**
-     * Get all tab group root ids that are associated with tab groups.
-     *
-     * @deprecated Use {@link #getAllTabGroupIds()} instead.
-     */
-    @Deprecated
-    Set<@TabId Integer> getAllTabGroupRootIds();
-
     /** Get all tab group IDs that are associated with tab groups. */
     Set<Token> getAllTabGroupIds();
 

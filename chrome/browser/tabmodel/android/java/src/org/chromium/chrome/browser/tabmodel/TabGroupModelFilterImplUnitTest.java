@@ -2357,17 +2357,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testGetAllTabGroupRootIds() {
-        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
-        // group.
-        Set<Integer> rootIds = new ArraySet<>();
-        rootIds.add(mTab2.getRootId());
-        rootIds.add(mTab5.getRootId());
-
-        assertEquals(rootIds, mTabGroupModelFilter.getAllTabGroupRootIds());
-    }
-
-    @Test
     public void testGetAllTabGroupIds() {
         // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
         // group.
