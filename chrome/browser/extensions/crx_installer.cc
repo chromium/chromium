@@ -132,6 +132,7 @@ CrxInstaller::CrxInstaller(content::BrowserContext* context,
       update_from_settings_page_(false),
       install_flags_(kInstallFlagNone) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!profile_->IsOffTheRecord());
   profile_observation_.Observe(profile_);
 
   // Observe for browser shutdown. Unretained is safe because the callback
