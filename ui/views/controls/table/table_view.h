@@ -87,6 +87,9 @@ struct TableStyle {
 
   // Icons will be drawn with a rounded rect background if this is set to true.
   bool icons_have_background = false;
+
+  // Focus Ring is drawn inside the cell, instead of outside the cell.
+  bool inset_focus_ring = false;
 };
 
 // The cell's in the first column of a table can contain:
@@ -588,6 +591,9 @@ class VIEWS_EXPORT TableView : public View, public ui::TableModelObserver {
   bool UpdateVirtualAccessibilityRowData(AXVirtualView* ax_row,
                                          int view_index,
                                          int model_index);
+
+  // Installs a focus ring on the TableView.
+  void InstallFocusRing();
 
   // Updates the focus rings of the TableView and the TableHeader if necessary.
   void UpdateFocusRings();

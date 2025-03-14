@@ -185,13 +185,7 @@ TableView::TableView() : weak_factory_(this) {
   views::HighlightPathGenerator::Install(
       this, std::make_unique<TableView::HighlightPathGenerator>());
 
-  FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate(
-      base::BindRepeating([](const View* view) {
-        const auto* v = views::AsViewClass<TableView>(view);
-        CHECK(v);
-        return v->HasFocus() && !v->header_row_is_active_;
-      }));
+  InstallFocusRing();
   GetViewAccessibility().SetRole(ax::mojom::Role::kListGrid);
   GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
@@ -2219,6 +2213,32 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
   return ax_cell;
 }
 
+void TableView::InstallFocusRing() {
+  // Remove and reinstall a new focus ring, if one is already present.
+  if (views::FocusRing::Get(this)) {
+    views::FocusRing::Remove(this);
+  }
+
+  FocusRing::Install(this);
+  FocusRing* focus_ring = views::FocusRing::Get(this);
+  if (table_style().inset_focus_ring) {
+    focus_ring->SetOutsetFocusRingDisabled(true);
+    focus_ring->SetHaloInset(0);
+  }
+  focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
+    const auto* v = views::AsViewClass<TableView>(view);
+    CHECK(v);
+    const bool table_focused = v->HasFocus() && !v->header_row_is_active_;
+    // Note: Checking if there is a selected row prevents the focus ring
+    // from highlighting the whole table, which is the default fallback
+    // behavior if there is no highlight path.
+    if (v->table_style().inset_focus_ring) {
+      return table_focused && v->GetFirstSelectedRow().has_value();
+    }
+    return table_focused;
+  }));
+}
+
 void TableView::UpdateFocusRings() {
   views::FocusRing::Get(this)->SchedulePaint();
   if (header_) {
@@ -2498,6 +2518,13 @@ void TableView::SetHeaderStyle(const TableHeaderStyle& style) {
 
 void TableView::SetTableStyle(const TableStyle& style) {
   table_style_ = style;
+
+  // Reinstall the Focus Ring since TableStyle has influence on its appearance.
+  InstallFocusRing();
+  if (header_) {
+    header_->InstallFocusRing();
+  }
+
   SchedulePaint();
 }
 

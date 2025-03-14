@@ -645,6 +645,7 @@ void TaskManagerView::Init() {
                     kColorTaskManagerTableBackgroundSelectedUnfocused,
             },
         .icons_have_background = true,
+        .inset_focus_ring = true,
     };
     tab_table->SetTableStyle(table_style);
   }
