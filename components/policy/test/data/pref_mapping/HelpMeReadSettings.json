@@ -55,16 +55,14 @@
       "linux",
       "mac"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "The default is changed by default_for_enterprise_users only on ChromeOS",
-        "policies": {},
-        "prefs": {
-          "settings.managed.help_me_read": {
-            "default_value": 0
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.managed.help_me_read",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
   }
 ]
