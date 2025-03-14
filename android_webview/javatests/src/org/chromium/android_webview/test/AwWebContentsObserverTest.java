@@ -269,15 +269,14 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 isSameDocument,
                 awNavigationStart.isSameDocument());
         Assert.assertEquals(
-                "onNavigationStarted should have the intended isPageInitiated",
+                "onNavigationStarted should have the intended wasInitiatedByPage",
                 isRendererInitiated,
-                awNavigationStart.isPageInitiated());
+                awNavigationStart.wasInitiatedByPage());
         Assert.assertFalse(
                 "onNavigationStarted should have the intended isReload",
                 awNavigationStart.isReload());
         Assert.assertFalse(
-                "onNavigationStarted should have a false hasCommitted",
-                awNavigationStart.hasCommitted());
+                "onNavigationStarted should have a false didCommit", awNavigationStart.didCommit());
         Assert.assertFalse(
                 "onNavigationStarted should have a false didCommitErrorPage",
                 awNavigationStart.didCommitErrorPage());
@@ -317,15 +316,15 @@ public class AwWebContentsObserverTest extends AwParameterizedTest {
                 isSameDocument,
                 awNavigationComplete.isSameDocument());
         Assert.assertEquals(
-                "onNavigationCompleted should have the intended isPageInitiated",
+                "onNavigationCompleted should have the intended wasInitiatedByPage",
                 isRendererInitiated,
-                awNavigationComplete.isPageInitiated());
+                awNavigationComplete.wasInitiatedByPage());
         Assert.assertFalse(
                 "onNavigationCompleted should have the intended isReload",
                 awNavigationComplete.isReload());
         Assert.assertTrue(
-                "onNavigationCompleted should have the intended hasCommitted",
-                awNavigationComplete.hasCommitted());
+                "onNavigationCompleted should have the intended didCommit",
+                awNavigationComplete.didCommit());
         Assert.assertEquals(
                 "onNavigationCompleted should have the intended error page status",
                 isErrorPage,
