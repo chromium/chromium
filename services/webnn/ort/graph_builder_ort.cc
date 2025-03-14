@@ -79,6 +79,7 @@ constexpr char kOpTypeGatherElements[] = "GatherElements";
 constexpr char kOpTypeGatherND[] = "GatherND";
 constexpr char kOpTypeGelu[] = "Gelu";
 constexpr char kOpTypeGemm[] = "Gemm";
+constexpr char kOpTypeGru[] = "GRU";
 constexpr char kOpTypeHardSwish[] = "HardSwish";
 constexpr char kOpTypeHardSigmoid[] = "HardSigmoid";
 constexpr char kOpTypeInstanceNormalization[] = "InstanceNormalization";
@@ -245,6 +246,46 @@ std::string GraphBuilderOrt::GenerateNextOperationName(std::string_view label) {
                           kUnderscore);
 }
 
+const std::vector<std::string> GetRecurrentNetworkActivations(
+    std::vector<mojom::RecurrentNetworkActivation> activations,
+    bool is_bidirectional) {
+  std::vector<std::string> activation_list;
+  for (const auto& activation : activations) {
+    switch (activation) {
+      case mojom::RecurrentNetworkActivation::kRelu:
+        activation_list.push_back("relu");
+        break;
+      case mojom::RecurrentNetworkActivation::kSigmoid:
+        activation_list.push_back("sigmoid");
+        break;
+      case mojom::RecurrentNetworkActivation::kTanh:
+        activation_list.push_back("tanh");
+        break;
+      default:
+        NOTREACHED() << "Unsupported recurrent network activation function.";
+    }
+  }
+  if (is_bidirectional) {
+    activation_list.insert(activation_list.end(), activation_list.begin(),
+                           activation_list.end());
+  }
+  return activation_list;
+}
+
+const std::string GetRecurrentNetworkDirection(
+    mojom::RecurrentNetworkDirection direction) {
+  switch (direction) {
+    case mojom::RecurrentNetworkDirection::kForward:
+      return "forward";
+    case mojom::RecurrentNetworkDirection::kBackward:
+      return "reverse";
+    case mojom::RecurrentNetworkDirection::kBoth:
+      return "bidirectional";
+    default:
+      NOTREACHED() << "Unsupported recurrent network activation direction.";
+  }
+}
+
 template <typename DataType>
   requires internal::IsSupportedTensorType<DataType>
 base::expected<std::string, mojom::ErrorPtr> GraphBuilderOrt::CreateInitializer(
@@ -396,6 +437,27 @@ GraphBuilderOrt::AppendReshape(std::string_view input,
   model_editor_.AddNode(kOpTypeReshape, node, inputs, outputs);
 
   return base::ok();
+}
+
+[[nodiscard]] base::expected<std::string, mojom::ErrorPtr>
+GraphBuilderOrt::PrependExpand(std::string_view input,
+                               base::span<const uint32_t> shape) {
+  const std::string node = GenerateNextOperationName("inserted_expand");
+  const std::string output = GenerateNextOperandName();
+
+  // Shape is an operand with data type int64, not an attribute.
+  std::vector<uint32_t> shape_dims = {
+      base::checked_cast<uint32_t>(shape.size())};
+  std::vector<int64_t> shape_value(shape.begin(), shape.end());
+  ASSIGN_OR_RETURN(const std::string new_shape,
+                   CreateInitializer<int64_t>(shape_dims, shape_value));
+
+  std::array<const char*, 2> inputs = {input.data(), new_shape.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
+
+  model_editor_.AddNode(kOpTypeExpand, node, inputs, outputs);
+
+  return output;
 }
 
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
@@ -1416,6 +1478,240 @@ void GraphBuilderOrt::AddGemmOperation(const mojom::Gemm& gemm) {
                         std::move(attributes));
 }
 
+// `GruType` must be `mojom::Gru` or `mojom::GruCell`.
+template <typename GruType>
+  requires(std::is_same_v<GruType, mojom::Gru> ||
+           std::is_same_v<GruType, mojom::GruCell>)
+[[nodiscard]] base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddGruOperation(const GruType& gru) {
+  const std::string node = GenerateNextOperationName(gru.label);
+  std::string input = GetOperandNameById(gru.input_operand_id);
+  std::string weight = GetOperandNameById(gru.weight_operand_id);
+  std::string recurrent_weight =
+      GetOperandNameById(gru.recurrent_weight_operand_id);
+  if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
+    const std::vector<uint32_t>& input_shape =
+        GetOperand(gru.input_operand_id).descriptor.shape();
+    CHECK_EQ(input_shape.size(), 2u);
+    ASSIGN_OR_RETURN(
+        input,
+        // Reshape the input into a 3-D tensor, since the GRU of ONNX requires
+        // the input shape to be [seq_length, batch_size, input_size]. For
+        // gruCell, `seq_length` is equal to 1.
+        PrependReshape(input, {1, input_shape[0], input_shape[1]}));
+    const std::vector<uint32_t>& weight_shape =
+        GetOperand(gru.weight_operand_id).descriptor.shape();
+    CHECK_EQ(weight_shape.size(), 2u);
+    ASSIGN_OR_RETURN(
+        weight,
+        // Reshape the weight into a 3-D tensor, since the GRU of ONNX requires
+        // the weight shape to be [num_directions, 3*hidden_size, input_size].
+        // For gruCell, `num_directions` is equal to 1.
+        PrependReshape(weight, {1, weight_shape[0], weight_shape[1]}));
+    const std::vector<uint32_t>& recurrent_weight_shape =
+        GetOperand(gru.recurrent_weight_operand_id).descriptor.shape();
+    CHECK_EQ(recurrent_weight_shape.size(), 2u);
+    ASSIGN_OR_RETURN(
+        recurrent_weight,
+        // Reshape the recurrentWeight into a 3-D tensor, since the GRU of ONNX
+        // requires the recurrent weight shape to be [num_directions,
+        // 3*hidden_size, hidden_size]. For gruCell, `num_directions` is equal
+        // to 1.
+        PrependReshape(recurrent_weight, {1, recurrent_weight_shape[0],
+                                          recurrent_weight_shape[1]}));
+  }
+  std::vector<const char*> inputs = {input.c_str(), weight.c_str(),
+                                     recurrent_weight.c_str()};
+
+  uint32_t num_directions = 1;
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    num_directions =
+        gru.direction == mojom::RecurrentNetworkDirection::kBoth ? 2 : 1;
+  }
+  const uint32_t hidden_size = gru.hidden_size;
+  // Already checked that hidden_size * 3 is safe in the model validation.
+  uint32_t checked_three_times_hidden_size = hidden_size * 3;
+  std::vector<uint32_t> bias_dims = {num_directions,
+                                     checked_three_times_hidden_size};
+  std::string bias = "";
+  if (!gru.bias_operand_id.has_value() &&
+      !gru.recurrent_bias_operand_id.has_value()) {
+    // When both bias and currentBias are not present, set ONNX gru input "B" as
+    // not specified.
+    inputs.push_back(bias.c_str());
+  } else {
+    const OperandDataType input_data_type =
+        GetOperand(gru.input_operand_id).descriptor.data_type();
+    if (gru.bias_operand_id.has_value()) {
+      bias = GetOperandNameById(gru.bias_operand_id.value());
+      if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
+        // Reshape the bias into a 2-D tensor, since the GRU of ONNX requires
+        // the bias shape to be [num_directions, 6*hidden_size]. For gruCell,
+        // `num_directions` is equal to 1.
+        ASSIGN_OR_RETURN(bias, PrependReshape(bias, bias_dims));
+      }
+    } else {
+      switch (input_data_type) {
+        case OperandDataType::kFloat16: {
+          std::array<uint16_t, 1> bias_value = {
+              fp16_ieee_from_fp32_value(0.0f)};
+          ASSIGN_OR_RETURN(const std::string bias_saclar,
+                           CreateInitializer<uint16_t>({}, bias_value));
+          ASSIGN_OR_RETURN(bias, PrependExpand(bias_saclar, bias_dims));
+          break;
+        }
+        case OperandDataType::kFloat32: {
+          std::array<float, 1> bias_value = {0.0f};
+          ASSIGN_OR_RETURN(const std::string bias_saclar,
+                           CreateInitializer<float>({}, bias_value));
+          ASSIGN_OR_RETURN(bias, PrependExpand(bias_saclar, bias_dims));
+          break;
+        }
+        default:
+          NOTREACHED()
+              << "[WebNN] GRU only supports float32 and float16 data type.";
+      }
+    }
+    std::string recurrent_bias;
+    if (gru.recurrent_bias_operand_id.has_value()) {
+      recurrent_bias =
+          GetOperandNameById(gru.recurrent_bias_operand_id.value());
+      if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
+        // Reshape the recurrentBias into a 2-D tensor, since the GRU of ONNX
+        // requires the bias shape to be [num_directions, 6*hidden_size]. For
+        // gruCell, `num_directions` is equal to 1.
+        ASSIGN_OR_RETURN(recurrent_bias,
+                         PrependReshape(recurrent_bias, bias_dims));
+      }
+    } else {
+      switch (input_data_type) {
+        case OperandDataType::kFloat16: {
+          std::array<uint16_t, 1> recurrent_bias_value = {
+              fp16_ieee_from_fp32_value(0.0f)};
+          ASSIGN_OR_RETURN(
+              const std::string recurrent_bias_saclar,
+              CreateInitializer<uint16_t>({}, recurrent_bias_value));
+          ASSIGN_OR_RETURN(recurrent_bias,
+                           PrependExpand(recurrent_bias_saclar, bias_dims));
+          break;
+        }
+        case OperandDataType::kFloat32: {
+          std::array<float, 1> recurrent_bias_value = {0.0f};
+          ASSIGN_OR_RETURN(const std::string recurrent_bias_saclar,
+                           CreateInitializer<float>({}, recurrent_bias_value));
+          ASSIGN_OR_RETURN(recurrent_bias,
+                           PrependExpand(recurrent_bias_saclar, bias_dims));
+          break;
+        }
+        default:
+          NOTREACHED()
+              << "[WebNN] GRU only supports float32 and float16 data type.";
+      }
+    }
+    // Concat bias and recurrent_bias
+    std::string concatenated_bias = GenerateNextOperandName();
+    std::array<const char*, 2> bias_inputs = {bias.c_str(),
+                                              recurrent_bias.c_str()};
+    std::array<const char*, 1> bias_outputs = {concatenated_bias.c_str()};
+    // The bias tensor of ONNX has shape [num_directions, 6*hidden_size]
+    std::vector<ScopedOrtOpAttr> concat_attributes;
+    concat_attributes.reserve(1);
+    concat_attributes.push_back({model_editor_.CreateAttribute(
+        /*name=*/"axis", static_cast<int64_t>(1))});
+    model_editor_.AddNode(
+        kOpTypeConcat, GenerateNextOperationName("inserted_concat"),
+        bias_inputs, bias_outputs, std::move(concat_attributes));
+    inputs.push_back(concatenated_bias.c_str());
+  }
+
+  // `sequence_lens` is an optional tensor specifying lengths of the sequences
+  // in a batch.
+  std::string sequence_lens = "";
+  inputs.push_back(sequence_lens.c_str());
+
+  std::string hidden_state;
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    if (gru.initial_hidden_state_operand_id.has_value()) {
+      hidden_state =
+          GetOperandNameById(gru.initial_hidden_state_operand_id.value());
+    }
+  } else {
+    hidden_state = GetOperandNameById(gru.hidden_state_operand_id);
+    const std::vector<uint32_t>& hidden_state_shape =
+        GetOperand(gru.hidden_state_operand_id).descriptor.shape();
+    CHECK_EQ(hidden_state_shape.size(), 2u);
+    // Reshape the hiddenState into a 3-D tensor, since the GRU of ONNX requires
+    // the initial_h shape to be [num_directions, batch_size, hidden_size]. For
+    // gruCell, `num_directions` is equal to 1.
+    ASSIGN_OR_RETURN(hidden_state,
+                     PrependReshape(hidden_state, {1, hidden_state_shape[0],
+                                                   hidden_state_shape[1]}));
+  }
+  inputs.push_back(hidden_state.c_str());
+
+  std::vector<ScopedOrtOpAttr> attributes;
+  attributes.reserve(4);
+  std::string direction = "forward";
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    direction = GetRecurrentNetworkDirection(gru.direction);
+  }
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"direction", direction.c_str()));
+
+  const std::vector<std::string> activations = GetRecurrentNetworkActivations(
+      gru.activations, direction == "bidirectional");
+  std::vector<const char*> activations_c_str;
+  for (const auto& activation : activations) {
+    activations_c_str.push_back(activation.c_str());
+  }
+  attributes.push_back(
+      model_editor_.CreateAttribute(/*name=*/"activations", activations_c_str));
+
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"hidden_size", base::checked_cast<int64_t>(hidden_size)));
+
+  // TODO(https://github.com/shiyi9801/chromium/issues/190): Support rzn layout.
+  if (gru.layout != mojom::GruWeightLayout::kZrn) {
+    return NewNotSupportedError(
+        "[WebNN] The gru weight layout (rzn) is not supported.");
+  }
+
+  int64_t linear_before_reset = static_cast<int64_t>(gru.reset_after);
+  attributes.push_back(model_editor_.CreateAttribute(
+      /*name=*/"linear_before_reset", linear_before_reset));
+
+  std::string output_Y, output_Y_h;
+  if constexpr (std::is_same_v<GruType, mojom::Gru>) {
+    output_Y_h = GetOperandNameById(gru.output_operand_ids[0]);
+    if (gru.return_sequence) {
+      output_Y = GetOperandNameById(gru.output_operand_ids[1]);
+    }
+  } else {
+    output_Y_h = GenerateNextOperandName();
+  }
+  std::array<const char*, 2> outputs = {output_Y.c_str(), output_Y_h.c_str()};
+  model_editor_.AddNode(kOpTypeGru, node, inputs, outputs,
+                        std::move(attributes));
+  if constexpr (std::is_same_v<GruType, mojom::GruCell>) {
+    // Reshape the Y_h of shape [num_directions, batch_size, hidden_size] back
+    // to a 2-D tensor, since the gruCell of WebNN requires the output shape to
+    // be [batchSize, hiddenSize].
+    const std::vector<uint32_t>& output_shape =
+        GetOperand(gru.output_operand_id).descriptor.shape();
+    CHECK_EQ(output_shape.size(), 2u);
+    RETURN_IF_ERROR(AppendReshape(
+        output_Y_h, GetOperandNameById(gru.output_operand_id), output_shape));
+  }
+
+  return base::ok();
+}
+
+template base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddGruOperation<mojom::Gru>(const mojom::Gru&);
+
+template base::expected<void, mojom::ErrorPtr>
+GraphBuilderOrt::AddGruOperation<mojom::GruCell>(const mojom::GruCell&);
+
 void GraphBuilderOrt::AddHardSigmoidOperation(
     const mojom::HardSigmoid& hard_sigmoid) {
   const std::string node = GenerateNextOperationName(hard_sigmoid.label);
@@ -2420,6 +2716,14 @@ GraphBuilderOrt::BuildModel() {
         AddGemmOperation(*operation->get_gemm());
         break;
       }
+      case mojom::Operation::Tag::kGru: {
+        RETURN_IF_ERROR(AddGruOperation(*operation->get_gru()));
+        break;
+      }
+      case mojom::Operation::Tag::kGruCell: {
+        RETURN_IF_ERROR(AddGruOperation(*operation->get_gru_cell()));
+        break;
+      }
       case mojom::Operation::Tag::kHardSigmoid: {
         AddHardSigmoidOperation(*operation->get_hard_sigmoid());
         break;
@@ -2539,8 +2843,6 @@ GraphBuilderOrt::BuildModel() {
         AddWhereOperation(*operation->get_where());
         break;
       }
-      case mojom::Operation::Tag::kGru:
-      case mojom::Operation::Tag::kGruCell:
       case mojom::Operation::Tag::kLstm:
       case mojom::Operation::Tag::kLstmCell:
         return NewNotSupportedError("op is not supported.");
