@@ -8,7 +8,7 @@ promise_test(async () => {
     length: "medium",
   });
   assert_not_equals(availability, "unavailable");
-}, 'AISummarizerFactory.availability is available');
+}, 'AISummarizerFactory.availability() is available');
 
 promise_test(async () => {
   const availability = await ai.summarizer.availability({
@@ -20,7 +20,7 @@ promise_test(async () => {
     outputLanguage: "en",
   });
   assert_not_equals(availability, "unavailable");
-}, 'AISummarizerFactory.availability is available for supported languages');
+}, 'AISummarizerFactory.availability() is available for supported languages');
 
 promise_test(async () => {
   const availability = await ai.summarizer.availability({
@@ -32,15 +32,20 @@ promise_test(async () => {
     outputLanguage: "es", // not supported
   });
   assert_equals(availability, "unavailable");
-}, 'AISummarizerFactory.availability returns no for unsupported languages');
+}, 'AISummarizerFactory.availability() returns no for unsupported languages');
 
 promise_test(async () => {
   const summarizer = await createSummarizerMaybeDownload({});
-  const response = await summarizer.summarize(
-    "The web-platform-tests Project is a cross-browser test suite for the Web-platform stack. Writing tests in a way that allows them to be run in all browsers gives browser projects confidence that they are shipping software that is compatible with other implementations, and that later implementations will be compatible with their implementations. This in turn gives Web authors/developers confidence that they can actually rely on the Web platform to deliver on the promise of working across browsers and devices without needing extra layers of abstraction to paper over the gaps left by specification editors and implementors.");
-  assert_equals(typeof response, "string");
-  assert_greater_than(response.length, 0);
-});
+  const result = await summarizer.summarize(kTestPrompt);
+  assert_equals(typeof result, "string");
+  assert_greater_than(result.length, 0);
+}, 'AISummarizer.summarize() returns non-empty result');
+
+promise_test(async () => {
+  const summarizer = await createSummarizerMaybeDownload({});
+  const result = await summarizer.measureInputUsage(kTestPrompt);
+  assert_greater_than(result, 0);
+}, 'AISummarizer.measureInputUsage() returns non-empty result');
 
 promise_test(async () => {
   const sharedContext = 'This is a shared context string';

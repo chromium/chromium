@@ -93,6 +93,10 @@ void AutoDeletionService::RemoveScheduledFilesReadyForDeletion(
                      weak_ptr_factory_.GetWeakPtr(), now, std::move(closure)));
 }
 
+void AutoDeletionService::Clear() {
+  scheduler_.Clear();
+}
+
 void AutoDeletionService::ScheduleFileForDeletionHelper(web::DownloadTask* task,
                                                         NSData* data) {
   ScheduledFile file(task->GetResponsePath(),

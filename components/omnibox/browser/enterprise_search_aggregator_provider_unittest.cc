@@ -1078,14 +1078,17 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
           CreateContentResult("mango-3-content", "mime_type",
                               "https://url-mango-3/"),
       }));
-  EXPECT_THAT(GetScoredMatches(),
-              testing::UnorderedElementsAre(
-                  ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
-                  ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300},
-                  ScoredMatch{u"https://www.google.com/?q=mango-3-people", 300},
-                  ScoredMatch{u"https://url-mango-1/", 201},
-                  ScoredMatch{u"https://url-mango-2/", 201},
-                  ScoredMatch{u"https://url-mango-3/", 201}));
+  EXPECT_THAT(
+      GetScoredMatches(),
+      testing::UnorderedElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 300},
+          ScoredMatch{u"https://url-mango-1/", 201},
+          ScoredMatch{u"https://url-mango-2/", 201},
+          ScoredMatch{u"https://url-mango-3/", 201},
+          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 200},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 200}));
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {

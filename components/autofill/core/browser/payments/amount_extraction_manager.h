@@ -68,6 +68,8 @@ class AmountExtractionManager {
 
   bool GetSearchRequestPendingForTesting();
 
+  bool IsUrlEligibleForAmountExtractionForTesting() const;
+
  private:
   friend class AmountExtractionManagerTest;
 
@@ -83,7 +85,6 @@ class AmountExtractionManager {
   // so, cancel the ongoing search.
   virtual void OnTimeoutReached();
 
- private:
   // Check whether the host of the checkout webpage exists in the amount
   // extraction allowlist.
   bool IsUrlEligibleForAmountExtraction() const;

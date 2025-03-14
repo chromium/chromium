@@ -1999,7 +1999,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard 30%, constrained-high 70%)");
+            "dynamic-range-limit-mix(standard 30%, constrained 70%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2033,7 +2033,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard 40%, high 60%)");
+            "dynamic-range-limit-mix(standard 40%, no-limit 60%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2067,7 +2067,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(constrained-high 55%, high 45%)");
+            "dynamic-range-limit-mix(constrained 55%, no-limit 45%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2102,7 +2102,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
 
   EXPECT_EQ(
       dynamic_range_limit_mix_value->CssText(),
-      "dynamic-range-limit-mix(standard 20%, constrained-high 60%, high 20%)");
+      "dynamic-range-limit-mix(standard 20%, constrained 60%, no-limit 20%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =

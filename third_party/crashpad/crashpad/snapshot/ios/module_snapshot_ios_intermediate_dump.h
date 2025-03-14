@@ -78,6 +78,7 @@ class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
 
   // Used by ProcessSnapshot
   std::vector<const MemorySnapshot*> ExtraMemory() const;
+  std::vector<const MemorySnapshot*> IntermediateDumpExtraMemory() const;
 
  private:
   std::string name_;
@@ -93,6 +94,8 @@ class ModuleSnapshotIOSIntermediateDump final : public ModuleSnapshot {
   std::vector<AnnotationSnapshot> annotation_objects_;
   std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
       extra_memory_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
+      intermediate_dump_extra_memory_;
   InitializationStateDcheck initialized_;
 };
 

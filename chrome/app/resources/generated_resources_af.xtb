@@ -2810,7 +2810,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2921081876747860777">Skep asseblief 'n wagwoord om jou plaaslike data te beskerm.</translation>
 <translation id="2923006468155067296">Jou <ph name="DEVICE_TYPE" /> sal nou gesluit word.
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Ander <ph name="OTHER_TASK_NUM" /> take in dieselfde taakgroep: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Verwyder hierdie rekening</translation>
 <translation id="2923644930701689793">Kry toegang tot jou foon se kameraspoel</translation>
 <translation id="292371311537977079">Chrome-instellings</translation>
@@ -10641,7 +10640,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8524841856047224176">Personaliseer jou kamera-agtergronde vir video-oproepe en meer</translation>
 <translation id="8525306231823319788">Volskerm</translation>
 <translation id="8525461909394569609">Hierdie app bevat webinhoud van</translation>
-<translation id="8526313996927074827">Voeg skakels, emosiekone en meer in. Jy kan ook met Google AI hulp kry met skryf.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Luidsprekers</translation>
 <translation id="8527257351549797148">Jou organisasie vereis dalk inskrywing sodat jy toegang tot apps, uitbreidings en meer kan kry. Dit laat jou organisasie ook toe om dinge soos sekuriteit en toestelinstellings te bestuur.</translation>

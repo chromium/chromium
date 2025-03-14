@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -109,6 +110,8 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
                          affiliatedGroup:GetTestAffiliatedGroup()
                             reauthModule:mock_reauth_module_
                                  context:DetailsContext::kPasswordSettings];
+
+    scoped_window_.Get().rootViewController = navigation_controller;
   }
 
   ~PasswordDetailsCoordinatorTest() override { [coordinator_ stop]; }
@@ -116,6 +119,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
+  ScopedKeyWindow scoped_window_;
   MockReauthenticationModule* mock_reauth_module_;
   SceneState* scene_state_;
   PasswordDetailsCoordinator* coordinator_;

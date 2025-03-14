@@ -13,9 +13,6 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 
 namespace blink {
 namespace event_handling_util {
@@ -74,32 +71,8 @@ WebInputEventResult ToWebInputEventResult(DispatchEventResult result) {
   }
 }
 
-PaintLayer* LayerForNode(Node* node) {
-  if (!node)
-    return nullptr;
-
-  LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object)
-    return nullptr;
-
-  PaintLayer* layer = layout_object->EnclosingLayer();
-  if (!layer)
-    return nullptr;
-
-  return layer;
-}
-
 bool IsInDocument(EventTarget* n) {
   return n && n->ToNode() && n->ToNode()->isConnected();
-}
-
-ScrollableArea* AssociatedScrollableArea(const PaintLayer* layer) {
-  if (PaintLayerScrollableArea* scrollable_area = layer->GetScrollableArea()) {
-    if (scrollable_area->ScrollsOverflow())
-      return scrollable_area;
-  }
-
-  return nullptr;
 }
 
 ContainerNode* ParentForClickEvent(const Node& node) {

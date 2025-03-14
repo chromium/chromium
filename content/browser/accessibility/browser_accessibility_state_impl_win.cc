@@ -169,10 +169,11 @@ class BrowserAccessibilityStateImplWin : public BrowserAccessibilityStateImpl {
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 
   bool is_jaws_active_ = false;
+  bool is_narrator_active_ = false;
   bool is_nvda_active_ = false;
   bool is_supernova_active_ = false;
+  bool is_zdsr_active_ = false;
   bool is_zoomtext_active_ = false;
-  bool is_narrator_active_ = false;
   bool is_uia_active_ = false;
 };
 
@@ -226,10 +227,11 @@ void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
   }
 
   is_jaws_active_ = false;
+  is_narrator_active_ = false;
   is_nvda_active_ = false;
   is_supernova_active_ = false;
+  is_zdsr_active_ = false;
   is_zoomtext_active_ = false;
-  is_narrator_active_ = false;
   is_uia_active_ = false;
 
   // Look for DLLs of assistive technology known to work with Chrome.
@@ -248,6 +250,10 @@ void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
     }
     if (base::EqualsCaseInsensitiveASCII(module_name, "dolwinhk.dll")) {
       is_supernova_active_ = true;
+    }
+    if (base::EqualsCaseInsensitiveASCII(module_name, "outhelper.dll") ||
+        base::EqualsCaseInsensitiveASCII(module_name, "outhelper_x64.dll")) {
+      is_zdsr_active_ = true;  // Zhengdu screen reader.
     }
     if (base::EqualsCaseInsensitiveASCII(module_name, "zslhook.dll") ||
         base::EqualsCaseInsensitiveASCII(module_name, "zslhook64.dll")) {
@@ -270,10 +276,11 @@ void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
   is_narrator_active_ = narrator_value != 0;
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinJAWS", is_jaws_active_);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator", is_narrator_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA", is_nvda_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova", is_supernova_active_);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR", is_zdsr_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText", is_zoomtext_active_);
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator", is_narrator_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinAPIs.UIAutomation", is_uia_active_);
   static auto* ax_jaws_crash_key = base::debug::AllocateCrashKeyString(
       "ax_jaws", base::debug::CrashKeySize::Size32);
@@ -283,6 +290,8 @@ void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
       "ax_nvda", base::debug::CrashKeySize::Size32);
   static auto* ax_supernova_crash_key = base::debug::AllocateCrashKeyString(
       "ax_supernova", base::debug::CrashKeySize::Size32);
+  static auto* ax_zdsr_crash_key = base::debug::AllocateCrashKeyString(
+      "ax_zdsr", base::debug::CrashKeySize::Size32);
   static auto* ax_zoomtext_crash_key = base::debug::AllocateCrashKeyString(
       "ax_zoomtext", base::debug::CrashKeySize::Size32);
   static auto* ax_uia_crash_key = base::debug::AllocateCrashKeyString(
@@ -312,6 +321,12 @@ void BrowserAccessibilityStateImplWin::UpdateKnownAssistiveTechSlow() {
     base::debug::ClearCrashKeyString(ax_supernova_crash_key);
   }
 
+  if (is_zdsr_active_) {
+    base::debug::SetCrashKeyString(ax_zdsr_crash_key, "true");
+  } else {
+    base::debug::ClearCrashKeyString(ax_zdsr_crash_key);
+  }
+
   if (is_zoomtext_active_) {
     base::debug::SetCrashKeyString(ax_zoomtext_crash_key, "true");
   } else {
@@ -337,6 +352,7 @@ void BrowserAccessibilityStateImplWin::UpdateUniqueUserHistograms() {
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNVDA.EveryReport", is_nvda_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinSupernova.EveryReport",
                         is_supernova_active_);
+  UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZDSR.EveryReport", is_zdsr_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinZoomText.EveryReport",
                         is_zoomtext_active_);
   UMA_HISTOGRAM_BOOLEAN("Accessibility.WinNarrator.EveryReport",
@@ -383,6 +399,9 @@ BrowserAccessibilityStateImplWin::ActiveKnownAssistiveTech() {
   }
   if (is_supernova_active_) {
     return kSupernova;
+  }
+  if (is_zdsr_active_) {
+    return kZdsr;  // Zhengdu screen reader.
   }
   if (is_zoomtext_active_) {
     return kZoomText;

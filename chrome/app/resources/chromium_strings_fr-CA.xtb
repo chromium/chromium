@@ -33,6 +33,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1478370723027452770">Obtenir de l'aide avec Chrome for Testing</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Partager un onglet de Chromium</translation>
+<translation id="1547469039832541117">Termine la tâche mise en évidence.</translation>
 <translation id="1553461853655228091">Chromium a besoin de votre autorisation pour accéder à votre appareil photo afin de créer une carte 3D de votre environnement</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Cette extension n'est plus prise en charge. Chromium vous recommande de la retirer.}one{Cette extension n'est plus prise en charge. Chromium vous recommande de la retirer.}other{Ces extensions ne sont plus prises en charge. Chromium vous recommande de les retirer.}}</translation>
 <translation id="1574377791422810894">Les outils de sécurité de Chromium</translation>

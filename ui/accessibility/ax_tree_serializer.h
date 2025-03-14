@@ -758,7 +758,7 @@ bool AXTreeSerializer<AXSourceNode,
       (out_update->has_tree_data || new_tree_data != client_tree_data_)) {
     out_update->has_tree_data = true;
     out_update->tree_data = new_tree_data;
-    client_tree_data_ = new_tree_data;
+    client_tree_data_ = std::move(new_tree_data);
   }
 
   return true;

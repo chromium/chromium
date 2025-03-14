@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+#include "net/cert/qwac.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
@@ -730,6 +731,55 @@ TEST_P(X509CertificateModel, SubjectEmptySequence) {
     else
       EXPECT_EQ(GetParam(), model.GetTitle());
   }
+}
+
+TEST_P(X509CertificateModel, QcStatements) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.11.2 }
+  //     SEQUENCE {
+  //       OBJECT_IDENTIFIER { 0.4.0.194121.1.2 }
+  //     }
+  //   }
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 0.4.0.1862.1.1 }
+  //   }
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 0.4.0.1862.1.6 }
+  //     SEQUENCE {
+  //       OBJECT_IDENTIFIER { 0.4.0.1862.1.6.3 }
+  //       OBJECT_IDENTIFIER { 0.4.0.1862.1.6.2 }
+  //     }
+  //   }
+  // }
+  constexpr uint8_t kQcStatementsValue[] = {
+      0x30, 0x3f, 0x30, 0x15, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05,
+      0x07, 0x0b, 0x02, 0x30, 0x09, 0x06, 0x07, 0x04, 0x00, 0x8b, 0xec,
+      0x49, 0x01, 0x02, 0x30, 0x08, 0x06, 0x06, 0x04, 0x00, 0x8e, 0x46,
+      0x01, 0x01, 0x30, 0x1c, 0x06, 0x06, 0x04, 0x00, 0x8e, 0x46, 0x01,
+      0x06, 0x30, 0x12, 0x06, 0x07, 0x04, 0x00, 0x8e, 0x46, 0x01, 0x06,
+      0x03, 0x06, 0x07, 0x04, 0x00, 0x8e, 0x46, 0x01, 0x06, 0x02};
+  builder->SetExtension(bssl::der::Input(net::kQcStatementsOid),
+                        std::string(base::as_string_view(kQcStatementsValue)));
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+  auto extensions = model.GetExtensions("critical", "notcrit");
+  auto extension_value =
+      FindExtension(extensions, "Qualified Certificate Statements");
+  ASSERT_TRUE(extension_value);
+  EXPECT_EQ(
+      "notcrit\n"
+      "OID.1.3.6.1.5.5.7.11.2 = 30 09 06 07 04 00 8B EC 49 01 02\n"
+      "ETSI QcCompliance\n"
+      "ETSI QcType = ETSI qct-web, OID.0.4.0.1862.1.6.2\n",
+      *extension_value);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

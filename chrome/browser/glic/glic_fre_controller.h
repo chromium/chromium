@@ -79,6 +79,9 @@ class GlicFreController {
   // Notify FRE controller that the user clicked on a link.
   void OnLinkClicked(const GURL& url);
 
+  // Notify FRE controller that the user clicked "no thanks" in the FRE.
+  void OnNoThanksClicked();
+
   // Returns the WebContents from the dialog view.
   content::WebContents* GetWebContents();
 

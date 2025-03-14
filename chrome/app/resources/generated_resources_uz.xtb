@@ -2799,7 +2799,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2921081876747860777">Mahalliy ma’lumotlarni himoyalash uchun parol kiriting.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> hozir qulanadi.
 <ph name="DOMAIN" /> smart karta kiritilishini talab qilmoqda.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Bir xil vazifalar guruhida yana <ph name="OTHER_TASK_NUM" /> ta vazifa mavjud: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Bu hisobni olib tashlash</translation>
 <translation id="2923644930701689793">Telefon kamerasi olgan rasmlarga ruxsat</translation>
 <translation id="292371311537977079">Chrome sozlamalari</translation>
@@ -6902,6 +6901,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> tez orada pauza qilinadi</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> tizimini diskdagi tasviridan ishga tushirgansiz. Uni kompyuteringizga o‘rnatsangiz, disk tasviri kerak bo‘lmaydi hamda tizim muntazam yangilanib turadi.</translation>
 <translation id="5865733239029070421">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin</translation>
+<translation id="5866363217037791319">Vazifani yakunlash</translation>
 <translation id="5868434909835797817">Qurilma mikofoni oʻchiq</translation>
 <translation id="5868479397518301468">Kirish vaqti tugadi</translation>
 <translation id="5868822853313956582">Tizim ranglarini ishlatish</translation>
@@ -10625,7 +10625,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8524841856047224176">Video chaqiruv kabi amallar uchun kamera fon rasmini moslang</translation>
 <translation id="8525306231823319788">To‘liq ekran rejimi</translation>
 <translation id="8525461909394569609">Bu ilovada veb-kontent bor:</translation>
-<translation id="8526313996927074827">Havola, emoji va boshqalarni joylang. Shuningdek, Google AI bilan yozishda yordam olish mumkin.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Karnaylar</translation>
 <translation id="8527257351549797148">Ilovalar va kengaytmalarga kirishingiz uchun tashkilotingiz roʻyxatdan oʻtishni talab qilishi mumkin. Bu, shuningdek, tashkilotingizga xavfsizlik va qurilma sozlamalari kabilarni boshqarish imkonini beradi.</translation>
@@ -11081,6 +11080,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="883924185304953854">Rasm asosida qidirish</translation>
 <translation id="8841786407272321022">Parol faqat shu qurilmaga saqlanadi. Yangi parollarni Google hisobingizga saqlash uchun Google Play xizmatlarini yangilang.</translation>
 <translation id="8841843049738266382">Foydalanuvchilarning oq roʻyxatini oʻqish va tahrirlash</translation>
+<translation id="8841884135319684422">Vazifani yakunlash</translation>
 <translation id="8842594465773264717">Bu barmoq izini olib tashlash</translation>
 <translation id="8845001906332463065">Yordam</translation>
 <translation id="8846132060409673887">Kompyuter ishlab chiqaruvchisi va modeli haqidagi axborotni olish</translation>

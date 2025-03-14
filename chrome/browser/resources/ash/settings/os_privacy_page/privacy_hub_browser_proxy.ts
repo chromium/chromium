@@ -4,10 +4,13 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+import type {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
+
 export interface PrivacyHubBrowserProxy {
   getInitialMicrophoneHardwareToggleState(): Promise<boolean>;
   getInitialMicrophoneMutedBySecurityCurtainState(): Promise<boolean>;
   getInitialCameraSwitchForceDisabledState(): Promise<boolean>;
+  getInitialGeolocationAccessLevelState(): Promise<GeolocationAccessLevel>;
   getCameraLedFallbackState(): Promise<boolean>;
   getCurrentTimeZoneName(): Promise<string>;
   getCurrentSunriseTime(): Promise<string>;
@@ -29,6 +32,9 @@ export class PrivacyHubBrowserProxyImpl implements PrivacyHubBrowserProxy {
     return sendWithPromise('getInitialCameraSwitchForceDisabledState');
   }
 
+  getInitialGeolocationAccessLevelState(): Promise<GeolocationAccessLevel> {
+    return sendWithPromise('getInitialGeolocationAccessLevelState');
+  }
   getCameraLedFallbackState(): Promise<boolean> {
     return sendWithPromise('getCameraLedFallbackState');
   }

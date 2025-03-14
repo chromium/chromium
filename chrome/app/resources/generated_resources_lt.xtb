@@ -2813,7 +2813,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2921081876747860777">Sukurkite slaptažodį, kad apsaugotumėte vietinius duomenis.</translation>
 <translation id="2923006468155067296">Jūsų „<ph name="DEVICE_TYPE" />“ įrenginys dabar bus užrakintas.
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Pašalinti šią paskyrą</translation>
 <translation id="2923644930701689793">Galimybė pasiekti telefono fotoaparato aplanką</translation>
 <translation id="292371311537977079">„Chrome“ nustatymai</translation>
@@ -10653,7 +10652,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8524841856047224176">Suasmeninkite fotoaparato fonus, kad galėtumėte atlikti vaizdo skambučius ir kitus veiksmus</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="8525461909394569609">Šioje programoje yra žiniatinklio turinio iš</translation>
-<translation id="8526313996927074827">Įterpkite nuorodų, jaustukų ir kt. Be to, galite gauti pagalbos rašydami naudodami „Google“ DI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Garsiakalbiai</translation>
 <translation id="8527257351549797148">Jūsų organizacija gali reikalauti užsiregistruoti, kad galėtumėte pasiekti programas, plėtinius ir kt. Tai taip pat suteikia organizacijai galimybę tvarkyti saugos ir įrenginio nustatymus ir kt.</translation>

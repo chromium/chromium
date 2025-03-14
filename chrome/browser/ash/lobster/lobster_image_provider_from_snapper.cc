@@ -225,11 +225,8 @@ void LobsterImageProviderFromSnapper::RequestSingleCandidateWithSeed(
   auto request =
       CreateMantaRequest(/*query=*/query, /*seed=*/seed,
                          /*image_size=*/kFullImageSize, /*num_outputs=*/1);
-
-  // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   provider_->Call(
-      request, MISSING_TRAFFIC_ANNOTATION,
+      request, kLobsterTrafficAnnotation,
       base::BindOnce(&LobsterImageProviderFromSnapper::OnCandidatesRequested,
                      weak_ptr_factory_.GetWeakPtr(), query,
                      std::move(callback)));

@@ -26117,12 +26117,12 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
   ASSERT_TRUE(base::Base64Decode(
       "AgAAACQfiwgAAAAAAAADq84sds5ITEuzUigpKk2t5QIAAAgvJxAAAAA=",
       &not_cbor_response));
-  std::string missing_fields_response;
-  // CBOR {isChaff: false} | xxd -r -p | gzip | xxd -p -c 0 | sed
+  std::string bad_field_type_response;
+  // CBOR {"isChaff": ""} | xxd -r -p | gzip | xxd -p -c 0 | sed
   // 's/^/02<size>/' | xxd -r -p | base64
   ASSERT_TRUE(
-      base::Base64Decode("AgAAAB4fiwgAAAAAAAADW5ieWeyckZiW9gUATA0P6QoAAAA=",
-                         &missing_fields_response));
+      base::Base64Decode("AgAAAB4fiwgAAAAAAAADW5ieWeyckZiWlgAAEVptHgoAAAA=",
+                         &bad_field_type_response));
   std::string chaff_response;
   // CBOR {isChaff: true} | xxd -r -p | gzip | xxd -p -c 0 | sed 's/^/02<size>/'
   // | xxd -r -p | base64
@@ -26172,8 +26172,8 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
        true,
        {"runAdAuction(): Could not parse server response"},
        AuctionResult::kInvalidServerResponse},
-      {"missing fields",
-       missing_fields_response,
+      {"bad field type",
+       bad_field_type_response,
        true,
        true,
        kSellerUrl,

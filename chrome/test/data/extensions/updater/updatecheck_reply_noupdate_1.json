@@ -1,10 +1,11 @@
 )]}'
 {"response":{
- "protocol":"3.1",
+ "protocol":"4.0",
  "daystart":{"elapsed_days":4055, "elapsed_seconds":44620},
- "app":[
+ "apps":[
   {"appid":"aohghmighlieiainnegkcijnfilokake",
-    "updatecheck":{"status":"noupdate"}
+   "status":"ok",
+   "updatecheck":{"status":"noupdate"}
   }
  ]
 }}

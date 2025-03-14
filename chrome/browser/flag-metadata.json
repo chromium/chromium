@@ -1634,6 +1634,13 @@
     "expiry_milestone": 150
   },
   {
+    "name": "credential-management-third-party-web-api-request-forwarding",
+    "owners": [
+      "izuzic@google.com",
+      "friedrichh@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cros-apps-background-event-handling",
     "owners": [
       "clamclamyan@chromium.org",
@@ -4586,6 +4593,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "feed-swipe-iph",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "feedback-include-variations",
     "owners": [ "svenzheng@google.com", "chrome-metrics-team@google.com" ],
     "expiry_milestone": 145
@@ -5719,6 +5731,11 @@
   {
     "name": "lens-prewarm-hard-stickiness-in-query-formulation",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "lens-qr-code-parsing-fix",
+    "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -9339,6 +9356,11 @@
     "name": "web-otp-backend",
     "owners": [ "yigu@chromium.org" ],
     "expiry_milestone": 138
+  },
+  {
+    "name": "web-serial-api",
+    "owners": ["ovn@google.com", "cros-web-apps-team@google.com"],
+    "expiry_milestone": 146
   },
   {
     "name": "web-share",

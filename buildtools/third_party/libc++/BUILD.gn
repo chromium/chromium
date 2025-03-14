@@ -168,7 +168,10 @@ libcxx_modules("std_float_h") {
 }
 
 libcxx_modules("std_inttypes_h") {
-  deps = [ ":_Builtin_inttypes" ]
+  deps = [
+    ":_Builtin_inttypes",
+    ":_Builtin_stdint",
+  ]
 }
 
 libcxx_modules("std_math_h") {

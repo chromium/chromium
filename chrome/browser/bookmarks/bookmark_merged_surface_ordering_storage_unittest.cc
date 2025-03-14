@@ -54,7 +54,9 @@ class BookmarkMergedSurfaceOrderingStorageTest : public testing::Test {
  public:
   BookmarkMergedSurfaceOrderingStorageTest()
       : model_(TestBookmarkClient::CreateModel()),
-        service_(model_.get(), /*managed_bookmark_service=*/nullptr) {}
+        service_(model_.get(), /*managed_bookmark_service=*/nullptr) {
+    service_.LoadForTesting({});
+  }
 
   const BookmarkNode* CreateURLNode(const BookmarkNode* parent,
                                     const std::u16string& title,
@@ -377,6 +379,7 @@ TEST(BookmarkMergedSurfaceOrderingStorageShutdownTest,
   std::unique_ptr<BookmarkModel> model(TestBookmarkClient::CreateModel());
   BookmarkMergedSurfaceService service(model.get(),
                                        /*managed_bookmark_service=*/nullptr);
+  service.LoadForTesting({});
   {
     base::test::TaskEnvironment task_environment{
         base::test::TaskEnvironment::TimeSource::MOCK_TIME};

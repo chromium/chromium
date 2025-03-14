@@ -503,6 +503,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="310900540163454140">Želite da izbrišite lozinku za aplikaciju <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Označi…</translation>
 <translation id="3119874402040566234">Odjavićete se i podaci pregledanja će biti izbrisani</translation>
+<translation id="3124568093781685165">Delite lozinke sa porodicom</translation>
 <translation id="3130863904455712965">Istorija i drugo</translation>
 <translation id="313283613037595347">Napravi novu karticu bez arhiviranja.</translation>
 <translation id="3138611310073113613">Odbaci izbor</translation>
@@ -1002,6 +1003,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5352128922772839949">Sačuvajte fajl</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
 <translation id="537853552771686272">Upravljajte temama i sajtovima koji vas interesuju</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} zatvorena}one{{count} zatvorena}few{{count} zatvorene}other{{count} zatvorenih}}</translation>
 <translation id="5394975111793637642">Sakrijte karticu Recenzije proizvoda za vas</translation>
 <translation id="5395707839134961196">Sakrijte detalje o pretraživaču</translation>
 <translation id="5414763847370083940">Dobićete obaveštenje ako se cena snizi na bilo kom sajtu.</translation>
@@ -1131,6 +1133,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="5897749768294722429">Da biste se brzo vratili na sajtove koje ste posetili, sinhronizujte kartice i istoriju.</translation>
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Da biste delili sa ljudima u blizini, dajte im da skeniraju ovaj QR kôd pomoću kamere ili aplikacije za skeniranje QR koda</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} nova kartica}one{{count} nova kartica}few{{count} nove kartice}other{{count} novih kartica}}</translation>
 <translation id="5911030830365207728">Google prevodilac</translation>
 <translation id="5917913282764181683">Automatski brišite preuzimanja</translation>
 <translation id="5922999516621365983">Prevucite karticu ovde da biste je zakačili.</translation>
@@ -1674,6 +1677,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8132598642024322408">Cena je <ph name="PRICE" />, a bila je <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Koristite jedinstvenu lozinku za svaki sajt ili aplikaciju. Ako neko otkrije lozinku koju koristite za više naloga, može da je upotrebi za pristup drugim nalozima. Kliknite da biste otvorili veb-sajt i promenili je.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} zatvorena kartica}one{{count} zatvorena kartica}few{{count} zatvorene kartice}other{{count} zatvorenih kartica}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Još 1}one{Još #}few{Još #}other{Još #}}</translation>
 <translation id="8150167929304790980">Ime i prezime</translation>
 <translation id="8152331954420209374">Idi na Objektiv</translation>

@@ -253,7 +253,8 @@ int main(int argc, char** argv) {
   // Disabling Direct Composition works around the limitation that
   // InProcessContextFactory doesn't work with Direct Composition, causing the
   // window to not render. See http://crbug.com/936249.
-  gl::SetGlWorkarounds(gl::GlWorkarounds{.disable_direct_composition = true});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableDirectComposition);
 
   // The exit manager is in charge of calling the dtors of singleton objects.
   base::AtExitManager exit_manager;

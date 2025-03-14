@@ -30,7 +30,6 @@
 #include "components/commerce/core/compare/cluster_server_proxy.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/compare/product_specifications_server_proxy.h"
-#include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
@@ -218,13 +217,13 @@ ShoppingService::ShoppingService(
   if (opt_guide_) {
     std::vector<optimization_guide::proto::OptimizationType> types;
 
-      types.push_back(
-          optimization_guide::proto::OptimizationType::PRICE_TRACKING);
+    types.push_back(
+        optimization_guide::proto::OptimizationType::PRICE_TRACKING);
 
-      if (IsMerchantViewerEnabled(account_checker_.get())) {
-        types.push_back(optimization_guide::proto::OptimizationType::
-                            MERCHANT_TRUST_SIGNALS_V2);
-      }
+    if (IsMerchantViewerEnabled(account_checker_.get())) {
+      types.push_back(optimization_guide::proto::OptimizationType::
+                          MERCHANT_TRUST_SIGNALS_V2);
+    }
     if (IsPriceInsightsApiEnabled(account_checker_.get())) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_INSIGHTS);
@@ -271,12 +270,6 @@ ShoppingService::ShoppingService(
         std::make_unique<metrics::ScheduledMetricsManager>(pref_service_, this);
   }
 
-  if (IsDiscountInfoApiEnabled(account_checker_.get()) && discounts_proto_db &&
-      history_service) {
-    discounts_storage_ =
-        std::make_unique<DiscountsStorage>(discounts_proto_db, history_service);
-  }
-
   if (subscriptions_manager_) {
     RemoveDanglingSubscriptions(
         this, bookmark_model_, base::BindOnce([](size_t dangling_sub_count) {
@@ -319,6 +312,12 @@ ShoppingService::ShoppingService(
         product_specifications_service_);
   }
 
+  // TODO(crbug.com/403323742): This is added in 03/2025 to deprecate
+  // discount storage. This part should be removed in 03/2026.
+  if (discounts_proto_db) {
+    discounts_proto_db->DeleteAllContent(base::DoNothing());
+  }
+
   // TODO(crbug.com/373426638): This is added in 11/2024 to deprecate
   // ChromeCart. This part should be removed in 11/2025.
   if (cart_proto_db) {
@@ -358,15 +357,15 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    commerce_info_cache_.AddRef(web->GetLastCommittedURL());
+  commerce_info_cache_.AddRef(web->GetLastCommittedURL());
 
-    CommerceInfoCache::CacheEntry* entry =
-        commerce_info_cache_.GetEntryForUrl(web->GetLastCommittedURL());
-    CHECK(entry);
+  CommerceInfoCache::CacheEntry* entry =
+      commerce_info_cache_.GetEntryForUrl(web->GetLastCommittedURL());
+  CHECK(entry);
 
-    // When info is loaded as the result of a navigation, there's no reason to
-    // require it be loaded on-demand.
-    entry->run_product_info_on_demand = false;
+  // When info is loaded as the result of a navigation, there's no reason to
+  // require it be loaded on-demand.
+  entry->run_product_info_on_demand = false;
 
   opt_guide_->CanApplyOptimization(
       web->GetLastCommittedURL(),
@@ -817,8 +816,9 @@ std::optional<ProductInfo> ShoppingService::GetAvailableProductInfoForUrl(
   std::optional<ProductInfo> optional_info;
 
   const ProductInfo* cached_info = GetFromProductInfoCache(url);
-  if (cached_info)
+  if (cached_info) {
     optional_info.emplace(*cached_info);
+  }
 
   return optional_info;
 }
@@ -1148,23 +1148,26 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
 
 std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
     const optimization_guide::OptimizationMetadata& metadata) {
-  if (!metadata.any_metadata().has_value())
+  if (!metadata.any_metadata().has_value()) {
     return nullptr;
+  }
 
   std::optional<commerce::PriceTrackingData> parsed_any =
       optimization_guide::ParsedAnyMetadata<commerce::PriceTrackingData>(
           metadata.any_metadata().value());
   commerce::PriceTrackingData price_data = parsed_any.value();
 
-  if (!parsed_any.has_value() || !price_data.IsInitialized())
+  if (!parsed_any.has_value() || !price_data.IsInitialized()) {
     return nullptr;
+  }
 
   const commerce::BuyableProduct buyable_product = price_data.buyable_product();
 
   std::unique_ptr<ProductInfo> info = std::make_unique<ProductInfo>();
 
-  if (buyable_product.has_title())
+  if (buyable_product.has_title()) {
     info->title = buyable_product.title();
+  }
 
   if (buyable_product.has_gpc_title()) {
     info->product_cluster_title = buyable_product.gpc_title();
@@ -1177,19 +1180,22 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
     info->server_image_available = false;
   }
 
-  if (buyable_product.has_offer_id())
+  if (buyable_product.has_offer_id()) {
     info->offer_id = buyable_product.offer_id();
+  }
 
-  if (buyable_product.has_product_cluster_id())
+  if (buyable_product.has_product_cluster_id()) {
     info->product_cluster_id = buyable_product.product_cluster_id();
+  }
 
   if (buyable_product.has_current_price()) {
     info->currency_code = buyable_product.current_price().currency_code();
     info->amount_micros = buyable_product.current_price().amount_micros();
   }
 
-  if (buyable_product.has_country_code())
+  if (buyable_product.has_country_code()) {
     info->country_code = buyable_product.country_code();
+  }
 
   // Check to see if there was a price drop associated with this product. Those
   // prices take priority over what BuyableProduct has.
@@ -1243,8 +1249,9 @@ void ShoppingService::HandleOnDemandProductInfoResponseForBookmarks(
   auto iter = decisions.find(
       optimization_guide::proto::OptimizationType::PRICE_TRACKING);
 
-  if (iter == decisions.cend())
+  if (iter == decisions.cend()) {
     return;
+  }
 
   optimization_guide::OptimizationGuideDecisionWithMetadata decision =
       iter->second;
@@ -1285,8 +1292,9 @@ void ShoppingService::HandleOnDemandProductInfoResponse(
 void ShoppingService::MergeProductInfoData(
     ProductInfo* info,
     const base::Value::Dict& on_page_data_map) {
-  if (!info)
+  if (!info) {
     return;
+  }
 
   // This will be true if any of the data found in |on_page_data_map| is used to
   // populate fields in |meta|.
@@ -1314,8 +1322,9 @@ void ShoppingService::MergeProductInfoData(
         GURL og_url(value.GetString());
 
         // Only keep the local image if we're allowed to.
-        if (base::FeatureList::IsEnabled(commerce::kCommerceAllowLocalImages))
+        if (base::FeatureList::IsEnabled(commerce::kCommerceAllowLocalImages)) {
           info->image_url.Swap(&og_url);
+        }
 
         base::UmaHistogramEnumeration(
             "Commerce.ShoppingService.ProductInfo.FallbackDataContent",
@@ -1608,17 +1617,7 @@ void ShoppingService::HandleOptGuideDiscountInfoResponse(
   std::vector<DiscountInfo> discount_infos =
       OptGuideResultToDiscountInfos(metadata);
 
-  if (discount_infos.size() != 0) {
-    base::UmaHistogramEnumeration(kDiscountsFetchResultHistogramName,
-                                  DiscountsFetchResult::kInfoFromOptGuide);
-  }
-
-  if (discounts_storage_) {
-    discounts_storage_->HandleServerDiscounts(url, std::move(discount_infos),
-                                              std::move(callback));
-  } else {
-    std::move(callback).Run(url, std::move(discount_infos));
-  }
+  std::move(callback).Run(url, std::move(discount_infos));
 }
 
 std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
@@ -1717,11 +1716,6 @@ std::vector<DiscountInfo> ShoppingService::OptGuideResultToDiscountInfos(
   }
 
   return discount_infos;
-}
-
-void ShoppingService::SetDiscountsStorageForTesting(
-    std::unique_ptr<DiscountsStorage> storage) {
-  discounts_storage_ = std::move(storage);
 }
 
 void ShoppingService::Subscribe(

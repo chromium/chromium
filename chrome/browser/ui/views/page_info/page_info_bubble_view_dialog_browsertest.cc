@@ -323,13 +323,11 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
           net::GetTestCertsDirectory(), kExpiredCertificateFile);
       identity.safe_browsing_status = PageInfo::SAFE_BROWSING_STATUS_MALWARE;
     } else if (name == kMixedContentForm) {
-      identity.identity_status =
-          PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT;
+      identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_CERT;
       identity.connection_status =
           PageInfo::SITE_CONNECTION_STATUS_INSECURE_FORM_ACTION;
     } else if (name == kMixedContent) {
-      identity.identity_status =
-          PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT;
+      identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_CERT;
       identity.connection_status =
           PageInfo::SITE_CONNECTION_STATUS_INSECURE_PASSIVE_SUBRESOURCE;
     }

@@ -1,0 +1,37 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module custom_help_bubble.mojom;
+
+// Contains IPC calls that allow a WebUI to behave as a Custom UI help bubble.
+//
+// The only thing a Custom UI Help Bubble needs to do is report its user action.
+
+// The action the user took (the bubble will be closed).
+//
+// These are used for UMA and for determining next steps and if the promo can be
+// shown again.
+enum CustomHelpBubbleUserAction {
+  kDismiss,  // e.g. "Got It", "No Thanks"
+  kSnooze,   // e.g. "Maybe Later", "Not Now"
+  kAction,   // e.g. "Show me how", clicking a link
+  kCancel,   // clicking the (x) close button or pressing ESC
+};
+
+// Used by the controller to bootstrap IPC. Any WebUIController can implement
+// this interface to be a custom help bubble UI; see README.md for more
+// information.
+interface CustomHelpBubbleHandlerFactory {
+  // This method is called on bootstrap to create the browser-side handler.
+  CreateCustomHelpBubbleHandler(
+           pending_receiver<CustomHelpBubbleHandler> handler);
+};
+
+// Object which handles the C++/browser side of a Custom UI help bubble for a
+// WebUIController.
+interface CustomHelpBubbleHandler {
+  // Indicates that the user interacted with the bubble in a way that should
+  // result in the bubble closing; `action` is the type of action the user took.
+  NotifyUserAction(CustomHelpBubbleUserAction action);
+};

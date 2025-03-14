@@ -290,9 +290,9 @@ void UpdateEngine::UpdateCheckResultsAvailable(
   CHECK(results);
   CHECK_EQ(0, error);
 
-  std::map<std::string, ProtocolParser::Result> id_to_result;
-  for (const auto& result : results->list) {
-    id_to_result[result.extension_id] = result;
+  std::map<std::string, ProtocolParser::App> id_to_result;
+  for (const auto& result : results->apps) {
+    id_to_result[result.app_id] = result;
   }
 
   for (const auto& id : update_context->components_to_check_for_updates) {
@@ -302,8 +302,11 @@ void UpdateEngine::UpdateCheckResultsAvailable(
     if (it != id_to_result.end()) {
       const auto& result = it->second;
       const auto& [category, protocol_error] = [](const std::string& status) {
-        // First, handle app status literals which can be folded down as an
-        // updatecheck status
+        // "ok" and "noupdate" are non-error cases.
+        if (status == "ok" || status == "noupdate") {
+          return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);
+        }
+        // Some app status literals can be folded down as an updatecheck status.
         if (status == "error-unknownApplication") {
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::UNKNOWN_APPLICATION);
@@ -336,9 +339,13 @@ void UpdateEngine::UpdateCheckResultsAvailable(
           return std::make_pair(ErrorCategory::kUpdateCheck,
                                 ProtocolError::INTERNAL);
         }
-        // If the parser has return a valid result and the status is not one of
-        // the literals above, then this must be a success an not a parse error.
-        return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);
+        if (status == "error-inexpressible") {
+          return std::make_pair(ErrorCategory::kUpdateCheck,
+                                ProtocolError::INEXPRESSIBLE);
+        }
+        // Otherwise, this is an unknown status.
+        return std::make_pair(ErrorCategory::kUpdateCheck,
+                              ProtocolError::UNKNOWN_ERROR);
       }(result.status);
       component->SetUpdateCheckResult(
           result, category, static_cast<int>(protocol_error), complete);

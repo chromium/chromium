@@ -2809,7 +2809,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2921081876747860777">Kreirajte lozinku da zaštitite svoje lokalne podatke.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> će se sada zaključati.
 Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Još <ph name="OTHER_TASK_NUM" /> zadatak u istoj grupi zadataka: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Još <ph name="OTHER_TASK_NUM" /> zadatka u istoj grupi zadataka: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Još <ph name="OTHER_TASK_NUM" /> zadataka u istoj grupi zadataka: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Ukloni ovaj račun</translation>
 <translation id="2923644930701689793">Pristupite snimljenim fotografijama telefona</translation>
 <translation id="292371311537977079">Postavke Chromea</translation>
@@ -10646,7 +10645,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8524841856047224176">Personalizirajte pozadine kamere za video pozive i još mnogo toga</translation>
 <translation id="8525306231823319788">Cijeli ekran</translation>
 <translation id="8525461909394569609">Aplikacija sadržava web sadržaj s</translation>
-<translation id="8526313996927074827">Umetnite linkove, emodžije i drugo. Također možete dobiti pomoć u pisanju putem Google AI-ja.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Zvučnici</translation>
 <translation id="8527257351549797148">Vaša organizacija može zahtijevati registriranje da možete pristupati aplikacijama, ekstenzijama i drugom. Ovo također omogućava organizaciji upravljanje stvarima kao što su sigurnost i postavke uređaja.</translation>

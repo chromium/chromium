@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
                        AllowlistedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
-      "eefninhhiifgcimjkmkongegpoaikmhm"};
+      "eefninhhiifgcimjkmkongegpoaikmhm", "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -380,7 +380,8 @@ class AiDataKeyedServiceBrowserTestWithBlocklistedExtensions
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithBlocklistedExtensions,
                        BlockedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
-      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm"};
+      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm",
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -406,7 +407,8 @@ IN_PROC_BROWSER_TEST_F(
     RemotelyAllowlistedExtensionList) {
   std::vector<std::string> expected_allowlisted_extensions = {
       "1234", "hpkopmikdojpadgmioifjjodbmnjjjca",
-      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm"};
+      "bgbpcgpcobgjpnpiginpidndjpggappi", "eefninhhiifgcimjkmkongegpoaikmhm",
+      "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);
@@ -431,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTestWithAllowAndBlock,
                        AllowAndBlock) {
   std::vector<std::string> expected_allowlisted_extensions = {
       "hpkopmikdojpadgmioifjjodbmnjjjca", "bgbpcgpcobgjpnpiginpidndjpggappi",
-      "eefninhhiifgcimjkmkongegpoaikmhm"};
+      "eefninhhiifgcimjkmkongegpoaikmhm", "abdciamfdmknaeggbnmafmbdfdmhfgfa"};
 
   EXPECT_EQ(AiDataKeyedService::GetAllowlistedExtensions(),
             expected_allowlisted_extensions);

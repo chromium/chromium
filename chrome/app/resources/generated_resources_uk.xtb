@@ -2813,7 +2813,6 @@
 <translation id="2921081876747860777">Створіть пароль, щоб захистити дані на пристрої.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> зараз буде заблоковано.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдань у тій самій групі: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Видалити цей обліковий запис</translation>
 <translation id="2923644930701689793">Отримайте доступ до фотоплівки на телефоні</translation>
 <translation id="292371311537977079">Налаштування Chrome</translation>
@@ -10645,7 +10644,6 @@
 <translation id="8524841856047224176">Персоналізуйте фони для відеодзвінків тощо</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="8525461909394569609">Цей додаток містить веб-контент з інших джерел</translation>
-<translation id="8526313996927074827">Вставляйте посилання, смайли тощо. Ви також можете писати тексти за допомогою ШІ від Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527257351549797148">Можливо, ваша організація вимагатиме від вас зареєструватися, щоб ви могли отримати доступ до додатків, розширень тощо. Це також дасть змогу вашій організації керувати налаштуваннями безпеки й пристрою.</translation>

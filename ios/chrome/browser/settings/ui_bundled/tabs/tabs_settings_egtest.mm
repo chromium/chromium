@@ -20,13 +20,13 @@
   [super setUp];
   // Ensures that inactive tabs preference settings is set to its default state.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
 }
 
 - (void)tearDownHelper {
   // Resets preferences back to default values.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   [super tearDownHelper];
 }
 
@@ -41,14 +41,13 @@
 // tabs feature has been manually disabled.
 - (void)testOpenTabsSettingsWhenInactiveTabsDisabledByUser {
   GREYAssertEqual(
-      0,
-      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      0, [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
       @"Inactive tabs preference is not set to default value.");
   [ChromeEarlGrey setIntegerValue:kInactiveTabsDisabledByUser
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   GREYAssertEqual(
       kInactiveTabsDisabledByUser,
-      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
       @"Inactive tabs preference is not set to disable the feature.");
 
   [self openTabsSettings];

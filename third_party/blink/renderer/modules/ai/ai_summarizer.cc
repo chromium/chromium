@@ -22,15 +22,15 @@ AISummarizer::AISummarizer(
     AISummarizerCreateOptions* options)
     : ExecutionContextClient(context),
       task_runner_(task_runner),
-      summarizer_remote_(context),
+      remote_(context),
       options_(options) {
-  summarizer_remote_.Bind(std::move(pending_remote), task_runner_);
+  remote_.Bind(std::move(pending_remote), task_runner_);
 }
 
 void AISummarizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
-  visitor->Trace(summarizer_remote_);
+  visitor->Trace(remote_);
   visitor->Trace(options_);
 }
 
@@ -78,9 +78,8 @@ ScriptPromise<IDLString> AISummarizer::summarize(
       AIMetrics::AISessionType::kSummarizer,
       /*complete_callback=*/base::DoNothing(),
       /*overflow_callback=*/base::DoNothing());
-  summarizer_remote_->Summarize(trimmed_input,
-                                options->getContextOr(g_empty_string),
-                                std::move(pending_remote));
+  remote_->Summarize(trimmed_input, options->getContextOr(g_empty_string),
+                     std::move(pending_remote));
   return promise;
 }
 
@@ -126,10 +125,63 @@ ReadableStream* AISummarizer::summarizeStreaming(
           AIMetrics::AISessionType::kSummarizer,
           /*complete_callback=*/base::DoNothing(),
           /*overflow_callback=*/base::DoNothing());
-  summarizer_remote_->Summarize(trimmed_input,
-                                options->getContextOr(g_empty_string),
-                                std::move(pending_remote));
+  remote_->Summarize(trimmed_input, options->getContextOr(g_empty_string),
+                     std::move(pending_remote));
   return readable_stream;
+}
+
+// TODO(crbug.com/402442890): Refactor Writing Assistance APIs to reduce
+// duplicated code.
+ScriptPromise<IDLDouble> AISummarizer::measureInputUsage(
+    ScriptState* script_state,
+    const String& input,
+    const AISummarizerSummarizeOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  if (is_destroyed_) {
+    ThrowSessionDestroyedException(exception_state);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
+  auto promise = resolver->Promise();
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
+
+  remote_->MeasureUsage(
+      input, options->getContextOr(g_empty_string),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
+             std::optional<uint64_t> usage) {
+            ExecutionContext* context = resolver->GetExecutionContext();
+            if (!context) {
+              return;
+            }
+            if (signal && signal->aborted()) {
+              resolver->Reject(signal->reason(resolver->GetScriptState()));
+              return;
+            }
+            if (!usage.has_value()) {
+              resolver->Reject(
+                  DOMException::Create(kExceptionMessageUnableToCalculateUsage,
+                                       DOMException::GetErrorName(
+                                           DOMExceptionCode::kOperationError)));
+              return;
+            }
+            resolver->Resolve(static_cast<double>(usage.value()));
+          },
+          WrapPersistent(resolver),
+          WrapPersistent(options->getSignalOr(nullptr))));
+
+  return promise;
 }
 
 // TODO(crbug.com/355967885): reset the remote to destroy the session.
@@ -146,7 +198,7 @@ void AISummarizer::destroy(ScriptState* script_state,
 
   if (!is_destroyed_) {
     is_destroyed_ = true;
-    summarizer_remote_.reset();
+    remote_.reset();
   }
 }
 

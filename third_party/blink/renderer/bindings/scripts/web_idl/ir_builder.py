@@ -950,6 +950,7 @@ class _IRBuilder(object):
             'Uint32Array',
             'BigUint64Array',
             'Uint8ClampedArray',
+            'Float16Array',
             'Float32Array',
             'Float64Array',
         ])

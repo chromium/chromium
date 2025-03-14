@@ -41,13 +41,6 @@ interface CaptureController : EventTarget {
   [
     RuntimeEnabled = CapturedSurfaceControl,
     MeasureAs = CapturedSurfaceControl,
-    CallWith = ScriptState
-  ]
-  Promise<undefined> sendWheel(CapturedWheelAction action);
-
-  [
-    RuntimeEnabled = CapturedSurfaceControl,
-    MeasureAs = CapturedSurfaceControl,
     RaisesException
   ]
   sequence<long> getSupportedZoomLevels();

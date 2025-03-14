@@ -135,6 +135,62 @@ ReadableStream* AIWriter::writeStreaming(ScriptState* script_state,
   return readable_stream;
 }
 
+// TODO(crbug.com/402442890): Refactor Writing Assistance APIs to reduce
+// duplicated code.
+ScriptPromise<IDLDouble> AIWriter::measureInputUsage(
+    ScriptState* script_state,
+    const String& writing_task,
+    const AIWriterWriteOptions* options,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  if (!remote_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kExceptionMessageWriterDestroyed);
+    return ScriptPromise<IDLDouble>();
+  }
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
+  auto promise = resolver->Promise();
+  CHECK(options);
+  AbortSignal* signal = options->getSignalOr(nullptr);
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
+    return promise;
+  }
+
+  remote_->MeasureUsage(
+      writing_task, options->getContextOr(g_empty_string),
+      WTF::BindOnce(
+          [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
+             std::optional<uint64_t> usage) {
+            ExecutionContext* context = resolver->GetExecutionContext();
+            if (!context) {
+              return;
+            }
+            if (signal && signal->aborted()) {
+              resolver->Reject(signal->reason(resolver->GetScriptState()));
+              return;
+            }
+            if (!usage.has_value()) {
+              resolver->Reject(
+                  DOMException::Create(kExceptionMessageUnableToCalculateUsage,
+                                       DOMException::GetErrorName(
+                                           DOMExceptionCode::kOperationError)));
+              return;
+            }
+            resolver->Resolve(static_cast<double>(usage.value()));
+          },
+          WrapPersistent(resolver),
+          WrapPersistent(options->getSignalOr(nullptr))));
+
+  return promise;
+}
+
 void AIWriter::destroy(ScriptState* script_state,
                        ExceptionState& exception_state) {
   remote_.reset();

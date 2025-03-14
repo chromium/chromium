@@ -2810,7 +2810,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2921081876747860777">Skapa ett lösenord för att skydda lokal data</translation>
 <translation id="2923006468155067296">Din <ph name="DEVICE_TYPE" /> kommer nu att låsas.
 <ph name="DOMAIN" /> kräver att du har smartkortet isatt.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> andra uppgifter i samma uppgiftsgrupp: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Ta bort det här kontot</translation>
 <translation id="2923644930701689793">Kom åt telefonens kamerabilder</translation>
 <translation id="292371311537977079">Inställningar för Chrome</translation>
@@ -10642,7 +10641,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8524841856047224176">Anpassa kamerabakgrunden för videosamtal med mera</translation>
 <translation id="8525306231823319788">Helskärm</translation>
 <translation id="8525461909394569609">Den här appen innehåller webbinnehåll från</translation>
-<translation id="8526313996927074827">Infoga länkar, emojis och mycket annat. Du kan även få hjälp att skriva med Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Högtalare</translation>
 <translation id="8527257351549797148">Organisationen kan kräva att du registrerar dig för att få åtkomst till appar, tillägg med mera. Detta gör det även möjligt för organisationen att hantera säkerhets- och enhetsinställningar.</translation>

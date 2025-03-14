@@ -246,4 +246,8 @@ BASE_FEATURE(kFastPathNoRaster,
              "FastPathNoRaster",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExportFrameTimingAfterFrameDone,
+             "ExportFrameTimingAfterFrameDone",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features

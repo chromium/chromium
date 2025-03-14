@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/shell/app/shell_content_main.h"
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
@@ -16,12 +12,11 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #if BUILDFLAG(IS_MAC)
-int ContentMain(int argc,
-                const char** argv) {
+int ContentMain(int argc, const char** argv) {
   bool is_browsertest = false;
   std::string browser_test_flag(std::string("--") + switches::kBrowserTest);
   for (int i = 0; i < argc; ++i) {
-    if (browser_test_flag == argv[i]) {
+    if (browser_test_flag == UNSAFE_BUFFERS(argv[i])) {
       is_browsertest = true;
       break;
     }

@@ -172,10 +172,11 @@ class BookmarkMergedSurfaceServiceTest : public testing::Test {
     }
     model_ =
         std::make_unique<bookmarks::BookmarkModel>(std::move(bookmark_client));
-    model_->LoadEmptyForTest();
     service_ = std::make_unique<BookmarkMergedSurfaceService>(
         model_.get(), managed_bookmark_service_.get());
     service_->AddObserver(&mock_service_observer_);
+    model_->LoadEmptyForTest();
+    service_->LoadForTesting({});
   }
 
   ~BookmarkMergedSurfaceServiceTest() override {
@@ -1386,6 +1387,113 @@ TEST_F(BookmarkMergedSurfaceServiceTest, BookmarkAllUserNodesRemoved) {
   EXPECT_EQ(
       service().GetChildrenCount(BookmarkParentFolder::BookmarkBarFolder()),
       0u);
+}
+
+TEST(BookmarkMergedSurfaceServiceLoadingTest, ModelLoadedFirst) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>());
+  BookmarkMergedSurfaceService service(model.get(),
+                                       /*managed_bookmark_service=*/nullptr);
+  MockBookmarkMergedSurfaceServiceObserver mock_observer;
+  base::ScopedObservation<BookmarkMergedSurfaceService,
+                          BookmarkMergedSurfaceServiceObserver>
+      scoped_mock_observer{&mock_observer};
+  scoped_mock_observer.Observe(&service);
+
+  EXPECT_CALL(mock_observer, BookmarkMergedSurfaceServiceLoaded()).Times(0);
+  EXPECT_CALL(mock_observer, BookmarkNodeAdded).Times(0);
+  model->LoadEmptyForTest();
+  // Notifications ignored while service is not loaded yet.
+  AddNodesFromModelString(model.get(), model->other_node(), "1 2 3 ");
+  Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_CALL(mock_observer, BookmarkMergedSurfaceServiceLoaded()).Times(1);
+  service.LoadForTesting({});
+
+  // Verify service is observing the bookmark model.
+  EXPECT_CALL(mock_observer,
+              BookmarkNodeAdded(BookmarkParentFolder::BookmarkBarFolder(), _))
+      .Times(3);
+  AddNodesFromModelString(model.get(), model->bookmark_bar_node(), "1 2 3 ");
+}
+
+TEST(BookmarkMergedSurfaceServiceLoadingTest, ServiceLoadedFirst) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>());
+  BookmarkMergedSurfaceService service(model.get(),
+                                       /*managed_bookmark_service=*/nullptr);
+  MockBookmarkMergedSurfaceServiceObserver mock_observer;
+  base::ScopedObservation<BookmarkMergedSurfaceService,
+                          BookmarkMergedSurfaceServiceObserver>
+      scoped_mock_observer{&mock_observer};
+  scoped_mock_observer.Observe(&service);
+
+  EXPECT_CALL(mock_observer, BookmarkMergedSurfaceServiceLoaded()).Times(0);
+  service.LoadForTesting({});
+  Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_CALL(mock_observer, BookmarkMergedSurfaceServiceLoaded()).Times(1);
+  model->LoadEmptyForTest();
+
+  // Verify service is observing the bookmark model.
+  EXPECT_CALL(mock_observer,
+              BookmarkNodeAdded(BookmarkParentFolder::BookmarkBarFolder(), _))
+      .Times(3);
+  AddNodesFromModelString(model.get(), model->bookmark_bar_node(), "1 2 3 ");
+}
+
+TEST(BookmarkMergedSurfaceServiceLoadingTest, IdsReassigned) {
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>());
+  BookmarkMergedSurfaceService service(model.get(),
+                                       /*managed_bookmark_service=*/nullptr);
+  MockBookmarkMergedSurfaceServiceObserver mock_observer;
+  base::ScopedObservation<BookmarkMergedSurfaceService,
+                          BookmarkMergedSurfaceServiceObserver>
+      scoped_mock_observer{&mock_observer};
+  scoped_mock_observer.Observe(&service);
+
+  EXPECT_CALL(mock_observer, BookmarkMergedSurfaceServiceLoaded()).Times(1);
+  service.BookmarkModelLoaded(/*ids_reassigned=*/true);
+  model->LoadEmptyForTest();
+}
+
+TEST(BookmarkMergedSurfaceServiceLoadingTest, CustomOrder) {
+  base::test::ScopedFeatureList features{
+      switches::kSyncEnableBookmarksInTransportMode};
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>());
+  BookmarkMergedSurfaceService service(model.get(),
+                                       /*managed_bookmark_service=*/nullptr);
+  MockBookmarkMergedSurfaceServiceObserver mock_observer;
+  base::ScopedObservation<BookmarkMergedSurfaceService,
+                          BookmarkMergedSurfaceServiceObserver>
+      scoped_mock_observer{&mock_observer};
+  scoped_mock_observer.Observe(&service);
+
+  model->LoadEmptyForTest();
+  model->CreateAccountPermanentFolders();
+  AddNodesFromModelString(model.get(), model->bookmark_bar_node(), "1 ");
+  AddNodesFromModelString(model.get(), model->account_bookmark_bar_node(),
+                          "4 5 ");
+
+  EXPECT_CALL(mock_observer, BookmarkMergedSurfaceServiceLoaded()).Times(1);
+  service.LoadForTesting(
+      {{PermanentFolderType::kBookmarkBarNode,
+        {model->bookmark_bar_node()->children()[0]->id(),
+         model->account_bookmark_bar_node()->children()[0]->id(),
+         model->account_bookmark_bar_node()->children()[1]->id()}}});
+
+  EXPECT_EQ(
+      service.GetNodeAtIndex(BookmarkParentFolder::BookmarkBarFolder(), 0),
+      model->bookmark_bar_node()->children()[0].get());
+  EXPECT_EQ(
+      service.GetNodeAtIndex(BookmarkParentFolder::BookmarkBarFolder(), 1),
+      model->account_bookmark_bar_node()->children()[0].get());
 }
 
 }  // namespace

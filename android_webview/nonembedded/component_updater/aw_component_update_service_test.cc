@@ -73,7 +73,7 @@ void AssertOnDemandRequest(bool on_demand, std::string post_data) {
   ASSERT_TRUE(root);
   const auto* request = root->GetDict().FindDict("request");
   ASSERT_TRUE(request);
-  const auto& app = (*request->FindList("app"))[0].GetDict();
+  const auto& app = (*request->FindList("apps"))[0].GetDict();
   if (on_demand) {
     EXPECT_EQ("ondemand", *app.FindString("installsource"));
   } else {

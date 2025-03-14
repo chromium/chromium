@@ -2807,7 +2807,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2921081876747860777">Tafadhali unda nenosiri la kulinda data yako kwenye kifaa.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> itafungwa sasa.
 <ph name="DOMAIN" /> inahitaji usiondoe kadi yako mahiri.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Majukumu mengine <ph name="OTHER_TASK_NUM" /> katika kikundi kile kile cha majukumu: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Ondoa akaunti hii</translation>
 <translation id="2923644930701689793">Fikia albamu ya kamera ya simu yako</translation>
 <translation id="292371311537977079">Mipangilio ya Chrome</translation>
@@ -10638,7 +10637,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8524841856047224176">Wekea mapendeleo mandharinyuma ya kamera ili uyatumie unapopiga simu za video na zaidi</translation>
 <translation id="8525306231823319788">Skrini nzima</translation>
 <translation id="8525461909394569609">Programu hii ina maudhui ya wavuti kutoka</translation>
-<translation id="8526313996927074827">Weka viungo, emoji na mengineyo. Unaweza pia kupata usaidizi wa kuandika kwa kutumia Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Spika</translation>
 <translation id="8527257351549797148">Shirika lako huenda likahitaji ujiandikishe ili uweze kufikia programu, viendelezi na zaidi. Hii inaruhusu shirika lako lidhibiti vitu kama usalama na mipangilio ya kifaa.</translation>

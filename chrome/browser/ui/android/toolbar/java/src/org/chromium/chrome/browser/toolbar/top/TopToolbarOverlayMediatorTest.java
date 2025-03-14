@@ -40,6 +40,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for the top toolbar overlay's mediator (composited version of the top toolbar). */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.DISABLE_COMPOSITED_PROGRESS_BAR)
 public class TopToolbarOverlayMediatorTest {
     private TopToolbarOverlayMediator mMediator;
     private PropertyModel mModel;

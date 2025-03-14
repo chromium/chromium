@@ -144,7 +144,6 @@ struct App {
   std::string install_id;
   std::string install_source;
   std::string install_location;
-  std::string fingerprint;
 
   std::string cohort;       // Opaque string.
   std::string cohort_hint;  // Server may use to move the app to a new cohort.
@@ -166,6 +165,8 @@ struct App {
 
   // Progress/result pings.
   std::optional<std::vector<base::Value::Dict>> events;
+
+  std::vector<std::string> cached_hashes;
 };
 
 struct Request {

@@ -336,37 +336,37 @@ void PrefetchResponseReader::OnComplete(
   auto old_load_state = load_state();
   base::debug::Alias(&old_load_state);
 
-  switch (load_state()) {
-    case LoadState::kStarted:
-      CHECK_NE(completion_status.error_code, net::OK);
-      load_state_ = LoadState::kFailed;
-      break;
-    case LoadState::kResponseReceived:
-      if (completion_status.error_code == net::OK) {
-        load_state_ = LoadState::kCompleted;
-      } else {
-        load_state_ = LoadState::kFailed;
-      }
-      break;
-    case LoadState::kFailedResponseReceived:
-      load_state_ = LoadState::kFailed;
-      break;
-    case LoadState::kRedirectHandled:
-      NOTREACHED();
-    case LoadState::kCompleted:
-      NOTREACHED();
-    case LoadState::kFailed:
-      NOTREACHED();
-    case LoadState::kFailedRedirect:
-      NOTREACHED();
-  }
+  auto new_load_state = [&]() {
+    switch (load_state()) {
+      case LoadState::kStarted:
+        CHECK_NE(completion_status.error_code, net::OK);
+        return LoadState::kFailed;
+      case LoadState::kResponseReceived:
+        if (completion_status.error_code == net::OK) {
+          return LoadState::kCompleted;
+        } else {
+          return LoadState::kFailed;
+        }
+      case LoadState::kFailedResponseReceived:
+        return LoadState::kFailed;
+      case LoadState::kRedirectHandled:
+        NOTREACHED();
+      case LoadState::kCompleted:
+        NOTREACHED();
+      case LoadState::kFailed:
+        NOTREACHED();
+      case LoadState::kFailedRedirect:
+        NOTREACHED();
+    }
+  }();
 
   CHECK(!response_complete_time_);
   CHECK(!completion_status_);
   response_complete_time_ = base::TimeTicks::Now();
   completion_status_ = completion_status;
 
-  AddEventToQueue(
+  SetLoadStateAndAddEventToQueue(
+      new_load_state,
       base::BindRepeating(&PrefetchResponseReader::ForwardCompletionStatus,
                           base::Unretained(this)));
 }
@@ -400,19 +400,18 @@ void PrefetchResponseReader::HandleRedirect(
 
   switch (redirect_status) {
     case PrefetchRedirectStatus::kFollow:
-      load_state_ = LoadState::kRedirectHandled;
       // To record only one UMA per `PrefetchStreamingURLLoader`, skip UMA
       // recording if `this` is not the last `PrefetchResponseReader` of a
       // `PrefetchStreamingURLLoader`. This is to keep the existing behavior.
       should_record_metrics_ = false;
       break;
+
     case PrefetchRedirectStatus::kSwitchNetworkContext:
-      load_state_ = LoadState::kRedirectHandled;
       break;
 
     case PrefetchRedirectStatus::kFail:
-      load_state_ = LoadState::kFailedRedirect;
-      // Do not add to the event queue on failure.
+      // Do not add to the event queue on failure nor store the head.
+      SetLoadStateAndAddEventToQueue(LoadState::kFailedRedirect, {});
       return;
   }
 
@@ -421,9 +420,11 @@ void PrefetchResponseReader::HandleRedirect(
   StoreInfoFromResponseHead(*redirect_head);
   redirect_head->request_cookies.clear();
 
-  AddEventToQueue(base::BindRepeating(&PrefetchResponseReader::ForwardRedirect,
-                                      base::Unretained(this), redirect_info,
-                                      std::move(redirect_head)));
+  SetLoadStateAndAddEventToQueue(
+      LoadState::kRedirectHandled,
+      base::BindRepeating(&PrefetchResponseReader::ForwardRedirect,
+                          base::Unretained(this), redirect_info,
+                          std::move(redirect_head)));
 }
 
 void PrefetchResponseReader::OnReceiveResponse(
@@ -439,14 +440,14 @@ void PrefetchResponseReader::OnReceiveResponse(
   CHECK(!service_worker_handle_);
   CHECK(serving_url_loader_clients_.empty());
 
+  const auto new_load_state =
+      error ? LoadState::kFailedResponseReceived : LoadState::kResponseReceived;
   if (!error) {
-    load_state_ = LoadState::kResponseReceived;
     head->navigation_delivery_type =
         network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
     CHECK(body);
   } else {
     failure_reason_ = std::move(error);
-    load_state_ = LoadState::kFailedResponseReceived;
     // Discard `body` for non-servable cases, to keep the existing behavior
     // and also because `body` is not used.
     body.reset();
@@ -466,8 +467,11 @@ void PrefetchResponseReader::OnReceiveResponse(
   } else {
     body_ = std::move(body);
   }
-  AddEventToQueue(base::BindRepeating(&PrefetchResponseReader::ForwardResponse,
-                                      base::Unretained(this)));
+
+  SetLoadStateAndAddEventToQueue(
+      new_load_state,
+      base::BindRepeating(&PrefetchResponseReader::ForwardResponse,
+                          base::Unretained(this)));
 }
 
 void PrefetchResponseReader::ForwardCompletionStatus(
@@ -612,6 +616,47 @@ void PrefetchResponseReader::StoreInfoFromResponseHead(
     indices.expected_hash =
         net::HashCookieIndices(indices.cookie_names, head.request_cookies);
   }
+}
+
+void PrefetchResponseReader::SetLoadStateAndAddEventToQueue(
+    LoadState new_load_state,
+    EventCallback callback) {
+  // Other relevant state changes should be done before calling this method.
+
+  // First, set the `LoadState`.
+  auto old_load_state = load_state();
+  switch (old_load_state) {
+    case LoadState::kStarted:
+      CHECK_NE(new_load_state, LoadState::kCompleted);
+      break;
+    case LoadState::kResponseReceived:
+      CHECK(new_load_state == LoadState::kCompleted ||
+            new_load_state == LoadState::kFailed);
+      break;
+    case LoadState::kFailedResponseReceived:
+      CHECK_EQ(new_load_state, LoadState::kFailed);
+      break;
+    case LoadState::kRedirectHandled:
+      NOTREACHED();
+    case LoadState::kCompleted:
+      NOTREACHED();
+    case LoadState::kFailed:
+      NOTREACHED();
+    case LoadState::kFailedRedirect:
+      NOTREACHED();
+  }
+  load_state_ = new_load_state;
+
+  // Next, add the event to the queue. This should be after `load_state_`
+  // changes above, because `callback` CHECKs `load_state_`.
+  if (callback) {
+    AddEventToQueue(std::move(callback));
+  }
+
+  // TODO(https://crbug.com/400761083): Notify PrefetchContainer of the state
+  // change, which can eventually trigger `PrefetchContainer::Observer` calls.
+  // This should done after every state changes are done, including
+  // `load_state_` changes and `AddEventToQueue()` above.
 }
 
 PrefetchResponseReader::CookieIndicesInfo::CookieIndicesInfo() = default;

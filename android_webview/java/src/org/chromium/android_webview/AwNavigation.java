@@ -37,7 +37,7 @@ public class AwNavigation extends AwSupportLibIsomorphic {
         return mNavigationHandle.getUrl().getValidSpecOrEmpty();
     }
 
-    public boolean isPageInitiated() {
+    public boolean wasInitiatedByPage() {
         return mNavigationHandle.isRendererInitiated();
     }
 
@@ -65,7 +65,7 @@ public class AwNavigation extends AwSupportLibIsomorphic {
         return mNavigationHandle.isForward();
     }
 
-    public boolean hasCommitted() {
+    public boolean didCommit() {
         return mNavigationHandle.hasCommitted();
     }
 

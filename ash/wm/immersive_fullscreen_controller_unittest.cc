@@ -47,17 +47,6 @@ using ::chromeos::ImmersiveFullscreenController;
 using ::chromeos::ImmersiveFullscreenControllerTestApi;
 using ::chromeos::ImmersiveRevealedLock;
 
-class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
- public:
-  explicit TestBubbleDialogDelegate(views::View* anchor)
-      : BubbleDialogDelegateView(anchor, views::BubbleBorder::NONE) {}
-
-  TestBubbleDialogDelegate(const TestBubbleDialogDelegate&) = delete;
-  TestBubbleDialogDelegate& operator=(const TestBubbleDialogDelegate&) = delete;
-
-  ~TestBubbleDialogDelegate() override = default;
-};
-
 class ConsumeEventHandler : public ui::test::TestEventHandler {
  public:
   ConsumeEventHandler() = default;
@@ -76,6 +65,17 @@ class ConsumeEventHandler : public ui::test::TestEventHandler {
 };
 
 }  // namespace
+
+class TestBubbleDialogDelegate : public views::BubbleDialogDelegateView {
+ public:
+  explicit TestBubbleDialogDelegate(views::View* anchor)
+      : BubbleDialogDelegateView(anchor, views::BubbleBorder::NONE) {}
+
+  TestBubbleDialogDelegate(const TestBubbleDialogDelegate&) = delete;
+  TestBubbleDialogDelegate& operator=(const TestBubbleDialogDelegate&) = delete;
+
+  ~TestBubbleDialogDelegate() override = default;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 

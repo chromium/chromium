@@ -6,6 +6,7 @@ package org.chromium.android_webview.payments;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.AwContents;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
@@ -54,9 +55,21 @@ public class AwPaymentRequestFactory implements InterfaceFactory<PaymentRequest>
             return SslValidityChecker.getInvalidSslCertificateErrorMessage(liveWebContents);
         }
 
+        // TODO(crbug.com/403534114): Rename prefsCanMakePayment() to prefsHasEnrolledInstrument()
+        // when this setting stops applying to both canMakePayment() and hasEnrolledInstrument().
         @Override
         public boolean prefsCanMakePayment() {
-            return true;
+            WebContents liveWebContents =
+                    PaymentRequestServiceUtil.getLiveWebContents(mRenderFrameHost);
+            if (liveWebContents == null) {
+                return false;
+            }
+
+            // The prefsCanMakePayment() preference applies to both canMakePayment() and
+            // hasEnrolledInstrument(). The https://crbug.com/403534114 is tracking removal of
+            // canMakePayment() dependency on this preference.
+            AwContents awContents = AwContents.fromWebContents(liveWebContents);
+            return awContents != null && awContents.getSettings().getHasEnrolledInstrumentEnabled();
         }
 
         @Override
@@ -95,6 +108,11 @@ public class AwPaymentRequestFactory implements InterfaceFactory<PaymentRequest>
 
         WebContents webContents = WebContentsStatics.fromRenderFrameHost(mRenderFrameHost);
         if (webContents == null || webContents.isDestroyed()) {
+            return new InvalidPaymentRequest();
+        }
+
+        AwContents awContents = AwContents.fromWebContents(webContents);
+        if (awContents == null || !awContents.getSettings().getPaymentRequestEnabled()) {
             return new InvalidPaymentRequest();
         }
 

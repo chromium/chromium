@@ -2798,7 +2798,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2921081876747860777">Creează o parolă ca să protejezi datele locale.</translation>
 <translation id="2923006468155067296">Dispozitivul <ph name="DEVICE_TYPE" /> va fi blocat.
 <ph name="DOMAIN" /> solicită să nu scoți cardul inteligent din dispozitiv.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}few{<ph name="TASK_ROW" />. Alte <ph name="OTHER_TASK_NUM" /> sarcini din același grup de sarcini: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Alte <ph name="OTHER_TASK_NUM" /> sarcini din același grup de sarcini: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Elimină acest cont</translation>
 <translation id="2923644930701689793">Accesează dosarul camerei foto a telefonului</translation>
 <translation id="292371311537977079">Setări Chrome</translation>
@@ -10629,7 +10628,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8524841856047224176">Personalizează fundalurile camerei pentru apeluri video și altele</translation>
 <translation id="8525306231823319788">Ecran complet</translation>
 <translation id="8525461909394569609">Această aplicație include conținut web de la</translation>
-<translation id="8526313996927074827">Inserează linkuri, emojiuri și multe altele. Poți și să primești ajutor pentru a scrie de la Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Difuzoare</translation>
 <translation id="8527257351549797148">Organizația ta poate necesita înregistrarea ca să poți accesa aplicații, extensii și altele. Astfel, organizația poate să gestioneze securitatea și setările dispozitivului.</translation>

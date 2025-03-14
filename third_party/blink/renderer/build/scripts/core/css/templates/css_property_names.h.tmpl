@@ -36,6 +36,10 @@ const CSSPropertyID kCSSComputableProperties[] = {
 {{computable_properties}}
 };
 
+inline constexpr CSSPropertyID kCSSIncludesCurrentColorProperties[] = {
+  {{includes_currentcolor_properties}}
+};
+
 // The lowest CSSPropertyID excluding kInvalid and kVariable.
 const int kIntFirstCSSProperty = {{first_property_id}};
 const CSSPropertyID kFirstCSSProperty =

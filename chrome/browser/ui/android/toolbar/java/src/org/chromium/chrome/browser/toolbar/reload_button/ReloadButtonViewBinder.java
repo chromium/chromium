@@ -25,14 +25,32 @@ class ReloadButtonViewBinder {
     public static void bind(PropertyModel model, ImageButton button, PropertyKey key) {
         if (key == ReloadButtonProperties.CLICK_LISTENER) {
             final Runnable listener = model.get(ReloadButtonProperties.CLICK_LISTENER);
-            if (listener == null) {
-                button.setOnClickListener(null);
-            } else {
-                button.setOnClickListener(view -> listener.run());
-            }
+            button.setOnClickListener(
+                    view -> {
+                        if (listener != null) {
+                            listener.run();
+                        }
+                    });
         } else if (key == ReloadButtonProperties.TOUCH_LISTENER) {
             final Callback<MotionEvent> listener = model.get(ReloadButtonProperties.TOUCH_LISTENER);
             setTouchListener(button, listener);
+        } else if (key == ReloadButtonProperties.CONTENT_DESCRIPTION) {
+            button.setContentDescription(model.get(ReloadButtonProperties.CONTENT_DESCRIPTION));
+        } else if (key == ReloadButtonProperties.DRAWABLE_LEVEL) {
+            button.getDrawable().setLevel(model.get(ReloadButtonProperties.DRAWABLE_LEVEL));
+        } else if (key == ReloadButtonProperties.IS_ENABLED) {
+            button.setEnabled(model.get(ReloadButtonProperties.IS_ENABLED));
+        } else if (key == ReloadButtonProperties.LONG_CLICK_LISTENER) {
+            final var listener = model.get(ReloadButtonProperties.LONG_CLICK_LISTENER);
+            button.setOnLongClickListener(
+                    view -> {
+                        if (listener != null) {
+                            listener.run();
+                        }
+                        return listener != null;
+                    });
+        } else {
+            assert false : String.format("Unsupported property key %s", key.toString());
         }
     }
 

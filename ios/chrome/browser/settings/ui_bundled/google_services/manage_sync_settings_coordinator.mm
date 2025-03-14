@@ -18,6 +18,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator.h"
@@ -88,6 +89,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SyncEncryptionTableViewController* _syncEncryptionTableViewController;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
+  // Account menu coordinator.
+  SigninCoordinator* _accountMenuCoordinator;
 }
 
 // View controller.
@@ -195,6 +198,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [self.mediator disconnect];
   [self stopBulkUpload];
   [self stopManageAccountsCoordinator];
+  [self interruptAccountMenuCoordinator];
   self.mediator = nil;
   self.viewController = nil;
   // Unblock any sync data type changes.
@@ -251,6 +255,17 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 - (void)stopPersonalizedGoogleServicesCoordinator {
   [_personalizeGoogleServicesCoordinator stop];
   _personalizeGoogleServicesCoordinator = nil;
+}
+
+- (void)stopAccountMenuCoordinatorWithResult:(SigninCoordinatorResult)result
+                                    identity:(id<SystemIdentity>)identity {
+  [_accountMenuCoordinator stop];
+  _accountMenuCoordinator = nil;
+}
+
+- (void)interruptAccountMenuCoordinator {
+  [_accountMenuCoordinator interruptAnimated:YES];
+  _accountMenuCoordinator = nil;
 }
 
 // Closes the Manage sync settings view controller.
@@ -476,6 +491,22 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                     [weakSelf resetDismissAccountDetailsController];
                   },
                   weakself));
+}
+
+- (void)openAccountMenu {
+  // TODO(crbug.com/336719357): Update to use ApplicationCommands.
+  _accountMenuCoordinator = [SigninCoordinator
+      accountMenuCoordinatorWithBaseViewController:self.viewController
+                                           browser:self.browser
+                                        anchorView:_viewController.view];
+
+  __weak __typeof(self) weakself = self;
+  _accountMenuCoordinator.signinCompletion = ^(SigninCoordinatorResult result,
+                                               id<SystemIdentity> identity) {
+    [weakself stopAccountMenuCoordinatorWithResult:result identity:identity];
+  };
+
+  [_accountMenuCoordinator start];
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate

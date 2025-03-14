@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height= "wrap_content"
     android:orientation="horizontal"
-    android:padding="@dimen/content_item_container_padding"
+    android:baselineAligned="false"
     android:layout_marginTop="@dimen/price_insights_content_top_margin">
 
     <!-- Price tracking title and description -->
@@ -42,11 +42,27 @@ found in the LICENSE file.
     </LinearLayout>
 
     <!-- Price tracking button -->
-    <org.chromium.ui.widget.ButtonCompat
+    <LinearLayout
         android:id="@+id/price_tracking_button"
-        style="@style/FilledButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMediumThick"
-        android:padding="@dimen/price_tracking_button_padding_end"/>
+        android:orientation="horizontal"
+        style="@style/FilledButton"
+        android:background="@drawable/price_tracking_button_background"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingStart="@dimen/price_tracking_button_padding_start"
+        android:paddingEnd="@dimen/price_tracking_button_padding_end">
+        <ImageView
+            android:id="@+id/price_tracking_button_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/price_insights_price_tracking_button_drawable_padding"
+            android:importantForAccessibility="no"/>
+        <TextView
+            android:id="@+id/price_tracking_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMediumThick"/>
+    </LinearLayout>
 </LinearLayout>

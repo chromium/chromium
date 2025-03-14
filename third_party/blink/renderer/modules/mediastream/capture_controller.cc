@@ -349,59 +349,6 @@ void CaptureController::setFocusBehavior(
   FinalizeFocusDecision();
 }
 
-ScriptPromise<IDLUndefined> CaptureController::sendWheel(
-    ScriptState* script_state,
-    CapturedWheelAction* action) {
-  DCHECK(IsMainThread());
-  CHECK(action);
-  CHECK(action->hasX());
-  CHECK(action->hasY());
-  CHECK(action->hasWheelDeltaX());
-  CHECK(action->hasWheelDeltaY());
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-
-  const auto promise = resolver->Promise();
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
-                                   "Unsupported.");
-  return promise;
-#else
-  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
-  if (validation_result.code != DOMExceptionCode::kNoError) {
-    resolver->RejectWithDOMException(validation_result.code,
-                                     validation_result.message);
-    return promise;
-  }
-
-  const base::expected<ScaledCoordinates, String> scaled_coordinates =
-      ScaleCoordinates(video_track_, action);
-  if (!scaled_coordinates.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
-                                     scaled_coordinates.error());
-    return promise;
-  }
-
-  const std::optional<base::UnguessableToken>& session_id =
-      GetCaptureSessionId(video_track_);
-  if (!session_id.has_value()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
-                                     "Invalid capture");
-    return promise;
-  }
-
-  GetMediaStreamDispatcherHost()->SendWheel(
-      *session_id,
-      blink::mojom::blink::CapturedWheelAction::New(
-          scaled_coordinates->relative_x, scaled_coordinates->relative_y,
-          action->wheelDeltaX(), action->wheelDeltaY()),
-      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
-
-  return promise;
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-}
-
 ScriptPromise<IDLUndefined> CaptureController::forwardWheel(
     ScriptState* script_state,
     HTMLElement* element) {
@@ -680,6 +627,59 @@ ScriptPromise<IDLUndefined> CaptureController::UpdateZoomLevel(
   GetMediaStreamDispatcherHost()->UpdateZoomLevel(
       session_id.value(), action,
       WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
+  return promise;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+ScriptPromise<IDLUndefined> CaptureController::SendWheel(
+    ScriptState* script_state,
+    CapturedWheelAction* action) {
+  DCHECK(IsMainThread());
+  CHECK(action);
+  CHECK(action->hasX());
+  CHECK(action->hasY());
+  CHECK(action->hasWheelDeltaX());
+  CHECK(action->hasWheelDeltaY());
+
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+
+  const auto promise = resolver->Promise();
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                   "Unsupported.");
+  return promise;
+#else
+  ValidationResult validation_result = ValidateCapturedSurfaceControlCall();
+  if (validation_result.code != DOMExceptionCode::kNoError) {
+    resolver->RejectWithDOMException(validation_result.code,
+                                     validation_result.message);
+    return promise;
+  }
+
+  const base::expected<ScaledCoordinates, String> scaled_coordinates =
+      ScaleCoordinates(video_track_, action);
+  if (!scaled_coordinates.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     scaled_coordinates.error());
+    return promise;
+  }
+
+  const std::optional<base::UnguessableToken>& session_id =
+      GetCaptureSessionId(video_track_);
+  if (!session_id.has_value()) {
+    resolver->RejectWithDOMException(DOMExceptionCode::kUnknownError,
+                                     "Invalid capture");
+    return promise;
+  }
+
+  GetMediaStreamDispatcherHost()->SendWheel(
+      *session_id,
+      blink::mojom::blink::CapturedWheelAction::New(
+          scaled_coordinates->relative_x, scaled_coordinates->relative_y,
+          action->wheelDeltaX(), action->wheelDeltaY()),
+      WTF::BindOnce(&OnCapturedSurfaceControlResult, WrapPersistent(resolver)));
+
   return promise;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }

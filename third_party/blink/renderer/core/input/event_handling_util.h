@@ -17,8 +17,6 @@ namespace blink {
 class ContainerNode;
 class EventTarget;
 class LocalFrame;
-class ScrollableArea;
-class PaintLayer;
 enum class DispatchEventResult;
 
 namespace event_handling_util {
@@ -32,9 +30,6 @@ CORE_EXPORT HitTestResult HitTestResultInFrame(
 WebInputEventResult MergeEventResult(WebInputEventResult result_a,
                                      WebInputEventResult result_b);
 WebInputEventResult ToWebInputEventResult(DispatchEventResult);
-
-PaintLayer* LayerForNode(Node*);
-ScrollableArea* AssociatedScrollableArea(const PaintLayer*);
 
 bool IsInDocument(EventTarget*);
 

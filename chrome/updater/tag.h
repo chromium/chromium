@@ -258,9 +258,9 @@ std::ostream& operator<<(std::ostream&, const ErrorCode&);
 // - untrusteddata     Can be any string.
 //
 // |app_installer_data_args| is also a querystring-encoded ordered list of
-// key-value pairs. Unlike in the |tag|, the values are no unescaped. The
-// following keys are valid and affect the app installer data parameters and
-// have the following constraints on the value:
+// key-value pairs. Unlike in the |tag|, the values are escaped. The following
+// keys are valid and affect the app installer data parameters and have the
+// following constraints on the value:
 // - appid        Must be a valid app id specified in |tag|.
 // - installerdata  Can be any string. Must be specified after appid.
 //

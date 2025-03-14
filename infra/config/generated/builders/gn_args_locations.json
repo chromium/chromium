@@ -854,6 +854,7 @@
     "linux-trees-in-viz-rel": "try/linux-trees-in-viz-rel/gn-args.json",
     "linux-v4l2-codec-rel": "try/linux-v4l2-codec-rel/gn-args.json",
     "linux-viz-rel": "try/linux-viz-rel/gn-args.json",
+    "linux-wayland-mutter-rel": "try/linux-wayland-mutter-rel/gn-args.json",
     "linux-wayland-rel": "try/linux-wayland-rel/gn-args.json",
     "linux-webkit-asan-rel": "try/linux-webkit-asan-rel/gn-args.json",
     "linux-webkit-msan-rel": "try/linux-webkit-msan-rel/gn-args.json",

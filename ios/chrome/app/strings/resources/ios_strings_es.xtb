@@ -503,6 +503,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="310900540163454140">¿Eliminar la contraseña de <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3119874402040566234">Tu sesión se cerrará y los datos de navegación se eliminarán</translation>
+<translation id="3124568093781685165">Comparte tus contraseñas con tu familia</translation>
 <translation id="3130863904455712965">Historial y más</translation>
 <translation id="313283613037595347">Crea una nueva pestaña de Incógnito</translation>
 <translation id="3138611310073113613">Descartar selección</translation>
@@ -1002,6 +1003,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
 <translation id="537853552771686272">Gestiona los temas y los sitios que te interesan</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} cerrada}other{{count} cerradas}}</translation>
 <translation id="5394975111793637642">Ocultar tarjeta Reseñas de productos para ti</translation>
 <translation id="5395707839134961196">Ocultar detalles del buscador</translation>
 <translation id="5414763847370083940">Recibirás una alerta si el precio baja en algún sitio.</translation>
@@ -1131,6 +1133,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5897749768294722429">Para volver rápidamente a los sitios que has visitado, sincroniza tus pestañas y tu historial.</translation>
 <translation id="5898848375214731122">Masa</translation>
 <translation id="5899314093904173337">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR con su aplicación de cámara o de escáner de códigos QR</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} pestaña nueva}other{{count} pestañas nuevas}}</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
 <translation id="5917913282764181683">Eliminar automáticamente tus descargas</translation>
 <translation id="5922999516621365983">Arrastra la pestaña aquí para fijarla.</translation>
@@ -1674,6 +1677,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132598642024322408">Ahora por <ph name="PRICE" />. Antes por <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Utiliza contraseñas diferentes en cada sitio o aplicación. Si alguien descubre una contraseña que reutilizas en varias cuentas, podrá acceder a cualquiera de ellas. Haz clic para abrir el sitio web y cambiarlas ahora.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} pestaña cerrada}other{{count} pestañas cerradas}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="8150167929304790980">Nombre completo</translation>
 <translation id="8152331954420209374">Ir a Lens</translation>

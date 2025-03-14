@@ -70,6 +70,11 @@ BASE_FEATURE(kCertVerificationNetworkTime,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Killswitch that guards clearing all user data in the ProfileImpl destructor.
+BASE_FEATURE(kClearUserDataUponProfileDestruction,
+             "ClearUserDataUponProfileDestruction",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Uses the browser theme's color mode for web contents.
 // The theme can have three modes: light, dark, and device.
 // When the mode is light or dark, the browser theme's color mode will be

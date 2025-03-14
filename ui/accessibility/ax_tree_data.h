@@ -25,6 +25,10 @@ namespace ui {
 struct AX_BASE_EXPORT AXTreeData final {
   AXTreeData();
   AXTreeData(const AXTreeData& other);
+  AXTreeData(AXTreeData&& other) noexcept;
+  AXTreeData& operator=(const AXTreeData& other);
+  AXTreeData& operator=(AXTreeData&& other) noexcept;
+
   ~AXTreeData();
 
   // Return a string representation of this data, for debugging.

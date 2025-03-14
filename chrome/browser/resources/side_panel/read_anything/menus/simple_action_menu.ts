@@ -8,6 +8,7 @@ import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {openMenu, ToolbarEvent} from '../common.js';
@@ -66,6 +67,7 @@ export class SimpleActionMenuElement extends SimpleActionMenuElementBase {
     this.currentSelectedIndex =
         Number.parseInt(currentTarget.dataset['index']!);
     const menuItem = this.menuItems[this.currentSelectedIndex];
+    assert(menuItem);
     this.fire(this.eventName, {data: menuItem.data});
     this.$.lazyMenu.get().close();
   }

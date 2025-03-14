@@ -278,28 +278,5 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kGranted);
 }
 
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
-       CallFailsIfCapturerUnfocused) {
-  UnFocusCapturer();
-  SetTransientActivation(true);
-
-  std::unique_ptr<PermissionCheckState> state = CheckPermission();
-  state->WaitForCheckPermissionCallbackResult();
-
-  EXPECT_FALSE(state->user_prompted());
-  EXPECT_EQ(state->result(), PermissionManager::PermissionResult::kError);
-}
-
-TEST_F(CapturedSurfaceControlPermissionManagerTest,
-       UserPromptedIfCapturerFocused) {
-  // Capturer focused in SetUp()
-  SetTransientActivation(true);
-
-  std::unique_ptr<PermissionCheckState> state = CheckPermission();
-  state->WaitForUserPromptToBeShown();
-
-  EXPECT_TRUE(state->user_prompted());
-}
-
 }  // namespace
 }  // namespace content

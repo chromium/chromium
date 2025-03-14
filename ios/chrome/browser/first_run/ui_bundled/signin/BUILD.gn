@@ -65,5 +65,4 @@ source_set("signin_ui") {
     "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator" ]
 }

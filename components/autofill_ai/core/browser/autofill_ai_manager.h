@@ -46,7 +46,8 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       autofill::FormGlobalId form_global_id,
       autofill::FieldGlobalId field_global_id) override;
   bool MaybeImportForm(const autofill::FormStructure& form) override;
-  bool ShouldDisplayIph(const autofill::AutofillField& field) const override;
+  bool ShouldDisplayIph(autofill::FormGlobalId form,
+                        autofill::FieldGlobalId field) const override;
   void OnSuggestionsShown(const autofill::DenseSet<autofill::SuggestionType>&
                               shown_suggestion_types,
                           const autofill::FormGlobalId& form_id) override;

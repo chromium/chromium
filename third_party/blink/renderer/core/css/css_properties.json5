@@ -200,6 +200,17 @@
       valid_type: "bool",
     },
 
+    // - includes_currentcolor
+    //
+    // Whether or not a property's value potentially includes currentcolor.
+    //
+    // This is used to determine if we need to invalidate the property when the
+    // currentcolor is changed.
+    includes_currentcolor: {
+      valid_type: "bool",
+      default: false,
+    },
+
     // - runtime_flag
     // The name of the flag on RuntimeEnabledFeatures
     // (e.g. "CSSOverscrollBehavior") that conditionally enables the
@@ -1785,6 +1796,7 @@
       default_value: "StyleAutoColor::AutoColor()",
       computable: true,
       invalidate: ["accent-color"],
+      includes_currentcolor: true,
     },
     {
       name: "align-content",
@@ -1893,6 +1905,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["compositing"],
+      includes_currentcolor: true,
     },
     {
       name: "backface-visibility",
@@ -1971,6 +1984,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -2007,6 +2021,7 @@
       is_background: true,
       supports_incremental_style: true,
       valid_for_page_context: true,
+      includes_currentcolor: true,
     },
     {
       name: "background-origin",
@@ -2122,6 +2137,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -2290,6 +2306,7 @@
       is_border: true,
       // Overlaps with -webkit-border-image.
       overlapping: true,
+      includes_currentcolor: true,
     },
     {
       name: "border-image-width",
@@ -2317,6 +2334,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -2388,6 +2406,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -2459,6 +2478,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -2610,6 +2630,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       invalidate: ["paint", "visual-overflow"],
+      includes_currentcolor: true,
     },
     {
       name: "box-sizing",
@@ -2714,6 +2735,7 @@
       typedom_types: ["Keyword"],
       valid_for_highlight_legacy: true,
       invalidate: ["color"],
+      includes_currentcolor: true,
     },
     {
       name: "clear",
@@ -3153,6 +3175,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,
       inherited: true,
+      includes_currentcolor: true,
       field_group: "svginherited->fill",
       field_template: "external",
       type_name: "SVGPaint",
@@ -3213,6 +3236,7 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       invalidate: ["filter-data"],
+      includes_currentcolor: true,
     },
     {
       name: "flex-basis",
@@ -3304,6 +3328,7 @@
       },
       converter: "ConvertStyleColor",
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       supports_incremental_style: true,
       invalidate: ["paint"],
@@ -3588,7 +3613,7 @@
       type_name: "DynamicRangeLimit",
       field_group: "*",
       field_template: "external",
-      keywords: ["standard", "high", "constrained-high"],
+      keywords: ["standard", "no-limit", "constrained"],
       typedom_types: ["Keyword"],
       include_paths: ["third_party/blink/renderer/platform/graphics/graphics_context_types.h"],
       default_value: "DynamicRangeLimit(cc::PaintFlags::DynamicRangeLimit::kHigh)",
@@ -3729,6 +3754,7 @@
       },
       converter: "ConvertStyleColor",
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       invalidate: ["paint"],
     },
@@ -3769,6 +3795,7 @@
       keywords: ["none"],
       invalidate: ["layout", "paint"],
       affected_by_zoom: true,
+      includes_currentcolor: true,
     },
     {
       name: "list-style-position",
@@ -4342,6 +4369,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -5422,6 +5450,7 @@
       },
       converter: "ConvertStyleColor",
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       invalidate: ["paint"],
     },
@@ -5443,6 +5472,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,
       inherited: true,
+      includes_currentcolor: true,
       field_group: "svginherited->stroke",
       field_template: "external",
       type_name: "SVGPaint",
@@ -5700,6 +5730,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -5832,6 +5863,7 @@
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
       affected_by_zoom: true,
+      includes_currentcolor: true,
     },
     {
       name: "text-size-adjust",
@@ -6380,11 +6412,12 @@
       field_group: "*",
       field_template: "pointer",
       include_paths: ["third_party/blink/renderer/core/style/style_reflection.h"],
-      wrapper_pointer_name: "scoped_refptr",
+      wrapper_pointer_name: "Member",
       default_value: "nullptr",
       type_name: "StyleReflection",
       converter: "ConvertBoxReflect",
       invalidate: ["filter-data"],
+      includes_currentcolor: true,
     },
     {
       name: "column-count",
@@ -6501,6 +6534,7 @@
       default_value: "GapDataList<StyleColor>::DefaultGapColorDataList()",
       type_name: "GapDataList<StyleColor>",
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationColorDataList",
       invalidate: ["paint"],
@@ -6516,6 +6550,7 @@
       default_value: "GapDataList<StyleColor>::DefaultGapColorDataList()",
       type_name: "GapDataList<StyleColor>",
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertGapDecorationColorDataList",
       invalidate: ["paint"],
@@ -6704,6 +6739,7 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       interpolable: true,
       style_builder_custom_functions: ["value"],
+      includes_currentcolor: true,
     },
     {
       name: "-webkit-mask-box-image-width",
@@ -6757,6 +6793,7 @@
       // {-webkit-}mask-image needs to be applied before {-webkit-}mask-composite,
       // otherwise {-webkit-}mask-composite has no effect.
       priority: 2,
+      includes_currentcolor: true,
     },
     {
       name: "-webkit-mask-image",
@@ -6911,6 +6948,7 @@
       type_name: "StyleColor",
       default_value: "StyleColor(LayoutTheme::TapHighlightColor())",
       converter: "ConvertStyleColor",
+      includes_currentcolor: true,
     },
     {
       name: "-webkit-text-combine",
@@ -6930,6 +6968,7 @@
       type_name: "StyleColor",
       computed_style_protected_functions: ["getter"],
       keywords: ["currentcolor"],
+      includes_currentcolor: true,
       typedom_types: ["Keyword"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
@@ -6999,6 +7038,7 @@
       style_builder_template: "color",
       valid_for_highlight_legacy: true,
       invalidate: ["color"],
+      includes_currentcolor: true,
     },
     {
       name: "-webkit-text-stroke-width",

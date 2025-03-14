@@ -16,9 +16,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- rodmartin@google.com
 - chromeos-commercial-identity@google.com
-- file://components/policy/OWNERS
 schema:
   maximum: 365
   minimum: -1

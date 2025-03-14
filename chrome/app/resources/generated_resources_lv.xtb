@@ -2799,7 +2799,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="2921081876747860777">Paroles izveide lokālo datu aizsardzībai</translation>
 <translation id="2923006468155067296">Jūsu <ph name="DEVICE_TYPE" /> ierīce tūlīt tiks bloķēta.
 Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievietotai.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}zero{<ph name="TASK_ROW" />. Vēl <ph name="OTHER_TASK_NUM" /> uzdevumi tajā pašā uzdevumu grupā: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Vēl <ph name="OTHER_TASK_NUM" /> uzdevums tajā pašā uzdevumu grupā: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Vēl <ph name="OTHER_TASK_NUM" /> uzdevumi tajā pašā uzdevumu grupā: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Noņemt šo kontu</translation>
 <translation id="2923644930701689793">Piekļūstiet sava tālruņa kameras fotoalbumam.</translation>
 <translation id="292371311537977079">Chrome iestatījumi</translation>
@@ -10628,7 +10627,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8524841856047224176">Personalizējiet kameras fonus videozvaniem un citiem nolūkiem.</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="8525461909394569609">Šajā lietotnē ir ietverts tīmekļa saturs no tālāk minētajiem avotiem.</translation>
-<translation id="8526313996927074827">Ievietojiet saites, emocijzīmes un citu saturu. Varat arī saņemt palīdzību rakstīšanā, izmantojot Google MI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Skaļruņi</translation>
 <translation id="8527257351549797148">Jūsu organizācija var pieprasīt reģistrāciju, lai jūs varētu piekļūt lietotnēm, paplašinājumiem un citām iespējām. Tādējādi jūsu organizācija varēs arī pārvaldīt tādu informāciju kā drošības un ierīces iestatījumi.</translation>

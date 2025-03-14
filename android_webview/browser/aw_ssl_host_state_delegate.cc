@@ -48,14 +48,12 @@ AwSSLHostStateDelegate::~AwSSLHostStateDelegate() {
 
 void AwSSLHostStateDelegate::HostRanInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
   // Intentional no-op for Android WebView.
 }
 
 bool AwSSLHostStateDelegate::DidHostRunInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
   // Intentional no-op for Android WebView.
   return false;

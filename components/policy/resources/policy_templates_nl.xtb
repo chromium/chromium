@@ -2451,11 +2451,6 @@ Als je het beleid niet instelt, is <ph name="BLOCK_POPUPS_POLICY_NAME" /> van to
 <translation id="2812417768214606683">Met dit beleid wordt een lijst met USB-opslagapparaten aangegeven die zijn uitgesloten van de beleidsregels <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> en <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 Items zijn paren van de ID van de USB-leverancier en de ID van het product, zodat het specifieke USB-apparaatmodel kan worden geïdentificeerd.</translation>
-<translation id="2815701930753942156">Met dit beleid stel je een lijst met wekelijkse intervallen in waarin het <ph name="PRODUCT_OS_NAME" />-apparaat niet kan worden gebruikt. Eventuele actieve sessies worden gesloten en inloggen wordt geblokkeerd.
-
-Overlappende intervallen worden niet ondersteund.
-
-<ph name="PRODUCT_OS_NAME" />-apparaten gebruiken de tijdzone van het systeem om deze intervallen toe te passen.</translation>
 <translation id="2816964824289752181"><ph name="DESK_API_NAME" /> aanzetten voor <ph name="PRODUCT_OS_NAME" />-beheer door derden</translation>
 <translation id="2818074121667686266">Als je het beleid toepast of niet instelt, wordt gebruikers in een prompt om toegang tot audio-opnamen gevraagd, met uitzondering van de URL's die zijn ingesteld in de lijst AudioCaptureAllowedUrls.
 
@@ -7425,7 +7420,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
       Als je dit beleid niet instelt, wordt de standaardwaarde uitgezet voor zakelijke gebruikers en aangezet voor niet-beheerde accounts.</translation>
 <translation id="6401669939808766804">De gebruiker uitloggen</translation>
 <translation id="640244877779556713">Suggestie voor emoji's aanzetten</translation>
-<translation id="6402928885627067154">Kies wekelijkse intervallen waarin ChromeOS-apparaten niet kunnen worden gebruikt</translation>
 <translation id="6403114173011456561">Beheert het virtuele aanraaktoetsenbord en fungeert als aanvullend beleid op het beleid <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Als het virtuele toetsenbord voor toegankelijkheid aanstaat, heeft dit beleid geen effect.

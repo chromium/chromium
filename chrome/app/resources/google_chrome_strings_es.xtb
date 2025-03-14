@@ -39,6 +39,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personaliza tu nuevo perfil de Chrome.</translation>
 <translation id="1547295885616600893">ChromeOS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
+<translation id="1547469039832541117">Finaliza la tarea resaltada.</translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1587223624401073077">Google Chrome está utilizando la cámara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> es peligroso, por lo que Chrome lo ha bloqueado.</translation>
@@ -175,6 +176,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3140883423282498090">Los cambios se aplicarán la próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicaciones de Chrome</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
+<translation id="319199214552513804">Para obtener esta extensión y más en todos tus ordenadores, inicia sesión en Chrome</translation>
 <translation id="3196187562065225381">Chrome ha bloqueado esta descarga porque el archivo es peligroso</translation>
 <translation id="3222857603094643834">Busca cualquier cosa en esta página con Google Lens</translation>
 <translation id="3226612997184048185">Si también guardas los marcadores en tu cuenta de Google, puedes hacer un seguimiento de los precios de los productos en Chrome y recibir una notificación cuando bajen</translation>

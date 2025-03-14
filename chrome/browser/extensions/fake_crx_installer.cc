@@ -8,8 +8,8 @@
 
 namespace extensions {
 
-FakeCrxInstaller::FakeCrxInstaller(ExtensionService* frontend)
-    : CrxInstaller(frontend, nullptr, nullptr) {}
+FakeCrxInstaller::FakeCrxInstaller(content::BrowserContext* context)
+    : CrxInstaller(context, nullptr, nullptr) {}
 
 FakeCrxInstaller::~FakeCrxInstaller() = default;
 

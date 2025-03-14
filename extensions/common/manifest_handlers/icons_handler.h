@@ -24,10 +24,11 @@ struct IconsInfo : public Extension::ManifestData {
 
   // Return the icon set for the given `extension`.
   static const ExtensionIconSet& GetIcons(const Extension* extension) {
-    return GetIcons(extension, ExtensionIconVariant::ColorScheme::kLight);
+    DCHECK(extension);
+    return GetIcons(*extension, ExtensionIconVariant::ColorScheme::kLight);
   }
   static const ExtensionIconSet& GetIcons(
-      const Extension* extension,
+      const Extension& extension,
       std::optional<ExtensionIconVariant::ColorScheme> color_scheme);
 
   // Get an extension icon as a resource.

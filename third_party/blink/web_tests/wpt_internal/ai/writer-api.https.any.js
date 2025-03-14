@@ -1,3 +1,5 @@
+// META: script=resources/utils.js
+
 promise_test(async () => {
   assert_true(!!ai);
   assert_true(!!ai.writer);
@@ -116,3 +118,8 @@ promise_test(async (t) => {
   assert_throws_dom('InvalidStateError', () => writer.writeStreaming('hello'));
 }, 'AIWriter.writeStreaming() fails after destroyed');
 
+promise_test(async () => {
+  const writer = await ai.writer.create();
+  const result = await writer.measureInputUsage(kTestPrompt);
+  assert_greater_than(result, 0);
+}, 'AIWriter.measureInputUsage() returns non-empty result');

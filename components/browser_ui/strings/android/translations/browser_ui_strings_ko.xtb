@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">사용 설정하면 사이트에서 NFC 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 NFC 기기를 사용할 수 없습니다.</translation>
 <translation id="1660204651932907780">사이트에서 소리를 재생하도록 허용(권장)</translation>
 <translation id="1677097821151855053">예를 들어 로그인하거나 광고를 맞춤설정하기 위해 정보를 저장하는 데 쿠키와 기타 사이트 데이터가 사용됩니다. 모든 사이트의 쿠키를 관리하려면 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 참조하세요.</translation>
+<translation id="1679305402657584804">사이트에서 NFC 기기 사용을 요청할 수 있음</translation>
 <translation id="1686785653877010442">사이트에서는 보통 속보 또는 채팅 메시지에 관한 알림을 전송합니다.</translation>
 <translation id="169515064810179024">사이트에서 움직임 감지 센서에 액세스하지 못하도록 차단</translation>
 <translation id="1703666494654169921">사이트에서 가상 현실 기기 또는 데이터를 사용하도록 허용하지 않음</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">이렇게 하면 사이트 또는 홈 화면의 앱에서 저장한 <ph name="DATASIZE" />의 데이터 및 쿠키가 삭제됩니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2215727959747642672">파일 수정</translation>
+<translation id="2218389616572918761">사이트에서 마이크를 요청할 수 있음</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />에서 카메라에 액세스하도록 허용하려면 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서도 카메라를 사용 설정하세요.</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2238944249568001759">마지막 탭을 바탕으로 한 추천 검색어</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">검색주소창에 초점을 맞춘 Chrome을 실행하여 저사양 기기의 시작 시간을 줄입니다.</translation>
 <translation id="2750481671343847896">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있습니다.</translation>
 <translation id="2787357173144933081">검색주소창 시작하기</translation>
+<translation id="2789132527330338807">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하도록 요청할 수 있음</translation>
 <translation id="2790501146643349491">사용 설정하면 최근에 닫은 사이트에서 데이터 전송 및 수신을 완료할 수 있습니다. 사용 중지하면 최근에 닫은 사이트에서 데이터 전송 또는 수신을 완료할 수 없습니다.</translation>
 <translation id="2795716239552913152">사이트에서는 일반적으로 현지 뉴스 또는 주변 상점 같은 관련 기능이나 정보에 위치를 사용합니다.</translation>
+<translation id="2802908157808345702">사이트에서 팝업을 전송하거나 리디렉션을 사용할 수 없음</translation>
 <translation id="2814830417943086299">이제 Chrome에서 기기의 앱 목록과 검색 결과에 최근 탭을 표시합니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" />의 모든 사이트 권한을 재설정하시겠습니까?</translation>
 <translation id="2850913818900871965">모바일 뷰 요청</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">시크릿 모드인 경우 사이트에서 쿠키를 사용해 관련 사이트 등 사용자의 사이트 탐색 활동을 볼 수 없습니다. 사용자의 탐색 활동은 광고 개인 최적화 등의 목적으로 사용되지 않습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
 <translation id="461356340001513807">가지고 있는 ID 서비스 계정으로 웹사이트에 로그인할 수 있습니다.</translation>
 <translation id="4619615317237390068">다른 기기의 탭</translation>
+<translation id="4635969503923889910">사이트에서 NFC 기기를 사용할 수 없음</translation>
 <translation id="4644713492825682049">삭제 및 재설정</translation>
 <translation id="4645575059429386691">부모님이 관리합니다.</translation>
 <translation id="4670064810192446073">가상 현실</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">모든 요청 접기</translation>
 <translation id="5884085660368669834">사이트 환경설정</translation>
 <translation id="5887687176710214216">최근 방문: 어제</translation>
+<translation id="5908617755156109052">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적할 수 없음</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5922853908706496913">화면 공유</translation>
 <translation id="5922967540311291836">서드 파티 쿠키 차단:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="8681886425883659911">방해가 되거나 사용자를 현혹하는 광고를 표시하는 것으로 알려진 사이트에서 광고가 차단됩니다.</translation>
 <translation id="868929229000858085">연락처 검색</translation>
+<translation id="8707904142362025782">사이트에서 카메라를 요청할 수 있음</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="8715862698998036666">전체 화면을 종료하려면 위에서 드래그하고 왼쪽 또는 오른쪽 가장자리에서 스와이프하세요.</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 설정합니다.</translation>

@@ -2803,7 +2803,6 @@
 <translation id="2921081876747860777">ನಿಮ್ಮ ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ರಕ್ಷಿಸಲು ದಯವಿಟ್ಟು ಪಾಸ್‌ವರ್ಡ್ ರಚಿಸಿ.</translation>
 <translation id="2923006468155067296">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಈಗ ಲಾಕ್ ಮಾಡಲಾಗುತ್ತದೆ.
 <ph name="DOMAIN" />, ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಸೇರಿಸಬೇಕೆಂದು ಬಯಸುತ್ತದೆ.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. ಒಂದೇ ಕಾರ್ಯ ಗುಂಪಿನಲ್ಲಿರುವ ಇತರ <ph name="OTHER_TASK_NUM" /> ಕಾರ್ಯಗಳು: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. ಒಂದೇ ಕಾರ್ಯ ಗುಂಪಿನಲ್ಲಿರುವ ಇತರ <ph name="OTHER_TASK_NUM" /> ಕಾರ್ಯಗಳು: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">ಈ ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="2923644930701689793">ನಿಮ್ಮ ಫೋನ್‌ನ ಕ್ಯಾಮರಾ ರೋಲ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="292371311537977079">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -10632,7 +10631,6 @@
 <translation id="8524841856047224176">ವೀಡಿಯೊ ಕರೆಗಳು ಹಾಗೂ ಮುಂತಾದವುಗಳಿಗಾಗಿ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಹಿನ್ನೆಲೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಿ</translation>
 <translation id="8525306231823319788">ಪೂರ್ಣ ಪರದೆ</translation>
 <translation id="8525461909394569609">ಈ ಆ್ಯಪ್ ವೆಬ್ ಕಂಟೆಂಟ್ ಅನ್ನು ಒಳಗೊಂಡಿದೆ</translation>
-<translation id="8526313996927074827">ಲಿಂಕ್‌ಗಳು, ಎಮೋಜಿಗಳು ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ಸೇರಿಸಿ. ನೀವು Google AI ಮೂಲಕ ಬರೆಯಲು ಸಹಾಯವನ್ನು ಸಹ ಪಡೆಯಬಹುದು.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">ಸ್ಪೀಕರ್‌ಗಳು</translation>
 <translation id="8527257351549797148">ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ನೋಂದಣಿ ಅಗತ್ಯವಿರಬಹುದು ಆದ್ದರಿಂದ ನೀವು ಆ್ಯಪ್‌ಗಳು, ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು. ಭದ್ರತೆ ಮತ್ತು ಸಾಧನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಂತಹ ವಿಷಯಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಇದು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಅನುಮತಿಸುತ್ತದೆ.</translation>

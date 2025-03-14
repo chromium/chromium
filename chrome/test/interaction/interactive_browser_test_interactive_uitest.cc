@@ -485,8 +485,6 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       WaitForStateChange(kWebContentsId, clear_all_downloads_click));
 }
 
-namespace {
-
 // Simple bubble containing a WebView. Allows us to simulate swapping out one
 // WebContents for another.
 class WebBubbleView : public views::BubbleDialogDelegateView {
@@ -542,8 +540,6 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
 
 BEGIN_METADATA(WebBubbleView)
 END_METADATA
-
-}  // namespace
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                        SwappingWebViewWebContentsTreatedAsNavigation) {

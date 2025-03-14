@@ -7,18 +7,16 @@
 
 #include <memory>
 
-namespace password_manager {
-class CredentialManagerInterface;
-}  // namespace password_manager
-
 namespace credential_management {
+
+class CredentialManagerInterface;
 
 // Interface for factory classes that create implementations of
 // `CredentialManagerInterface`.
 class CredentialManagerFactoryInterface {
  public:
   virtual ~CredentialManagerFactoryInterface() = default;
-  virtual std::unique_ptr<password_manager::CredentialManagerInterface>
+  virtual std::unique_ptr<CredentialManagerInterface>
   CreateCredentialManager() = 0;
 };
 }  // namespace credential_management

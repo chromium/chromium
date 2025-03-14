@@ -76,6 +76,10 @@ bool IsDenied(ContentSettingsType type) {
 
 // static
 bool IsAllowed(ContentSettingsType type) {
+  if (g_mock_system_permission_denied_for_testing_) {
+    return false;
+  }
+
   if (GlobalTestingBlockOverrides().find(type) !=
       GlobalTestingBlockOverrides().end()) {
     return !GlobalTestingBlockOverrides().at(type);

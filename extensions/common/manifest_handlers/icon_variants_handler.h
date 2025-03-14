@@ -23,12 +23,17 @@ struct IconVariantsInfo : public Extension::ManifestData {
   static bool HasIconVariants(const Extension* extension);
 
   // Get IconVariants for the given `extension`, if they exist.
-  static const IconVariantsInfo* GetIconVariants(const Extension* extension);
+  static const IconVariantsInfo* GetIconVariants(const Extension& extension);
+
+  // Available e.g. when the extension feature enabled.
+  static bool SupportsIconVariants(const Extension& extension);
 
   // Retrieve a matching ExtensionIconSet.
+  const ExtensionIconSet& Get() const {
+    return Get(ExtensionIconVariant::ColorScheme::kLight);
+  }
   const ExtensionIconSet& Get(
-      std::optional<ExtensionIconVariant::ColorScheme> color_scheme =
-          ExtensionIconVariant::ColorScheme::kLight) const;
+      std::optional<ExtensionIconVariant::ColorScheme> color_scheme) const;
 
   // Data structure for `icon_variants`, based on icon_variants.idl.
   std::optional<ExtensionIconVariants> icon_variants;

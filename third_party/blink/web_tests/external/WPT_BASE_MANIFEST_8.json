@@ -410,8 +410,8 @@
    },
    "ai": {
     "language_detection": {
-     "capabilities-detached-crash.tentative.https.html": [
-      "705fff6ceec378b32d7ec6efe4cdece49bf6f107",
+     "availability-detached-crash.tentative.https.html": [
+      "8dd685d990ad0c2e2524ab134da7284dbe79d010",
       [
        null,
        {}
@@ -259047,6 +259047,58 @@
        {}
       ]
      ],
+     "available-size-020.html": [
+      "bf09886f30a0762e8a56d0ad01a335b263280b39",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-020-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "available-size-021.html": [
+      "4547ba1934f8ec3432f1f09dfda0c06f84494026",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-020-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "available-size-022.html": [
+      "5e6e684adae62960c3abb8b8d4e3a14bc7d72c78",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-022-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "available-size-023.html": [
+      "a1be62a27e2395a243410fe89a0d662db5e4a535",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-022-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "background-position-vrl-018.xht": [
       "d4e76334b7647340282d732692f08b6691437930",
       [
@@ -308957,6 +309009,19 @@
         [
          [
           "/svg/shapes/reftests/pathlength-004-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "pathlength-005.html": [
+       "59d4ae5fa6443bd971856c6c2e385026d9002c9f",
+       [
+        null,
+        [
+         [
+          "/svg/shapes/reftests/pathlength-005-ref.html",
           "=="
          ]
         ],
@@ -367463,6 +367528,12 @@
        []
       ]
      },
+     "tree-counting": {
+      "sibling-function-descriptors.tentative-expected.txt": [
+       "af9e75c66ba1693a8135b1f34424a9f28c2426ff",
+       []
+      ]
+     },
      "urls": {
       "fragment-only-expected.txt": [
        "e79da1e4b879f3f871eb3f2fb2627fbd4f98297b",
@@ -369270,6 +369341,14 @@
       ],
       "available-size-011-ref.html": [
        "ef66b4e0d6248a8bc5b49c2654bfc77a2ac2e298",
+       []
+      ],
+      "available-size-020-ref.html": [
+       "ecd3ac273a2be4c198abba2730ef8355f4b52111",
+       []
+      ],
+      "available-size-022-ref.html": [
+       "c1e492ef24d2c9bae39611d26f4b8ca0db7d426b",
        []
       ],
       "baseline-with-orthogonal-flow-001-ref.html": [
@@ -374711,7 +374790,7 @@
    },
    "digital-credentials": {
     "META.yml": [
-     "7273f019d78464df10e4ee48f9babd1ccbc1a112",
+     "d062affc1848e3f315ef4f7e1d30319545bc7992",
      []
     ],
     "create.tentative.https-expected.txt": [
@@ -384665,7 +384744,7 @@
      []
     ],
     "generic-sensor-iframe-tests.sub.js": [
-     "277d5d0ea9b290b554a7746567dde65b826a165d",
+     "a63729ec2e62ed5ca6aab02278b6d0f7d38fd437",
      []
     ],
     "generic-sensor-tests.js": [
@@ -384902,7 +384981,7 @@
       []
      ],
      "hsts.html.headers": [
-      "fcf9e8ef40c829332c76d15349afbfd905dd7bb1",
+      "1e3f57846f9dd490029c32e5d0e2a9a2863eb80d",
       []
      ],
      "post-origin-to-opener.html": [
@@ -411136,7 +411215,7 @@
       []
      ],
      "digital-credentials-get.html": [
-      "12a450a1ae41c806c6023d0ef17e3ae55236e931",
+      "543417f230a59b3d09705b20775a38cbabaf7a22",
       []
      ],
      "nested-sandbox.html": [
@@ -420623,6 +420702,10 @@
      []
     ],
     "signatures": {
+     "accept-signature-script.py": [
+      "a1c61f396d50332831d1af1d3749e2c790454a7a",
+      []
+     ],
      "query-resource.py": [
       "dea586937454298f137e9c34d8ecee2262b70c98",
       []
@@ -421620,6 +421703,10 @@
       ],
       "pathlength-004-ref.svg": [
        "4b166e0cae0729babc69732c33fa7d5baaf19b20",
+       []
+      ],
+      "pathlength-005-ref.html": [
+       "b99474aa4667f94beace3d59465fa187a4f3a490",
        []
       ],
       "reference": {
@@ -423304,7 +423391,7 @@
       []
      ],
      "setters_tests.json": [
-      "c47797c4d61c75c7d83e8fae2123a10984cbad9a",
+      "cf8a420caab8cf2872600997dd788ca0a03cd3e9",
       []
      ],
      "toascii.json": [
@@ -423316,7 +423403,7 @@
       []
      ],
      "urltestdata.json": [
-      "214ed0852aa31236a6b7a975e31763de82911f9c",
+      "d1a06f6319d1bca3275d75d5433de3dc846d3322",
       []
      ]
     },
@@ -423367,15 +423454,19 @@
      []
     ],
     "urlsearchparams-delete.any-expected.txt": [
-     "daa83c990d022d5c81871e0d476ee3179c199b3f",
+     "5c3ac171862103ec1122cb22a6af88137b56882a",
      []
     ],
     "urlsearchparams-delete.any.worker-expected.txt": [
-     "daa83c990d022d5c81871e0d476ee3179c199b3f",
+     "5c3ac171862103ec1122cb22a6af88137b56882a",
      []
     ]
    },
    "urlpattern": {
+    "META.yml": [
+     "ad348f6dfd778f953d8f55405b2ea3198dbff0d3",
+     []
+    ],
     "WEB_FEATURES.yml": [
      "cb82ba5cda2918be080e10ab8bbd4c145e05b790",
      []
@@ -459914,71 +460005,8 @@
    },
    "ai": {
     "language_detection": {
-     "capabilities.tentative.https.any.js": [
-      "3eca5119a378741fc48adb44f4bd83ba7a7e06bd",
-      [
-       "ai/language_detection/capabilities.tentative.https.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "capabilities test"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "ai/language_detection/capabilities.tentative.https.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "capabilities test"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "ai/language_detection/capabilities.tentative.https.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "capabilities test"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "ai/language_detection/capabilities.tentative.https.any.worker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "capabilities test"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ]
-     ],
      "detector.https.tentative.any.js": [
-      "2a5420b51e5ab9cdb6e94289e17a52b96bb99610",
+      "5af45e0cbf044ebbf0f2ba07f072a2408386e91f",
       [
        "ai/language_detection/detector.https.tentative.any.html",
        {
@@ -460126,7 +460154,7 @@
       ]
      ],
      "ai_translator_translate.tentative.https.any.js": [
-      "df4086bf8442cb70ccc4bf3cf2aa1704001d9aba",
+      "729cb04fb76e94d9bf8eb40e463b840931b0e3a7",
       [
        "ai/translator/ai_translator_translate.tentative.https.any.html",
        {
@@ -491022,28 +491050,28 @@
     },
     "css-color-hdr": {
      "computed.html": [
-      "48076da6b6a9f7eece37c6e701ef1a7c5ed96e91",
+      "47021144087d8fe6976ee7a06a187e85665b8fdf",
       [
        null,
        {}
       ]
      ],
      "inheritance.html": [
-      "4f7a44a77290736703b170425f5b15e0ca445039",
+      "6f893b6b68a8cd450871b18143a6f59b4345d402",
       [
        null,
        {}
       ]
      ],
      "interpolation.html": [
-      "62e079f6366d7979e130e72dfec8d7f9fede07b7",
+      "41ee84210196946b222f74c6ac964d20e724382e",
       [
        null,
        {}
       ]
      ],
      "parsing.html": [
-      "caf3e86a27c00862902e107b3219338633c795d6",
+      "e165a60d7edb9f7599608f6d4749ca640bfa9635",
       [
        null,
        {}
@@ -521354,8 +521382,22 @@
         {}
        ]
       ],
+      "sibling-function-descriptors.tentative.html": [
+       "d31d4acf499fb62f777817f24186e394626d507e",
+       [
+        null,
+        {}
+       ]
+      ],
       "sibling-function-invalidation.html": [
        "3c75c78530dca4cfb30dfc0c17c0ad2049cfb087",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sibling-function-media-query.tentative.html": [
+       "c76ac449e48493c396d9aea0ab8f04dde27092c5",
        [
         null,
         {}
@@ -530002,7 +530044,7 @@
      ]
     ],
     "default-permissions-policy.https.sub.html": [
-     "b4696293a287cfa8ad027e3f0116829052cd267f",
+     "742a94ec4eb8ff079b1b24f17179962818fb3868",
      [
       null,
       {
@@ -530018,7 +530060,7 @@
      ]
     ],
     "disabled-by-permissions-policy.https.sub.html": [
-     "5c634b1b66d7974f41a2c803037231c0e58f403a",
+     "c32f73aa309b64e5785d67b3565077a8ac6b8424",
      [
       null,
       {
@@ -530027,7 +530069,7 @@
      ]
     ],
     "enabled-on-self-origin-by-permissions-policy.https.sub.html": [
-     "ec70461e3857b5c1111d3b947c45527386569ff6",
+     "d530f4920a395b0a612964a32b60fec65833054e",
      [
       null,
       {
@@ -590977,7 +591019,7 @@
    },
    "hsts": {
     "only-top-level-navigation-hsts-upgrade.tentative.sub.html": [
-     "44bce7af65878df9bbe56b1faeb1bd43a5c38c9b",
+     "be891d05c01e04a961842557ee5a8fb0e8941f46",
      [
       null,
       {}
@@ -661745,7 +661787,7 @@
      ]
     ],
     "VideoTrackGenerator-with-window-tracks.https.html": [
-     "dfe000fbddb6cddd52538dfdcb686c2357ca1ff7",
+     "1c5560f6964aac0c6506a531619392a318756c8b",
      [
       null,
       {}
@@ -718448,6 +718490,27 @@
    "subresource-integrity": {
     "signatures": {
      "tentative": {
+      "accept-signature.parser-inserted.html": [
+       "ccedc5ce4f9213e748611cb305892a87950978f6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "accept-signature.window.js": [
+       "efcbf0cdad6cb2816b47e989701835a30b777639",
+       [
+        "subresource-integrity/signatures/tentative/accept-signature.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "authority.https.window.js": [
        "9f05359d43222250c9392bdf1598a8a33724ac97",
        [
@@ -727293,7 +727356,7 @@
      ]
     ],
     "urlsearchparams-delete.any.js": [
-     "c597142c51d5bf3cdea286cf7a6e191d4e3be828",
+     "09a5dccb6487338bc69d6fb924472b1dc8b7899d",
      [
       "url/urlsearchparams-delete.any.html",
       {}
@@ -803184,7 +803247,7 @@
      ]
     ],
     "WorkerGlobalScope_ErrorEvent_message.htm": [
-     "bc1d2c45b42cb0e3cb96a243d00f2b7351e8b1d3",
+     "27d4dda5114cfe0ff5ebab090d0c41dfebf0a256",
      [
       null,
       {}

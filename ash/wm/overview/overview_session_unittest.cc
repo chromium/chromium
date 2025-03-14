@@ -1458,6 +1458,7 @@ TEST_P(OverviewSessionTest, HideBubbleTransient) {
 
   // Create a bubble widget that's anchored to frame.
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegateView>(
+      views::BubbleDialogDelegateView::CreatePassKey(),
       NonClientFrameViewAsh::Get(window.get()), views::BubbleBorder::TOP_RIGHT);
 
   // The line below is essential to make sure that the bubble doesn't get closed

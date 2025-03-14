@@ -1300,6 +1300,7 @@
 <translation id="7040230719604914234">운영자</translation>
 <translation id="7040729769968826896">발화자 식별 허용</translation>
 <translation id="7041549558901442110">기기가 연결되어 있지 않습니다.</translation>
+<translation id="704183341263526038">목성</translation>
 <translation id="7046522406494308071">모든 단축키를 기본값으로 재설정하시겠습니까?</translation>
 <translation id="7049916119678019302">설정에서 스크립트 작성 모델을 다운로드하세요.</translation>
 <translation id="7058278511608979688">종료 및 저장</translation>
@@ -1394,6 +1395,7 @@
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> 옵션 더보기</translation>
 <translation id="7388959671917308825">내장 터치패드</translation>
 <translation id="7397270852490618635">밝은 테마 사용 중지</translation>
+<translation id="7400166052988585408"><ph name="NUM_SECONDS" />초 후에 선생님이 내 화면을 잠급니다.</translation>
 <translation id="7401543881546089382">바로가기 삭제</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> 업데이트 준비 완료</translation>
 <translation id="741244894080940828">변환</translation>

@@ -377,8 +377,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual RenderFrameHost* GetOutermostMainFrameOrEmbedder() = 0;
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
-  // Returns true if this document is the root of a fenced frame tree. This
-  // supports both Shadow DOM and MPArch implementations.
+  // Returns true if this document is the root of a fenced frame tree.
   //
   // In particular, this always returns false for frames loaded inside a
   // <fencedframe> element, if the frame is not the top-level <fencedframe>
@@ -388,8 +387,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Fenced frames (meta-bug https://crbug.com/1111084):
   // Returns true if `this` was loaded in a <fencedframe> element directly or if
-  // one of `this` ancestors was loaded in a <fencedframe> element. This
-  // supports both Shadow DOM and MPArch implementations.
+  // one of `this` ancestors was loaded in a <fencedframe> element.
   virtual bool IsNestedWithinFencedFrame() const = 0;
 
   // Check if the frame has untrusted network access disabled.

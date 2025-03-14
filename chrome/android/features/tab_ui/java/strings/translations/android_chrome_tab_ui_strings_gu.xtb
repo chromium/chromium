@@ -194,6 +194,7 @@
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="COLOR_NAME" /> રંગનું <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="COLOR_NAME" /> રંગના <ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબના ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_MINS_MANY" /> મિનિટ પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>
+<translation id="8236097722223016103">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
 <translation id="8338427544764842461">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે અને તમારા સાઇન ઇન કરેલા બધા ડિવાઇસ પર અપડેટ કરવામાં આવે છે</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા, <ph name="COLOR_NAME" /> રંગના ટૅબના ગ્રૂપને મોટું કરો.}}</translation>

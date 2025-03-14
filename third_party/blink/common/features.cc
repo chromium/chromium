@@ -1128,6 +1128,10 @@ BASE_FEATURE(kInputPredictorTypeChoice,
              "InputPredictorTypeChoice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kInputScenarioPriorityBoost,
+             "InputScenarioPriorityBoost",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, wake ups from throttleable TaskQueues are limited to 1 per
 // minute in a page that has been backgrounded for 5 minutes.
 //

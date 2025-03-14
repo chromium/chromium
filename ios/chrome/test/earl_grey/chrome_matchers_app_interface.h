@@ -597,6 +597,9 @@
 // Returns the GREYMatcher for the incognito tab grid.
 + (id<GREYMatcher>)incognitoTabGrid;
 
+// Returns the GREYMatcher for the inactive tab grid.
++ (id<GREYMatcher>)inactiveTabGrid;
+
 // Returns the GREYMatcher for the button to close the cell at `index` in the
 // tab grid.
 + (id<GREYMatcher>)tabGridCloseButtonForCellAtIndex:(unsigned int)index;

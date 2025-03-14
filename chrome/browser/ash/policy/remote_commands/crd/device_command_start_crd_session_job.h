@@ -56,6 +56,8 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool UserTypeSupportsCrd() const;
   CrdSessionType GetCrdSessionType() const;
   bool IsDeviceIdle() const;
+  bool IsRemoteSupportSession() const;
+  bool IsRemoteAccessSession() const;
 
   bool ShouldShowConfirmationDialog() const;
   bool ShouldTerminateUponInput() const;

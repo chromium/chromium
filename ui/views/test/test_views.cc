@@ -118,7 +118,7 @@ void EventCountView::OnGestureEvent(ui::GestureEvent* event) {
 void EventCountView::RecordEvent(ui::Event* event) {
   ++event_count_[event->type()];
   last_flags_ = event->flags();
-  if (handle_mode_ == CONSUME_EVENTS) {
+  if (handle_mode_ == HandleMode::kConsumeEvents) {
     event->SetHandled();
   }
 }

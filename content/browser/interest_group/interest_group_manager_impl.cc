@@ -524,6 +524,19 @@ void InterestGroupManagerImpl::RecordDebugReportCooldown(
                                              cooldown_type);
 }
 
+void InterestGroupManagerImpl::RecordViewClick(
+    network::AdAuctionEventRecord event_record) {
+  // TODO(crbug.com/394108643): Check against
+  // ContentBrowserClient::IsInterestGroupAPIAllowed(). This will require
+  // getting an RFH; we could use something like
+  // url_loader_network_observers_.current_context().navigation_or_document()
+  // in the StoragePartitionImpl, but the issue is that for clicks, we'll
+  // probably get a navigation handle instead of an RFH? Perhaps we can
+  // override WebContentsObserver::DidFinishNavigation() to wait until the new
+  // RFH is ready?
+  caching_storage_.RecordViewClick(std::move(event_record));
+}
+
 void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
     base::flat_set<std::string> hashed_keys) {
   k_anonymity_manager_->RegisterAdKeysAsJoined(std::move(hashed_keys));

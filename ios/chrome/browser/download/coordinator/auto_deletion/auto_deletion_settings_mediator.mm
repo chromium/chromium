@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
 #import "ios/chrome/browser/download/ui/auto_deletion/auto_deletion_settings_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -52,6 +53,12 @@
 
 - (void)setDownloadAutoDeletionPermissionStatus:(BOOL)status {
   _localState->SetBoolean(prefs::kDownloadAutoDeletionEnabled, status);
+
+  // Untracks the files scheduled for deletion when the user disables the
+  // feature.
+  if (!status) {
+    GetApplicationContext()->GetAutoDeletionService()->Clear();
+  }
 }
 
 #pragma mark - BooleanObserver

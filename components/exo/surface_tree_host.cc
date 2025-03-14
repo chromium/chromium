@@ -136,6 +136,9 @@ SurfaceTreeHost::~SurfaceTreeHost() {
   context_provider_->RemoveObserver(this);
 
   SetRootSurface(nullptr);
+  // We can delete frame_timing_history_ give that we don't
+  // care about metrics at this point.
+  layer_tree_frame_sink_holder_->DeleteFrameTimingHistory();
   LayerTreeFrameSinkHolder::DeleteWhenLastResourceHasBeenReclaimed(
       std::move(layer_tree_frame_sink_holder_));
   CleanUpCallbacks();

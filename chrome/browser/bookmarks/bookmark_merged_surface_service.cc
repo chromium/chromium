@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
 #include "base/containers/to_vector.h"
+#include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
@@ -25,6 +26,9 @@ namespace {
 using bookmarks::BookmarkNode;
 using bookmarks::ManagedBookmarkService;
 using PermanentFolderType = BookmarkParentFolder::PermanentFolderType;
+
+const base::FilePath::CharType kMergedSurfaceOrderingFileName[] =
+    FILE_PATH_LITERAL("BookmarkMergedSurfaceOrdering");
 
 std::optional<PermanentFolderType> GetIfPermanentFolderType(
     const BookmarkNode* node) {
@@ -58,6 +62,35 @@ bool IsPermanentManagedFolder(const BookmarkParentFolder& folder) {
 
 }  // namespace
 
+class BookmarkMergedSurfaceService::BookmarkModelLoadedObserver
+    : public bookmarks::BaseBookmarkModelObserver {
+ public:
+  // `model` must outlive this object.
+  BookmarkModelLoadedObserver(bookmarks::BookmarkModel* model,
+                              base::OnceCallback<void(bool)> on_load_completed)
+      : on_load_completed_(std::move(on_load_completed)) {
+    CHECK(model);
+    CHECK(on_load_completed_);
+    if (model->loaded()) {
+      BookmarkModelLoaded(false);
+      return;
+    }
+    observation_.Observe(model);
+  }
+
+  void BookmarkModelLoaded(bool ids_reassigned) override {
+    std::move(on_load_completed_).Run(ids_reassigned);
+  }
+
+  void BookmarkModelChanged() override {}
+
+ private:
+  base::OnceCallback<void(bool)> on_load_completed_;
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BaseBookmarkModelObserver>
+      observation_{this};
+};
+
 BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
     bookmarks::BookmarkModel* model,
     bookmarks::ManagedBookmarkService* managed_bookmark_service)
@@ -67,20 +100,58 @@ BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
       dummy_empty_node_(/*id=*/0, base::Uuid::GenerateRandomV4(), GURL()) {
   CHECK(model_);
 
-  // TODO(crbug.com/393047033): Load from disk.
-  for (const auto& folder_to_tracker : permanent_folder_to_tracker_) {
-    folder_to_tracker.second->Init(/*in_order_node_ids=*/{});
-  }
-
-  // `PermanentFolderOrderingTracker` must precede this class in observing the
-  // `BookmarkModel` to ensure changes are reflected in the tracker before
-  // `this` notifies its observers.
-  model_observation_.Observe(model_);
+  model_loaded_observer_ = std::make_unique<BookmarkModelLoadedObserver>(
+      model_, base::BindOnce(&BookmarkMergedSurfaceService::BookmarkModelLoaded,
+                             base::Unretained(this)));
 }
 
 BookmarkMergedSurfaceService::~BookmarkMergedSurfaceService() {
   for (auto& observer : observers_) {
     observer.BookmarkMergedSurfaceServiceBeingDeleted();
+  }
+}
+
+void BookmarkMergedSurfaceService::Load(const base::FilePath& profile_path) {
+  CHECK(!load_ordering_completed_);
+
+  // `base::Unretained` is safe as `this` owns `load_from_disk_`.
+  loader_ = BookmarkMergedSurfaceOrderingStorage::Loader::Create(
+      profile_path.Append(kMergedSurfaceOrderingFileName),
+      base::BindOnce(&BookmarkMergedSurfaceService::OnLoadOrderingComplete,
+                     base::Unretained(this)));
+}
+
+void BookmarkMergedSurfaceService::OnLoadOrderingComplete(
+    BookmarkMergedSurfaceOrderingStorage::Loader::LoadResult result) {
+  CHECK(!load_ordering_completed_);
+  load_ordering_completed_ = true;
+  loader_.reset();
+  model_loaded_observer_.reset();
+
+  for (const auto& [type, tracker] : permanent_folder_to_tracker_) {
+    std::vector<int64_t> node_ids;
+    auto loaded_node_ids = result.find(type);
+    if (loaded_node_ids != result.end()) {
+      node_ids = std::move(loaded_node_ids->second);
+    }
+    tracker->Init(std::move(node_ids));
+  }
+
+  // `PermanentFolderOrderingTracker` must precede this class in observing the
+  // `BookmarkModel` to ensure changes are reflected in the tracker before
+  // `this` notifies its observers.
+  CHECK(!model_observation_.IsObserving());
+  model_observation_.Observe(model_);
+
+  if (loaded()) {
+    NotifyLoaded();
+  }
+}
+
+void BookmarkMergedSurfaceService::NotifyLoaded() {
+  CHECK(loaded());
+  for (auto& observer : observers_) {
+    observer.BookmarkMergedSurfaceServiceLoaded();
   }
 }
 
@@ -122,7 +193,7 @@ const bookmarks::BookmarkNode* BookmarkMergedSurfaceService::GetNodeAtIndex(
 }
 
 bool BookmarkMergedSurfaceService::loaded() const {
-  return model_->loaded();
+  return load_ordering_completed_ && model_->loaded();
 }
 
 size_t BookmarkMergedSurfaceService::GetChildrenCount(
@@ -217,6 +288,12 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
   CHECK(browser);
   ShowBookmarkAccountStorageMoveDialog(
       browser, node, new_parent.as_non_permanent_folder(), index);
+}
+
+void BookmarkMergedSurfaceService::LoadForTesting(
+    BookmarkMergedSurfaceOrderingStorage::Loader::LoadResult result) {
+  CHECK_IS_TEST();
+  OnLoadOrderingComplete(std::move(result));
 }
 
 void BookmarkMergedSurfaceService::SetShowMoveStorageDialogCallbackForTesting(
@@ -352,10 +429,17 @@ size_t BookmarkMergedSurfaceService::GetIndexAcrossStorage(
 }
 
 void BookmarkMergedSurfaceService::BookmarkModelLoaded(bool ids_reassigned) {
-  // TODO(crbug.com/393047033): Wait for the custom ordering to be loaded from
-  // disk.
-  for (auto& observer : observers_) {
-    observer.BookmarkMergedSurfaceServiceLoaded();
+  if (load_ordering_completed_) {
+    // Trackers already initialized and observing the model and will handle
+    // `ids_reassigned`.
+    CHECK(model_observation_.IsObserving());
+    NotifyLoaded();
+    return;
+  }
+
+  if (ids_reassigned) {
+    OnLoadOrderingComplete({});
+    return;
   }
 }
 

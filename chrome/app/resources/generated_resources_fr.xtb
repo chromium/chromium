@@ -2798,7 +2798,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2921081876747860777">Veuillez créer un mot de passe pour protéger vos données locales</translation>
 <translation id="2923006468155067296">Votre <ph name="DEVICE_TYPE" /> va être verrouillé maintenant.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> autres tâches dans le même groupe de tâches : <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Supprimer ce compte</translation>
 <translation id="2923644930701689793">Accéder à la pellicule de votre téléphone</translation>
 <translation id="292371311537977079">Paramètres de Chrome</translation>
@@ -10629,7 +10628,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8524841856047224176">Personnalisez l'arrière-plan de votre caméra pour les appels vidéo et plus</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8525461909394569609">Cette appli inclut du contenu Web provenant de</translation>
-<translation id="8526313996927074827">Insérez des liens, des emoji et plus. Vous pouvez aussi obtenir de l'aide de l'IA de Google pour rédiger des contenus.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Enceintes</translation>
 <translation id="8527257351549797148">Votre organisation peut exiger un enregistrement afin que vous puissiez accéder aux applis, extensions, etc. Cela lui permet aussi de gérer certains éléments, comme la sécurité et les paramètres de l'appareil.</translation>

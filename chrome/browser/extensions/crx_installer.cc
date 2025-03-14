@@ -22,9 +22,11 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_check.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
@@ -86,16 +88,15 @@ namespace extensions {
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
     content::BrowserContext* context) {
-  return new CrxInstaller(ExtensionSystem::Get(context)->extension_service(),
-                          std::unique_ptr<ExtensionInstallPrompt>(), nullptr);
+  return new CrxInstaller(context, std::unique_ptr<ExtensionInstallPrompt>(),
+                          nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPrompt> client) {
-  return new CrxInstaller(ExtensionSystem::Get(context)->extension_service(),
-                          std::move(client), nullptr);
+  return new CrxInstaller(context, std::move(client), nullptr);
 }
 
 // static
@@ -103,14 +104,13 @@ scoped_refptr<CrxInstaller> CrxInstaller::Create(
     content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPrompt> client,
     const InstallApproval* approval) {
-  return new CrxInstaller(ExtensionSystem::Get(context)->extension_service(),
-                          std::move(client), approval);
+  return new CrxInstaller(context, std::move(client), approval);
 }
 
-CrxInstaller::CrxInstaller(ExtensionService* service,
+CrxInstaller::CrxInstaller(content::BrowserContext* context,
                            std::unique_ptr<ExtensionInstallPrompt> client,
                            const InstallApproval* approval)
-    : profile_(service->profile()),
+    : profile_(Profile::FromBrowserContext(context)),
       registrar_(ExtensionRegistrar::Get(profile_)),
       install_directory_(registrar_->install_directory()),
       install_source_(mojom::ManifestLocation::kInternal),
@@ -118,7 +118,6 @@ CrxInstaller::CrxInstaller(ExtensionService* service,
       fail_install_if_unexpected_version_(false),
       extensions_enabled_(registrar_->extensions_enabled()),
       delete_source_(false),
-      service_(service),
       // See header file comment on |client_| for why we use a raw pointer here.
       client_(client.release()),
       apps_require_extension_mime_type_(false),
@@ -133,6 +132,7 @@ CrxInstaller::CrxInstaller(ExtensionService* service,
       update_from_settings_page_(false),
       install_flags_(kInstallFlagNone) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!profile_->IsOffTheRecord());
   profile_observation_.Observe(profile_);
 
   // Observe for browser shutdown. Unretained is safe because the callback
@@ -613,8 +613,7 @@ void CrxInstaller::OnProfileWillBeDestroyed(Profile* profile) {
   profile_keep_alive_.reset();
   profile_observation_.Reset();
   profile_ = nullptr;
-  // The service will be deleted shortly.
-  service_ = nullptr;
+  // The registrar will be deleted shortly.
   registrar_ = nullptr;
 }
 
@@ -1053,8 +1052,10 @@ void CrxInstaller::ReportSuccessFromUIThread() {
     }
   }
 
-  service_->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
-                                 std::move(ruleset_install_prefs_));
+  ExtensionService* service =
+      ExtensionSystem::Get(profile_)->extension_service();
+  service->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
+                                std::move(ruleset_install_prefs_));
   NotifyCrxInstallComplete(std::nullopt);
 }
 

@@ -25,17 +25,13 @@
 - (void)start {
   _viewController = [[ReminderNotificationsViewController alloc] init];
   _viewController.actionHandler = self;
-
-  // Configure presentation style for half-sheet.
-  _viewController.modalPresentationStyle = UIModalPresentationPageSheet;
-  UISheetPresentationController* presentationController =
-      _viewController.sheetPresentationController;
-  presentationController.prefersEdgeAttachedInCompactHeight = YES;
-  presentationController.detents =
-      @[ UISheetPresentationControllerDetent.mediumDetent ];
-
-  // Set up presentation controller delegate to handle dismissal.
   _viewController.presentationController.delegate = self;
+  _viewController.sheetPresentationController
+      .prefersEdgeAttachedInCompactHeight = YES;
+  _viewController.sheetPresentationController.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent],
+  ];
 
   [self.baseViewController presentViewController:_viewController
                                         animated:YES

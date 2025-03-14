@@ -51,7 +51,8 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
 
   std::unique_ptr<views::BubbleDialogDelegateView> bubble_view =
       std::make_unique<views::BubbleDialogDelegateView>(
-          target, views::BubbleBorder::Arrow::FLOAT,
+          views::BubbleDialogDelegateView::CreatePassKey(), target,
+          views::BubbleBorder::Arrow::FLOAT,
           views::BubbleBorder::Shadow::STANDARD_SHADOW);
 
   const auto* color_provider = target_->GetColorProvider();

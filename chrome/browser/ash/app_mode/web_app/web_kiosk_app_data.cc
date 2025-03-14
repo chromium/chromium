@@ -84,6 +84,7 @@ class WebKioskAppData::IconFetcher : public ImageDecoder::ImageRequest {
         })");
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = icon_url_;
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
     simple_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), traffic_annotation);
 
