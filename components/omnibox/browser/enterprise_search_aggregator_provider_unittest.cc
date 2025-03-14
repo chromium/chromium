@@ -119,7 +119,10 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 "source_type": "jira",
                 "entity_type": "issue",
                 "title": "John's doodle",
-                "link": "https://www.example.com"
+                "link": "https://www.example.com",
+                "owner": "John Doe",
+                "mime_type": "application/vnd.google-apps.document",
+                "updated_time": 1192487100
               }
             },
             "iconUri": "https://example.com/icon.png",
@@ -238,7 +241,7 @@ std::string CreatePeopleResult(const std::string& displayName,
       displayName, userName, givenName, familyName);
 }
 std::string CreateContentResult(const std::string& title,
-                                const std::string& mime_type,
+                                const std::string& owner_email,
                                 const std::string& url) {
   return base::StringPrintf(
       R"(
@@ -246,13 +249,13 @@ std::string CreateContentResult(const std::string& title,
           "document": {
             "derivedStructData": {
               "title": "%s",
-              "mime_type": "%s",
+              "owner_email": "%s",
               "link": "%s"
             }
           }
         }
         )",
-      title, mime_type, url);
+      title, owner_email, url);
 }
 std::string CreateResponse(std::vector<std::string> queries,
                            std::vector<std::string> peoples,
@@ -580,7 +583,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
 
   EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
   EXPECT_EQ(matches[1].relevance, 501);
-  EXPECT_EQ(matches[1].contents, u"");
+  EXPECT_EQ(matches[1].contents, u"10/15/2007 - John Doe - Google Docs");
   EXPECT_EQ(matches[1].description, u"John's doodle");
   EXPECT_EQ(matches[1].destination_url, GURL("https://www.example.com"));
   EXPECT_EQ(matches[1].icon_url, GURL("https://example.com/icon.png"));
