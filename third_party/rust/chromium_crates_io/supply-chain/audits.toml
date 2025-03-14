@@ -766,6 +766,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.29 -> 4.5.31"
 notes = "Comment-only change to update version."
 
+[[audits.clap]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.31 -> 4.5.32"
+notes = "Only `examples` changes + comment-only changes in `lib.rs` and `_tutorial.rs`."
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -870,6 +876,12 @@ who = "Daniel Cheng <dcheng@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.29 -> 4.5.31"
 notes = "No unsafe uses added or changed. Delta consists of miscellaneous fixes and cleanups (e.g. improvements for ValueRange) and a new parser for Saturating<T>."
+
+[[audits.clap_builder]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.31 -> 4.5.32"
+notes = "Just a new `fn remove` method in `src/error/mod.rs`."
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"
@@ -3334,6 +3346,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.217 -> 1.0.218"
 notes = "No changes outside comments and documentation."
 
+[[audits.serde]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.218 -> 1.0.219"
+notes = "Just allowing `clippy::elidable_lifetime_names`."
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -3437,6 +3455,12 @@ who = "Daniel Cheng <dcheng@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.217 -> 1.0.218"
 notes = "No changes outside comments and documentation."
+
+[[audits.serde_derive]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.218 -> 1.0.219"
+notes = "Minor changes (clippy tweaks, using `mem::take` instead of `mem::replace`)."
 
 [[audits.serde_json]]
 who = "danakj@chromium.org"
@@ -3867,6 +3891,11 @@ delta = "1.4.0 -> 1.4.1"
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "0.8.0"
+
+[[audits.tinystr]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "0.8.0 -> 0.8.1"
 
 [[audits.tinyvec]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"

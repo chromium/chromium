@@ -34,6 +34,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.DialogStyles;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -56,7 +57,7 @@ public class AppModalPresenterUnitTest {
 
     @Before
     public void setup() {
-        Activity activity = buildActivity(Activity.class).setup().get();
+        Activity activity = buildActivity(TestActivity.class).setup().get();
         mDisplayMetrics = activity.getResources().getDisplayMetrics();
         mDisplayMetrics.density = 1;
         mAppModalPresenter = new AppModalPresenter(activity);

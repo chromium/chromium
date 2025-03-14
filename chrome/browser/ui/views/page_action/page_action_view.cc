@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -229,6 +230,8 @@ void PageActionView::OnClickCanceled(const ui::Event& event) {
 
 void PageActionView::OnLabelVisibilityChanged() {
   UpdateBorder();
+  UpdateLabelColors();
+  UpdateIconImage();
   chip_visibility_changed_callbacks_.Notify(this);
 }
 

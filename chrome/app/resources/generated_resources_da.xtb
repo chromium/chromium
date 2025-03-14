@@ -2811,7 +2811,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2921081876747860777">Opret en adgangskode for at beskytte dine lokale data.</translation>
 <translation id="2923006468155067296">Din <ph name="DEVICE_TYPE" /> låses nu.
 <ph name="DOMAIN" /> kræver, at chipkortet er indsat.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> anden opgave i samme opgavegruppe: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> andre opgaver i samme opgavegruppe: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Fjern denne konto</translation>
 <translation id="2923644930701689793">Tilgå din telefons kamerarulle</translation>
 <translation id="292371311537977079">Indstillinger for Chrome</translation>
@@ -10644,7 +10643,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8524841856047224176">Tilpas dine kamerabaggrunde til videoopkald m.m. til dig personligt</translation>
 <translation id="8525306231823319788">Fuld skærm</translation>
 <translation id="8525461909394569609">Denne app indeholder webindhold fra</translation>
-<translation id="8526313996927074827">Indsæt links, emojis m.m. Du kan også få hjælp til at skrive med Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Højttalere</translation>
 <translation id="8527257351549797148">Din organisation kræver muligvis tilmelding, før du kan få adgang til apps, udvidelser m.m. Dette giver også din organisation mulighed for at administrere ting såsom sikkerheds- og enhedsindstillinger.</translation>

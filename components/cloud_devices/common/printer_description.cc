@@ -128,17 +128,13 @@ constexpr char kTypeDuplexLongEdge[] = "LONG_EDGE";
 constexpr char kTypeDuplexNoDuplex[] = "NO_DUPLEX";
 constexpr char kTypeDuplexShortEdge[] = "SHORT_EDGE";
 
-constexpr char kTypeFitToPageFillPage[] = "FILL_PAGE";
-constexpr char kTypeFitToPageFitToPage[] = "FIT_TO_PAGE";
-constexpr char kTypeFitToPageGrowToPage[] = "GROW_TO_PAGE";
-constexpr char kTypeFitToPageNoFitting[] = "NO_FITTING";
-constexpr char kTypeFitToPageShrinkToPage[] = "SHRINK_TO_PAGE";
+constexpr char kTypeFitToPageAuto[] = "AUTO";
+constexpr char kTypeFitToPageAutoFit[] = "AUTO_FIT";
+constexpr char kTypeFitToPageFill[] = "FILL";
+constexpr char kTypeFitToPageFit[] = "FIT";
+constexpr char kTypeFitToPageNone[] = "NONE";
 
-constexpr char kTypeMarginsBorderless[] = "BORDERLESS";
-constexpr char kTypeMarginsCustom[] = "CUSTOM";
-constexpr char kTypeMarginsStandard[] = "STANDARD";
 constexpr char kTypeOrientationAuto[] = "AUTO";
-
 constexpr char kTypeOrientationLandscape[] = "LANDSCAPE";
 constexpr char kTypeOrientationPortrait[] = "PORTRAIT";
 
@@ -211,24 +207,15 @@ constexpr struct OrientationNames {
     {OrientationType::AUTO_ORIENTATION, kTypeOrientationAuto},
 };
 
-constexpr struct MarginsNames {
-  MarginsType id;
-  const char* const json_name;
-} kMarginsNames[] = {
-    {MarginsType::NO_MARGINS, kTypeMarginsBorderless},
-    {MarginsType::STANDARD_MARGINS, kTypeMarginsStandard},
-    {MarginsType::CUSTOM_MARGINS, kTypeMarginsCustom},
-};
-
 constexpr struct FitToPageNames {
   FitToPageType id;
   const char* const json_name;
 } kFitToPageNames[] = {
-    {FitToPageType::NO_FITTING, kTypeFitToPageNoFitting},
-    {FitToPageType::FIT_TO_PAGE, kTypeFitToPageFitToPage},
-    {FitToPageType::GROW_TO_PAGE, kTypeFitToPageGrowToPage},
-    {FitToPageType::SHRINK_TO_PAGE, kTypeFitToPageShrinkToPage},
-    {FitToPageType::FILL_PAGE, kTypeFitToPageFillPage},
+    {FitToPageType::AUTO, kTypeFitToPageAuto},
+    {FitToPageType::AUTO_FIT, kTypeFitToPageAutoFit},
+    {FitToPageType::FILL, kTypeFitToPageFill},
+    {FitToPageType::FIT, kTypeFitToPageFit},
+    {FitToPageType::NONE, kTypeFitToPageNone},
 };
 
 constexpr struct DocumentSheetBackNames {
@@ -900,27 +887,20 @@ bool VendorItem::operator==(const VendorItem& other) const {
   return id == other.id && value == other.value;
 }
 
-Margins::Margins()
-    : type(MarginsType::STANDARD_MARGINS),
-      top_um(0),
-      right_um(0),
-      bottom_um(0),
-      left_um(0) {}
+Margins::Margins() : top_um(0), right_um(0), bottom_um(0), left_um(0) {}
 
-Margins::Margins(MarginsType type,
-                 int32_t top_um,
+Margins::Margins(int32_t top_um,
                  int32_t right_um,
                  int32_t bottom_um,
                  int32_t left_um)
-    : type(type),
-      top_um(top_um),
+    : top_um(top_um),
       right_um(right_um),
       bottom_um(bottom_um),
       left_um(left_um) {}
 
 bool Margins::operator==(const Margins& other) const {
-  return type == other.type && top_um == other.top_um &&
-         right_um == other.right_um && bottom_um == other.bottom_um;
+  return top_um == other.top_um && right_um == other.right_um &&
+         bottom_um == other.bottom_um;
 }
 
 Dpi::Dpi() : horizontal(0), vertical(0) {
@@ -1319,9 +1299,6 @@ class MarginsTraits : public NoValueValidation,
                       public ItemsTraits<kOptionMargins> {
  public:
   static bool Load(const base::Value::Dict& dict, Margins* option) {
-    const std::string* type = dict.FindString(kKeyType);
-    if (!type || !TypeFromString(kMarginsNames, *type, &option->type))
-      return false;
     std::optional<int> top_um = dict.FindInt(kMarginTop);
     std::optional<int> right_um = dict.FindInt(kMarginRight);
     std::optional<int> bottom_um = dict.FindInt(kMarginBottom);
@@ -1336,7 +1313,6 @@ class MarginsTraits : public NoValueValidation,
   }
 
   static void Save(const Margins& option, base::Value::Dict* dict) {
-    dict->Set(kKeyType, TypeToString(kMarginsNames, option.type));
     dict->Set(kMarginTop, option.top_um);
     dict->Set(kMarginRight, option.right_um);
     dict->Set(kMarginBottom, option.bottom_um);

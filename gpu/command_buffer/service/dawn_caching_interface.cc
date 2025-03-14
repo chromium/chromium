@@ -12,6 +12,9 @@
 #include <cstring>
 
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/config/gpu_preferences.h"
 #include "net/base/io_buffer.h"
@@ -55,13 +58,21 @@ void DawnCachingInterface::StoreData(const void* key,
 }
 
 DawnCachingInterfaceFactory::DawnCachingInterfaceFactory(BackendFactory factory)
-    : backend_factory_(factory) {}
+    : backend_factory_(factory) {
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "DawnCache", base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+}
 
 DawnCachingInterfaceFactory::DawnCachingInterfaceFactory()
     : DawnCachingInterfaceFactory(base::BindRepeating(
           &DawnCachingInterfaceFactory::CreateDefaultInMemoryBackend)) {}
 
-DawnCachingInterfaceFactory::~DawnCachingInterfaceFactory() = default;
+DawnCachingInterfaceFactory::~DawnCachingInterfaceFactory() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+}
 
 std::unique_ptr<DawnCachingInterface>
 DawnCachingInterfaceFactory::CreateInstance(
@@ -94,6 +105,28 @@ void DawnCachingInterfaceFactory::ReleaseHandle(
          gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnGraphite);
 
   backends_.erase(handle);
+}
+
+bool DawnCachingInterfaceFactory::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  const bool is_background =
+      args.level_of_detail ==
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground;
+  for (auto& [key, backend] : backends_) {
+    if (absl::holds_alternative<GpuDiskCacheDawnGraphiteHandle>(key)) {
+      // There should only be a single graphite cache.
+      backend->OnMemoryDump("gpu/shader_cache/graphite_cache", pmd);
+    } else if (!is_background &&
+               absl::holds_alternative<GpuDiskCacheDawnWebGPUHandle>(key)) {
+      // Note that in memory only webgpu caches aren't stored in `backends_` so
+      // they won't produce memory dumps.
+      std::string dump_name = base::StringPrintf(
+          "gpu/shader_cache/webgpu_cache_0x%X", GetHandleValue(key));
+      backend->OnMemoryDump(dump_name, pmd);
+    }
+  }
+  return true;
 }
 
 scoped_refptr<detail::DawnCachingBackend>
@@ -211,6 +244,19 @@ void DawnCachingBackend::StoreData(const std::string& key,
 
   auto [it, inserted] = entries_.insert(std::move(entry));
   DCHECK(inserted);
+}
+
+void DawnCachingBackend::OnMemoryDump(
+    const std::string& dump_name,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  base::AutoLock lock(mutex_);
+
+  using base::trace_event::MemoryAllocatorDump;
+  MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(dump_name);
+  dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                  MemoryAllocatorDump::kUnitsBytes, current_size_);
+  dump->AddScalar(MemoryAllocatorDump::kNameObjectCount,
+                  MemoryAllocatorDump::kUnitsObjects, entries_.size());
 }
 
 void DawnCachingBackend::EvictEntry(DawnCachingBackend::Entry* entry) {

@@ -119,6 +119,7 @@ void GlicFreController::ShowFreDialogAfterAuthCheck(
   will_detach_subscription_ = tab_showing_modal_->RegisterWillDetach(
       base::BindRepeating(&GlicFreController::OnTabShowingModalWillDetach,
                           base::Unretained(this)));
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
 }
 
 void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
@@ -135,6 +136,7 @@ void GlicFreController::DismissFreIfOpenOnActiveTab(Browser* browser) {
 }
 
 void GlicFreController::AcceptFre() {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.Accept"));
   // Update FRE related preferences.
   profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
 
@@ -193,6 +195,11 @@ void GlicFreController::OnLinkClicked(const GURL& url) {
         base::UserMetricsAction("Glic.Fre.MyActivityLinkOpened"));
     return;
   }
+}
+
+void GlicFreController::OnNoThanksClicked() {
+  base::RecordAction(base::UserMetricsAction("Glic.Fre.NoThanks"));
+  DismissFre();
 }
 
 content::WebContents* GlicFreController::GetWebContents() {

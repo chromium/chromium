@@ -98,8 +98,6 @@ bool AmountExtractionManager::ShouldTriggerAmountExtraction(
     return false;
   }
 
-  // TODO(crbug.com/378531706) check that there is at least one BNPL issuer
-  // present.
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS)) {
     return base::FeatureList::IsEnabled(
@@ -137,6 +135,11 @@ void AmountExtractionManager::SetSearchRequestPendingForTesting(
 
 bool AmountExtractionManager::GetSearchRequestPendingForTesting() {
   return search_request_pending_;
+}
+
+bool AmountExtractionManager::IsUrlEligibleForAmountExtractionForTesting()
+    const {
+  return IsUrlEligibleForAmountExtraction();
 }
 
 void AmountExtractionManager::OnCheckoutAmountReceived(
@@ -182,9 +185,16 @@ bool AmountExtractionManager::IsUrlEligibleForAmountExtraction() const {
           autofill_manager_->client().GetAutofillOptimizationGuide()) {
     const GURL& url =
         autofill_manager_->client().GetLastCommittedPrimaryMainFrameURL();
-    for (std::string_view issuer : BnplManager::GetSupportedBnplIssuerIds()) {
+    payments::PaymentsAutofillClient* payments_autofill_client =
+        autofill_manager_->client().GetPaymentsAutofillClient();
+    if (!payments_autofill_client) {
+      return false;
+    }
+    for (const BnplIssuer& issuer :
+         payments_autofill_client->GetPaymentsDataManager().GetBnplIssuers()) {
       if (autofill_optimization_guide
-              ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(issuer, url)) {
+              ->IsUrlEligibleForCheckoutAmountSearchForIssuerId(
+                  issuer.issuer_id(), url)) {
         return true;
       }
     }

@@ -219,7 +219,8 @@ void ShellDevToolsManagerDelegate::HandleCommand(
 
 scoped_refptr<DevToolsAgentHost> ShellDevToolsManagerDelegate::CreateNewTarget(
     const GURL& url,
-    content::DevToolsManagerDelegate::TargetType target_type) {
+    content::DevToolsManagerDelegate::TargetType target_type,
+    bool new_window) {
   Shell* shell = Shell::CreateNewWindow(browser_context_, url, nullptr,
                                         Shell::GetShellDefaultSize());
   return target_type == content::DevToolsManagerDelegate::kTab

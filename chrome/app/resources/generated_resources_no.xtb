@@ -2804,7 +2804,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2921081876747860777">Opprett et passord for å beskytte de lokale dataene dine.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> låses nå.
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> andre gjøremål i den samme gjøremålsgruppen: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Fjern denne kontoen</translation>
 <translation id="2923644930701689793">Få tilgang til kamerarullen på telefonen din</translation>
 <translation id="292371311537977079">Chrome-innstillinger</translation>
@@ -10631,7 +10630,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8524841856047224176">Tilpass kamerabakgrunnene dine for videosamtaler med mer</translation>
 <translation id="8525306231823319788">Full skjerm</translation>
 <translation id="8525461909394569609">Denne appen har nettinnhold fra</translation>
-<translation id="8526313996927074827">Sett inn linker, emojier og mer. Du kan også få hjelp til å skrive med AI-løsninger fra Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Høyttalere</translation>
 <translation id="8527257351549797148">Det kan hende at organisasjonen din krever registrering, for at du skal få tilgang til apper, utvidelser med mer. Da kan organisasjonen din også administrere ting som sikkerhet og enhetsinnstillinger.</translation>

@@ -96,16 +96,29 @@ TableHeader::TableHeader(base::WeakPtr<TableView> table)
       font_list_(gfx::FontList().DeriveWithWeight(GetFontWeight())) {
   HighlightPathGenerator::Install(
       this, std::make_unique<TableHeader::HighlightPathGenerator>());
-  FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate(
-      base::BindRepeating([](const View* view) {
-        const auto* v = views::AsViewClass<TableHeader>(view);
-        CHECK(v);
-        return v->GetHeaderRowHasFocus();
-      }));
+  InstallFocusRing();
 }
 
 TableHeader::~TableHeader() = default;
+
+void TableHeader::InstallFocusRing() {
+  // Remove and reinstall a new focus ring, if one is already present.
+  if (views::FocusRing::Get(this)) {
+    views::FocusRing::Remove(this);
+  }
+
+  FocusRing::Install(this);
+  FocusRing* focus_ring = views::FocusRing::Get(this);
+  if (table_->table_style().inset_focus_ring) {
+    focus_ring->SetOutsetFocusRingDisabled(true);
+    focus_ring->SetHaloInset(0);
+  }
+  focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
+    const auto* v = views::AsViewClass<TableHeader>(view);
+    CHECK(v);
+    return v->GetHeaderRowHasFocus();
+  }));
+}
 
 void TableHeader::UpdateFocusState() {
   views::FocusRing::Get(this)->SchedulePaint();

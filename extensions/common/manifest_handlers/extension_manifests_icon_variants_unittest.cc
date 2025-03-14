@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
@@ -16,18 +17,20 @@
 #include "extensions/common/manifest_handlers/icon_variants_handler.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_test.h"
+#include "extensions/common/warnings_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 // Don't enable the icon variants feature. Warn if the key is used, but don't
 // create an error.
-using NoIconVariantsFeatureManifestTest = ManifestTest;
+using NoIconVariantsManifestTest = ManifestTest;
 
-TEST_F(NoIconVariantsFeatureManifestTest, Warnings) {
-  LoadAndExpectWarnings("icon_variants.json",
-                        {"'icon_variants' requires canary channel or newer, "
-                         "but this is the stable channel."});
+TEST_F(NoIconVariantsManifestTest, Warnings) {
+  // Test simple feature's AvailabilityResult::UNSUPPORTED_CHANNEL.
+  LoadAndExpectWarning("icon_variants.json",
+                       "'icon_variants' requires canary channel or newer, "
+                       "but this is the stable channel.");
 }
 
 // Enable the icon variants feature.
@@ -183,20 +186,8 @@ TEST_F(IconVariantsManifestTest, WarnOnUnrecognizedIconVariants) {
     scoped_refptr<extensions::Extension> extension =
         LoadAndExpectSuccess(GetManifestData(test_case.icon_variants));
     ASSERT_FALSE(IconVariantsInfo::HasIconVariants(extension.get()));
-
-    // Verify that the case where `icon_variants` is invalid generates a warning
-    // and not an error. There could be other warnings, so find any instance
-    // of this one to succeed. This warning indicates that there aren't any icon
-    // variants populated in C++.
-    bool has_error = false;
-    static constexpr char expected[] = "'icon_variants' is not valid.";
-    for (const auto& warning : extension->install_warnings()) {
-      if (warning.message != expected) {
-        has_error = true;
-        break;
-      }
-    }
-    EXPECT_TRUE(has_error);
+    EXPECT_TRUE(warnings_test_util::HasInstallWarning(
+        extension, "'icon_variants' is not valid."));
   }
 }
 
@@ -216,7 +207,6 @@ TEST_F(IconVariantsManifestTest, PreferIconVariantsOverIcons) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess(manifest_data));
   const ExtensionIconSet& icons = IconsInfo::GetIcons(extension.get());
-
   EXPECT_EQ("icon_variants.16.png",
             icons.Get(extension_misc::EXTENSION_ICON_BITTY,
                       ExtensionIconSet::Match::kExactly));
@@ -271,8 +261,7 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
     const ExtensionIconSet& icons =
         !test_case.color_scheme.has_value()
             ? IconsInfo::GetIcons(extension.get())
-            : IconsInfo::GetIcons(extension.get(),
-                                  test_case.color_scheme.value());
+            : IconsInfo::GetIcons(*extension, test_case.color_scheme.value());
     EXPECT_EQ(test_case.expected,
               icons.Get(extension_misc::EXTENSION_ICON_BITTY,
                         ExtensionIconSet::Match::kExactly));
@@ -350,23 +339,6 @@ TEST_F(IconVariantsManifestTest, ColorSchemesKeyValid) {
   scoped_refptr<extensions::Extension> extension(
       LoadAndExpectSuccess(manifest_data));
   ASSERT_TRUE(extension->install_warnings().empty());
-}
-
-// Warn, don't error, if manifest.json has an empty action.icon_variants.
-// Similar to ExtensionAction*Test, but specifically related to IconVariants.
-TEST_F(IconVariantsManifestTest, Action) {
-  ManifestData manifest_data = ManifestData::FromJSON(
-      R"({
-      "name": "Test",
-      "version": "1",
-      "manifest_version": 3,
-      "action": {"icon_variants": {}}
-    })");
-  scoped_refptr<extensions::Extension> extension(
-      LoadAndExpectSuccess(manifest_data));
-  EXPECT_EQ(1u, extension->install_warnings().size());
-  EXPECT_EQ("Unrecognized manifest key 'action'.",
-            extension->install_warnings()[0].message);
 }
 
 }  // namespace extensions

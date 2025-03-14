@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView;
-import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
@@ -85,7 +84,6 @@ public final class ToolbarTabletUnitTest {
     @Mock private ToolbarColorObserver mToolbarColorObserver;
     @Mock private ToolbarDataProvider mToolbarDataProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
-    @Mock private ToolbarTabController mToolbarTabController;
     private Activity mActivity;
     private ToolbarTablet mToolbarTablet;
     private LinearLayout mToolbarTabletLayout;
@@ -361,7 +359,6 @@ public final class ToolbarTabletUnitTest {
 
     @Test
     public void testOnLongClick() {
-        longClickAndVerifyToast(R.id.refresh_button, R.string.refresh);
         longClickAndVerifyToast(R.id.bookmark_button, R.string.menu_bookmark);
         longClickAndVerifyToast(R.id.save_offline_button, R.string.menu_download);
     }
@@ -386,25 +383,6 @@ public final class ToolbarTabletUnitTest {
         mToolbarTablet.updateForwardButtonVisibility(false);
         assertFalse("Button should not be enabled", btn.isEnabled());
         assertFalse("Button should not be focused", btn.isFocusable());
-    }
-
-    @Test
-    public void testUpdateReloadButtonVisibility() {
-        ImageButton btn = mToolbarTablet.findViewById(R.id.refresh_button);
-        mToolbarTablet.updateReloadButtonVisibility(true);
-        assertTrue("Button should be enabled", btn.isEnabled());
-        assertEquals("Button drawable level is not as expected", 1, btn.getDrawable().getLevel());
-        assertEquals(
-                "Button description is not as expected",
-                mActivity.getResources().getString(R.string.accessibility_btn_stop_loading),
-                btn.getContentDescription());
-        mToolbarTablet.updateReloadButtonVisibility(false);
-        assertEquals("Button drawable level is not as expected", 0, btn.getDrawable().getLevel());
-        assertEquals(
-                "Button description is not as expected",
-                mActivity.getResources().getString(R.string.accessibility_btn_refresh),
-                btn.getContentDescription());
-        assertTrue("Button should be enabled", btn.isEnabled());
     }
 
     @Test

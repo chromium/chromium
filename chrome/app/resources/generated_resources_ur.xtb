@@ -2799,7 +2799,6 @@
 <translation id="2921081876747860777">براہ کرم اپنے مقامی ڈیٹا کی حفاظت کرنے کیلئے ایک پاس ورڈ بنائیں۔</translation>
 <translation id="2923006468155067296">آپ کے <ph name="DEVICE_TYPE" /> کو ابھی مقفل کر دیا جائے گا۔
 <ph name="DOMAIN" /> آپ سے اپنا سمارٹ کارڈ داخل کئے رکھنے کا تقاضا کرتا ہے۔</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />۔ اسی ٹاسک گروپ میں دیگر <ph name="OTHER_TASK_NUM" /> ٹاسکس: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">یہ اکاؤنٹ ہٹائیں</translation>
 <translation id="2923644930701689793">اپنے فون کے کیمرا رول تک رسائی حاصل کریں</translation>
 <translation id="292371311537977079">‏Chrome کی ترتیبات</translation>
@@ -10624,7 +10623,6 @@
 <translation id="8524841856047224176">ویڈیو کالز وغیرہ کے لیے اپنے کیمرے کے پس منظر کو ذاتی نوعیت کا بنائیں</translation>
 <translation id="8525306231823319788">پوری اسکرین</translation>
 <translation id="8525461909394569609">اس ایپ میں ویب کے مواد کا فارم شامل ہے</translation>
-<translation id="8526313996927074827">‏لنکس، ایموجیز اور مزید داخل کریں۔ ‫Google AI کے ساتھ لکھنے میں آپ بھی مدد حاصل کر سکتے ہیں۔</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">اسپیکرز</translation>
 <translation id="8527257351549797148">آپ کی تنظیم کو اندراج کی ضرورت ہو سکتی ہے تاکہ آپ ایپس، ایکسٹینشنز وغیرہ تک رسائی حاصل کر سکیں۔ اس سے آپ کی تنظیم کو سیکیورٹی اور آلے کی ترتیبات جیسی چیزوں کا نظم کرنے کی بھی اجازت ملتی ہے۔</translation>

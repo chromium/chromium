@@ -67,6 +67,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   void UnblockDomainFrom3DAPIs(const GURL& url);
   void DisableHardwareAcceleration();
   bool HardwareAccelerationEnabled() const;
+  bool IsGpuRasterizationForUIEnabled() const;
 
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
@@ -314,6 +315,8 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 #if BUILDFLAG(IS_LINUX)
   bool is_gpu_memory_buffer_NV12_supported_ = false;
 #endif  // BUILDFLAG(IS_LINUX)
+
+  bool is_gpu_rasterization_for_ui_enabled_ = true;
 };
 
 }  // namespace content

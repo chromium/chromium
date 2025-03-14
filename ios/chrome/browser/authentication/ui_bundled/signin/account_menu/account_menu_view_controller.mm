@@ -330,40 +330,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                       itemIdentifier:(id)itemIdentifier {
   NSString* gaiaID = base::apple::ObjCCast<NSString>(itemIdentifier);
   if (gaiaID) {
-    // `itemIdentifier` is a gaia id.
-    TableViewAccountCell* cell =
-        DequeueTableViewCell<TableViewAccountCell>(tableView);
-    cell.accessibilityTraits = UIAccessibilityTraitButton;
-
-    cell.imageView.image = [self.dataSource imageForGaiaID:gaiaID];
-    cell.textLabel.text = [self.dataSource nameForGaiaID:gaiaID];
-    NSString* email = [self.dataSource emailForGaiaID:gaiaID];
-    cell.detailTextLabel.text = email;
-    cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    cell.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(email));
-    cell.userInteractionEnabled = YES;
-    cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
-    // Set the enterprise icon. This may be replaced by the activity indicator
-    // when needed.
-    [cell showManagementIcon:[self.dataSource isGaiaIDManaged:gaiaID]];
-
-    if ([indexPath isEqual:_selectedIndexPath]) {
-      // In theory, this can occur if, during the account switch process, the
-      // user scrolls a lot, and scroll back.
-      [self setActivityIndicator:cell];
-    }
-    BOOL lastSecondaryIdentity =
-        (indexPath.row == [_accountMenuDataSource tableView:self.tableView
-                                      numberOfRowsInSection:indexPath.section] -
-                              2);
-    cell.separatorInset = UIEdgeInsetsMake(
-        0., /*left=*/
-        (lastSecondaryIdentity) ? kSecondaryAccountsLeftSeparatorInset
-                                : kLastSecondaryAccountLeftSeparatorInset,
-        0., 0.);
-    return cell;
+    return [self cellForTableView:tableView gaiaID:gaiaID indexPath:indexPath];
   }
 
   // Otherwise `itemIdentifier` is a `RowIdentifier`.
@@ -374,18 +341,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   NSString* accessibilityLabel = nil;
   switch (rowIdentifier) {
     case RowIdentifierErrorExplanation: {
-      SettingsImageDetailTextCell* cell =
-          DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
-      cell.selectionStyle = UITableViewCellSelectionStyleNone;
-      cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
-      cell.accessibilityElementsHidden = YES;
-      cell.detailTextLabel.text =
-          l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
-      cell.image =
-          DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
-      cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-      [cell setImageViewTintColor:[UIColor colorNamed:kRed500Color]];
-      return cell;
+      return [self cellForErrorExplanationForTableView:tableView];
     }
     case RowIdentifierErrorButton:
       label = l10n_util::GetNSString(
@@ -427,6 +383,63 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   cell.userInteractionEnabled = YES;
   cell.accessibilityIdentifier = accessibilityIdentifier;
 
+  return cell;
+}
+
+// Returns a cell for signing-in with the account with `gaiaID`.
+- (UITableViewCell*)cellForTableView:(UITableView*)tableView
+                              gaiaID:(NSString*)gaiaID
+                           indexPath:(NSIndexPath*)indexPath {
+  // `itemIdentifier` is a gaia id.
+  TableViewAccountCell* cell =
+      DequeueTableViewCell<TableViewAccountCell>(tableView);
+  cell.accessibilityTraits = UIAccessibilityTraitButton;
+
+  cell.imageView.image = [self.dataSource imageForGaiaID:gaiaID];
+  cell.textLabel.text = [self.dataSource nameForGaiaID:gaiaID];
+  NSString* email = [self.dataSource emailForGaiaID:gaiaID];
+  cell.detailTextLabel.text = email;
+  cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  cell.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(email));
+  cell.userInteractionEnabled = YES;
+  cell.accessibilityIdentifier = kAccountMenuSecondaryAccountButtonId;
+  // Set the enterprise icon. This may be replaced by the activity indicator
+  // when needed.
+  [cell showManagementIcon:[self.dataSource isGaiaIDManaged:gaiaID]];
+
+  if ([indexPath isEqual:_selectedIndexPath]) {
+    // In theory, this can occur if, during the account switch process, the
+    // user scrolls a lot, and scroll back.
+    [self setActivityIndicator:cell];
+  }
+  BOOL lastSecondaryIdentity =
+      (indexPath.row == [_accountMenuDataSource tableView:self.tableView
+                                    numberOfRowsInSection:indexPath.section] -
+                            2);
+  cell.separatorInset = UIEdgeInsetsMake(
+      0., /*left=*/
+      (lastSecondaryIdentity) ? kSecondaryAccountsLeftSeparatorInset
+                              : kLastSecondaryAccountLeftSeparatorInset,
+      0., 0.);
+  return cell;
+}
+
+// Returns a cell for the error explanation.
+- (UITableViewCell*)cellForErrorExplanationForTableView:
+    (UITableView*)tableView {
+  SettingsImageDetailTextCell* cell =
+      DequeueTableViewCell<SettingsImageDetailTextCell>(tableView);
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
+  cell.accessibilityIdentifier = kAccountMenuErrorMessageId;
+  cell.accessibilityElementsHidden = YES;
+  cell.detailTextLabel.text =
+      l10n_util::GetNSString(self.dataSource.accountErrorUIInfo.messageID);
+  cell.image =
+      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolSize);
+  cell.detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  [cell setImageViewTintColor:[UIColor colorNamed:kRed500Color]];
   return cell;
 }
 

@@ -78,7 +78,7 @@ bool IsAllowedCustomUiPromo(const base::Feature& promo_feature) {
   // Or better yet, reach out to Frizzle (User Education) Team before adding
   // code for your new Custom UI promo.
   //
-  // Add the text names of allowlisted custom UI promos here:
+  // Add the text names of allowlisted rotating promos here:
   // static constexpr auto kAllowedPromoNames =
   //     base::MakeFixedFlatSet<std::string_view>({ });
   // return kAllowedPromoNames.contains(promo_feature.name);

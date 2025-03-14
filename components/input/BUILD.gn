@@ -125,6 +125,7 @@ component("input") {
       "web_input_event_builders_android.cc",
       "web_input_event_builders_android.h",
     ]
+    deps += [ "//components/input/android:jni_headers" ]
   }
   if (is_ios) {
     sources += [

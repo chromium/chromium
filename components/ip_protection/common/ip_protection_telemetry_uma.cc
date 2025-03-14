@@ -146,7 +146,10 @@ void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
           /*is_proxy_list_available=*/true);
       break;
     case ProxyResolutionResult::kHasSiteException:
-      eligibility = ProtectionEligibility::kUnknown;
+      eligibility = ProtectionEligibility::kEligible;
+      record_availability(
+          /*are_auth_tokens_available=*/true,
+          /*is_proxy_list_available=*/true);
       break;
     case ProxyResolutionResult::kAttemptProxy:
       eligibility = ProtectionEligibility::kEligible;
@@ -244,7 +247,7 @@ void IpProtectionTelemetryUma::MdlEstimatedDiskUsage(int64_t usage) {
 }
 
 void IpProtectionTelemetryUma::MdlSize(int64_t size) {
-  base::UmaHistogramCustomCounts("NetworkService.MaskedDomainList.Size",
+  base::UmaHistogramCustomCounts("NetworkService.MaskedDomainList.Size2",
                                  size / 1024,  // Convert to KB
                                  /*min=*/1,
                                  /*exclusive_max=*/5000,  // Maximum of 5MB

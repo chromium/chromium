@@ -1,18 +1,22 @@
 )]}'
 {"response":{
- "protocol":"3.1",
- "app":[
+ "protocol":"4.0",
+ "apps":[
   {"appid":"jebgalgnebhfojomionfpkfelancnnkf",
    "status":"ok",
    "updatecheck":{
-   "status":"ok",
-   "urls":{"url":[{"codebase":"http://localhost/download/"}]},
-   "actions":{"action":[{"run":"this"}]},
-   "manifest":{
-    "version":"1.0",
-    "prodversionmin":"11.0.1.0",
-    "packages":{"package":[{"name":"jebgalgnebhfojomionfpkfelancnnkf.crx"}]}}
-    }
+    "status":"ok",
+    "nextversion":"1.0",
+    "pipelines":[
+     {"operations":[
+      {"type": "download",
+       "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx3"}]},
+      {"type": "crx3"},
+      {"type": "run",
+       "path": "this"}
+     ]}
+    ]
    }
+  }
  ]
 }}

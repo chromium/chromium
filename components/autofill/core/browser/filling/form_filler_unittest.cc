@@ -263,6 +263,7 @@ TEST_F(FormFillerTest, FillTriggeredSection) {
                   {.role = NAME_FULL, .autocomplete_attribute = "name"}}});
   FormsSeen({form});
   FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
 
   // Assign different sections to the fields.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
@@ -273,6 +274,8 @@ TEST_F(FormFillerTest, FillTriggeredSection) {
   AutofillProfile profile = test::GetFullProfile();
   FillAutofillFormData(form, form.fields()[1], &profile);
 
+  form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
   EXPECT_FALSE(form_structure->field(0)->is_autofilled());
   EXPECT_TRUE(form_structure->field(1)->is_autofilled());
 }
@@ -1533,8 +1536,8 @@ TEST_F(FormFillerTest, FillPassportEntity) {
                                          {.role = UNKNOWN_TYPE},
                                      }});
   FormsSeen({form});
-  FormStructure* form_structure = GetFormStructure(form);
 
+  FormStructure* form_structure = GetFormStructure(form);
   ASSERT_TRUE(form_structure);
   auto set_server_type = [&](size_t field_index, auto... types) {
     form_structure->fields()[field_index]->set_server_predictions(
@@ -1673,11 +1676,12 @@ TEST_F(FormFillerTest, TrackFillingOrigin) {
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
            {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
   FormsSeen({form});
-  FormStructure* form_structure = GetFormStructure(form);
-  ASSERT_TRUE(form_structure);
 
   AutofillProfile profile = test::GetFullProfile();
   FillAutofillFormData(form, form.fields()[0], &profile);
+
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
   ASSERT_EQ(form_structure->field_count(), 4u);
   EXPECT_THAT(form_structure->field(0), AutofilledWithProfile(profile));
   EXPECT_THAT(form_structure->field(1), AutofilledWithProfile(profile));
@@ -1693,8 +1697,6 @@ TEST_F(FormFillerTest, TrackFillingOriginWithUsingMultipleProfiles) {
                   {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
   FormsSeen({form});
-  FormStructure* form_structure = GetFormStructure(form);
-  ASSERT_TRUE(form_structure);
 
   // Fill the form with a profile without email
   AutofillProfile profile1 = test::GetFullProfile();
@@ -1703,6 +1705,8 @@ TEST_F(FormFillerTest, TrackFillingOriginWithUsingMultipleProfiles) {
       FillAutofillFormData(form, form.fields()[0], &profile1);
 
   // Check that the email field has no filling source.
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
   ASSERT_EQ(form.fields()[2].label(), u"E-mail address");
   EXPECT_EQ(form_structure->field(2)->autofill_source_profile_guid(),
             std::nullopt);
@@ -1713,6 +1717,8 @@ TEST_F(FormFillerTest, TrackFillingOriginWithUsingMultipleProfiles) {
 
   // Check that the first three fields have the first profile as filling source
   // and the last field has the second profile.
+  form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
   ASSERT_EQ(form_structure->field_count(), 3u);
   EXPECT_THAT(form_structure->field(0), AutofilledWithProfile(profile1));
   EXPECT_THAT(form_structure->field(1), AutofilledWithProfile(profile1));
@@ -1727,8 +1733,6 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
            {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
            {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
   FormsSeen({form});
-  FormStructure* form_structure = GetFormStructure(form);
-  ASSERT_TRUE(form_structure);
 
   AutofillProfile profile = test::GetFullProfile();
   FormData filled_form = FillAutofillFormData(form, form.fields()[0], &profile);
@@ -1738,6 +1742,8 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
   browser_autofill_manager_->OnTextFieldValueChanged(
       filled_form, filled_form.fields()[0].global_id(), base::TimeTicks::Now());
 
+  FormStructure* form_structure = GetFormStructure(form);
+  ASSERT_TRUE(form_structure);
   ASSERT_TRUE(form_structure->field(0)->previously_autofilled());
   EXPECT_FALSE(form_structure->field(0)->is_autofilled());
   EXPECT_THAT(form_structure->field(0)->autofill_source_profile_guid(),

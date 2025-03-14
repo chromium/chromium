@@ -40,6 +40,10 @@ public class CommerceBottomSheetContentBinder {
                     model.get(CommerceBottomSheetContentProperties.HAS_TITLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING) {
+            if (!model.get(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING)) return;
+            LinearLayout itemContainer = (LinearLayout) view.findViewById(R.id.item_container);
+            itemContainer.setPadding(0, 0, 0, 0);
         }
     }
 }

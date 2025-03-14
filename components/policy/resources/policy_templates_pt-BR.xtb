@@ -2571,11 +2571,6 @@ Se a política não for definida, a <ph name="BLOCK_POPUPS_POLICY_NAME" /> será
 <translation id="2812417768214606683">Esta política especifica uma lista de dispositivos de armazenamento USB isentos das políticas de <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> e <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 As entradas são pares de identificador de fornecedor e identificador de produto USB que reconhecem o modelo específico do dispositivo USB.</translation>
-<translation id="2815701930753942156">Esta política especifica uma lista de intervalos semanais durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não pode ser usado. As sessões em andamento serão fechadas, e o login será bloqueado.
-
-Não é possível usar intervalos sobrepostos.
-
-Os dispositivos <ph name="PRODUCT_OS_NAME" /> vão usar o fuso horário do sistema para aplicar esses intervalos.</translation>
 <translation id="2816964824289752181">Ativar a <ph name="DESK_API_NAME" /> para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros</translation>
 <translation id="2818074121667686266">Se a política for definida como ativada ou não for definida, o usuário receberá uma solicitação para acesso de captura de áudio, exceto para URLs configurados na lista AudioCaptureAllowedUrls.
 
@@ -5938,6 +5933,11 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se a política não for definida, o período padrão de 604.800.000 milissegundos (uma semana) será usado.</translation>
 <translation id="5212810195096589189">Especificar permissão para CLI de VM</translation>
 <translation id="5213038356678567351">Sites que nunca acionarão uma troca de navegador.</translation>
+<translation id="5216520638921067085">Especifica a idade mínima da versão para notificações de reinicialização mais agressivas. A idade é calculada a partir do momento em que a versão atual foi veiculada aos clientes pela última vez.
+
+Se uma nova versão estiver pendente ou for necessário reinicializar o navegador/reiniciar o dispositivo e a versão atual tiver sido substituída por mais tempo do que o número de dias especificado por essa configuração, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será substituída por duas horas. Se a política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> estiver definida como 1 (obrigatória), os usuários vão precisar reinicializar ou reiniciar ao final do período.
+
+Se ela estiver sem definição ou não for possível determinar a idade de lançamento, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será usada para todas as atualizações.</translation>
 <translation id="5216815237712190041">Configure a imagem de plano de fundo que vai aparecer na tela de login do dispositivo quando nenhum usuário tiver feito login. A política é definida especificando o URL do qual o dispositivo ChromeOS pode fazer o download da imagem de plano de fundo e de uma hash criptográfica usada para verificar a integridade do download. A imagem precisa estar no formato JPEG, e o tamanho desse arquivo não pode ultrapassar 16 MB. É necessário que o URL possa ser acessado sem qualquer tipo de autenticação. A imagem do plano de fundo é baixada e armazenada em cache. O download vai ser refeito sempre que o URL ou o hash mudarem.
 
       Se esta política de plano de fundo for definida, o dispositivo ChromeOS vai fazer o download da imagem de plano de fundo, que será usada na tela de login caso nenhum usuário tenha feito login no dispositivo. Depois que o usuário faz login, a política de plano de fundo dele entra em ação.
@@ -7042,6 +7042,7 @@ Se a política for definida como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VA
 
       Caso contrário, se a compatibilidade com um servidor com bugs precisar ser mantida, essa política poderá ser definida como "tls1.1". Essa é uma medida provisória, e o servidor precisará ser corrigido o mais rápido possível.</translation>
 <translation id="5932767795525445337">Esta política também pode ser usada para fixar apps Android.</translation>
+<translation id="5936192285609409992">Calculadora (compatível desde a versão 136)</translation>
 <translation id="5936193585187054065">O Encrypted ClientHello (ECH) é uma extensão do TLS para criptografar campos confidenciais do ClientHello e melhorar a privacidade.
 
       Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão do ECH. Se ela for desativada, o <ph name="PRODUCT_NAME" /> não vai ativar o ECH.
@@ -7562,6 +7563,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="6287128640500683781">Permitir que qualquer usuário faça login</translation>
 <translation id="6287310684159482272">Configurações de cookies</translation>
 <translation id="6287742528823584153">Ativar o serviço <ph name="PRODUCT_NAME" /> e iniciar o espaço de trabalho remoto após o login</translation>
+<translation id="6288152932495466841">Notificar usuários de versões do navegador substituídas</translation>
 <translation id="6299147100249359151">Permitir a detecção do escopo da política.</translation>
 <translation id="6299554629216555326">Configurações de gerenciamento de janelas</translation>
 <translation id="6302021021024941085">Desativar as ferramentas de solução de problemas em quiosques.</translation>
@@ -7791,7 +7793,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       contas não gerenciadas.</translation>
 <translation id="6401669939808766804">Fazer logout do usuário</translation>
 <translation id="640244877779556713">Permitir sugestão de emojis</translation>
-<translation id="6402928885627067154">Especificar intervalos semanais em que os dispositivos ChromeOS não podem ser usados</translation>
 <translation id="6403114173011456561">Controla o teclado virtual de toque, agindo como uma política complementar à <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Se o teclado virtual de acessibilidade estiver ativado, esta política não terá efeito.
@@ -11596,6 +11597,7 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 <translation id="9107635531763682565">Se a política for definida como 1, os sites poderão mostrar notificações na área de trabalho. Se a política for definida como 2, as notificações na área de trabalho serão negadas.
 
 Se a política não for definida, a <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="9107664925383184344">Período (dias)</translation>
 <translation id="910929592571075861">Não particionar URLs de blobs durante a busca e navegação.</translation>
 <translation id="9110194749335632373">Impedir conexões de acesso remoto de administradores corporativos a esta máquina</translation>
 <translation id="9110198768621013941">Esta política ativa as configurações de previsão de preenchimento automático.

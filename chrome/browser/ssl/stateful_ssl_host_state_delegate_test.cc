@@ -326,72 +326,64 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateTest,
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
 
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 42,
-      content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191,
-      content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
 
   // Mark a site as MIXED_CONTENT and check that only that host/child id
   // is affected, and only for MIXED_CONTENT (not for
   // CERT_ERRORS_CONTENT);
-  state->HostRanInsecureContent("www.google.com", 42,
+  state->HostRanInsecureContent("www.google.com",
                                 content::SSLHostStateDelegate::MIXED_CONTENT);
 
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "www.google.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 42,
-      content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
 
-  // Mark another site as MIXED_CONTENT, and check that that host/child
-  // id is affected (for MIXED_CONTENT only), and that the previously
-  // host/child id is still marked as MIXED_CONTENT.
-  state->HostRanInsecureContent("example.com", 42,
+  // Mark another site as MIXED_CONTENT, and check that that host is affected
+  // (for MIXED_CONTENT only), and that the previously host is still marked as
+  // MIXED_CONTENT.
+  state->HostRanInsecureContent("example.com",
                                 content::SSLHostStateDelegate::MIXED_CONTENT);
 
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "www.google.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
-  EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
 
-  // Mark a MIXED_CONTENT host/child id as CERT_ERRORS_CONTENT also.
+  // Mark a MIXED_CONTENT host as CERT_ERRORS_CONTENT also.
   state->HostRanInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT);
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT);
 
+  EXPECT_TRUE(state->DidHostRunInsecureContent(
+      "www.google.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.google.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "example.com", content::SSLHostStateDelegate::MIXED_CONTENT));
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "example.com", 42, content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
+      "example.com", content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
 
   // Mark a non-MIXED_CONTENT host as CERT_ERRORS_CONTENT.
   state->HostRanInsecureContent(
-      "www.google.com", 191,
+      "www.not-mixed-content.test",
       content::SSLHostStateDelegate::CERT_ERRORS_CONTENT);
 
   EXPECT_TRUE(state->DidHostRunInsecureContent(
-      "www.google.com", 191,
+      "www.not-mixed-content.test",
       content::SSLHostStateDelegate::CERT_ERRORS_CONTENT));
   EXPECT_FALSE(state->DidHostRunInsecureContent(
-      "www.google.com", 191, content::SSLHostStateDelegate::MIXED_CONTENT));
+      "www.not-mixed-content.test",
+      content::SSLHostStateDelegate::MIXED_CONTENT));
 }
 
 // Tests that StatefulSSLHostStateDelegate::HasSeenRecurrentErrors returns true

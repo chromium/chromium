@@ -194,6 +194,7 @@ Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Flytta fliken uppåt</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Uppdaterades för <ph name="NUM_MINS_ONE" /> minut sedan}other{Uppdaterades för <ph name="NUM_MINS_MANY" /> minuter sedan}}</translation>
+<translation id="8236097722223016103">Lägg till i bokmärken</translation>
 <translation id="8261506727792406068">Radera</translation>
 <translation id="8338427544764842461">Dina flikgrupper sparas här och uppdateras på alla enheter där du är inloggad</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Utöka den delade flikgruppen med <ph name="TABS_COUNT_ONE" /> flik, färgen <ph name="COLOR_NAME" />.}other{Utöka den delade flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar, färgen <ph name="COLOR_NAME" />.}}</translation>

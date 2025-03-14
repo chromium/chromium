@@ -535,6 +535,57 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_UserClosed) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
+// Tests that FetchVcnDetails will display an autofill progress dialog.
+TEST_F(BnplManagerTest, FetchVcnDetails_ShowAutofillProgressDialog) {
+  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  test_api(*bnpl_manager_)
+      .PopulateManagerWithUserAndBnplIssuerDetails(
+          kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
+          kRedirectUrl, kIssuerId);
+
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+
+  test_api(*bnpl_manager_).FetchVcnDetails();
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+}
+
+// Tests that calling Reset while fetching VCN details will reset the status of
+// BnplManager.
+TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
+  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  test_api(*bnpl_manager_)
+      .PopulateManagerWithUserAndBnplIssuerDetails(
+          kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
+          kRedirectUrl, kIssuerId);
+
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+  EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+
+  test_api(*bnpl_manager_).FetchVcnDetails();
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+  EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+
+  test_api(*bnpl_manager_).Reset();
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+}
+
 // Tests that `OnIssuerSelected()` calls with an unlinked BNPL issuer will call
 // the payments network interface with the request details filled out correctly.
 TEST_F(

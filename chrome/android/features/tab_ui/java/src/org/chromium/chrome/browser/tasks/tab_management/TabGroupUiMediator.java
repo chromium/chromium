@@ -74,7 +74,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** A mediator for the TabGroupUi. Responsible for managing the internal state of the component. */
-public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver, TintObserver {
+public class TabGroupUiMediator implements BackPressHandler {
 
     /** Defines an interface for a {@link TabGroupUiMediator} reset event handler. */
     interface ResetHandler {
@@ -127,6 +127,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     private final Callback mOnTokenComponentChange = this::onTokenComponentChange;
     private final ObservableSupplierImpl<Integer> mWidthPxSupplier =
             new ObservableSupplierImpl<>(0);
+    private final ThemeColorObserver mThemeColorObserver = this::onThemeColorChanged;
+    private final TintObserver mTintObserver = this::onTintChanged;
     private final PropertyModel mModel;
     private final TabModelObserver mTabModelObserver;
     private final ResetHandler mResetHandler;
@@ -185,8 +187,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mThemeColorProvider = themeColorProvider;
 
-        mThemeColorProvider.addThemeColorObserver(this);
-        mThemeColorProvider.addTintObserver(this);
+        mThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
+        mThemeColorProvider.addTintObserver(mTintObserver);
         mOnSnapshotTokenChange = onSnapshotTokenChange;
         mChildTokenSupplier = childTokenSupplier;
         mChildTokenSupplier.addObserver(mOnTokenComponentChange);
@@ -361,13 +363,11 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
-    @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
         mModel.set(BACKGROUND_COLOR, color);
         publishSnapshotToken();
     }
 
-    @Override
     public void onTintChanged(
             ColorStateList tint, ColorStateList activityFocusTint, int brandedColorScheme) {
         mModel.set(TINT, mThemeColorProvider.getTint());
@@ -594,6 +594,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         }
         mChildTokenSupplier.removeObserver(mOnTokenComponentChange);
         mWidthPxSupplier.removeObserver(mOnTokenComponentChange);
+        mThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
+        mThemeColorProvider.removeTintObserver(mTintObserver);
     }
 
     private @Nullable DialogController getTabGridDialogControllerIfExists() {

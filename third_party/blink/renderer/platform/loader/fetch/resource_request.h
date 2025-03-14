@@ -66,6 +66,7 @@ namespace blink {
 
 class FeatureContext;
 class EncodedFormData;
+struct IntegrityMetadataSet;
 
 // ResourceRequestHead represents request without request body.
 // See ResourceRequest below to see what request is.
@@ -406,8 +407,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   const String& GetFetchIntegrity() const { return fetch_integrity_; }
   void SetFetchIntegrity(const String& integrity, const FeatureContext*);
 
-  // The list of expected signatures is set as a side-effect of
-  // `SetFetchIntegrity()`.
+  // This is also called as a side-effect of `SetFetchIntegrity()`.
+  void SetExpectedSignatures(const IntegrityMetadataSet&);
   const WTF::Vector<String>& GetExpectedSignatures() const {
     return expected_signatures_;
   }

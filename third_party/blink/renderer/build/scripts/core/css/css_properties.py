@@ -304,14 +304,19 @@ class CSSProperties(object):
             if (not property_.alias_for and not property_.longhands)
         ]
 
-        # Sort the properties by priority, then alphabetically. Ensure that
-        # the resulting order is deterministic.
-        # Sort properties by priority, then alphabetically.
+        # Sort the properties by priority, then internal-visited first,
+        # then alphabetically. Ensures that the resulting order is deterministic.
+        # (internal-visited is because we want to fit their number into an
+        # uint8_t for kPropertyVisitedIDs.)
         for property_ in self._longhands + self._shorthands:
             name_without_leading_dash = property_.name.original
             if name_without_leading_dash.startswith('-'):
                 name_without_leading_dash = name_without_leading_dash[1:]
+            internal_visited_order = 1
+            if name_without_leading_dash.startswith('internal-visited-'):
+                internal_visited_order = 0
             property_.sorting_key = (-property_.priority,
+                                     internal_visited_order,
                                      name_without_leading_dash)
 
         sorting_keys = {}
@@ -602,6 +607,10 @@ class CSSProperties(object):
 
         return sorted(unprefixed, key=sorting_name) + \
             sorted(prefixed, key=sorting_name)
+
+    @property
+    def includes_currentcolor(self):
+        return [p for p in self._longhands if p.includes_currentcolor]
 
     @property
     def shorthands(self):

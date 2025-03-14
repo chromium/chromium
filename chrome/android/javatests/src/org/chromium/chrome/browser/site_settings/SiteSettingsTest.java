@@ -11,6 +11,7 @@ import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.PreferenceMatchers.withKey;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
@@ -424,8 +425,7 @@ public class SiteSettingsTest {
     }
 
     private void createAndSetRwsCookieInfo(Website owner, List<Website> websiteList) {
-        RwsCookieInfo rwsInfo =
-                new RwsCookieInfo(owner.getAddress().getDomainAndRegistry(), websiteList);
+        RwsCookieInfo rwsInfo = new RwsCookieInfo(owner.getAddress().getOrigin(), websiteList);
         owner.setRwsCookieInfo(rwsInfo);
     }
 
@@ -440,8 +440,21 @@ public class SiteSettingsTest {
         Website origin1 = new Website(WebsiteAddress.create("https://one.test.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("https://two.test.com"), null);
         createAndSetRwsCookieInfo(origin1, List.of(origin1, origin2));
-        return new WebsiteGroup(
-                origin1.getAddress().getDomainAndRegistry(), Arrays.asList(origin1, origin2));
+        return new WebsiteGroup(origin1.getAddress().getOrigin(), Arrays.asList(origin1, origin2));
+    }
+
+    private Website getRwsOwnerSiteForUrls(String url1, String url2) {
+        Website origin1 = new Website(WebsiteAddress.create(url1), null);
+        Website origin2 = new Website(WebsiteAddress.create(url2), null);
+        createAndSetRwsCookieInfo(origin1, List.of(origin1, origin2));
+        return origin1;
+    }
+
+    private WebsiteGroup getRwsSiteGroupForUrls(String url1, String url2) {
+        Website origin1 = new Website(WebsiteAddress.create(url1), null);
+        Website origin2 = new Website(WebsiteAddress.create(url2), null);
+        createAndSetRwsCookieInfo(origin1, List.of(origin1, origin2));
+        return new WebsiteGroup(origin1.getAddress().getOrigin(), Arrays.asList(origin1, origin2));
     }
 
     /** Sets Allow Location Enabled to be true and make sure it is set correctly. */
@@ -936,6 +949,94 @@ public class SiteSettingsTest {
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
     }
 
+    /** Tests clearing cookies for the RWS group from SingleWebsiteSettings. */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void clearCookiesForRwsOwner() throws Exception {
+        final String url1 =
+                mPermissionRule.getURLWithHostName(
+                        "one.example.com", "/chrome/test/data/android/cookie.html");
+        final String url2 =
+                mPermissionRule.getURLWithHostName(
+                        "two.example.com", "/chrome/test/data/android/cookie.html");
+        Website rwsOwner = getRwsOwnerSiteForUrls(url1, url2);
+
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        resetRwsGroupOnSingleWebsiteSettings(rwsOwner);
+
+        // Load the page again and ensure the cookie is gone.
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+    }
+
+    /** Tests clearing cookies for the RWS group from GroupedWebsiteSettings. */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void clearCookiesForRwsGroup() throws Exception {
+        final String url1 =
+                mPermissionRule.getURLWithHostName(
+                        "one.example.com", "/chrome/test/data/android/cookie.html");
+        final String url2 =
+                mPermissionRule.getURLWithHostName(
+                        "two.example.com", "/chrome/test/data/android/cookie.html");
+        final String url3 =
+                mPermissionRule.getURLWithHostName(
+                        "foo.com", "/chrome/test/data/android/cookie.html");
+        WebsiteGroup rwsGroup = getRwsSiteGroupForUrls(url1, url2);
+
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".example.com\")");
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".one.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".two.example.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar; Foo=Bar\"",
+                mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        mPermissionRule.loadUrl(url3);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.runJavaScriptCodeInCurrentTab("setCookie(\".foo.com\")");
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        resetRwsGroupOnGroupedWebsiteSettings(rwsGroup);
+
+        // 1 and 2 got cleared; 3 stays intact.
+        mPermissionRule.loadUrl(url1);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url2);
+        Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        mPermissionRule.loadUrl(url3);
+        Assert.assertEquals(
+                "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+    }
+
     /**
      * Set the cookie content setting to allow through policy and ensure the correct radio buttons
      * are enabled.
@@ -1203,6 +1304,30 @@ public class SiteSettingsTest {
                     GroupedWebsitesSettings websitePreferences =
                             (GroupedWebsitesSettings) settingsActivity.getMainFragment();
                     websitePreferences.resetGroup();
+                });
+        settingsActivity.finish();
+    }
+
+    private void resetRwsGroupOnSingleWebsiteSettings(Website website) {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    websitePreferences.resetRwsData();
+                });
+        settingsActivity.finish();
+    }
+
+    private void resetRwsGroupOnGroupedWebsiteSettings(WebsiteGroup group) {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(group);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    GroupedWebsitesSettings websitePreferences =
+                            (GroupedWebsitesSettings) settingsActivity.getMainFragment();
+                    websitePreferences.resetRwsData();
                 });
         settingsActivity.finish();
     }
@@ -3035,6 +3160,24 @@ public class SiteSettingsTest {
         renderSettingsPage(settingsActivity, name);
     }
 
+    private void renderClearDataDialogView(SettingsActivity settingsActivity, String name)
+            throws IOException {
+        onView(withId(R.id.clear_reset_dialog))
+                .inRoot(isDialog())
+                .check(
+                        (view, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            try {
+                                ChromeRenderTestRule.sanitize(view);
+                                mRenderTestRule.render(view, name);
+                            } catch (IOException e) {
+                                assert false : "Render test failed due to " + e;
+                            }
+                        });
+        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
+        settingsActivity.finish();
+    }
+
     @Test
     @SmallTest
     @Feature({"RenderTest"})
@@ -3072,6 +3215,59 @@ public class SiteSettingsTest {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startGroupedWebsitesPreferences(getRwsSiteGroup());
         renderSettingsPage(settingsActivity, "site_settings_rws_grouped_website_settings");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderRwsSingleWebsiteSettingsDeleteAllDataDialog() throws Exception {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(getRwsOwnerSite());
+
+        onView(withText(R.string.site_settings_rws_delete_button_label))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(R.string.site_settings_delete_rws_storage_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.site_settings_delete_rws_storage_sign_out))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.webstorage_delete_data_dialog_offline_message))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.storage_delete_dialog_clear_storage_option))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        renderClearDataDialogView(
+                settingsActivity, "site_settings_rws_single_website_delete_dialog");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void renderRwsGroupedWebsiteSettingsDeleteAllDataDialog() throws Exception {
+        final SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startGroupedWebsitesPreferences(getRwsSiteGroup());
+
+        onView(withText(R.string.site_settings_rws_delete_button_label))
+                .check(matches(isDisplayed()))
+                .perform(click());
+        onView(withText(R.string.site_settings_delete_rws_storage_dialog_title))
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.site_settings_delete_rws_storage_sign_out))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.webstorage_delete_data_dialog_offline_message))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        onView(withText(R.string.storage_delete_dialog_clear_storage_option))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        renderClearDataDialogView(
+                settingsActivity, "site_settings_rws_grouped_website_settings_delete_dialog");
     }
 
     // TODO(crbug.com/396463421): Remove once RWS UI V2 launched.

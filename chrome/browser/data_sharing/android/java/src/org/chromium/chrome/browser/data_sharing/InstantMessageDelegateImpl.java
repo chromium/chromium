@@ -20,7 +20,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
@@ -225,10 +224,8 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
         for (AttachedWindowInfo info : mAttachList) {
             TabGroupModelFilter tabGroupModelFilter = info.tabGroupModelFilter;
-            int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
-            if (rootId == Tab.INVALID_TAB_ID) continue;
+            if (!tabGroupModelFilter.tabGroupExists(tabGroupId)) continue;
 
-            // If we had a valid rootId, this is the right window.
             return info;
         }
 
@@ -479,8 +476,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             @Nullable String syncId = MessageUtils.extractSyncTabGroupId(message);
             @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(syncId);
             @Nullable Token token = extractLocalId(syncGroup);
-            int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(token);
-            int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
+            int tabCount = tabGroupModelFilter.getTabCountForGroup(token);
             return TabGroupTitleUtils.getDefaultTitle(context, tabCount);
         } else {
             return messageTitle;

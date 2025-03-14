@@ -95,7 +95,8 @@ enum FeatureState {
 // Provides a definition for `feature_object_name` with `T`, `feature`, `name`
 // and `default_value`, with an internal parsed value cache, e.g.
 //
-//   BASE_FEATURE_PARAM(int, kMyFeatureParam, kMyFeature, "MyFeatureParam", 0);
+//   BASE_FEATURE_PARAM(int, kMyFeatureParam, kMyFeature, "my_feature_param",
+//                      0);
 //
 // `T` is a parameter type, one of bool, int, size_t, double, std::string, and
 // base::TimeDelta. Enum types are not supported for now.
@@ -499,7 +500,7 @@ class BASE_EXPORT FeatureList {
       std::string_view input);
 
   // Checks and parses the |enable_feature| (e.g.
-  // FeatureName<Study.Group:Param1/value1/) obtained by applying
+  // FeatureName<Study.Group:param1/value1/) obtained by applying
   // SplitFeatureListString() to the |enable_features| flag, and sets
   // |feature_name| to be the feature's name, |study_name| and |group_name| to
   // be the field trial name and its group name if the field trial is specified

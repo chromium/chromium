@@ -964,8 +964,6 @@ TEST_F(BubbleFrameViewTest, MetadataTest) {
   test::TestViewMetadata(frame_pointer);
 }
 
-namespace {
-
 class FrameViewTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   METADATA_HEADER(FrameViewTestBubbleDialogDelegateView,
                   BubbleDialogDelegateView)
@@ -1033,6 +1031,8 @@ class FrameViewTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
 BEGIN_METADATA(FrameViewTestBubbleDialogDelegateView)
 END_METADATA
+
+namespace {
 
 class TestAnchor {
  public:

@@ -187,6 +187,8 @@ try_.builder(
     gn_args = "ci/linux-cast-arm64-rel",
     contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    # TODO(http://b/403148474): Enable this.
+    siso_remote_linking = False,
     tryjob = try_.job(
         location_filters = [
             "chromecast/.+",
@@ -558,6 +560,44 @@ try_.builder(
             "ui/views/widget/.+test.+",
         ],
     ),
+    use_clang_coverage = True,
+)
+
+try_.builder(
+    name = "linux-wayland-mutter-rel",
+    # TODO(crbug.com/401284929): Uncomment when adding to CQ.
+    # branch_selector = branches.selector.LINUX_BRANCHES,
+    mirrors = [
+        "ci/Linux Builder (Wayland)",
+        "linux-wayland-mutter-rel-tests",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder (Wayland)",
+            "release_try_builder",
+            "use_clang_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
+    ),
+    ssd = True,
+    # TODO(crbug.com/329118490): Re-enable flake endorser.
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
+    contact_team_email = "chrome-linux-engprod@google.com",
+    coverage_test_types = ["unit", "overall"],
+    # TODO(crbug.com/401284929): Uncomment to add this try builder to CQ once tests are stable on mutter.
+    # tryjob = try_.job(
+    #     location_filters = [
+    #         "chrome/browser/.+(ui|browser)test.+",
+    #         "chrome/browser/ui/views/.+test.+",
+    #         "chrome/browser/ui/views/tabs/.+",
+    #         "testing/xvfb\\.py",
+    #         "third_party/wayland/.+",
+    #         "third_party/wayland-protocols/.+",
+    #         "ui/ozone/platform/wayland/.+",
+    #         "ui/views/widget/.+test.+",
+    #     ],
+    # ),
     use_clang_coverage = True,
 )
 

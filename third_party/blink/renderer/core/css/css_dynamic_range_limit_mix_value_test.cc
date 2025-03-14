@@ -18,7 +18,7 @@ namespace {
 
 TEST(CSSDynamicRangeLimitMixValueTest, ParsingSimple) {
   String value =
-      "dynamic-range-limit-mix(standard 10%, constrained-high 80%, high 10%)";
+      "dynamic-range-limit-mix(standard 10%, constrained 80%, no-limit 10%)";
   const auto* parsed =
       DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(
           CSSPropertyID::kDynamicRangeLimit, value,
@@ -27,8 +27,8 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingSimple) {
 
   HeapVector<Member<const CSSValue>> limits = {
       CSSIdentifierValue::Create(CSSValueID::kStandard),
-      CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh),
-      CSSIdentifierValue::Create(CSSValueID::kHigh),
+      CSSIdentifierValue::Create(CSSValueID::kConstrained),
+      CSSIdentifierValue::Create(CSSValueID::kNoLimit),
   };
   HeapVector<Member<const CSSPrimitiveValue>> percentages = {
       CSSNumericLiteralValue::Create(10,
@@ -46,9 +46,10 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingSimple) {
 
 TEST(CSSDynamicRangeLimitMixValueTest, ParsingNested) {
   String value =
-      "dynamic-range-limit-mix(dynamic-range-limit-mix(standard 80%, high 20%) "
+      "dynamic-range-limit-mix(dynamic-range-limit-mix(standard 80%, no-limit "
+      "20%) "
       "10%, "
-      "constrained-high 90%)";
+      "constrained 90%)";
 
   const auto* parsed =
       DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(
@@ -58,7 +59,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingNested) {
 
   HeapVector<Member<const CSSValue>> nested_limits = {
       CSSIdentifierValue::Create(CSSValueID::kStandard),
-      CSSIdentifierValue::Create(CSSValueID::kHigh),
+      CSSIdentifierValue::Create(CSSValueID::kNoLimit),
   };
   HeapVector<Member<const CSSPrimitiveValue>> nested_percentages = {
       CSSNumericLiteralValue::Create(80,
@@ -69,7 +70,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingNested) {
   HeapVector<Member<const CSSValue>> limits = {
       MakeGarbageCollected<CSSDynamicRangeLimitMixValue>(
           std::move(nested_limits), std::move(nested_percentages)),
-      CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh),
+      CSSIdentifierValue::Create(CSSValueID::kConstrained),
   };
   HeapVector<Member<const CSSPrimitiveValue>> percentages = {
       CSSNumericLiteralValue::Create(10,
@@ -86,7 +87,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingNested) {
 TEST(CSSDynamicRangeLimitMixValueTest, ParsingInvalid) {
   // If all percentages are zero then fail.
   {
-    String value = "dynamic-range-limit-mix(standard 0%, constrained-high 0%)";
+    String value = "dynamic-range-limit-mix(standard 0%, constrained 0%)";
     const auto* parsed =
         DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(
             CSSPropertyID::kDynamicRangeLimit, value,
@@ -96,8 +97,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingInvalid) {
 
   // Negative percentages not allowed.
   {
-    String value =
-        "dynamic-range-limit-mix(standard -1%, constrained-high 10%)";
+    String value = "dynamic-range-limit-mix(standard -1%, constrained 10%)";
     const auto* parsed =
         DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(
             CSSPropertyID::kDynamicRangeLimit, value,
@@ -107,8 +107,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingInvalid) {
 
   // Percentages above 100 not allowed.
   {
-    String value =
-        "dynamic-range-limit-mix(standard 110%, constrained-high 10%)";
+    String value = "dynamic-range-limit-mix(standard 110%, constrained 10%)";
     const auto* parsed =
         DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(
             CSSPropertyID::kDynamicRangeLimit, value,
@@ -118,7 +117,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingInvalid) {
 
   // Percentages are not optional.
   {
-    String value = "dynamic-range-limit-mix(high, constrained-high 10%)";
+    String value = "dynamic-range-limit-mix(no-limit, constrained 10%)";
     const auto* parsed =
         DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(
             CSSPropertyID::kDynamicRangeLimit, value,
@@ -130,7 +129,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingInvalid) {
   {
     String value =
         "dynamic-range-limit-mix(standard 10% parasaurolophus, "
-        "constrained-high 10%)";
+        "constrained 10%)";
     const auto* parsed =
         DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(
             CSSPropertyID::kDynamicRangeLimit, value,
@@ -141,7 +140,7 @@ TEST(CSSDynamicRangeLimitMixValueTest, ParsingInvalid) {
   // Disallow junk at the end
   {
     String value =
-        "dynamic-range-limit-mix(standard 10%, constrained-high 10%, "
+        "dynamic-range-limit-mix(standard 10%, constrained 10%, "
         "pachycephalosaurus)";
     const auto* parsed =
         DynamicTo<CSSDynamicRangeLimitMixValue>(CSSParser::ParseSingleValue(

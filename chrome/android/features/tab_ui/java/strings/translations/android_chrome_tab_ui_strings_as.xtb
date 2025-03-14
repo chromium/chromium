@@ -194,6 +194,7 @@
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}one{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}other{<ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙৰ সৈতে বিস্তাৰ কৰক।}}</translation>
 <translation id="8205266828577616993">টেবটো ওপৰলৈ নিয়ক</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট পূৰ্বে আপডে’ট কৰা হৈছে}one{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে আপডে’ট কৰা হৈছে}other{<ph name="NUM_MINS_MANY" /> মিনিট পূৰ্বে আপডে’ট কৰা হৈছে}}</translation>
+<translation id="8236097722223016103">বুকমাৰ্কত যোগ দিয়ক</translation>
 <translation id="8261506727792406068">মচক</translation>
 <translation id="8338427544764842461">আপোনাৰ টেবৰ গোটসমূহ ইয়াত ছেভ কৰা হয় আৰু আপোনাৰ আটাইবোৰ ছাইন-ইন কৰা ডিভাইচত আপডে’ট কৰা হয়</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_ONE" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙলৈ বিস্তাৰ কৰক।}one{শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙলৈ বিস্তাৰ কৰক।}other{শ্বেয়াৰ কৰা টেবৰ গোটটো <ph name="TABS_COUNT_MANY" /> টা টেব, <ph name="COLOR_NAME" /> ৰঙলৈ বিস্তাৰ কৰক।}}</translation>

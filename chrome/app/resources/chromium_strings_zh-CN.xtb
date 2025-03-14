@@ -31,6 +31,7 @@
 <translation id="1478370723027452770">获取 Chrome for Testing 方面的帮助</translation>
 <translation id="1497802159252041924">安装时出错：<ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">共享 Chromium 标签页</translation>
+<translation id="1547469039832541117">结束突出显示的任务。</translation>
 <translation id="1553461853655228091">Chromium 需要获得相应权限，才能使用您的摄像头为您的周边环境创建 3D 地图</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{此扩展程序已不再受支持。Chromium 建议您移除它。}other{这些扩展程序已不再受支持。Chromium 建议您移除它们。}}</translation>
 <translation id="1574377791422810894">Chromium 的安全工具</translation>

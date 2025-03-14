@@ -124,7 +124,7 @@ export class ReadAnythingLogger {
     // base lang and the locale are the same, just use the base lang.
     let langToLog = lang;
     const langSplit = lang.toLowerCase().split('-');
-    if (langSplit.length === 2 && langSplit[0] === langSplit[1]) {
+    if (langSplit.length === 2 && langSplit[0]! === langSplit[1]!) {
       langToLog = langSplit[0];
     }
     this.metrics.recordLanguage(langToLog);

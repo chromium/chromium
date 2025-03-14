@@ -56,12 +56,12 @@ GL_EXPORT ID3D11Device* GetDirectCompositionD3D11Device();
 // Returns true if direct composition is supported.  We prefer to use direct
 // composition even without hardware overlays, because it allows us to bypass
 // blitting by DWM to the window redirection surface by using a flip mode swap
-// chain.  Overridden with --disable_direct_composition=1.
+// chain. Overridden with --disable-direct-composition.
 GL_EXPORT bool DirectCompositionSupported();
 
 // Returns true if video overlays are supported and should be used. Overridden
 // with --enable-direct-composition-video-overlays and
-// --disable_direct_composition_video_overlays=1. This function is thread safe.
+// --disable-direct-composition-video-overlays. This function is thread safe.
 GL_EXPORT bool DirectCompositionOverlaysSupported();
 
 // Returns true if hardware overlays are supported. This function is thread

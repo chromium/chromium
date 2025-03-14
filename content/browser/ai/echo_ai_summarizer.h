@@ -27,6 +27,9 @@ class EchoAISummarizer : public blink::mojom::AISummarizer {
                  const std::string& context,
                  mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                      pending_responder) override;
+  void MeasureUsage(const std::string& input,
+                    const std::string& context,
+                    MeasureUsageCallback callback) override;
 
  private:
   mojo::RemoteSet<blink::mojom::ModelStreamingResponder> responder_set_;

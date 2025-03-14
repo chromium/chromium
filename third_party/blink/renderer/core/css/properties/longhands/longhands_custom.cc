@@ -840,6 +840,11 @@ void BackdropFilter::ApplyValue(StyleResolverState& state,
                                                      PropertyID()));
 }
 
+bool BackdropFilter::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.HasBackdropFilter() && style.BackdropFilter().UsesCurrentColor();
+}
+
 const CSSValue* BackfaceVisibility::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -1019,6 +1024,11 @@ const CSSValue* BackgroundColor::CSSValueFromComputedStyleInternal(
                                                       value_phase);
 }
 
+bool BackgroundColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BackgroundColor().DependsOnCurrentColor();
+}
+
 const CSSValue* BackgroundImage::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1035,6 +1045,11 @@ const CSSValue* BackgroundImage::CSSValueFromComputedStyleInternal(
   const FillLayer& fill_layer = style.BackgroundLayers();
   return ComputedStyleUtils::BackgroundImageOrMaskImage(
       style, allow_visited_style, fill_layer, value_phase);
+}
+
+bool BackgroundImage::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BackgroundInternal().AnyLayerUsesCurrentColor();
 }
 
 const CSSValue* BackgroundOrigin::ParseSingleValue(
@@ -1286,6 +1301,12 @@ const CSSValue* BorderBottomColor::CSSValueFromComputedStyleInternal(
                    style, border_bottom_color, value_phase);
 }
 
+bool BorderBottomColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BorderBottomWidth() &&
+         style.BorderBottomColor().DependsOnCurrentColor();
+}
+
 const CSSValue* BorderBottomLeftRadius::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1476,6 +1497,12 @@ void BorderImageSource::ApplyValue(StyleResolverState& state,
       state.GetStyleImage(CSSPropertyID::kBorderImageSource, value));
 }
 
+bool BorderImageSource::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BorderImageSource() &&
+         style.BorderImageSource()->DependsOnCurrentColor();
+}
+
 const CSSValue* BorderImageWidth::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1571,6 +1598,12 @@ const CSSValue* BorderLeftColor::CSSValueFromComputedStyleInternal(
                    style, border_left_color, value_phase);
 }
 
+bool BorderLeftColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BorderLeftWidth() &&
+         style.BorderLeftColor().DependsOnCurrentColor();
+}
+
 const CSSValue* BorderLeftStyle::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -1640,6 +1673,12 @@ const CSSValue* BorderRightColor::CSSValueFromComputedStyleInternal(
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
                    style, border_right_color, value_phase);
+}
+
+bool BorderRightColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BorderRightWidth() &&
+         style.BorderRightColor().DependsOnCurrentColor();
 }
 
 const CSSValue* BorderRightStyle::ParseSingleValue(
@@ -1725,6 +1764,12 @@ const CSSValue* BorderTopColor::CSSValueFromComputedStyleInternal(
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::ComputedStyleUtils::CurrentColorOrValidColor(
                    style, border_top_color, value_phase);
+}
+
+bool BorderTopColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BorderTopWidth() &&
+         style.BorderTopColor().DependsOnCurrentColor();
 }
 
 const CSSValue* BorderTopLeftRadius::ParseSingleValue(
@@ -1845,6 +1890,10 @@ const CSSValue* BoxShadow::CSSValueFromComputedStyleInternal(
                                                 value_phase);
 }
 
+bool BoxShadow::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.ShadowListHasCurrentColor(style.BoxShadow());
+}
+
 const CSSValue* BoxSizing::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -1954,6 +2003,10 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
 
   return ComputedStyleUtils::ValueForStyleAutoColor(style, style.CaretColor(),
                                                     value_phase);
+}
+
+bool CaretColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.CaretColor().DependsOnCurrentColor();
 }
 
 const CSSValue* Clear::CSSValueFromComputedStyleInternal(
@@ -2426,6 +2479,12 @@ const CSSValue* ColumnRuleColor::CSSValueFromComputedStyleInternal(
       style.ColumnRuleColor(), style, value_phase);
 }
 
+bool ColumnRuleColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.HasGapDecoration() &&
+         style.ColumnRuleColor().MaybeDependsOnCurrentColor();
+}
+
 const CSSValue* RowRuleColor::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -2456,6 +2515,11 @@ const CSSValue* RowRuleColor::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForGapDecorationColorDataList(
       style.RowRuleColor(), style, value_phase);
+}
+
+bool RowRuleColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.HasGapDecoration() &&
+         style.RowRuleColor().MaybeDependsOnCurrentColor();
 }
 
 const CSSValue* ColumnRuleStyle::ParseSingleValue(
@@ -3763,9 +3827,10 @@ const CSSValue* DynamicRangeLimit::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     const CSSParserLocalContext& local_context) const {
-  if (const CSSValue* const keyword_value = css_parsing_utils::ConsumeIdent<
-          CSSValueID::kStandard, CSSValueID::kHigh,
-          CSSValueID::kConstrainedHigh>(stream)) {
+  if (const CSSValue* const keyword_value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kStandard,
+                                          CSSValueID::kNoLimit,
+                                          CSSValueID::kConstrained>(stream)) {
     return keyword_value;
   }
 
@@ -3839,11 +3904,11 @@ const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kStandard);
   }
   if (limit.constrained_high_mix == 1.f) {
-    return CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh);
+    return CSSIdentifierValue::Create(CSSValueID::kConstrained);
   }
   float high_mix = 1.f - limit.standard_mix - limit.constrained_high_mix;
   if (high_mix == 1.f) {
-    return CSSIdentifierValue::Create(CSSValueID::kHigh);
+    return CSSIdentifierValue::Create(CSSValueID::kNoLimit);
   }
   HeapVector<Member<const CSSValue>> limits;
   HeapVector<Member<const CSSPrimitiveValue>> percentages;
@@ -3853,13 +3918,13 @@ const CSSValue* DynamicRangeLimit::CSSValueFromComputedStyleInternal(
         100 * limit.standard_mix, CSSPrimitiveValue::UnitType::kPercentage));
   }
   if (limit.constrained_high_mix != 0.f) {
-    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kConstrainedHigh));
+    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kConstrained));
     percentages.push_back(CSSNumericLiteralValue::Create(
         100 * limit.constrained_high_mix,
         CSSPrimitiveValue::UnitType::kPercentage));
   }
   if (high_mix != 0.f) {
-    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kHigh));
+    limits.push_back(CSSIdentifierValue::Create(CSSValueID::kNoLimit));
     percentages.push_back(CSSNumericLiteralValue::Create(
         100 * high_mix, CSSPrimitiveValue::UnitType::kPercentage));
   }
@@ -3909,6 +3974,11 @@ void Fill::ApplyValue(StyleResolverState& state,
       state, value, false, PropertyID()));
 }
 
+bool Fill::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.FillPaint().HasColor() &&
+         style.FillPaint().GetColor().DependsOnCurrentColor();
+}
+
 const CSSValue* FillOpacity::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -3952,6 +4022,10 @@ void Filter::ApplyValue(StyleResolverState& state,
                         ValueMode) const {
   state.StyleBuilder().SetFilter(StyleBuilderConverter::ConvertFilterOperations(
       state, value, PropertyID()));
+}
+
+bool Filter::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.Filter().UsesCurrentColor();
 }
 
 const CSSValue* FlexBasis::ParseSingleValue(
@@ -4080,6 +4154,10 @@ const CSSValue* FloodColor::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(style, style.FloodColor(),
                                                       value_phase);
+}
+
+bool FloodColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.FloodColor().DependsOnCurrentColor();
 }
 
 const CSSValue* FloodOpacity::ParseSingleValue(
@@ -5984,6 +6062,10 @@ const CSSValue* LightingColor::CSSValueFromComputedStyleInternal(
       style, style.LightingColor(), value_phase);
 }
 
+bool LightingColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.LightingColor().DependsOnCurrentColor();
+}
+
 const CSSValue* LineBreak::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -6066,6 +6148,12 @@ void ListStyleImage::ApplyValue(StyleResolverState& state,
                                 ValueMode) const {
   state.StyleBuilder().SetListStyleImage(
       state.GetStyleImage(CSSPropertyID::kListStyleImage, value));
+}
+
+bool ListStyleImage::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.ListStyleImage() &&
+         style.ListStyleImage()->DependsOnCurrentColor();
 }
 
 const CSSValue* ListStylePosition::CSSValueFromComputedStyleInternal(
@@ -6998,6 +7086,10 @@ const CSSValue* AccentColor::CSSValueFromComputedStyleInternal(
                                                     value_phase);
 }
 
+bool AccentColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.AccentColor().DependsOnCurrentColor();
+}
+
 const blink::Color OutlineColor::ColorIncludingFallback(
     bool visited_link,
     const ComputedStyle& style,
@@ -7027,6 +7119,10 @@ const CSSValue* OutlineColor::CSSValueFromComputedStyleInternal(
              ? cssvalue::CSSColor::Create(style.VisitedDependentColor(*this))
              : ComputedStyleUtils::CurrentColorOrValidColor(
                    style, outline_color, value_phase);
+}
+
+bool OutlineColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.HasOutlineWithCurrentColor();
 }
 
 const CSSValue* OutlineOffset::ParseSingleValue(
@@ -8974,6 +9070,10 @@ const CSSValue* StopColor::CSSValueFromComputedStyleInternal(
                                                       value_phase);
 }
 
+bool StopColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.StopColor().DependsOnCurrentColor();
+}
+
 const CSSValue* StopOpacity::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -9023,6 +9123,11 @@ void Stroke::ApplyValue(StyleResolverState& state,
                         ValueMode) const {
   state.StyleBuilder().SetStrokePaint(StyleBuilderConverter::ConvertSVGPaint(
       state, value, false, PropertyID()));
+}
+
+bool Stroke::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.StrokePaint().HasColor() &&
+         style.StrokePaint().GetColor().DependsOnCurrentColor();
 }
 
 const CSSValue* StrokeDasharray::ParseSingleValue(
@@ -9330,6 +9435,12 @@ const CSSValue* TextDecorationColor::CSSValueFromComputedStyleInternal(
       style, style.TextDecorationColor(), value_phase);
 }
 
+bool TextDecorationColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.HasAppliedTextDecorations() &&
+         style.TextDecorationColor().DependsOnCurrentColor();
+}
+
 const CSSValue* TextDecorationLine::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext&,
@@ -9498,6 +9609,10 @@ const CSSValue* TextShadow::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::ValueForShadowList(style.TextShadow(), style,
                                                 false, value_phase);
+}
+
+bool TextShadow::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.ShadowListHasCurrentColor(style.TextShadow());
 }
 
 const CSSValue* TextSizeAdjust::ParseSingleValue(
@@ -10465,6 +10580,12 @@ const CSSValue* WebkitBoxReflect::CSSValueFromComputedStyleInternal(
       style.BoxReflect(), style, allow_visited_style, value_phase);
 }
 
+bool WebkitBoxReflect::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.BoxReflect() && style.BoxReflect()->Mask().HasImage() &&
+         style.BoxReflect()->Mask().GetImage()->DependsOnCurrentColor();
+}
+
 const CSSValue* InternalFontSizeDelta::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -10641,6 +10762,12 @@ void WebkitMaskBoxImageSource::ApplyValue(StyleResolverState& state,
       state.GetStyleImage(CSSPropertyID::kWebkitMaskBoxImageSource, value));
 }
 
+bool WebkitMaskBoxImageSource::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.MaskBoxImageSource() &&
+         style.MaskBoxImageSource()->DependsOnCurrentColor();
+}
+
 const CSSValue* WebkitMaskBoxImageWidth::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
@@ -10734,6 +10861,10 @@ const CSSValue* MaskImage::CSSValueFromComputedStyleInternal(
   const FillLayer& fill_layer = style.MaskLayers();
   return ComputedStyleUtils::BackgroundImageOrMaskImage(
       style, allow_visited_style, fill_layer, value_phase);
+}
+
+bool MaskImage::IsAffectedByCurrentColor(const ComputedStyle& style) const {
+  return style.MaskLayers().AnyLayerUsesCurrentColor();
 }
 
 const CSSValue* MaskMode::ParseSingleValue(CSSParserTokenStream& stream,
@@ -10999,6 +11130,11 @@ const CSSValue* WebkitTapHighlightColor::CSSValueFromComputedStyleInternal(
       style, style.TapHighlightColor(), value_phase);
 }
 
+bool WebkitTapHighlightColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.TapHighlightColor().DependsOnCurrentColor();
+}
+
 const CSSValue* WebkitTextCombine::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
@@ -11054,6 +11190,12 @@ const CSSValue* TextEmphasisColor::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
       style, style.TextEmphasisColor(), value_phase);
+}
+
+bool TextEmphasisColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.GetTextEmphasisMark() != TextEmphasisMark::kNone &&
+         style.TextEmphasisColor().DependsOnCurrentColor();
 }
 
 // auto | ([ over | under ] && [ right | left ]?)
@@ -11357,6 +11499,12 @@ const CSSValue* WebkitTextStrokeColor::CSSValueFromComputedStyleInternal(
     CSSValuePhase value_phase) const {
   return ComputedStyleUtils::CurrentColorOrValidColor(
       style, style.TextStrokeColor(), value_phase);
+}
+
+bool WebkitTextStrokeColor::IsAffectedByCurrentColor(
+    const ComputedStyle& style) const {
+  return style.TextStrokeWidth() &&
+         style.TextStrokeColor().DependsOnCurrentColor();
 }
 
 const CSSValue* WebkitTextStrokeWidth::ParseSingleValue(

@@ -305,6 +305,25 @@ void BocaSessionManager::NotifyAppReload() {
   }
 }
 
+void BocaSessionManager::SetSessionCaptionInitializer(
+    SessionCaptionInitializer session_caption_initializer) {
+  session_caption_initializer_ = session_caption_initializer;
+}
+
+void BocaSessionManager::RemoveSessionCaptionInitializer() {
+  session_caption_initializer_.Reset();
+}
+
+void BocaSessionManager::InitSessionCaption(
+    base::OnceCallback<void(bool)> success_cb) {
+  if (!session_caption_initializer_) {
+    // Initializer not set so nothing to do.
+    std::move(success_cb).Run(true);
+    return;
+  }
+  session_caption_initializer_.Run(std::move(success_cb));
+}
+
 void BocaSessionManager::LoadInitialNetworkState() {
   cros_network_config_->GetNetworkStateList(
       chromeos::network_config::mojom::NetworkFilter::New(

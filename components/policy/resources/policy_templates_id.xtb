@@ -2577,11 +2577,6 @@ Jika kebijakan tidak disetel, <ph name="BLOCK_POPUPS_POLICY_NAME" /> akan berlak
 <translation id="2812417768214606683">Kebijakan ini menentukan daftar perangkat penyimpanan USB yang dikecualikan dari kebijakan <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> dan <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 Entri untuk kebijakan ini berupa pasangan ID Vendor dan Kode Produk USB yang mengidentifikasi model perangkat USB tertentu.</translation>
-<translation id="2815701930753942156">Kebijakan ini menentukan daftar interval mingguan selama perangkat <ph name="PRODUCT_OS_NAME" /> tidak dapat digunakan. Semua sesi yang sedang berlangsung akan ditutup dan login akan diblokir.
-
-Interval yang tumpang-tindih tidak didukung.
-
-Perangkat <ph name="PRODUCT_OS_NAME" /> akan menggunakan zona waktu sistem untuk menerapkan interval ini.</translation>
 <translation id="2816964824289752181">Aktifkan <ph name="DESK_API_NAME" /> untuk kontrol <ph name="PRODUCT_OS_NAME" /> pihak ketiga</translation>
 <translation id="2818074121667686266">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna akan dimintai akses perekaman audio kecuali untuk URL yang ditentukan dalam daftar AudioCaptureAllowedUrls.
 
@@ -7821,7 +7816,6 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
       akun yang tidak terkelola.</translation>
 <translation id="6401669939808766804">Paksa pengguna logout</translation>
 <translation id="640244877779556713">Mengaktifkan Saran Emoji</translation>
-<translation id="6402928885627067154">Menentukan interval mingguan saat perangkat ChromeOS tidak dapat digunakan</translation>
 <translation id="6403114173011456561">Mengontrol keyboard virtual sentuh, yang berperan sebagai kebijakan tambahan untuk kebijakan <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Jika keyboard virtual aksesibilitas diaktifkan, kebijakan ini tidak akan berpengaruh.

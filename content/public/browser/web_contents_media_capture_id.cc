@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/public/browser/web_contents_media_capture_id.h"
 
 #include <string_view>
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 
@@ -38,7 +34,7 @@ bool ExtractTabCaptureTarget(const std::string& device_id_param,
   size_t end_pos = device_id.find('?');
   if (end_pos == std::string::npos)
     end_pos = device_id.length();
-  const std::string_view component2(device_id.data() + sep_pos + 1,
+  const std::string_view component2(UNSAFE_TODO(device_id.data() + sep_pos + 1),
                                     end_pos - sep_pos - 1);
 
   return (base::StringToInt(component1, render_process_id) &&
@@ -62,8 +58,9 @@ bool ExtractOptions(const std::string& device_id,
     option_pos_end = device_id.find(kOptionSeparator, option_pos + 1);
     if (option_pos_end == std::string::npos)
       option_pos_end = device_id.length();
-    const std::string_view component(device_id.data() + option_pos + 1,
-                                     option_pos_end - option_pos - 1);
+    const std::string_view component(
+        UNSAFE_TODO(device_id.data() + option_pos + 1),
+        option_pos_end - option_pos - 1);
 
     if (component.compare(kDisableLocalEchoFlag) == 0)
       *disable_local_echo = true;

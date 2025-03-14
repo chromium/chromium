@@ -160,17 +160,16 @@ function runToDataURLTestWithImageBitmap(testScenario) {
 
 function runAllTests() {
     var colorSpaces = [
-        {colorSpace: 'srgb', colorType: 'unorm8', imageFormat: 'uint8'},
-        {colorSpace: 'srgb', colorType: 'float16', imageFormat: 'float32'},
-        {colorSpace: 'rec2020', colorType: 'float16', imageFormat: 'float32'},
-        {colorSpace: 'display-p3', colorType: 'float16', imageFormat: 'float32'}];
+        {colorSpace: 'srgb', colorType: 'unorm8'},
+        {colorSpace: 'srgb', colorType: 'float16'},
+        {colorSpace: 'rec2020', colorType: 'float16'},
+        {colorSpace: 'display-p3', colorType: 'float16'}];
     var alphaValues = [0.5, 1];
     var colorSettings = [
-        {colorSpace: 'srgb', storageFormat: 'uint8'},
-        {colorSpace: 'srgb', storageFormat: 'float32'},
-        {colorSpace: 'rec2020', storageFormat: 'float32'},
-        {colorSpace: 'display-p3', storageFormat: 'float32'}
-        ];
+        {colorSpace: 'srgb', pixelFormat: 'rgba-unorm8'},
+        {colorSpace: 'srgb', pixelFormat: 'rgba-float32'},
+        {colorSpace: 'rec2020', pixelFormat: 'rgba-float32'},
+        {colorSpace: 'display-p3', pixelFormat: 'rgba-float32'}];
 
     var testScenarioSet = [];
     for (var i = 0; i < colorSpaces.length; i++)

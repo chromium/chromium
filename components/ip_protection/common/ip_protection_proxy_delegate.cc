@@ -55,13 +55,6 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
             << ") - " << message;
   };
 
-  // Check if the protection has been disabled via User Bypass.
-  if (net::features::kIpPrivacyEnableUserBypass.Get() &&
-      ip_protection_core_->HasTrackingProtectionException(
-          network_anonymization_key.GetTopFrameSite()->GetURL())) {
-    return ProxyResolutionResult::kHasSiteException;
-  }
-
   // Check eligibility of this request.
   if (!ip_protection_core_->IsMdlPopulated()) {
     vlog("proxy allow list not populated");
@@ -105,6 +98,13 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
   } else if (!auth_tokens_are_available) {
     vlog("no auth token available from cache");
     return ProxyResolutionResult::kTokensExhausted;
+  }
+
+  // Check if the protection has been disabled via User Bypass.
+  if (net::features::kIpPrivacyEnableUserBypass.Get() &&
+      ip_protection_core_->HasTrackingProtectionException(
+          network_anonymization_key.GetTopFrameSite()->GetURL())) {
+    return ProxyResolutionResult::kHasSiteException;
   }
 
   return ProxyResolutionResult::kAttemptProxy;

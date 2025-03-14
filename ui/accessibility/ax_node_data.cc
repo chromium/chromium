@@ -263,7 +263,7 @@ AXNodeData::AXNodeData(AXNodeData&& other) {
   stringlist_attributes.swap(other.stringlist_attributes);
   html_attributes.swap(other.html_attributes);
   child_ids.swap(other.child_ids);
-  relative_bounds = other.relative_bounds;
+  relative_bounds = std::move(other.relative_bounds);
 
   other.id = kInvalidAXNodeID;
   other.role = ax::mojom::Role::kUnknown;

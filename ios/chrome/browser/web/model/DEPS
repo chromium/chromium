@@ -28,6 +28,7 @@ include_rules = [
   "+ios/chrome/browser/prerender/model",
   "+ios/chrome/browser/profile/model",
   "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/reader_mode/model",
   "+ios/chrome/browser/reading_list/model",
   "+ios/chrome/browser/safe_browsing/model",
   "+ios/chrome/browser/search_engines/model",

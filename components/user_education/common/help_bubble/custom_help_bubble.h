@@ -107,7 +107,8 @@ class CustomHelpBubbleUi {
   void NotifyUserAction(UserAction user_action);
 
  private:
-  base::OnceCallbackList<void(UserAction)> user_action_callbacks_;
+  std::unique_ptr<base::OnceCallbackList<void(UserAction)>>
+      user_action_callbacks_;
   base::WeakPtrFactory<CustomHelpBubbleUi> weak_ptr_factory_{this};
 };
 

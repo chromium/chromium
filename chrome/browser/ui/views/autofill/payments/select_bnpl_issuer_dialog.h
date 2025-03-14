@@ -15,6 +15,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace autofill::payments {
 
 class SelectBnplIssuerDialogController;
@@ -36,10 +40,16 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void DisplayThrobber();
+
   // DialogDelegateView:
   bool Accept() override;
 
+  // View:
+  void AddedToWidget() override;
+
  private:
+  raw_ptr<views::View> container_view_ = nullptr;
   raw_ptr<BnplIssuerView> bnpl_issuer_view_ = nullptr;
   raw_ptr<BnplDialogFootnote> bnpl_footnote_view_ = nullptr;
 

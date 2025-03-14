@@ -7,12 +7,16 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -1456,6 +1460,32 @@ TEST_F(BocaSessionManagerTest, StudentHeartbeatNotCalledWithProducer) {
       std::make_unique<::boca::Session>(session), false);
 
   task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+}
+
+TEST_F(BocaSessionManagerTest, InitializerSetSuccess) {
+  base::test::TestFuture<bool> test_future;
+  boca_session_manager()->SetSessionCaptionInitializer(
+      base::BindLambdaForTesting([](base::OnceCallback<void(bool)> success_cb) {
+        std::move(success_cb).Run(true);
+      }));
+  boca_session_manager()->InitSessionCaption(test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get());
+}
+
+TEST_F(BocaSessionManagerTest, InitializerSetFailure) {
+  base::test::TestFuture<bool> test_future;
+  boca_session_manager()->SetSessionCaptionInitializer(
+      base::BindLambdaForTesting([](base::OnceCallback<void(bool)> success_cb) {
+        std::move(success_cb).Run(false);
+      }));
+  boca_session_manager()->InitSessionCaption(test_future.GetCallback());
+  EXPECT_FALSE(test_future.Get());
+}
+
+TEST_F(BocaSessionManagerTest, InitializerNotSet) {
+  base::test::TestFuture<bool> test_future;
+  boca_session_manager()->InitSessionCaption(test_future.GetCallback());
+  EXPECT_TRUE(test_future.Get());
 }
 
 class BocaSessionManagerManagedNetworkTest : public BocaSessionManagerTestBase {

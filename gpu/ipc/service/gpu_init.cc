@@ -122,7 +122,7 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 #if BUILDFLAG(IS_WIN)
   // This has to be called after a context is created, active GPU is identified,
   // and GPU driver bug workarounds are computed again. Otherwise the workaround
-  // |disable_direct_composition| may not be correctly applied.
+  // `disable_direct_composition_video_overlays` may not be correctly applied.
   // Also, this has to be called after falling back to SwiftShader decision is
   // finalized because this function depends on GL is ANGLE's GLES or not.
   gl::DirectCompositionOverlayWorkarounds workarounds = {

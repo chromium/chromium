@@ -503,6 +503,7 @@
 <translation id="310900540163454140">Желите да избришите лозинку за апликацију <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Означи…</translation>
 <translation id="3119874402040566234">Одјавићете се и подаци прегледања ће бити избрисани</translation>
+<translation id="3124568093781685165">Делите лозинке са породицом</translation>
 <translation id="3130863904455712965">Историја и друго</translation>
 <translation id="313283613037595347">Направи нову картицу без архивирања.</translation>
 <translation id="3138611310073113613">Одбаци избор</translation>
@@ -1002,6 +1003,7 @@
 <translation id="5352128922772839949">Сачувајте фајл</translation>
 <translation id="5355191726083956201">Побољшана заштита је укључена</translation>
 <translation id="537853552771686272">Управљајте темама и сајтовима који вас интересују</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} затворена}one{{count} затворена}few{{count} затворене}other{{count} затворених}}</translation>
 <translation id="5394975111793637642">Сакријте картицу Рецензије производа за вас</translation>
 <translation id="5395707839134961196">Сакријте детаље о претраживачу</translation>
 <translation id="5414763847370083940">Добићете обавештење ако се цена снизи на било ком сајту.</translation>
@@ -1131,6 +1133,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5897749768294722429">Да бисте се брзо вратили на сајтове које сте посетили, синхронизујте картице и историју.</translation>
 <translation id="5898848375214731122">Маса</translation>
 <translation id="5899314093904173337">Да бисте делили са људима у близини, дајте им да скенирају овај QR кôд помоћу камере или апликације за скенирање QR кода</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} нова картица}one{{count} нова картица}few{{count} нове картице}other{{count} нових картица}}</translation>
 <translation id="5911030830365207728">Google преводилац</translation>
 <translation id="5917913282764181683">Аутоматски бришите преузимања</translation>
 <translation id="5922999516621365983">Превуците картицу овде да бисте је закачили.</translation>
@@ -1674,6 +1677,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8132598642024322408">Цена је <ph name="PRICE" />, а била је <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Користите јединствену лозинку за сваки сајт или апликацију. Ако неко открије лозинку коју користите за више налога, може да је употреби за приступ другим налозима. Кликните да бисте отворили веб-сајт и променили је.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} затворена картица}one{{count} затворена картица}few{{count} затворене картице}other{{count} затворених картица}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Још 1}one{Још #}few{Још #}other{Још #}}</translation>
 <translation id="8150167929304790980">Име и презиме</translation>
 <translation id="8152331954420209374">Иди на Објектив</translation>

@@ -315,6 +315,8 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "../browser/bookmarks/bookmark_test_helpers.cc",
+      "../browser/bookmarks/bookmark_test_helpers.h",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
     ]
@@ -345,8 +347,6 @@ static_library("test_support") {
 
   if (enable_desktop_android_extensions) {
     sources += [
-      "../browser/extensions/desktop_android/desktop_android_extension_apitest.cc",
-      "../browser/extensions/desktop_android/desktop_android_extension_apitest.h",
       "../browser/extensions/platform_test_extension_loader.cc",
       "../browser/extensions/platform_test_extension_loader.h",
     ]
@@ -9374,7 +9374,6 @@ test("unit_tests") {
       "../browser/safe_browsing/client_side_detection_host_unittest.cc",
       "../browser/safe_browsing/client_side_detection_service_factory_unittest.cc",
       "../browser/safe_browsing/client_side_detection_service_unittest.cc",
-      "../browser/safe_browsing/cloud_content_scanning/binary_fcm_service_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/connector_data_pipe_getter_unittest.cc",
       "../browser/safe_browsing/cloud_content_scanning/deep_scanning_utils_unittest.cc",
@@ -11198,6 +11197,7 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/translate/translate_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/translate/translate_icon_view_interactive_uitest.cc",
         "../browser/ui/views/user_education/browser_user_education_service_interactive_uitest.cc",
+        "../browser/ui/views/user_education/custom_webui_help_bubble_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_dialog_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_lifecycle_interactive_uitest.cc",
         "../browser/ui/views/user_education/help_bubble_factory_registry_interactive_uitest.cc",
@@ -11235,9 +11235,11 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/tabs:tab_menu",
         "//chrome/browser/ui/tabs:tab_model",
         "//chrome/browser/ui/toolbar/cast",
+        "//chrome/browser/ui/user_education",
         "//chrome/browser/ui/views/page_action:interactive_ui_tests",
         "//chrome/browser/ui/views/webid:interactive_ui_tests",
         "//chrome/browser/ui/views/zoom:interactive_ui_tests",
+        "//chrome/test/data/webui:resources_grit",
         "//components/commerce/core:feature_list",
         "//components/commerce/core:shopping_service_test_support",
         "//components/data_sharing/public",

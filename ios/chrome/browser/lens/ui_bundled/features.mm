@@ -87,3 +87,7 @@ BASE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation,
 BASE_FEATURE(kLensFetchSrpApiEnabled,
              "LensFetchSrpApiEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLensQRCodeParsingFix,
+             "LensQRCodeParsingFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);

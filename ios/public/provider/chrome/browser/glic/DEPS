@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/optimization_guide/proto/features/common_quality_data.pb.h",
+  "+services/network/public/cpp/resource_request.h",
+]

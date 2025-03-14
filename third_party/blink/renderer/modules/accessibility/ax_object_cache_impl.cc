@@ -5566,7 +5566,7 @@ AXObjectCacheImpl::TakeLocationChangsForSerialization() {
 
       cached_bounding_boxes_.Set(
           changed_bounds_id,
-          CachedLocationChange(new_location, scroll_offset.x(),
+          CachedLocationChange(std::move(new_location), scroll_offset.x(),
                                scroll_offset.y()));
     }
   }
@@ -5625,7 +5625,8 @@ void AXObjectCacheImpl::SerializeLocationChanges() {
       ax::mojom::blink::AXLocationAndScrollUpdates::New();
   for (auto& item : changes.location_changes) {
     location_and_scroll_changes->location_changes.push_back(
-        ax::mojom::blink::AXLocationChange::New(item.id, item.new_location));
+        ax::mojom::blink::AXLocationChange::New(item.id,
+                                                std::move(item.new_location)));
   }
   for (auto& item : changes.scroll_changes) {
     location_and_scroll_changes->scroll_changes.push_back(

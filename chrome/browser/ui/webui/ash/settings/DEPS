@@ -76,6 +76,10 @@ specific_include_rules = {
     '+ash/shell.h',
     '+ash/system/power',
   ],
+  'privacy_hub_handler.(cc|h)' : [
+    '+ash/shell.h',
+    '+ash/session',
+  ],
   'search_section\.(cc|h)': [
     "+ash/lobster",
     "+ash/scanner",

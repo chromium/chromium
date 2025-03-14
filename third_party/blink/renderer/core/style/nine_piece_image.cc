@@ -25,14 +25,14 @@
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 
 #include "base/memory/values_equivalent.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
-static scoped_refptr<NinePieceImageData>& DefaultData() {
-  static scoped_refptr<NinePieceImageData>* data = nullptr;
-  if (!data) {
-    data = new scoped_refptr<NinePieceImageData>(NinePieceImageData::Create());
-  }
+static NinePieceImageData& DefaultData() {
+  DEFINE_STATIC_LOCAL(Persistent<NinePieceImageData>, data,
+                      (MakeGarbageCollected<NinePieceImageData>()));
+  data->single_owner = false;
   return *data;
 }
 
@@ -45,27 +45,28 @@ NinePieceImage::NinePieceImage(StyleImage* image,
                                const BorderImageLengthBox& outset,
                                ENinePieceImageRule horizontal_rule,
                                ENinePieceImageRule vertical_rule) {
-  data_ = NinePieceImageData::Create();
-  Access()->image = image;
-  Access()->image_slices = image_slices;
-  Access()->border_slices = border_slices;
-  Access()->outset = outset;
-  Access()->fill = fill;
-  Access()->horizontal_rule = horizontal_rule;
-  Access()->vertical_rule = vertical_rule;
+  data_ = MakeGarbageCollected<NinePieceImageData>();
+  data_->image = image;
+  data_->image_slices = image_slices;
+  data_->border_slices = border_slices;
+  data_->outset = outset;
+  data_->fill = fill;
+  data_->horizontal_rule = horizontal_rule;
+  data_->vertical_rule = vertical_rule;
 }
 
-NinePieceImageData::NinePieceImageData()
-    : fill(false),
-      horizontal_rule(kStretchImageRule),
-      vertical_rule(kStretchImageRule),
-      image(nullptr),
-      image_slices(Length::Percent(100),
-                   Length::Percent(100),
-                   Length::Percent(100),
-                   Length::Percent(100)),
-      border_slices(1.0, 1.0, 1.0, 1.0),
-      outset(0, 0, 0, 0) {}
+NinePieceImage NinePieceImage::MaskDefaults() {
+  DEFINE_STATIC_LOCAL(Persistent<NinePieceImageData>, data,
+                      (MakeGarbageCollected<NinePieceImageData>()));
+  if (data->single_owner) {
+    // First initialization.
+    data->image_slices = LengthBox(0);
+    data->fill = true;
+    data->border_slices = BorderImageLengthBox(Length::Auto());
+    data->single_owner = false;
+  }
+  return NinePieceImage(data.Get());
+}
 
 bool NinePieceImageData::operator==(const NinePieceImageData& other) const {
   return base::ValuesEquivalent(image, other.image) &&

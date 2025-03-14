@@ -284,10 +284,13 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Returns true if `navigation_request` can activate `host`.
   bool CanNavigationActivateHost(NavigationRequest& navigation_request,
                                  PrerenderHost& host);
-  void DeleteDelayedToBeDeletedHosts(FrameTreeNodeId prerender_host_id);
+  void DeletePendingDeletionHosts(FrameTreeNodeId prerender_host_id);
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
       const PrerenderCancellationReason& cancellation_reason);
+  void SchedulePendingDeletionPrerenderNewTabHandle(
+      std::unique_ptr<PrerenderNewTabHandle> handle);
+
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
@@ -382,10 +385,16 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   std::vector<std::unique_ptr<PrerenderHost>> to_be_deleted_hosts_;
 
   // The list of hosts which are scheduled to be deleted when
-  // `DeleteDelayedToBeDeletedHosts` is called. This list is for avoiding
+  // `DeletePendingDeletionHosts` is called. This list is for avoiding
   // the PrerenderHost being deleted prematurely before IPC calls are completed.
   base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderHost>>
-      delayed_to_be_deleted_hosts_;
+      pending_deletion_hosts_;
+
+  // PrerenderNewTabHandle that is scheduled to be deleted asynchronously. When
+  // unload related events are dispatched, PrerenderNewTabHandle deletion needs
+  // to be delayed until the dispatch of the events.
+  std::unique_ptr<PrerenderNewTabHandle>
+      pending_deletion_new_tab_prerender_handle_;
 
   // Starts running the timers when prerendering gets hidden.
   base::OneShotTimer timeout_timer_for_embedder_;

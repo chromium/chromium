@@ -2453,11 +2453,6 @@ Si cette règle n'est pas configurée, la règle <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2812417768214606683">Cette règle spécifie une liste d'appareils de stockage USB qui sont exclus des règles <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> et <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 Les entrées sont des paires composées d'un identifiant de fournisseur USB et d'un code produit qui identifient le modèle d'appareil USB spécifique.</translation>
-<translation id="2815701930753942156">Cette règle permet de spécifier une liste d'intervalles hebdomadaires pendant lesquels l'appareil <ph name="PRODUCT_OS_NAME" /> ne peut pas être utilisé. Toutes les sessions en cours seront fermées, et la connexion sera bloquée.
-
-Les intervalles qui se chevauchent ne sont pas acceptés.
-
-Les appareils <ph name="PRODUCT_OS_NAME" /> utiliseront le fuseau horaire du système pour appliquer ces intervalles.</translation>
 <translation id="2816964824289752181">Activer <ph name="DESK_API_NAME" /> pour le contrôle <ph name="PRODUCT_OS_NAME" /> tiers</translation>
 <translation id="2818074121667686266">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur est invité à autoriser ou non l'accès à la capture audio, sauf si l'URL concernée figure dans la liste AudioCaptureAllowedUrls.
 
@@ -5697,6 +5692,11 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si ce paramètre n'est pas défini, la période par défaut est fixée à 604 800 000 millisecondes (une semaine).</translation>
 <translation id="5212810195096589189">Spécifier l'autorisation concernant l'interface de ligne de commande pour les machines virtuelles</translation>
 <translation id="5213038356678567351">Sites Web qui ne doivent jamais déclencher un changement de navigateur.</translation>
+<translation id="5216520638921067085">Précise l'âge minimal de la version au-delà duquel les notifications de relance sont plus agressives. L'âge est calculé à partir de la date de dernière diffusion aux clients de la version en cours.
+
+Si une nouvelle version est en attente, qu'un redémarrage du navigateur ou de l'appareil est nécessaire et que la version actuelle a été remplacée depuis plus de jours que le nombre indiqué par ce paramètre, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> est remplacée par deux heures. Si la règle <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> est définie sur 1 ("Obligatoire"), les utilisateurs seront obligés de relancer ou de redémarrer à la fin de la période.
+
+Si elle n'est pas définie ou que l'âge de la version ne peut pas être déterminé, la règle <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> sera utilisée pour toutes les mises à jour.</translation>
 <translation id="5216815237712190041">Configurez le fond d'écran de l'appareil à afficher sur la page de connexion avant qu'un utilisateur ne se connecte à l'appareil. Pour configurer cette règle, vous devez indiquer l'URL depuis laquelle l'appareil Chrome OS peut télécharger l'image de fond d'écran et un hachage chiffré utilisé pour vérifier l'intégrité du téléchargement. L'image doit être au format JPEG, et sa taille ne doit pas dépasser 16 Mo. L'URL doit être accessible sans authentification. L'image de fond d'écran est téléchargée et mise en cache. Elle sera de nouveau téléchargée à chaque modification de l'URL ou du hachage.
 
       Si la règle relative au fond d'écran est configurée, l'appareil Chrome OS téléchargera et utilisera l'image de fond d'écran sur l'écran de connexion si aucun utilisateur ne s'est encore connecté à l'appareil. Lorsque l'utilisateur se connecte, la règle relative au fond d'écran pour cet utilisateur est activée.
@@ -6787,6 +6787,7 @@ Si vous définissez cette valeur sur <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIEN
 
       Sinon, si la compatibilité avec un serveur comportant des bugs doit être maintenue, cette règle peut être définie sur "tls1.1". Il s'agit là d'une solution provisoire qui exige parallèlement de dépanner le serveur rapidement.</translation>
 <translation id="5932767795525445337">Ces règles peuvent également être utilisées pour épingler des applications Android.</translation>
+<translation id="5936192285609409992">Calculatrice (compatible depuis la version 136)</translation>
 <translation id="5936193585187054065">Encrypted ClientHello (ECH) est une extension TLS qui permet de chiffrer les champs sensibles de ClientHello et de renforcer la confidentialité.
 
       Si cette règle est activée ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> suivra le processus de déploiement par défaut pour ECH. Si elle est désactivée, <ph name="PRODUCT_NAME" /> n'activera pas ECH.
@@ -7267,6 +7268,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides (depuis la v
 <translation id="6287128640500683781">Autoriser tous les utilisateurs à se connecter</translation>
 <translation id="6287310684159482272">Paramètres des cookies</translation>
 <translation id="6287742528823584153">Activer le service <ph name="PRODUCT_NAME" /> et lancer le bureau à distance lors de la connexion</translation>
+<translation id="6288152932495466841">Informer les utilisateurs des versions de navigateurs remplacées</translation>
 <translation id="6299147100249359151">Autorisez la détection du champ d'application des règles.</translation>
 <translation id="6299554629216555326">Paramètres de gestion des fenêtres</translation>
 <translation id="6302021021024941085">Désactiver les outils de dépannage de kiosque.</translation>
@@ -7466,7 +7468,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
       Si cette règle n'est pas configurée, la valeur par défaut est désactivée pour les utilisateurs gérés par une entreprise et activée sur les comptes non gérés.</translation>
 <translation id="6401669939808766804">Déconnecter l'utilisateur</translation>
 <translation id="640244877779556713">Activer la suggestion d'emoji</translation>
-<translation id="6402928885627067154">Spécifier des intervalles hebdomadaires pendant lesquels les appareils ChromeOS ne peuvent pas être utilisés</translation>
 <translation id="6403114173011456561">Contrôle le clavier virtuel tactile en agissant comme règle complémentaire de la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Si le clavier virtuel d'accessibilité est activé, cette règle n'a aucune incidence.
@@ -11144,6 +11145,7 @@ Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les donnée
 <translation id="9107635531763682565">Si cette règle est définie sur "1", les sites Web peuvent afficher des notifications sur le bureau. Si cette règle est définie sur "2", les sites ne sont pas autorisés à afficher ces notifications.
 
 Si cette règle n'est pas configurée, la règle <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
+<translation id="9107664925383184344">Période (jours)</translation>
 <translation id="910929592571075861">Ne pas partitionner les URL blob pendant l'extraction et la navigation.</translation>
 <translation id="9110194749335632373">Empêcher les connexions d'accès à distance des administrateurs d'entreprise à cet ordinateur</translation>
 <translation id="9110198768621013941">Active les paramètres de prédiction pour la saisie automatique.

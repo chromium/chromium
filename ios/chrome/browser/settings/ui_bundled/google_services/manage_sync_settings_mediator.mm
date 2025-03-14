@@ -1130,7 +1130,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       [self.commandHandler showAccountsPage];
       break;
     case SwitchAccountItemType:
-      // TODO(crbug.com/336719357): Open the account menu.
+      [self.commandHandler openAccountMenu];
       break;
     case BatchUploadButtonItemType:
       [self.commandHandler openBulkUpload];

@@ -39,7 +39,7 @@ namespace content {
 // A custom MSAA object id used to determine if a screen reader or some
 // other client is listening on MSAA events - if so, we enable full web
 // accessibility support.
-const int kIdScreenReaderHoneyPot = 1;
+static constexpr int kIdScreenReaderHoneyPot = 1;
 
 // static
 LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(
@@ -50,13 +50,14 @@ LegacyRenderWidgetHostHWND* LegacyRenderWidgetHostHWND::Create(
   // these tests to pass.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableLegacyIntermediateWindow) ||
-      (!GetWindowEventTarget(parent) && parent != ::GetDesktopWindow()))
+      (!GetWindowEventTarget(parent) && parent != ::GetDesktopWindow())) {
     return nullptr;
+  }
 
-  LegacyRenderWidgetHostHWND* legacy_window_instance =
-      new LegacyRenderWidgetHostHWND(host);
-  if (!legacy_window_instance->InitOrDeleteSelf(parent))
+  auto* legacy_window_instance = new LegacyRenderWidgetHostHWND(host);
+  if (!legacy_window_instance->InitOrDeleteSelf(parent)) {
     return nullptr;
+  }
 
   return legacy_window_instance;
 }
@@ -66,8 +67,9 @@ void LegacyRenderWidgetHostHWND::Destroy() {
   direct_manipulation_helper_.reset();
   window_tree_host_prop_.reset();
   host_ = nullptr;
-  if (::IsWindow(hwnd()))
+  if (::IsWindow(hwnd())) {
     ::DestroyWindow(hwnd());
+  }
 }
 
 void LegacyRenderWidgetHostHWND::CreateDirectManipulationHelper() {
@@ -88,8 +90,8 @@ void LegacyRenderWidgetHostHWND::UpdateParent(HWND new_parent) {
   // call altogether.
   const HWND current_parent = GetParent();
   if (current_parent != new_parent) {
-    if (GetWindowEventTarget(GetParent())) {
-      GetWindowEventTarget(GetParent())->HandleParentChanged();
+    if (auto* event_target = GetWindowEventTarget(current_parent)) {
+      event_target->HandleParentChanged();
     }
 
     ::SetParent(hwnd(), new_parent);
@@ -125,13 +127,14 @@ void LegacyRenderWidgetHostHWND::Hide() {
 }
 
 void LegacyRenderWidgetHostHWND::SetBounds(const gfx::Rect& bounds) {
-  gfx::Rect bounds_in_pixel = display::win::ScreenWin::DIPToClientRect(hwnd(),
-                                                                       bounds);
-  ::SetWindowPos(hwnd(), NULL, bounds_in_pixel.x(), bounds_in_pixel.y(),
+  gfx::Rect bounds_in_pixel =
+      display::win::ScreenWin::DIPToClientRect(hwnd(), bounds);
+  ::SetWindowPos(hwnd(), nullptr, bounds_in_pixel.x(), bounds_in_pixel.y(),
                  bounds_in_pixel.width(), bounds_in_pixel.height(),
                  SWP_NOREDRAW);
-  if (direct_manipulation_helper_)
+  if (direct_manipulation_helper_) {
     direct_manipulation_helper_->SetSizeInPixels(bounds_in_pixel.size());
+  }
 }
 
 void LegacyRenderWidgetHostHWND::OnFinalMessage(HWND hwnd) {
@@ -250,11 +253,12 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
          ui::GetWinAccessibilityAPIUsageObserverList()) {
       observer.OnScreenReaderHoneyPotQueried();
     }
-    return static_cast<LRESULT>(0L);
+    return 0;
   }
 
-  if (!host_)
-    return static_cast<LRESULT>(0L);
+  if (!host_) {
+    return 0;
+  }
 
   const bool is_uia_request = static_cast<DWORD>(UiaRootObjectId) == obj_id;
   const bool is_uia_active =
@@ -280,8 +284,9 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
       return UiaReturnRawElementProvider(hwnd(), w_param, l_param,
                                          root_uia.Get());
     } else {
-      if (root == nullptr)
-        return static_cast<LRESULT>(0L);
+      if (!root) {
+        return 0;
+      }
 
       Microsoft::WRL::ComPtr<IAccessible> root_msaa(root);
       return LresultFromObject(IID_IAccessible, w_param, root_msaa.Get());
@@ -296,7 +301,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnGetObject(UINT message,
                              ax_system_caret_accessible.Get());
   }
 
-  return static_cast<LRESULT>(0L);
+  return 0;
 }
 
 // We send keyboard/mouse/touch messages to the parent window via SendMessage.
@@ -311,13 +316,15 @@ LRESULT LegacyRenderWidgetHostHWND::OnKeyboardRange(UINT message,
                                                     WPARAM w_param,
                                                     LPARAM l_param,
                                                     BOOL& handled) {
-  LRESULT ret = 0;
-  if (GetWindowEventTarget(GetParent())) {
-    bool msg_handled = false;
-    ret = GetWindowEventTarget(GetParent())->HandleKeyboardMessage(
-        message, w_param, l_param, &msg_handled);
-    handled = msg_handled;
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return 0;
   }
+
+  bool msg_handled = false;
+  LRESULT ret = event_target->HandleKeyboardMessage(message, w_param, l_param,
+                                                    &msg_handled);
+  handled = msg_handled;
   return ret;
 }
 
@@ -348,22 +355,23 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
     l_param = MAKELPARAM(mouse_coords.x, mouse_coords.y);
   }
 
-  LRESULT ret = 0;
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return 0;
+  }
 
-  if (GetWindowEventTarget(GetParent())) {
-    bool msg_handled = false;
-    ret = GetWindowEventTarget(GetParent())->HandleMouseMessage(
-        message, w_param, l_param, &msg_handled);
-    handled = msg_handled;
-    // If the parent did not handle non client mouse messages, we call
-    // DefWindowProc on the message with the parent window handle. This
-    // ensures that WM_SYSCOMMAND is generated for the parent and we are
-    // out of the picture.
-    if (!handled &&
-        (message >= WM_NCMOUSEMOVE && message <= WM_NCXBUTTONDBLCLK)) {
-      ret = ::DefWindowProc(GetParent(), message, w_param, l_param);
-      handled = TRUE;
-    }
+  bool msg_handled = false;
+  LRESULT ret =
+      event_target->HandleMouseMessage(message, w_param, l_param, &msg_handled);
+  handled = msg_handled;
+  // If the parent did not handle non-client mouse messages, call
+  // DefWindowProc() on the message with the parent window handle. This ensures
+  // that WM_SYSCOMMAND is generated for the parent and this class is out of
+  // the picture.
+  if (!handled &&
+      (message >= WM_NCMOUSEMOVE && message <= WM_NCXBUTTONDBLCLK)) {
+    ret = ::DefWindowProc(GetParent(), message, w_param, l_param);
+    handled = TRUE;
   }
   return ret;
 }
@@ -372,26 +380,36 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseLeave(UINT message,
                                                  WPARAM w_param,
                                                  LPARAM l_param) {
   mouse_tracking_enabled_ = false;
-  LRESULT ret = 0;
   HWND capture_window = ::GetCapture();
-  if ((capture_window != GetParent()) && GetWindowEventTarget(GetParent())) {
-    // We should send a WM_MOUSELEAVE to the parent window only if the mouse
-    // has moved outside the bounds of the parent.
-    POINT cursor_pos;
-    ::GetCursorPos(&cursor_pos);
-
-    // WindowFromPoint returns the top-most HWND. As hwnd() may not
-    // respond with HTTRANSPARENT to a WM_NCHITTEST message,
-    // it may be returned.
-    HWND window_from_point = ::WindowFromPoint(cursor_pos);
-    if (window_from_point != GetParent() &&
-        (capture_window || window_from_point != hwnd())) {
-      bool msg_handled = false;
-      ret = GetWindowEventTarget(GetParent())->HandleMouseMessage(
-          message, w_param, l_param, &msg_handled);
-      SetMsgHandled(msg_handled);
-    }
+  if (capture_window == GetParent()) {
+    return 0;
   }
+
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return 0;
+  }
+
+  // We should send a WM_MOUSELEAVE to the parent window only if the mouse
+  // has moved outside the bounds of the parent.
+  POINT cursor_pos;
+  ::GetCursorPos(&cursor_pos);
+
+  // WindowFromPoint returns the top-most HWND. As hwnd() may not respond
+  // with HTTRANSPARENT to a WM_NCHITTEST message, it may be returned.
+  HWND window_from_point = ::WindowFromPoint(cursor_pos);
+  if (window_from_point == GetParent()) {
+    return 0;
+  }
+
+  if (!capture_window || window_from_point == hwnd()) {
+    return 0;
+  }
+
+  bool msg_handled = false;
+  LRESULT ret =
+      event_target->HandleMouseMessage(message, w_param, l_param, &msg_handled);
+  SetMsgHandled(msg_handled);
   return ret;
 }
 
@@ -406,8 +424,9 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseActivate(UINT message,
   // the parent. Return MA_ACTIVATE here ensures that focus state in the parent
   // is preserved. The only exception is if the parent was created with the
   // WS_EX_NOACTIVATE style.
-  if (::GetWindowLong(GetParent(), GWL_EXSTYLE) & WS_EX_NOACTIVATE)
+  if (::GetWindowLong(GetParent(), GWL_EXSTYLE) & WS_EX_NOACTIVATE) {
     return MA_NOACTIVATE;
+  }
   // On Windows, if we select the menu item by touch and if the window at the
   // location is another window on the same thread, that window gets a
   // WM_MOUSEACTIVATE message and ends up activating itself, which is not
@@ -425,70 +444,80 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseActivate(UINT message,
 LRESULT LegacyRenderWidgetHostHWND::OnPointer(UINT message,
                                               WPARAM w_param,
                                               LPARAM l_param) {
-  LRESULT ret = 0;
-  if (GetWindowEventTarget(GetParent())) {
-    bool msg_handled = false;
-    ret = GetWindowEventTarget(GetParent())
-              ->HandlePointerMessage(message, w_param, l_param, &msg_handled);
-    SetMsgHandled(msg_handled);
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return 0;
   }
+
+  bool msg_handled = false;
+  LRESULT ret = event_target->HandlePointerMessage(message, w_param, l_param,
+                                                   &msg_handled);
+  SetMsgHandled(msg_handled);
   return ret;
 }
 
 LRESULT LegacyRenderWidgetHostHWND::OnTouch(UINT message,
                                             WPARAM w_param,
                                             LPARAM l_param) {
-  LRESULT ret = 0;
-  if (GetWindowEventTarget(GetParent())) {
-    bool msg_handled = false;
-    ret = GetWindowEventTarget(GetParent())->HandleTouchMessage(
-        message, w_param, l_param, &msg_handled);
-    SetMsgHandled(msg_handled);
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return 0;
   }
+
+  bool msg_handled = false;
+  LRESULT ret =
+      event_target->HandleTouchMessage(message, w_param, l_param, &msg_handled);
+  SetMsgHandled(msg_handled);
   return ret;
 }
 
 LRESULT LegacyRenderWidgetHostHWND::OnInput(UINT message,
                                             WPARAM w_param,
                                             LPARAM l_param) {
-  LRESULT ret = 0;
-  if (GetWindowEventTarget(GetParent())) {
-    bool msg_handled = false;
-    ret = GetWindowEventTarget(GetParent())
-              ->HandleInputMessage(message, w_param, l_param, &msg_handled);
-    SetMsgHandled(msg_handled);
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return 0;
   }
+
+  bool msg_handled = false;
+  LRESULT ret =
+      event_target->HandleInputMessage(message, w_param, l_param, &msg_handled);
+  SetMsgHandled(msg_handled);
   return ret;
 }
 
 LRESULT LegacyRenderWidgetHostHWND::OnScroll(UINT message,
                                              WPARAM w_param,
                                              LPARAM l_param) {
-  LRESULT ret = 0;
-  if (GetWindowEventTarget(GetParent())) {
-    bool msg_handled = false;
-    ret = GetWindowEventTarget(GetParent())->HandleScrollMessage(
-        message, w_param, l_param, &msg_handled);
-    SetMsgHandled(msg_handled);
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return 0;
   }
+
+  bool msg_handled = false;
+  LRESULT ret = event_target->HandleScrollMessage(message, w_param, l_param,
+                                                  &msg_handled);
+  SetMsgHandled(msg_handled);
   return ret;
 }
 
 LRESULT LegacyRenderWidgetHostHWND::OnNCHitTest(UINT message,
                                                 WPARAM w_param,
                                                 LPARAM l_param) {
-  if (GetWindowEventTarget(GetParent())) {
-    bool msg_handled = false;
-    LRESULT hit_test = GetWindowEventTarget(
-        GetParent())->HandleNcHitTestMessage(message, w_param, l_param,
-                                             &msg_handled);
-    // If the parent returns HTNOWHERE which can happen for popup windows, etc
-    // we return HTCLIENT.
-    if (hit_test == HTNOWHERE)
-      hit_test = HTCLIENT;
-    return hit_test;
+  auto* event_target = GetWindowEventTarget(GetParent());
+  if (!event_target) {
+    return HTNOWHERE;
   }
-  return HTNOWHERE;
+
+  bool msg_handled = false;
+  LRESULT hit_test = event_target->HandleNcHitTestMessage(
+      message, w_param, l_param, &msg_handled);
+  if (hit_test == HTNOWHERE) {
+    // If the parent returns HTNOWHERE which can happen for popup windows, etc,
+    // return HTCLIENT.
+    return HTCLIENT;
+  }
+  return hit_test;
 }
 
 LRESULT LegacyRenderWidgetHostHWND::OnNCPaint(UINT message,
@@ -530,8 +559,7 @@ LRESULT LegacyRenderWidgetHostHWND::OnSize(UINT message,
   // We add these styles to ensure that trackpad/trackpoint scrolling
   // work.
   long current_style = ::GetWindowLong(hwnd(), GWL_STYLE);
-  ::SetWindowLong(hwnd(), GWL_STYLE,
-                  current_style | WS_VSCROLL | WS_HSCROLL);
+  ::SetWindowLong(hwnd(), GWL_STYLE, current_style | WS_VSCROLL | WS_HSCROLL);
   return 0;
 }
 
@@ -541,8 +569,9 @@ LRESULT LegacyRenderWidgetHostHWND::OnDestroy(UINT message,
   // If we have ever returned a UIA object via WM_GETOBJECT, signal that all
   // objects associated with this HWND can be discarded. See:
   // https://docs.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiareturnrawelementprovider#remarks
-  if (did_return_uia_object_)
+  if (did_return_uia_object_) {
     UiaReturnRawElementProvider(hwnd(), 0, 0, nullptr);
+  }
 
   return 0;
 }
@@ -550,10 +579,9 @@ LRESULT LegacyRenderWidgetHostHWND::OnDestroy(UINT message,
 LRESULT LegacyRenderWidgetHostHWND::OnPointerHitTest(UINT message,
                                                      WPARAM w_param,
                                                      LPARAM l_param) {
-  if (!direct_manipulation_helper_)
-    return 0;
-
-  direct_manipulation_helper_->OnPointerHitTest(w_param);
+  if (direct_manipulation_helper_) {
+    direct_manipulation_helper_->OnPointerHitTest(w_param);
+  }
 
   return 0;
 }
@@ -565,9 +593,7 @@ LegacyRenderWidgetHostHWND::GetChildOfAXFragmentRoot() {
 
 gfx::NativeViewAccessible
 LegacyRenderWidgetHostHWND::GetParentOfAXFragmentRoot() {
-  if (host_)
-    return host_->GetParentNativeViewAccessible();
-  return nullptr;
+  return host_ ? host_->GetParentNativeViewAccessible() : nullptr;
 }
 
 bool LegacyRenderWidgetHostHWND::IsAXFragmentRootAControlElement() {
@@ -588,19 +614,21 @@ LegacyRenderWidgetHostHWND::GetOrCreateWindowRootAccessible(
 
 gfx::NativeViewAccessible
 LegacyRenderWidgetHostHWND::GetOrCreateBrowserAccessibilityRoot() {
-  if (!host_)
+  if (!host_) {
     return nullptr;
+  }
 
   RenderWidgetHostImpl* rwhi =
       RenderWidgetHostImpl::From(host_->GetRenderWidgetHost());
-  if (!rwhi)
+  if (!rwhi) {
     return nullptr;
+  }
 
-  ui::BrowserAccessibilityManagerWin* manager =
-      static_cast<ui::BrowserAccessibilityManagerWin*>(
-          rwhi->GetOrCreateRootBrowserAccessibilityManager());
-  if (!manager || !manager->GetBrowserAccessibilityRoot())
+  auto* manager = static_cast<ui::BrowserAccessibilityManagerWin*>(
+      rwhi->GetOrCreateRootBrowserAccessibilityManager());
+  if (!manager || !manager->GetBrowserAccessibilityRoot()) {
     return nullptr;
+  }
 
   ui::BrowserAccessibility* root_node = manager->GetBrowserAccessibilityRoot();
 
@@ -616,8 +644,9 @@ LegacyRenderWidgetHostHWND::GetOrCreateBrowserAccessibilityRoot() {
     // Check to see if the manager has a child root (it's expected that there
     // won't be in popups without HTML-based content such as <select> controls).
     ui::BrowserAccessibility* child_root = manager->GetPopupRoot();
-    if (child_root)
+    if (child_root) {
       return child_root->GetNativeViewAccessible();
+    }
   }
 
   return root_node->GetNativeViewAccessible();

@@ -440,6 +440,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2789552044937754463">{COUNT,plural, =1{Kata laluan disimpan dalam Google Account anda, {EMAIL}}other{Kata laluan disimpan dalam Google Account anda, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Tambahkan kata laluan…</translation>
 <translation id="2797302972324086597">Kod negara</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fail}other{{COUNT} fail}}</translation>
 <translation id="2816489851009559785">Menu → Tetapan → Penyemak imbas lalai</translation>
 <translation id="2818821771744632548">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPhone anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
 <translation id="2819667972867209401">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data akan disimpan hanya pada peranti ini dan akan dipadamkan jika anda log keluar.</translation>
@@ -503,6 +504,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="310900540163454140">Padam kata laluan untuk <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Tandakan...</translation>
 <translation id="3119874402040566234">Anda akan dilog keluar dan data semakan imbas akan dipadamkan</translation>
+<translation id="3124568093781685165">Kongsi kata laluan anda dengan keluarga anda</translation>
 <translation id="3130863904455712965">Sejarah dan pelbagai lagi</translation>
 <translation id="313283613037595347">Buat tab Inkognito baharu.</translation>
 <translation id="3138611310073113613">Buang pilihan</translation>
@@ -1002,6 +1004,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5352128922772839949">Simpan fail</translation>
 <translation id="5355191726083956201">Perlindungan Dipertingkat dihidupkan</translation>
 <translation id="537853552771686272">Urus topik dan laman yang anda minati</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kad ulasan produk untuk anda</translation>
 <translation id="5395707839134961196">Sembunyikan butiran enjin carian</translation>
 <translation id="5414763847370083940">Anda akan menerima makluman jika harga turun pada mana-mana laman.</translation>
@@ -1131,6 +1134,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5897749768294722429">Untuk segera kembali kepada laman yang telah anda lawati, segerakkan tab dan sejarah anda.</translation>
 <translation id="5898848375214731122">Jisim</translation>
 <translation id="5899314093904173337">Untuk berkongsi dengan orang yang berdekatan, benarkan mereka mengimbas kod QR ini dengan kamera atau apl pengimbas QR mereka</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} tab baharu}other{{count} tab baharu}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">Autopadam muat turun anda</translation>
 <translation id="5922999516621365983">Seret tab ke sini untuk dipinkan.</translation>
@@ -1674,6 +1678,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8132598642024322408">Kini <ph name="PRICE" />, sebelum ini <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Gunakan kata laluan unik untuk setiap laman atau apl. Jika seseorang menemukan kata laluan yang digunakan semula, kata laluan itu boleh digunakan untuk mengakses akaun anda yang lain. Klik untuk membuka laman web dan tukar kata laluan sekarang.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} tab ditutup}other{{count} tab ditutup}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 yang lain}other{# yang lain}}</translation>
 <translation id="8150167929304790980">Nama penuh</translation>
 <translation id="8152331954420209374">Akses Lens</translation>

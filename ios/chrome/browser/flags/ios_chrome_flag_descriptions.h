@@ -282,6 +282,9 @@ extern const char kEnhancedSafeBrowsingPromoDescription[];
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
 
+extern const char kFeedSwipeInProductHelpName[];
+extern const char kFeedSwipeInProductHelpDescription[];
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
@@ -463,6 +466,9 @@ extern const char kLensPrewarmHardStickinessInInputSelectionDescription[];
 
 extern const char kLensPrewarmHardStickinessInQueryFormulationName[];
 extern const char kLensPrewarmHardStickinessInQueryFormulationDescription[];
+
+extern const char kLensQRCodeParsingFixName[];
+extern const char kLensQRCodeParsingFixDescription[];
 
 extern const char kLensSingleTapTextSelectionDisabledName[];
 extern const char kLensSingleTapTextSelectionDisabledDescription[];

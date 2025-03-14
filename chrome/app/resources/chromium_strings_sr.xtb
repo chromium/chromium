@@ -34,6 +34,7 @@
 <translation id="1478370723027452770">Потражите помоћ за верзију Chrome for Testing</translation>
 <translation id="1497802159252041924">Грешка при инсталацији: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Делите Chromium картицу</translation>
+<translation id="1547469039832541117">Завршава истакнути задатак.</translation>
 <translation id="1553461853655228091">Chromium тражи дозволу да приступи камери да би направио 3D мапу окружења</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Овај додатак више није подржан. Chromium препоручује да га уклоните.}one{Ови додаци више нису подржани. Chromium препоручује да их уклоните.}few{Ови додаци више нису подржани. Chromium препоручује да их уклоните.}other{Ови додаци више нису подржани. Chromium препоручује да их уклоните.}}</translation>
 <translation id="1574377791422810894">Chromium алатке за безбедност</translation>
@@ -226,6 +227,7 @@
 <translation id="4148957013307229264">Инсталирање...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – пријављивање на мрежу – Chromium</translation>
 <translation id="421369550622382712">Откријте одличне апликације, игре, додатке и теме за Chromium.</translation>
+<translation id="4217080900579554343">Да би вам овај додатак и други садржај били доступни на свим рачунарима, пријавите се у Chromium</translation>
 <translation id="4217972271355023382">Ако желиш већу безбедност онлајн уз изборе родитеља, пређи на свој Chromium профил на ком си већ пријављен/а као <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Отказује се...</translation>
 <translation id="4224210481850767180">Инсталација је отказана.</translation>

@@ -22,7 +22,12 @@ import {openMenu, spinnerDebounceTimeout, ToolbarEvent} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
 import {ReadAloudSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger} from './read_anything_logger.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isGoogle, isNatural, NotificationType} from './voice_language_util.js';
+// clang-format off
+// <if expr="not is_chromeos">
+import {isGoogle} from './voice_language_util.js';
+// </if>
+// clang-format on
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, NotificationType} from './voice_language_util.js';
 import {VoiceNotificationManager} from './voice_notification_manager.js';
 import type {VoiceNotificationListener} from './voice_notification_manager.js';
 import {getCss} from './voice_selection_menu.css.js';
@@ -215,7 +220,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
         }, {} as {[language: string]: VoiceDropdownItem[]});
 
     for (const lang of Object.keys(languageToVoices)) {
-      languageToVoices[lang].sort(voiceQualityRankComparator);
+      languageToVoices[lang]!.sort(voiceQualityRankComparator);
     }
 
     return Object.entries(languageToVoices).map(([
@@ -408,7 +413,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     const voiceIndex = Number.parseInt(
         (e.currentTarget as HTMLElement).dataset['voiceIndex']!);
 
-    return this.voiceGroups_[groupIndex].voices[voiceIndex];
+    return this.voiceGroups_[groupIndex]!.voices[voiceIndex]!;
   }
 
   private computeErrorMessages_(): string[] {

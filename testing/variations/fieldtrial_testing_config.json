@@ -2048,29 +2048,6 @@
             ]
         }
     ],
-    "AutofillFixValueSemantics": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillFixCurrentValueInImport",
-                        "AutofillFixInitialValueOfSelect",
-                        "AutofillFixValueSemantics"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillGivePrecedenceToEmailOverUsername": [
         {
             "platforms": [
@@ -3157,7 +3134,7 @@
             ],
             "experiments": [
                 {
-                    "name": "IPHWithBackgroundSendResultAndCompression",
+                    "name": "IPHWithBackgroundCompressionAndFastEtc1Encoder",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
@@ -3165,7 +3142,6 @@
                         "max-cache-size": "16777216",
                         "percentage-of-ram-to-use": "0.5",
                         "session_rate": "<1",
-                        "transfer-screenshot-in-background-priority": "true",
                         "x_trigger": "",
                         "x_unhandled_gesture_threshold": "2"
                     },
@@ -3174,7 +3150,8 @@
                         "CompressBitmapAtBackgroundPriority",
                         "IPH_RtlGestureNavigation",
                         "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
+                        "NativePageTransitionHardwareCapture",
+                        "UseNewEtc1Encoder"
                     ]
                 }
             ]
@@ -9557,6 +9534,27 @@
             ]
         }
     ],
+    "ExportFrameTimingAfterFrameDoneExperiment": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExportFrameTimingAfterFrameDone"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtendedReportingRemovePrefDependency": [
         {
             "platforms": [
@@ -12837,6 +12835,9 @@
             "experiments": [
                 {
                     "name": "EnabledWithSettings",
+                    "params": {
+                        "identity-disc-account-menu-with-settings-button": "true"
+                    },
                     "enable_features": [
                         "IdentityConfirmationSnackbar",
                         "IdentityDiscAccountMenu"
@@ -13009,6 +13010,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "InlineFullscreenPerfExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InputScenarioPriorityBoostDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InputScenarioPriorityBoost"
                     ]
                 }
             ]
@@ -15080,21 +15099,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NewContentForCheckerboardedScrolls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NewEtc1Encoder": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseNewEtc1Encoder"
                     ]
                 }
             ]
@@ -18131,21 +18135,6 @@
             ]
         }
     ],
-    "PrivacyHubGeolocation": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosPrivacyHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacyIndicators": [
         {
             "platforms": [
@@ -18733,6 +18722,25 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeBidderUseBalancingThreadSelector"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ProtectedAudienceClickiness": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AdAuctionEventRegistration"
                     ]
                 }
             ]
@@ -23393,23 +23401,6 @@
                     },
                     "enable_features": [
                         "SyncIncreaseNudgeDelayForSingleClient"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SyncMinimizeDeletionsDuringBookmarkBatchUpload": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_WithFastDeletions",
-                    "enable_features": [
-                        "SyncFastDeletionsDuringBookmarkBatchUpload",
-                        "SyncMinimizeDeletionsDuringBookmarkBatchUpload"
                     ]
                 }
             ]

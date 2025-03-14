@@ -503,6 +503,7 @@
 <translation id="310900540163454140"><ph name="WEBSITE" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="3112556859945124369">ಗುರುತಿಸಿ...</translation>
 <translation id="3119874402040566234">ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ ಮತ್ತು ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
+<translation id="3124568093781685165">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ ಕುಟುಂಬದೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="3130863904455712965">ಇತಿಹಾಸ ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="313283613037595347">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ರಚಿಸಿ</translation>
 <translation id="3138611310073113613">ಆಯ್ಕೆಯನ್ನು ತ್ಯಜಿಸಿ</translation>
@@ -1002,6 +1003,7 @@
 <translation id="5352128922772839949">ಫೈಲ್‌ ಸೇವ್‌ ಮಾಡಿ</translation>
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="537853552771686272">ನೀವು ಆಸಕ್ತಿ ಹೊಂದಿರುವ ವಿಷಯಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} ಮುಚ್ಚಲಾಗಿದೆ}one{{count} ಮುಚ್ಚಲಾಗಿದೆ}other{{count} ಮುಚ್ಚಲಾಗಿದೆ}}</translation>
 <translation id="5394975111793637642">ನಿಮ್ಮ ಕಾರ್ಡ್‌ಗಾಗಿ ಉತ್ಪನ್ನದ ವಿಮರ್ಶೆಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="5395707839134961196">ಸರ್ಚ್ ಎಂಜಿನ್ ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="5414763847370083940">ಯಾವುದಾದರೂ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕುಸಿತವಾದರೆ ನೀವು ಎಚ್ಚರಿಕೆ ಪಡೆಯುತ್ತೀರಿ.</translation>
@@ -1131,6 +1133,7 @@
 <translation id="5897749768294722429">ನೀವು ಭೇಟಿ ನೀಡಿದ ಸೈಟ್‌ಗಳಿಗೆ ತ್ವರಿತವಾಗಿ ಹಿಂತಿರುಗಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ.</translation>
 <translation id="5898848375214731122">ತೂಕ</translation>
 <translation id="5899314093904173337">ಹತ್ತಿರದ ಜನರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು, ಅವರ ಕ್ಯಾಮರಾ ಅಥವಾ QR ಸ್ಕ್ಯಾನರ್ ಆ್ಯಪ್ ಮೂಲಕ ಈ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ಅವರಿಗೆ ಅನುಮತಿಸಿ</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} ಹೊಸ ಟ್ಯಾಬ್}one{{count} ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}other{{count} ಹೊಸ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="5911030830365207728">Google Translate</translation>
 <translation id="5917913282764181683">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸಿ</translation>
 <translation id="5922999516621365983">ಟ್ಯಾಬ್ ಅನ್ನು ಪಿನ್ ಮಾಡಲು ಅದನ್ನು ಇಲ್ಲಿಗೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
@@ -1674,6 +1677,7 @@
 <translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8132598642024322408">ಈಗಿನ ಬೆಲೆ <ph name="PRICE" />, ಹಿಂದಿನ ಬೆಲೆ <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">ಪ್ರತಿಯೊಂದು ಸೈಟ್ ಅಥವಾ ಆ್ಯಪ್‌ಗಾಗಿ ಅನನ್ಯ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿ. ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಯಾರಾದರೂ ಪತ್ತೆಹಚ್ಚಿದರೆ, ನಿಮ್ಮ ಇತರ ಖಾತೆಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಪಡೆಯಲು ಅವರು ಅದನ್ನು ಬಳಸಬಹುದು. ವೆಬ್‌ಸೈಟ್ ತೆರೆಯಲು ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು ಅವುಗಳನ್ನು ಈಗಲೇ ಬದಲಾಯಿಸಿ.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} ಮುಚ್ಚಿದ ಟ್ಯಾಬ್}one{{count} ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳು}other{{count} ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 ಇತರೆ}one{# ಇತರೆ}other{# ಇತರೆ}}</translation>
 <translation id="8150167929304790980">ಪೂರ್ಣ ಹೆಸರು</translation>
 <translation id="8152331954420209374">Lens ಗೆ ಹೋಗಿ</translation>

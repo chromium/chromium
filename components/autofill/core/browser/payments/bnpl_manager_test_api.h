@@ -54,6 +54,8 @@ class BnplManagerTestApi {
     bnpl_manager_->OnVcnDetailsFetched(result, response_details);
   }
 
+  void Reset() { bnpl_manager_->Reset(); }
+
   BnplManager::OngoingFlowState* GetOngoingFlowState() {
     return bnpl_manager_->ongoing_flow_state_.get();
   }

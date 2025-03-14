@@ -2798,7 +2798,6 @@
 <translation id="2921081876747860777">Стварыце пароль, каб абараніць лакальныя даныя.</translation>
 <translation id="2923006468155067296">Ваша прылада <ph name="DEVICE_TYPE" /> зараз будзе заблакіравана.
 Па правілах дамена <ph name="DOMAIN" /> разумная картка павінна быць устаўлена.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задача ў гэтай групе задач: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задачы ў гэтай групе задач: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задач у гэтай групе задач: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задачы ў гэтай групе задач: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Выдаліць гэты ўліковы запіс</translation>
 <translation id="2923644930701689793">Доступ да галерэі камеры тэлефона</translation>
 <translation id="292371311537977079">Налады Chrome</translation>
@@ -10631,7 +10630,6 @@
 <translation id="8524841856047224176">Персаналізуйце фоны для камеры, якія выкарыстоўваюцца падчас відэавыклікаў і не толькі</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
 <translation id="8525461909394569609">У гэтай праграме ёсць вэб-змесціва з іншых крыніц:</translation>
-<translation id="8526313996927074827">Устаўляйце спасылкі, эмодзі і іншае змесціва, а таксама пішыце тэксты з дапамогай AI ад Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Дынамікі</translation>
 <translation id="8527257351549797148">Для доступу да праграм, пашырэнняў і іншага ваша арганізацыя можа патрабаваць зарэгістравацца. Рэгістрацыя таксама дазваляе арганізацыі кіраваць такімі функцыямі, як налады бяспекі і прылады.</translation>

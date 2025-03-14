@@ -24,10 +24,6 @@ class AccountWidgetUpdater : public SystemIdentityManagerObserver {
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() final;
   void OnIdentityUpdated(id<SystemIdentity> identity) final;
-  void OnIdentityRefreshTokenUpdated(id<SystemIdentity> identity) final;
-  void OnIdentityAccessTokenRefreshFailed(
-      id<SystemIdentity> identity,
-      id<RefreshAccessTokenError> error) final;
 
  private:
   SystemIdentityManager::IteratorResult StoreIdentityDataInDict(

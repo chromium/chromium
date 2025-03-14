@@ -116,7 +116,6 @@ class ScheduledMetricsManager;
 }  // namespace metrics
 
 class BookmarkUpdateManager;
-class DiscountsStorage;
 class ProductSpecificationsServerProxy;
 class ProductSpecificationsService;
 class ShoppingPowerBookmarkDataProvider;
@@ -598,8 +597,6 @@ class ShoppingService : public KeyedService,
                                      DiscountInfoCallback callback,
                                      const std::vector<DiscountsPair>& results);
 
-  void SetDiscountsStorageForTesting(std::unique_ptr<DiscountsStorage> storage);
-
   void GetProductIdentifierForUrl(const GURL& url,
                                   UrlProductIdentifierTupleCallback callback);
 
@@ -658,9 +655,6 @@ class ShoppingService : public KeyedService,
   // The object tracking metrics that are recorded at specific intervals.
   std::unique_ptr<commerce::metrics::ScheduledMetricsManager>
       scheduled_metrics_manager_;
-
-  // The object handling discounts storage.
-  std::unique_ptr<DiscountsStorage> discounts_storage_;
 
   // A consent throttle that will hold callbacks until the specific consent is
   // obtained.

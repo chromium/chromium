@@ -31,7 +31,7 @@ base::OnceClosure PuffOperation(
     scoped_refptr<Patcher> patcher,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
     const std::string& id,
-    const std::string& prev_fp,
+    const std::string& prev_hash,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback);

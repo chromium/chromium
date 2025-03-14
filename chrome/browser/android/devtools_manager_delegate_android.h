@@ -29,7 +29,8 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
       TargetType target_type) override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url,
-      TargetType target_type) override;
+      TargetType target_type,
+      bool new_window) override;
   bool IsBrowserTargetDiscoverable() override;
 };
 

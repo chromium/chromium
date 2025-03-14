@@ -312,7 +312,8 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
 
       // NOTE: We do not check for stream.AtEnd() here, as an empty mf-value is
       // legal.
-      auto exp = MediaQueryExp::Create(feature_name, stream, fake_context_);
+      auto exp = MediaQueryExp::Create(feature_name, stream, fake_context_,
+                                       feature_set.SupportsElementDependent());
       if (exp.IsValid() && stream.AtEnd()) {
         return MakeGarbageCollected<MediaQueryFeatureExpNode>(exp);
       }
@@ -339,7 +340,8 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
       MediaQueryOperator op = ConsumeComparison(stream);
       if (op != MediaQueryOperator::kNone) {
         auto value =
-            MediaQueryExpValue::Consume(feature_name, stream, fake_context_);
+            MediaQueryExpValue::Consume(feature_name, stream, fake_context_,
+                                        feature_set.SupportsElementDependent());
         if (value && stream.AtEnd()) {
           auto left = MediaQueryExpComparison();
           auto right = MediaQueryExpComparison(*value, op);
@@ -390,7 +392,8 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
 
   stream.Restore(start);
   auto value1 =
-      MediaQueryExpValue::Consume(feature_name, stream, fake_context_);
+      MediaQueryExpValue::Consume(feature_name, stream, fake_context_,
+                                  feature_set.SupportsElementDependent());
   if (!value1) {
     return nullptr;
   }
@@ -427,7 +430,8 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
   }
 
   auto value2 =
-      MediaQueryExpValue::Consume(feature_name, stream, fake_context_);
+      MediaQueryExpValue::Consume(feature_name, stream, fake_context_,
+                                  feature_set.SupportsElementDependent());
   if (!value2) {
     return nullptr;
   }

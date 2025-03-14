@@ -70,4 +70,7 @@ BASE_DECLARE_FEATURE(kLensPrewarmHardStickinessInQueryFormulation);
 // Whether to enable the fetch srp API.
 BASE_DECLARE_FEATURE(kLensFetchSrpApiEnabled);
 
+// Whether to enable the QR parsing code fix.
+BASE_DECLARE_FEATURE(kLensQRCodeParsingFix);
+
 #endif  // IOS_CHROME_BROWSER_LENS_UI_BUNDLED_FEATURES_H_

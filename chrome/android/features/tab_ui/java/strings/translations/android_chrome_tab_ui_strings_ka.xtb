@@ -136,7 +136,7 @@
 <translation id="6193448654517602979">აირჩიეთ ჩანართები</translation>
 <translation id="6228793724645064692">(მაღაზიის შეფასება)</translation>
 <translation id="6271513594716432922">ყველა უმოქმედო ჩანართის დახურვა</translation>
-<translation id="6313830465749181217">{TABS_COUNT,plural, =1{ჩანართის დამატება ახალ ჯგუფში}other{ჩანართების დამატება ახალ ჯგუფში}}</translation>
+<translation id="6313830465749181217">{TABS_COUNT,plural, =1{ჩანართის დამატება ახალ ჯგუფში}other{ჩანართის დამატება ახალ ჯგუფში}}</translation>
 <translation id="6333260925957816943">ინფორმაცია ამ მაღაზიის შესახებ</translation>
 <translation id="6381032505162537930">თქვენს ჩანართების ჯგუფებს აქ ნახავთ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{გააუქმეთ <ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{გააუქმეთ <ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>
@@ -189,11 +189,12 @@
 <translation id="799469866974412355">ახალი ჯგუფი თქვენი სხვა მოწყობილობიდან</translation>
 <translation id="8029301326595421733">ამ მაღაზიის შესახებ ინფორმაცია გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="8053770993984522566">ჩანართების ჯგუფების სია, გახსნილია ნახევარ სიმაღლეზე</translation>
-<translation id="805809603610022708">{TABS_COUNT,plural, =1{ჩანართის დამატება ჯგუფში}other{ჩანართების დამატება ჯგუფში}}</translation>
+<translation id="805809603610022708">{TABS_COUNT,plural, =1{ჩანართის დამატება ჯგუფში}other{ჩანართის დამატება ჯგუფში}}</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის ჯგუფი „<ph name="TITLE_OF_GROUP" />“.}}</translation>
 <translation id="8205266828577616993">ჩანართის ზემოთ გადატანა</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{განახლდა <ph name="NUM_MINS_ONE" /> წუთის წინ}other{განახლდა <ph name="NUM_MINS_MANY" /> წუთის წინ}}</translation>
+<translation id="8236097722223016103">სანიშნეებში დამატება</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="8338427544764842461">თქვენი ჩანართების ჯგუფები აქ ინახება და განახლდება სისტემაში შესულ ყველა მოწყობილობაში</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის გაზიარებული ჯგუფი.}other{გააფართოვეთ ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი <ph name="COLOR_NAME" /> ფერის გაზიარებული ჯგუფი.}}</translation>

@@ -46,7 +46,9 @@ base::OnceClosure RunAction(
     const std::string& file,
     const std::string& session_id,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
     ActionHandler::Callback callback) {
+  state_tracker.Run(ComponentState::kRun);
   if (!handler) {
     DVLOG(1) << file << " is missing an action handler";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

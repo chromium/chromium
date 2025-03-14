@@ -75,6 +75,8 @@ std::u16string GetArrowName(BubbleBorder::Arrow arrow) {
   return u"INVALID";
 }
 
+}  // namespace
+
 class ExampleBubble : public BubbleDialogDelegateView {
   METADATA_HEADER(ExampleBubble, BubbleDialogDelegateView)
 
@@ -98,8 +100,6 @@ class ExampleBubble : public BubbleDialogDelegateView {
 
 BEGIN_METADATA(ExampleBubble)
 END_METADATA
-
-}  // namespace
 
 BubbleExample::BubbleExample() : ExampleBase("Bubble") {}
 

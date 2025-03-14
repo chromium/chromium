@@ -21,10 +21,10 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.components.input.InputUtils;
 import org.chromium.content_public.browser.InputTransferHandler;
 import org.chromium.content_public.browser.SurfaceInputTransferHandlerMap;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.InputUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /***

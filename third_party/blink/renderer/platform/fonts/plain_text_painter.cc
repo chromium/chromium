@@ -97,7 +97,7 @@ bool PlainTextPainter::DrawWithBidiReorder(
           : ShapeResultBloberizer::Type::kEmitText;
   const FontDescription& font_desc = font.GetFontDescription();
 
-  if (!is_sub_run) [[likely]] {
+  if (!is_sub_run && !node.ContainsRtlItems()) [[likely]] {
     STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
         font_desc, node, blob_type);
     DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);

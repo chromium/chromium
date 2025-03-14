@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
+#include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -424,10 +425,12 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
 
 MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
                                     CSSParserTokenStream& stream,
-                                    const CSSParserContext& context) {
-  if (auto value =
-          MediaQueryExpValue::Consume(media_feature, stream, context)) {
-    return MediaQueryExp(media_feature, *value);
+                                    const CSSParserContext& context,
+                                    bool supports_element_dependent) {
+  std::optional<MediaQueryExpValue> value = MediaQueryExpValue::Consume(
+      media_feature, stream, context, supports_element_dependent);
+  if (value.has_value()) {
+    return MediaQueryExp(media_feature, value.value());
   }
   return Invalid();
 }
@@ -435,7 +438,8 @@ MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
 std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
     const String& media_feature,
     CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    bool supports_element_dependent) {
   CSSParserContext::ParserModeOverridingScope scope(context, kHTMLStandardMode);
 
   if (CSSVariableParser::IsValidVariableName(media_feature)) {
@@ -480,6 +484,10 @@ std::optional<MediaQueryExpValue> MediaQueryExpValue::Consume(
       }
       return MediaQueryExpValue(ident_id);
     }
+    return std::nullopt;
+  }
+
+  if (!supports_element_dependent && value->IsElementDependent()) {
     return std::nullopt;
   }
 

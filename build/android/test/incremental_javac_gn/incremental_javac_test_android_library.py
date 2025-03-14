@@ -119,6 +119,7 @@ def main():
       'treat_warnings_as_errors = true',
       # reclient does not work with non-standard output directories.
       'use_remoteexec = false',
+      'use_reclient = false',
       # Do not use fast_local_dev_server.py.
       'android_static_analysis = "on"',
   ]

@@ -850,6 +850,12 @@ Same as av1-I-frame-320x240 with --monochrome and -b=[8,10,12] aomenc options.
 #### av1-I-frame-320x240-agtm
 Same as av1-I-frame-320x240 but with an AGTM ITU_T35 metadata OBU added.
 
+#### av1-I-frame-320x240-agtm.ivf
+Created by converting av1-I-frame-320x240-agtm (raw OBU) to IVF:
+```
+ffmpeg -i av1-I-frame-320x240-agtm -c:v copy av1-I-frame-320x240-agtm.ivf
+```
+
 #### bear-av1-cenc.mp4
 Encrypted version of bear-av1.mp4. Encrypted by [Shaka Packager] built locally
 at commit 53aa775ea488c0ffd3a2e1cb78ad000154e414e1 using key ID [1] and key [2].

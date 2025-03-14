@@ -19,13 +19,6 @@ namespace android_ui_test_utils {
 void OpenUrlInNewTab(BrowserContext* context,
                      WebContents* parent,
                      const GURL& url) {
-  OpenUrlInNewTab(context, parent, url, url);
-}
-
-void OpenUrlInNewTab(BrowserContext* context,
-                     WebContents* parent,
-                     const GURL& url,
-                     const GURL& expected_commit_url) {
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(parent);
   ASSERT_EQ(parent, tab_model->GetActiveWebContents());
   int tab_count = tab_model->GetTabCount();
@@ -38,8 +31,7 @@ void OpenUrlInNewTab(BrowserContext* context,
   tab_model->CreateTab(TabAndroid::FromWebContents(parent), second_web_contents,
                        /*select=*/true);
 
-  ASSERT_TRUE(
-      content::NavigateToURL(second_web_contents, url, expected_commit_url));
+  ASSERT_TRUE(content::NavigateToURL(second_web_contents, url));
   ASSERT_EQ(tab_count + 1, tab_model->GetTabCount());
   ASSERT_NE(parent, second_web_contents);
   ASSERT_EQ(second_web_contents, tab_model->GetActiveWebContents());

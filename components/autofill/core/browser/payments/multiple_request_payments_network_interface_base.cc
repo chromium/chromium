@@ -4,18 +4,24 @@
 
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface_base.h"
 
+#include <memory>
+#include <string>
+
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/payments/account_info_getter.h"
+#include "components/autofill/core/browser/payments/payments_access_token_fetcher.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
-#include "components/signin/public/identity_manager/access_token_fetcher.h"
-#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -27,11 +33,62 @@ namespace autofill::payments {
 
 namespace {
 
-using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
-
-constexpr char kTokenFetchId[] = "wallet_client";
-constexpr char kPaymentsOAuth2Scope[] =
-    "https://www.googleapis.com/auth/wallet.chrome";
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("payments_autofill", R"(
+        semantics {
+          sender: "Payments"
+          description:
+            "This service communicates with Google Payments servers to "
+            "save/retrieve the user's payment methods (e.g., credit cards, "
+            "IBANs) as well as facilitate payments for Pix QR codes."
+          trigger:
+            "Requests are triggered by a user action, such as selecting a "
+            "masked server card from Chromium's credit card autofill dropdown, "
+            "submitting a form which has credit card information, or accepting "
+            "the prompt to save a credit card to Payments servers."
+          data:
+            "In case of save, a protocol buffer containing relevant address, "
+            "credit card and nickname information which should be saved in "
+            "Google Payments servers, along with user credentials. In case of "
+            "load, a protocol buffer containing the id of the credit card to "
+            "unmask, an encrypted cvc value, an optional updated card "
+            "expiration date, and user credentials. For virtual card numbers, "
+            "the merchant domain and last 4 digits of cards are extracted from "
+            "the web page. For virtual card verification, OTP and 3CSC etc "
+            "are collected from the user and sent to Google Payments servers. "
+            "For Pix, the QR code detected from the web page is sent to Google "
+            "Payments servers. User agent is sent to Google Payments servers "
+            "to determine the platform and return the corresponding response."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts: {
+                email: "payments-autofill-team@google.com"
+            }
+          }
+          user_data {
+            type: USER_CONTENT
+            type: CREDIT_CARD_DATA
+            type: SENSITIVE_URL
+            type: PROFILE_DATA
+            type: WEB_CONTENT
+            type: GAIA_ID
+          }
+          last_reviewed: "2025-02-24"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can enable or disable this feature in Chromium settings by "
+            "toggling 'Credit cards and addresses using Google Payments', "
+            "under 'Advanced sync settings...'. This feature is enabled by "
+            "default."
+          chrome_policy {
+            AutoFillEnabled {
+              policy_options {mode: MANDATORY}
+              AutoFillEnabled: false
+            }
+          }
+        })");
 
 GURL GetRequestUrl(const std::string& path) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("sync-url")) {
@@ -53,73 +110,102 @@ GURL GetRequestUrl(const std::string& path) {
 
 }  // namespace
 
-MultipleRequestPaymentsNetworkInterfaceBase::
-    MultipleRequestPaymentsNetworkInterfaceBase(
-        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        signin::IdentityManager* identity_manager,
-        AccountInfoGetter* account_info_getter,
-        bool is_off_the_record)
-    : url_loader_factory_(url_loader_factory),
-      identity_manager_(identity_manager),
-      account_info_getter_(account_info_getter),
-      is_off_the_record_(is_off_the_record) {}
+MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::RequestOperation(
+    std::unique_ptr<PaymentsRequest> request,
+    MultipleRequestPaymentsNetworkInterfaceBase& payments_network_interface)
+    : request_(std::move(request)),
+      payments_network_interface_(payments_network_interface),
+      token_fetcher_(PaymentsAccessTokenFetcher(
+          payments_network_interface.identity_manager())) {}
 
-MultipleRequestPaymentsNetworkInterfaceBase::
-    ~MultipleRequestPaymentsNetworkInterfaceBase() = default;
+MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
+    ~RequestOperation() = default;
 
-void MultipleRequestPaymentsNetworkInterfaceBase::CancelRequest() {
-  request_.reset();
-  resource_request_.reset();
-  simple_url_loader_.reset();
-  token_fetcher_.reset();
-  access_token_.clear();
+const RequestId& MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
+    StartOperation() {
+  request_operation_id_ =
+      RequestId(base::Uuid::GenerateRandomV4().AsLowercaseString());
   has_retried_authorization_ = false;
+  token_fetcher_.GetAccessToken(
+      /*invalidate_old=*/false,
+      base::BindOnce(&MultipleRequestPaymentsNetworkInterfaceBase::
+                         RequestOperation::AccessTokenFetchFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+  return request_operation_id_;
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::
-    set_url_loader_factory_for_testing(
-        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  url_loader_factory_ = std::move(url_loader_factory);
-}
-
-void MultipleRequestPaymentsNetworkInterfaceBase::set_access_token_for_testing(
-    std::string access_token) {
-  access_token_ = access_token;
-}
-
-void MultipleRequestPaymentsNetworkInterfaceBase::IssueRequest(
-    std::unique_ptr<PaymentsRequest> request) {
-  request_ = std::move(request);
-  has_retried_authorization_ = false;
-
-  InitializeResourceRequest();
-
-  if (access_token_.empty()) {
-    StartTokenFetch(false);
-  } else {
-    SetOAuth2TokenAndStartRequest();
+void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
+    AccessTokenFetchFinished(
+        const absl::variant<GoogleServiceAuthError, std::string>& result) {
+  if (absl::holds_alternative<GoogleServiceAuthError>(result)) {
+    GoogleServiceAuthError error = absl::get<GoogleServiceAuthError>(result);
+    VLOG(1) << "Unhandled access token error: " << error.ToString();
+    if (simple_url_loader_) {
+      simple_url_loader_.reset();
+    }
+    ReportOperationResult(PaymentsRpcResult::kPermanentFailure);
+    return;
   }
+
+  auto access_token = absl::get<std::string>(result);
+  SetAccessTokenAndStartRequest(access_token);
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::InitializeResourceRequest() {
-  resource_request_ = std::make_unique<network::ResourceRequest>();
-  resource_request_->url = GetRequestUrl(request_->GetRequestUrlPath());
-  resource_request_->load_flags = net::LOAD_DISABLE_CACHE;
-  resource_request_->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  resource_request_->method = "POST";
+void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
+    SetAccessTokenAndStartRequest(const std::string& access_token) {
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      InitializeResourceRequest();
+  // Set access token:
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                      std::string("Bearer ") + access_token);
+
+  // Start request:
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), kTrafficAnnotation);
+  simple_url_loader_->AttachStringForUpload(request_->GetRequestContent(),
+                                            request_->GetRequestContentType());
+
+  // Some request types specify a client-side timeout, in order to provide a
+  // better user experience (e.g., avoid the user being unnecessarily blocked).
+  //
+  // The sandbox server is significantly slower than prod, so we never set a
+  // client-side timeout when using sandbox, even if the request specifies one.
+  if (request_->GetTimeout().has_value() && IsPaymentsProductionEnabled()) {
+    CHECK(request_->GetTimeout()->is_positive());
+    simple_url_loader_->SetTimeoutDuration(*request_->GetTimeout());
+  }
+
+  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      payments_network_interface_->url_loader_factory(),
+      base::BindOnce(&MultipleRequestPaymentsNetworkInterfaceBase::
+                         RequestOperation::OnSimpleLoaderComplete,
+                     base::Unretained(this)));
+}
+
+std::unique_ptr<network::ResourceRequest>
+MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
+    InitializeResourceRequest() {
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      std::make_unique<network::ResourceRequest>();
+  resource_request->url = GetRequestUrl(request_->GetRequestUrlPath());
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->method = "POST";
 
   // Add Chrome experiment state to the request headers.
   net::HttpRequestHeaders headers;
   // User is always signed-in to be able to upload card to Google Payments.
   variations::AppendVariationsHeader(
-      resource_request_->url,
-      is_off_the_record_ ? variations::InIncognito::kYes
-                         : variations::InIncognito::kNo,
-      variations::SignedIn::kYes, resource_request_.get());
+      resource_request->url,
+      payments_network_interface_->is_off_the_record()
+          ? variations::InIncognito::kYes
+          : variations::InIncognito::kNo,
+      variations::SignedIn::kYes, resource_request.get());
+  return resource_request;
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
+    OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body) {
   int response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
@@ -137,7 +223,7 @@ void MultipleRequestPaymentsNetworkInterfaceBase::OnSimpleLoaderComplete(
   OnSimpleLoaderCompleteInternal(response_code, data);
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::
+void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
     OnSimpleLoaderCompleteInternal(int response_code, const std::string& data) {
   VLOG(2) << "Got data: " << data;
 
@@ -217,13 +303,14 @@ void MultipleRequestPaymentsNetworkInterfaceBase::
       }
       has_retried_authorization_ = true;
 
-      InitializeResourceRequest();
-      StartTokenFetch(true);
+      token_fetcher_.GetAccessToken(
+          /*invalidate_old=*/true,
+          base::BindOnce(&MultipleRequestPaymentsNetworkInterfaceBase::
+                             RequestOperation::AccessTokenFetchFinished,
+                         weak_ptr_factory_.GetWeakPtr()));
       return;
     }
 
-    // TODO(estade): is this actually how network connectivity issues are
-    // reported?
     case net::HTTP_REQUEST_TIMEOUT: {
       result = PaymentsRpcResult::kNetworkError;
       break;
@@ -249,148 +336,48 @@ void MultipleRequestPaymentsNetworkInterfaceBase::
             << " with data: " << data;
   }
 
+  ReportOperationResult(result);
+}
+
+void MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation::
+    ReportOperationResult(PaymentsRpcResult result) {
   request_->RespondToDelegate(result);
+  payments_network_interface_->OnRequestFinished(request_operation_id_);
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::AccessTokenFetchFinished(
-    GoogleServiceAuthError error,
-    signin::AccessTokenInfo access_token_info) {
-  DCHECK(token_fetcher_);
-  token_fetcher_.reset();
+MultipleRequestPaymentsNetworkInterfaceBase::
+    MultipleRequestPaymentsNetworkInterfaceBase(
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+        signin::IdentityManager& identity_manager,
+        bool is_off_the_record)
+    : url_loader_factory_(url_loader_factory),
+      identity_manager_(identity_manager),
+      is_off_the_record_(is_off_the_record) {}
 
-  if (error.state() != GoogleServiceAuthError::NONE) {
-    AccessTokenError(error);
-    return;
-  }
+MultipleRequestPaymentsNetworkInterfaceBase::
+    ~MultipleRequestPaymentsNetworkInterfaceBase() = default;
 
-  access_token_ = access_token_info.token;
-  if (resource_request_) {
-    SetOAuth2TokenAndStartRequest();
-  }
+RequestId MultipleRequestPaymentsNetworkInterfaceBase::IssueRequest(
+    std::unique_ptr<PaymentsRequest> request) {
+  auto operation =
+      std::make_unique<RequestOperation>(std::move(request), *this);
+  RequestId id = operation->StartOperation();
+  operations_[id] = std::move(operation);
+  return id;
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::AccessTokenError(
-    const GoogleServiceAuthError& error) {
-  VLOG(1) << "Unhandled OAuth2 error: " << error.ToString();
-  if (simple_url_loader_) {
-    simple_url_loader_.reset();
-  }
-  if (request_) {
-    request_->RespondToDelegate(PaymentsRpcResult::kPermanentFailure);
-  }
+void MultipleRequestPaymentsNetworkInterfaceBase::CancelRequests() {
+  operations_.clear();
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::StartTokenFetch(
-    bool invalidate_old) {
-  // We're still waiting for the last request to come back.
-  if (!invalidate_old && token_fetcher_) {
-    return;
-  }
-
-  DCHECK(account_info_getter_);
-
-  signin::ScopeSet payments_scopes;
-  payments_scopes.insert(kPaymentsOAuth2Scope);
-  CoreAccountId account_id =
-      account_info_getter_->GetAccountInfoForPaymentsServer().account_id;
-  if (invalidate_old) {
-    DCHECK(!access_token_.empty());
-    identity_manager_->RemoveAccessTokenFromCache(account_id, payments_scopes,
-                                                  access_token_);
-  }
-  access_token_.clear();
-  token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
-      account_id, kTokenFetchId, payments_scopes,
-      base::BindOnce(&MultipleRequestPaymentsNetworkInterfaceBase::
-                         AccessTokenFetchFinished,
-                     base::Unretained(this)),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+void MultipleRequestPaymentsNetworkInterfaceBase::CancelRequestWithId(
+    const RequestId& id) {
+  operations_.erase(id);
 }
 
-void MultipleRequestPaymentsNetworkInterfaceBase::
-    SetOAuth2TokenAndStartRequest() {
-  // Set OAuth2 token:
-  DCHECK(resource_request_);
-  resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                                       std::string("Bearer ") + access_token_);
-
-  // Start request:
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("payments_autofill", R"(
-        semantics {
-          sender: "Payments"
-          description:
-            "This service communicates with Google Payments servers to "
-            "save/retrieve the user's payment methods (e.g., credit cards, "
-            "IBANs) as well as facilitate payments for Pix QR codes."
-          trigger:
-            "Requests are triggered by a user action, such as selecting a "
-            "masked server card from Chromium's credit card autofill dropdown, "
-            "submitting a form which has credit card information, or accepting "
-            "the prompt to save a credit card to Payments servers."
-          data:
-            "In case of save, a protocol buffer containing relevant address, "
-            "credit card and nickname information which should be saved in "
-            "Google Payments servers, along with user credentials. In case of "
-            "load, a protocol buffer containing the id of the credit card to "
-            "unmask, an encrypted cvc value, an optional updated card "
-            "expiration date, and user credentials. For virtual card numbers, "
-            "the merchant domain and last 4 digits of cards are extracted from "
-            "the web page. For virtual card verification, OTP and 3CSC etc "
-            "are collected from the user and sent to Google Payments servers. "
-            "For Pix, the QR code detected from the web page is sent to Google "
-            "Payments servers. User agent is sent to Google Payments servers "
-            "to determine the platform and return the corresponding response."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts: {
-                email: "payments-autofill-team@google.com"
-            }
-          }
-          user_data {
-            type: USER_CONTENT
-            type: CREDIT_CARD_DATA
-            type: SENSITIVE_URL
-            type: PROFILE_DATA
-            type: WEB_CONTENT
-            type: GAIA_ID
-          }
-          last_reviewed: "2025-02-24"
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "Users can enable or disable this feature in Chromium settings by "
-            "toggling 'Credit cards and addresses using Google Payments', "
-            "under 'Advanced sync settings...'. This feature is enabled by "
-            "default."
-          chrome_policy {
-            AutoFillEnabled {
-              policy_options {mode: MANDATORY}
-              AutoFillEnabled: false
-            }
-          }
-        })");
-  simple_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request_), traffic_annotation);
-  simple_url_loader_->AttachStringForUpload(request_->GetRequestContent(),
-                                            request_->GetRequestContentType());
-
-  // Some request types specify a client-side timeout, in order to provide a
-  // better user experience (e.g., avoid the user being unnecessarily blocked).
-  //
-  // The sandbox server is significantly slower than prod, so we never set a
-  // client-side timeout when using sandbox, even if the request specifies one.
-  if (request_->GetTimeout().has_value() && IsPaymentsProductionEnabled()) {
-    CHECK(request_->GetTimeout()->is_positive());
-    simple_url_loader_->SetTimeoutDuration(*request_->GetTimeout());
-  }
-
-  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory_.get(),
-      base::BindOnce(
-          &MultipleRequestPaymentsNetworkInterfaceBase::OnSimpleLoaderComplete,
-          base::Unretained(this)));
+void MultipleRequestPaymentsNetworkInterfaceBase::OnRequestFinished(
+    RequestId& id) {
+  operations_.erase(id);
 }
 
 }  // namespace autofill::payments

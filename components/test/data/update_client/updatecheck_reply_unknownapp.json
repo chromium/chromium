@@ -1,7 +1,7 @@
 )]}'
 {"response":{
- "protocol":"3.1",
- "app":[
+ "protocol":"4.0",
+ "apps":[
   {"appid":"jebgalgnebhfojomionfpkfelancnnkf",
    "status":"error-unknownApplication"
   }

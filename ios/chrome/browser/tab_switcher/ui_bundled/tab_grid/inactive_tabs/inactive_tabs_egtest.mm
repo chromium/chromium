@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -32,22 +33,14 @@ using chrome_test_util::BackButton;
 using chrome_test_util::CancelButton;
 using chrome_test_util::CloseTabMenuButton;
 using chrome_test_util::CopyActivityButton;
+using chrome_test_util::InactiveTabGrid;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::ShareButton;
+using chrome_test_util::TabGridInactiveTabsButton;
 using chrome_test_util::TabGridSearchBar;
 using chrome_test_util::TabGridSearchTabsButton;
 
 namespace {
-
-// Matcher for the Inactive Tabs button.
-id<GREYMatcher> GetMatcherForInactiveTabsButton() {
-  return grey_accessibilityID(kInactiveTabsButtonAccessibilityIdentifier);
-}
-
-// Matcher for the Inactive Tabs grid.
-id<GREYMatcher> GetMatcherForInactiveTabsGrid() {
-  return grey_accessibilityID(kInactiveTabGridIdentifier);
-}
 
 // Matcher for the Close All Inactive button in the Inactive Tabs grid.
 id<GREYMatcher> GetMatcherForCloseAllInactiveButton() {
@@ -124,10 +117,9 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // Ensure that inactive tabs preference settings is set to its default state.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   GREYAssertEqual(
-      0,
-      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      0, [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
       @"Inactive tabs preference is not set to default value.");
 
   // Mark the User Education screen as already-seen by default.
@@ -179,7 +171,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // The Inactive Tabs button should not be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_notVisible()];
 
   // There should be no inactive tab.
@@ -210,7 +202,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // The Inactive Tabs button should be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // There should be one inactive tab.
@@ -241,7 +233,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // The Inactive Tabs button should be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // There should be one inactive tab.
@@ -259,7 +251,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // The Inactive Tabs button should not be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_notVisible()];
 
   // There should be no inactive tab.
@@ -285,7 +277,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // The Inactive Tabs button should not be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_notVisible()];
 
   // There should be no inactive tab.
@@ -340,7 +332,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // Tap on the inactive tab.
@@ -375,7 +367,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // Long press the tab.
@@ -412,7 +404,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -445,7 +437,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // Long press the tab.
@@ -486,7 +478,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // Long press the tab.
@@ -530,7 +522,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // Long press the tab.
@@ -575,7 +567,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 3");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // Tab the Close All Inactive button.
@@ -583,10 +575,9 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       performAction:grey_tap()];
 
   if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap outside of the context menu (on the button it originates from) to
-    // cancel it.
-    [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
-        performAction:grey_tapAtPoint(CGPointMake(20, 20))];
+    // Tap outside of the context menu to cancel it.
+    [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
+        performAction:grey_tap()];
   } else {
     // Tap Cancel.
     [[EarlGrey selectElementWithMatcher:CancelButton()]
@@ -618,11 +609,11 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 0");
 
   // The Inactive Tabs grid should no longer be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsGrid()]
+  [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
       assertWithMatcher:grey_notVisible()];
 
   // The Inactive Tabs button should not be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -644,7 +635,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
                  @"Inactive tab count should be 1");
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // Tap on the settings link from the preamble.
@@ -660,7 +651,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       performAction:grey_tap()];
 
   // The Inactive Tabs grid should be visible again.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsGrid()]
+  [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
       assertWithMatcher:grey_notVisible()];
@@ -674,7 +665,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // There should be one inactive tab, and the active NTP.
@@ -696,7 +687,42 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       performAction:grey_tap()];
 
   // The Inactive Tabs grid should no longer be visible.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsGrid()]
+  [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
+      assertWithMatcher:grey_notVisible()];
+
+  // There should be no inactive tab, just 2 active tabs.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
+                 @"Main tab count should be 2");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tab count should be 0");
+}
+
+// Checks that changing settings from another window updates the regular grid.
+- (void)testSettingsChangesInBackgroundUpdates {
+  CreateRegularTabs(1, self.testServer);
+  [self relaunchAppWithInactiveTabsTestMode];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that the Inactive Tabs button is present.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // There should be one inactive tab, and the active NTP.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Main tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 1,
+                 @"Inactive tab count should be 1");
+
+  // Simulate disabling Inactive Tabs from another window.
+  [ChromeEarlGrey setIntegerValue:kInactiveTabsDisabledByUser
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
+
+  // The Inactive Tabs button should no longer be visible.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_notVisible()];
 
   // There should be no inactive tab, just 2 active tabs.
@@ -719,7 +745,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // The Inactive Tabs count should be appended at the end of the button's
   // label.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_accessibilityLabel(
                             @"Inactive tabs, Tabs not used for 0 days, 3")];
 }
@@ -737,7 +763,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // The user education screen is shown.
@@ -749,7 +775,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:testing::NavigationBarBackButton()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // The user education screen is not shown.
@@ -768,7 +794,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Enter the Inactive Tabs grid.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsButton()]
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       performAction:grey_tap()];
 
   // The user education screen is shown.

@@ -618,6 +618,7 @@ if (current_toolchain == default_toolchain) {
       "//components/infobars/android:infobar_android_enums_java",
       "//components/infobars/android:java",
       "//components/infobars/core:infobar_enums_java",
+      "//components/input/android:java",
       "//components/installedapp/android:java",
       "//components/javascript_dialogs/android:java",
       "//components/language/android:java",

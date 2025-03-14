@@ -2453,11 +2453,6 @@ Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="BLOCK_POPUPS_POLI
 <translation id="2812417768214606683">Durch diese Richtlinie wird eine Liste von USB-Speichergeräten festgelegt, die von den Richtlinien „<ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" />“ und „<ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />“ ausgenommen sind.
 
 Die Einträge bestehen aus der ID des USB-Herstellers und der Produkt‑ID des jeweiligen USB-Gerätemodells.</translation>
-<translation id="2815701930753942156">Durch diese Richtlinie wird eine Liste von wöchentlichen Intervallen festgelegt, in denen das <ph name="PRODUCT_OS_NAME" />‑Gerät nicht verwendet werden kann. Alle laufenden Sitzungen werden geschlossen und die Anmeldung wird vorübergehend blockiert.
-
-Intervalle, die sich überschneiden, werden nicht unterstützt.
-
-<ph name="PRODUCT_OS_NAME" />‑Geräte verwenden für diese Intervalle die Systemzeitzone.</translation>
 <translation id="2816964824289752181"><ph name="DESK_API_NAME" /> für <ph name="PRODUCT_OS_NAME" />-Steuerung über Drittanbieter aktivieren</translation>
 <translation id="2818074121667686266">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird beim Zugriff für Audioaufnahmen beim Nutzer nachgefragt. Ausgenommen sind URLs in der Liste "AudioCaptureAllowedUrls".
 
@@ -5697,6 +5692,11 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
       Wenn die Richtlinie nicht konfiguriert ist, gilt der standardmäßige Zeitraum von 604.800.000 Millisekunden (eine Woche).</translation>
 <translation id="5212810195096589189">Berechtigung für VM-Befehlszeile festlegen</translation>
 <translation id="5213038356678567351">Websites, die unter keinen Umständen einen Browserwechsel auslösen sollten.</translation>
+<translation id="5216520638921067085">Gibt das Mindestalter für einen Release an, bei dessen Überschreitung die Benachrichtigungen zum Neustart aufdringlicher werden. Das Alter wird ab dem Zeitpunkt berechnet, zu dem die aktuell ausgeführte Version zuletzt an Clients ausgeliefert wurde.
+
+Wenn eine neue Version aussteht, ein Browser oder ein Gerät neu gestartet werden muss und die aktuelle Version länger als die in dieser Einstellung angegebene Anzahl von Tagen veraltet ist, wird die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />“ überschrieben und auf 2 Stunden gesetzt. Wenn die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" />“ auf 1 (erforderlich) festgelegt ist, müssen Nutzer am Ende des Zeitraums einen Neustart durchführen.
+
+Wenn die Richtlinie nicht konfiguriert ist oder das Alter des Release nicht ermittelt werden kann, wird die Richtlinie „<ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />“ für alle Updates verwendet.</translation>
 <translation id="5216815237712190041">Du kannst ein Hintergrundbild auf Geräteebene konfigurieren, das auf dem Anmeldebildschirm angezeigt wird, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Zum Festlegen der Richtlinie muss die URL, über die das Chrome OS-Gerät das Hintergrundbild herunterladen kann, sowie ein kryptografischer Hash angegeben werden, um die Integrität des Downloads zu verifizieren. Das Bild muss im JPEG-Format vorliegen und darf nicht größer als 16 MB sein. Der Zugriff auf die URL muss ohne Authentifizierung möglich sein. Das Hintergrundbild wird heruntergeladen und im Cache gespeichert. Immer, wenn sich die URL oder der Hash ändert, wird es noch einmal heruntergeladen.
 
       Ist die Richtlinie für den Gerätehintergrund konfiguriert, lädt das Chrome OS-Gerät das Hintergrundbild herunter und zeigt es auf dem Anmeldebildschirm an, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Sobald sich der Nutzer anmeldet, wird seine Hintergrundrichtlinie wirksam.
@@ -6774,6 +6774,7 @@ Ist die Richtlinie auf „<ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VALUE" />
 
       Wenn die Kompatibilität mit einem fehlerträchtigen Server aufrechterhalten werden muss, kann „tls1.1“ eingestellt werden. Dies ist aber nur eine provisorische Maßnahme und der Server sollte schnell repariert werden.</translation>
 <translation id="5932767795525445337">Diese Richtlinie kann auch verwendet werden, um Android-Apps anzupinnen.</translation>
+<translation id="5936192285609409992">Rechner (wird seit Version 136 unterstützt)</translation>
 <translation id="5936193585187054065">Encrypted ClientHello (ECH) ist eine Erweiterung für TLS, um vertrauliche Felder von ClientHello zu verschlüsseln und den Datenschutz zu verbessern.
 
       Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, folgt <ph name="PRODUCT_NAME" /> dem standardmäßigen Einführungsprozess für ECH. Ist die Richtlinie deaktiviert, wird ECH von <ph name="PRODUCT_NAME" /> nicht aktiviert.
@@ -7256,6 +7257,7 @@ Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern (ab Ver
 <translation id="6287128640500683781">Anmeldung für alle Nutzer zulassen</translation>
 <translation id="6287310684159482272">Cookie-Einstellungen</translation>
 <translation id="6287742528823584153">Den Dienst „<ph name="PRODUCT_NAME" />“ aktivieren und Remote-Desktop nach der Anmeldung starten</translation>
+<translation id="6288152932495466841">Nutzer über veraltete Browserversionen benachrichtigen</translation>
 <translation id="6299147100249359151">Lässt die Erkennung des Anwendungsbereichs von Richtlinien zu.</translation>
 <translation id="6299554629216555326">Einstellungen für die Fensterverwaltung</translation>
 <translation id="6302021021024941085">Kiosk-Tools zur Fehlerbehebung deaktivieren.</translation>
@@ -7454,7 +7456,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Standardwert für Unternehmensnutzer deaktiviert. Für nicht verwaltete Konten wird er aktiviert.</translation>
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
-<translation id="6402928885627067154">Wöchentliche Intervalle festlegen, in denen ChromeOS‑Geräte nicht verwendet werden können</translation>
 <translation id="6403114173011456561">Steuert die Touch-Bildschirmtastatur und ist eine Ergänzung zur Richtlinie <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Wenn die Bedienungshilfe „Bildschirmtastatur“ aktiviert ist, hat diese Richtlinie keine Auswirkungen.
@@ -11129,6 +11130,7 @@ Hinweis: Durch einen Neustart des Geräts wird der Cache geleert. Auch für Nutz
 <translation id="9107635531763682565">Wenn die Richtlinie auf „1“ gesetzt ist, können Websites Desktop-Benachrichtigungen anzeigen. Ist die Richtlinie auf „2“ gesetzt, werden Desktop-Benachrichtigungen blockiert.
 
 Wenn sie nicht konfiguriert ist, gilt die Richtlinie <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="9107664925383184344">Zeitraum (Tage)</translation>
 <translation id="910929592571075861">Blob-URLs werden beim Abrufen und Navigieren nicht partitioniert.</translation>
 <translation id="9110194749335632373">Verbindungen zu diesem Computer per Remote-Zugriff von Unternehmensadministratoren verhindern</translation>
 <translation id="9110198768621013941">Mit dieser Richtlinie werden die Einstellungen für Autofill-Vorschläge aktiviert.

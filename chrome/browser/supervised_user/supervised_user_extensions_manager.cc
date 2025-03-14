@@ -159,11 +159,14 @@ bool SupervisedUserExtensionsManager::IsExtensionAllowed(
 bool SupervisedUserExtensionsManager::CanInstallExtensions() const {
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForBrowserContext(context_);
+  bool has_custodian = supervised_user_service->GetCustodian() ||
+                       supervised_user_service->GetSecondCustodian();
+
   if (supervised_user::
           IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled()) {
-    return supervised_user_service->HasACustodian();
+    return has_custodian;
   }
-  return supervised_user_service->HasACustodian() &&
+  return has_custodian &&
          user_prefs_->GetBoolean(
              prefs::kSupervisedUserExtensionsMayRequestPermissions);
 }

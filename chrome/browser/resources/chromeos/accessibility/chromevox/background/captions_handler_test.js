@@ -28,3 +28,19 @@ AX_TEST_F('ChromeVoxCaptionsHandlerTest', 'Open', function() {
   CaptionsHandler.open();
   assertEquals(0, liveCaptionEnabledCount);
 });
+
+AX_TEST_F('ChromeVoxCaptionsHandlerTest', 'RangeObserver', async function() {
+  const root =
+      await this.runWithLoadedTree('<button>Hello</button><p>World</p>');
+  const button = root.find({role: 'button'});
+  const text = root.find({attributes: {name: 'World'}});
+
+  assertTrue(Boolean(button));
+  assertTrue(Boolean(text));
+
+  // Case: Range changes when focus is in captions.
+  CaptionsHandler.instance.onEnterCaptions_();
+  assertTrue(CaptionsHandler.instance.inCaptions_);
+  ChromeVoxRange.navigateTo(CursorRange.fromNode(text));
+  assertFalse(CaptionsHandler.instance.inCaptions_);
+});

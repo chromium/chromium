@@ -11,15 +11,8 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_consumer.h"
-#import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller_delegate.h"
-#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 
 @interface InactiveTabsSettingsMediator () <PrefObserverDelegate>
 @end
@@ -33,22 +26,17 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // The current browser.
-  raw_ptr<Browser> _browser;
 }
 
 - (instancetype)initWithProfilePrefService:(PrefService*)profilePrefService
-                                   browser:(Browser*)browser
                                   consumer:(id<InactiveTabsSettingsConsumer>)
                                                consumer {
   self = [super init];
   if (self) {
     DCHECK(profilePrefService);
     DCHECK(consumer);
-    DCHECK(browser);
     _prefs = profilePrefService;
     _consumer = consumer;
-    _browser = browser;
     _prefChangeRegistrar.Init(_prefs);
     _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
     // Register to observe any changes on pref backed values displayed by the
@@ -71,7 +59,6 @@
   _prefObserverBridge.reset();
   _prefs = nil;
   _consumer = nil;
-  _browser = nil;
 }
 
 #pragma mark - InactiveTabsSettingsTableViewControllerDelegate
@@ -84,21 +71,9 @@
   if (previousThreshold == threshold) {
     return;
   }
+  // Update the pref. The InactiveTabsService will take care of updating all web
+  // state lists.
   _prefs->SetInteger(prefs::kInactiveTabsTimeThreshold, threshold);
-
-  Browser* active_browser = _browser->GetActiveBrowser();
-  Browser* inactive_browser = _browser->GetInactiveBrowser();
-  CHECK(active_browser);
-  CHECK(inactive_browser);
-
-  if (threshold == kInactiveTabsDisabledByUser) {
-    RestoreAllInactiveTabs(inactive_browser, active_browser);
-  } else if (previousThreshold == kInactiveTabsDisabledByUser ||
-             previousThreshold > threshold) {
-    MoveTabsFromActiveToInactive(active_browser, inactive_browser);
-  } else {
-    MoveTabsFromInactiveToActive(inactive_browser, active_browser);
-  }
 }
 
 #pragma mark - PrefObserverDelegate
