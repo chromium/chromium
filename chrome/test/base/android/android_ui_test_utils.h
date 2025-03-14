@@ -15,16 +15,10 @@ class WebContents;
 // A collections of functions designed for use with AndroidBrowserTest.
 namespace android_ui_test_utils {
 
-// Opens |url| in a new tab expecting |url| to be committed.
+// Opens |url| in a new tab.
 void OpenUrlInNewTab(content::BrowserContext* context,
                      content::WebContents* parent,
                      const GURL& url);
-
-// Opens |url| in a new tab expecting |expected_commit_url| to be committed.
-void OpenUrlInNewTab(content::BrowserContext* context,
-                     content::WebContents* parent,
-                     const GURL& url,
-                     const GURL& expected_commit_url);
 
 }  // namespace android_ui_test_utils
 
