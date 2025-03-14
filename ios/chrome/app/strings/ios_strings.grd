@@ -4837,6 +4837,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_CANCEL_BUTTON" desc="Button text to cancel setting a reminder in the reminder notifications half sheet. [iOS only]">
         Cancel
       </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_DATE_LABEL" desc="Label for the date field in the reminder notifications date/time picker. [iOS only]">
+        Date
+      </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_DESCRIPTION" desc="Description text explaining the purpose of the reminder notifications half sheet where users can select when they want to be reminded about the current tab. [iOS only]">
         Choose a date and time to receive a reminder notification to revisit this page
       </message>
@@ -4851,6 +4854,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_SHEET_TITLE" desc="Title shown at the top of the half sheet where users can set a reminder for the current webpage. [iOS only]">
         Set a reminder
+      </message>
+      <message name="IDS_IOS_REMINDER_NOTIFICATIONS_TIME_LABEL" desc="Label for the time field in the reminder notifications date/time picker. [iOS only]">
+        Time
       </message>
       <message name="IDS_IOS_REMINDER_NOTIFICATIONS_TITLE" desc="Title of a notification reminding the user of a web page that they visited previously.">
         Your reminder to revisit
