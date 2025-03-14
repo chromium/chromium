@@ -34,6 +34,8 @@ class DisclaimerViewTest : public AshTestBase {
   // Mock callbacks:
   MOCK_METHOD(void, OnAcceptButtonPressed, (), ());
   MOCK_METHOD(void, OnDeclineButtonPressed, (), ());
+  MOCK_METHOD(void, OnTermsOfServiceLinkPressed, (), ());
+  MOCK_METHOD(void, OnLearnMoreLinkPressed, (), ());
 
   // Creates a widget with a `DisclaimerView` as the contents view and shows it.
   std::unique_ptr<views::Widget> CreateAndShowWidget() {
@@ -42,6 +44,10 @@ class DisclaimerViewTest : public AshTestBase {
         base::BindRepeating(&DisclaimerViewTest::OnAcceptButtonPressed,
                             base::Unretained(this)),
         base::BindRepeating(&DisclaimerViewTest::OnDeclineButtonPressed,
+                            base::Unretained(this)),
+        base::BindRepeating(&DisclaimerViewTest::OnTermsOfServiceLinkPressed,
+                            base::Unretained(this)),
+        base::BindRepeating(&DisclaimerViewTest::OnLearnMoreLinkPressed,
                             base::Unretained(this)));
     widget->Show();
     views::test::WidgetVisibleWaiter(widget.get()).Wait();
@@ -84,6 +90,34 @@ TEST_F(DisclaimerViewTest, DeclineButtonKeyboardNavigation) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   testing::Mock::VerifyAndClearExpectations(this);
+}
+
+TEST_F(DisclaimerViewTest, TermsOfServiceLink) {
+  std::unique_ptr<views::Widget> widget = CreateAndShowWidget();
+  auto* disclaimer_view =
+      views::AsViewClass<DisclaimerView>(widget->GetContentsView());
+
+  auto* paragraph = views::AsViewClass<views::StyledLabel>(
+      disclaimer_view->GetViewByID(kDisclaimerViewParagraphOneId));
+  ASSERT_TRUE(paragraph);
+  views::Link* link = paragraph->GetFirstLinkForTesting();
+  ASSERT_TRUE(link);
+  EXPECT_CALL(*this, OnTermsOfServiceLinkPressed);
+  LeftClickOn(link);
+}
+
+TEST_F(DisclaimerViewTest, LearnMoreLink) {
+  std::unique_ptr<views::Widget> widget = CreateAndShowWidget();
+  auto* disclaimer_view =
+      views::AsViewClass<DisclaimerView>(widget->GetContentsView());
+
+  auto* paragraph = views::AsViewClass<views::StyledLabel>(
+      disclaimer_view->GetViewByID(kDisclaimerViewParagraphThreeId));
+  ASSERT_TRUE(paragraph);
+  views::Link* link = paragraph->GetFirstLinkForTesting();
+  ASSERT_TRUE(link);
+  EXPECT_CALL(*this, OnLearnMoreLinkPressed);
+  LeftClickOn(link);
 }
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/system_panel_view.h"
+#include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -33,7 +34,9 @@ class ASH_EXPORT DisclaimerView : public views::View {
 
  public:
   DisclaimerView(base::RepeatingClosure press_accept_button_callback,
-                 base::RepeatingClosure press_decline_button_callback);
+                 base::RepeatingClosure press_decline_button_callback,
+                 base::RepeatingClosure press_terms_of_service_callback,
+                 base::RepeatingClosure press_learn_more_link_callback);
   DisclaimerView(const DisclaimerView&) = delete;
   DisclaimerView& operator=(const DisclaimerView&) = delete;
   ~DisclaimerView() override;
@@ -43,7 +46,9 @@ class ASH_EXPORT DisclaimerView : public views::View {
   static std::unique_ptr<views::Widget> CreateWidget(
       aura::Window* const root,
       base::RepeatingClosure press_accept_button_callback,
-      base::RepeatingClosure press_decline_button_callback);
+      base::RepeatingClosure press_decline_button_callback,
+      base::RepeatingClosure press_terms_of_service_callback,
+      base::RepeatingClosure press_learn_more_link_callback);
 
   // views::View:
   gfx::Size CalculatePreferredSize(

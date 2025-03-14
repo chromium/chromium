@@ -1573,7 +1573,10 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
                           std::move(accept_callback)),
       base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
                           weak_ptr_factory_.GetWeakPtr(),
-                          std::move(decline_callback)));
+                          std::move(decline_callback)),
+      // TODO: crbug.com/401110577 - Pass a callback here to open a link.
+      /*press_terms_of_service_callback=*/base::DoNothing(),
+      /*press_learn_more_link_callback=*/base::DoNothing());
   disclaimer_->Show();
   focus_cycler_->OnDisclaimerWidgetOpened(disclaimer_.get());
 }

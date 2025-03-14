@@ -151,7 +151,8 @@ views::StyledLabel::RangeStyleInfo GetLinkTextStyleInfo(
   return info;
 }
 
-views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
+views::Builder<views::StyledLabel> GetParagraphOneBuilder(
+    base::RepeatingClosure press_terms_of_service_callback) {
   std::vector<size_t> offsets;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::u16string link_text = l10n_util::GetStringUTF16(
@@ -166,11 +167,11 @@ views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   CHECK_EQ(offsets.size(), 1u);
 
-  // TODO: b/401110577 - Pass a callback here for the terms and conditions.
   return GetTextBodyBuilder()
       .SetText(std::move(text))
-      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
-                     GetLinkTextStyleInfo(base::DoNothing()))
+      .AddStyleRange(
+          gfx::Range(offsets[0], offsets[0] + link_text.size()),
+          GetLinkTextStyleInfo(std::move(press_terms_of_service_callback)))
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphOneId);
 }
 
@@ -187,7 +188,8 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphTwoId);
 }
 
-views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
+views::Builder<views::StyledLabel> GetParagraphThreeBuilder(
+    base::RepeatingClosure press_learn_more_link_callback) {
   std::vector<size_t> offsets;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::u16string link_text = l10n_util::GetStringUTF16(
@@ -202,11 +204,11 @@ views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   CHECK_EQ(offsets.size(), 1u);
 
-  // TODO: b/401110577 - Pass a callback here for the learn more link.
   return GetTextBodyBuilder()
       .SetText(std::move(text))
-      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
-                     GetLinkTextStyleInfo(base::DoNothing()))
+      .AddStyleRange(
+          gfx::Range(offsets[0], offsets[0] + link_text.size()),
+          GetLinkTextStyleInfo(std::move(press_learn_more_link_callback)))
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphThreeId);
 }
 
@@ -214,7 +216,9 @@ views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
 
 DisclaimerView::DisclaimerView(
     base::RepeatingClosure press_accept_button_callback,
-    base::RepeatingClosure press_decline_button_callback) {
+    base::RepeatingClosure press_decline_button_callback,
+    base::RepeatingClosure press_terms_of_service_callback,
+    base::RepeatingClosure press_learn_more_link_callback) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -253,8 +257,11 @@ DisclaimerView::DisclaimerView(
                           .SetText(GetTextTitle())
                           .SetAccessibleRole(ax::mojom::Role::kHeading)
                           .CopyAddressTo(&title_),
-                      GetParagraphOneBuilder(), GetParagraphTwoBuilder(),
-                      GetParagraphThreeBuilder()))
+                      GetParagraphOneBuilder(
+                          std::move(press_terms_of_service_callback)),
+                      GetParagraphTwoBuilder(),
+                      GetParagraphThreeBuilder(
+                          std::move(press_learn_more_link_callback))))
           .Build());
 
   AddChildView(
@@ -291,10 +298,14 @@ DisclaimerView::~DisclaimerView() = default;
 std::unique_ptr<views::Widget> DisclaimerView::CreateWidget(
     aura::Window* const root,
     base::RepeatingClosure press_accept_button_callback,
-    base::RepeatingClosure press_decline_button_callback) {
+    base::RepeatingClosure press_decline_button_callback,
+    base::RepeatingClosure press_terms_of_service_callback,
+    base::RepeatingClosure press_learn_more_link_callback) {
   auto disclaimer_view = std::make_unique<DisclaimerView>(
       std::move(press_accept_button_callback),
-      std::move(press_decline_button_callback));
+      std::move(press_decline_button_callback),
+      std::move(press_terms_of_service_callback),
+      std::move(press_learn_more_link_callback));
 
   auto delegate = std::make_unique<views::WidgetDelegate>();
   delegate->SetOwnedByWidget(true);
