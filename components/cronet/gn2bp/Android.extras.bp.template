@@ -1,0 +1,199 @@
+// Copyright (C) 2023 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licensNew.javaues/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// This is manually maintained and automatically included into the Android.bp by the gn2bp script.
+
+license {
+    name: "${MODULE_PREFIX}license",
+    license_kinds: [
+        "SPDX-license-identifier-Apache-2.0",
+        "SPDX-license-identifier-BSD",
+        "SPDX-license-identifier-BSD-3-Clause",
+        "SPDX-license-identifier-BSD-Source-Code",
+        "SPDX-license-identifier-BSD-2-Clause",
+        "SPDX-license-identifier-BSD-4-Clause",
+        "SPDX-license-identifier-BSL-1.0",
+        "SPDX-license-identifier-ICU",
+        "SPDX-license-identifier-ISC",
+        "SPDX-license-identifier-MIT",
+        "SPDX-license-identifier-MPL",
+        "SPDX-license-identifier-MPL-1.1",
+        "SPDX-license-identifier-MPL-2.0",
+        "SPDX-license-identifier-NCSA",
+        "SPDX-license-identifier-Zlib",
+        // "SPDX-license-identifier-GPL-2.0-with-autoconf-exception", // ICU TODO(aymanm): Reapply those once aosp/2470343 is merged
+        // "SPDX-license-identifier-GPL-3.0-with-autoconf-exception", // ICU TODO(aymanm): Reapply those once aosp/2470343 is merged
+        "SPDX-license-identifier-OpenSSL",
+        "SPDX-license-identifier-Unicode-DFS-2016",
+        "legacy_unencumbered",
+    ],
+    license_text: [
+        "LICENSE",
+    ],
+}
+
+java_library {
+    // Don't change the name of the module.
+    name: "${MODULE_PREFIX}api_java",
+    static_libs: [
+        "${MODULE_PREFIX}components_cronet_android_cronet_api_java",
+    ],
+    sdk_version: "module_current",
+    min_sdk_version: "30",
+    visibility: [
+        "//packages/modules/Connectivity:__subpackages__",
+        "//external/cronet/android:__subpackages__",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+java_library {
+    // Don't change the name of the module.
+    name: "${MODULE_PREFIX}java",
+    static_libs: [
+        "${MODULE_PREFIX}components_cronet_android_cronet_impl_native_java",
+        "${MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java",
+    ],
+    sdk_version: "module_current",
+    min_sdk_version: "30",
+    visibility: [
+        "//packages/modules/Connectivity:__subpackages__",
+        "//external/cronet/android:__subpackages__",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+java_library {
+    // Don't change the name of the module.
+    name: "${MODULE_PREFIX}java__testing",
+    static_libs: [
+        "${MODULE_PREFIX}components_cronet_android_cronet_impl_native_java__testing",
+        "${MODULE_PREFIX}components_cronet_android_cronet_jni_registration_java__testing",
+        "${MODULE_PREFIX}components_cronet_android_cronet_tests_jni_registration_java__testing",
+    ],
+    sdk_version: "module_current",
+    min_sdk_version: "30",
+    visibility: [
+        "//external/cronet/android:__subpackages__",
+    ],
+    apex_available: [
+        "com.android.tethering",
+    ],
+}
+
+// ------------------------------ NATIVE TEST TARGETS --------------------------------------------
+
+java_library {
+    name: "${MODULE_PREFIX}for_testing_net_java",
+    static_libs: [
+        "${MODULE_PREFIX}net_android_net_test_support_provider_java__testing",
+        "${MODULE_PREFIX}net_android_net_java_test_support__testing",
+        "${MODULE_PREFIX}net_android_net_tests_java__testing",
+        "${MODULE_PREFIX}net_android_dummy_spnego_authenticator_java__testing",
+    ],
+}
+
+filegroup {
+    name: "${MODULE_PREFIX}net_unittests_data",
+    srcs: [
+        "net/data/**/*",
+        "net/third_party/quiche/src/quiche/common/platform/api/testdir/**/*",
+        "third_party/anonymous_tokens/src/anonymous_tokens/testdata/**/*",
+    ],
+}
+
+filegroup {
+    name: "${MODULE_PREFIX}javatests_resources",
+    srcs: [
+        "net/data/ssl/certificates/**/*",
+        "components/cronet/testing/test_server/data/**/*",
+    ],
+    visibility: [
+        "//external/cronet/android/tests:__subpackages__",
+    ],
+}
+
+android_library {
+    name: "${MODULE_PREFIX}java_tests",
+    manifest: "components/cronet/android/test/src/org/chromium/net/AndroidManifest.xml",
+    sdk_version: "module_current",
+    min_sdk_version: "30",
+    static_libs: [
+        "${MODULE_PREFIX}components_cronet_android_cronet_javatests__testing",
+        "androidx.test.ext.junit",
+        "androidx.test.rules",
+        "${MODULE_PREFIX}java__testing",
+        "guava",
+        "hamcrest-library",
+        "junit",
+        "net-tests-utils",
+        "truth",
+    ],
+    libs: [
+        "android.test.base.stubs.system",
+        "${MODULE_PREFIX}api_java",
+        "framework-connectivity.stubs.module_lib",
+        "framework-connectivity-pre-jarjar",
+        // android.net.TrafficStats apis
+        "framework-connectivity-t.stubs.module_lib",
+        "guava",
+    ],
+    lint: {
+        test: true,
+    },
+    visibility: [
+        "//external/cronet/android/tests:__subpackages__",
+    ],
+}
+
+java_defaults {
+    name: "${MODULE_PREFIX}java_framework_defaults",
+    sdk_version: "system_current",
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+// the current rust_bindgen modules does not have a `include_dirs` attribute which means
+// that the CC header generated from the rust_bindgen will not be allowed to reference
+// other headers through relative path from repository root like how Chromium does, so
+// in order to circumvent this issue, this module exists in order to allow
+// rust_bindgen module access to include header files  using the relative path
+// from the repository root.
+cc_library_headers {
+    name: "${MODULE_PREFIX}repository_root_include_dirs_anchor",
+    host_supported: true,
+    apex_available: [
+        "com.android.tethering",
+    ],
+    min_sdk_version: "30",
+    export_include_dirs: ["."],
+    visibility: [
+        "//external/cronet:__subpackages__",
+    ],
+}
+
+filegroup {
+    name: "${MODULE_PREFIX}license_data",
+    srcs: [
+        "**/README.chromium",
+        "**/MODULE_LICENSE_*",
+        "**/LICENSE",
+        "**/METADATA",
+    ],
+}
