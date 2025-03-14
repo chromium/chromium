@@ -8808,6 +8808,9 @@ crbug.com/397880053 external/wpt/css/css-page/margin-boxes/auto-margins-002-prin
 crbug.com/397880053 external/wpt/css/css-page/page-box-009-print.html [ Failure ]
 crbug.com/397880053 external/wpt/css/css-page/page-size-010-print.html [ Failure ]
 
+# Gardener 2025-03-14
+crbug.com/403505389 external/wpt/css/css-page/page-size-005-print.html [ Failure ]
+
 # Gardener 2024-10-31
 crbug.com/376589790 [ Win11-arm64 ] fast/js/toString-stack-overflow.html [ Failure Pass ]
 
