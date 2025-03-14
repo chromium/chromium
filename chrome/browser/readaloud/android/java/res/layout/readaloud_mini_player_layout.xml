@@ -184,7 +184,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="4dp"
             android:layout_gravity="bottom"
-            android:background="?attr/colorSurfaceVariant"
+            android:background="@macro/progress_bar_bg_color"
             android:max="1000"
             android:progress="0"
             android:progressTint="@macro/default_icon_color"
