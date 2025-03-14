@@ -301,6 +301,8 @@
   /* CSS system colors. */ \
   E_CPONLY(kColorCssSystemBtnFace) \
   E_CPONLY(kColorCssSystemBtnText) \
+  E_CPONLY(kColorCssSystemField) \
+  E_CPONLY(kColorCssSystemFieldText) \
   E_CPONLY(kColorCssSystemGrayText) \
   E_CPONLY(kColorCssSystemHighlight) \
   E_CPONLY(kColorCssSystemHighlightText) \

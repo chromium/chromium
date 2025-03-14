@@ -6,10 +6,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/browser_test_utils.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
-#include "content/public/test/browser_test_utils.h"
 #endif
 
 namespace content {
@@ -141,4 +141,28 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest,
+                       FieldAndCanvasAreDistinctInDarkMode) {
+  GURL url(
+      "data:text/html,"
+      "<!doctype html><html>"
+      "<body style='color-scheme: dark;'>"
+      "<div id='field' style='color: Field'>Field</div>"
+      "<div id='canvas' style='color: Canvas'>Canvas</div>"
+      "</body></html>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  const std::string field_color =
+      EvalJs(shell(),
+             "window.getComputedStyle(document.getElementById('field'))."
+             "getPropertyValue('color').toString()")
+          .ExtractString();
+  const std::string canvas_color =
+      EvalJs(shell(),
+             "window.getComputedStyle(document.getElementById('canvas'))."
+             "getPropertyValue('color').toString()")
+          .ExtractString();
+
+  EXPECT_NE(field_color, canvas_color);
+}
 }  // namespace content
