@@ -13,13 +13,14 @@ import {TestImportManager} from '/common/testing/test_import_manager.js';
 import {ChromeVoxEvent} from '../common/custom_automation_event.js';
 import {SettingsManager} from '../common/settings_manager.js';
 
-import {ChromeVoxRange} from './chromevox_range.js';
+import {ChromeVoxRange, ChromeVoxRangeObserver} from './chromevox_range.js';
 
 type AutomationNode = chrome.automation.AutomationNode;
 
-export class CaptionsHandler {
+export class CaptionsHandler implements ChromeVoxRangeObserver {
   static instance: CaptionsHandler;
 
+  private inCaptions_ = false;
   private previousFocus_: CursorRange|null = null;
   private waitingForCaptions_ = false;
 
@@ -37,7 +38,11 @@ export class CaptionsHandler {
 
   static close(): void {
     CaptionsHandler.instance.disableLiveCaption_();
-    CaptionsHandler.instance.restoreFocus_();
+    CaptionsHandler.instance.onExitCaptions_();
+  }
+
+  static inCaptions(): boolean {
+    return CaptionsHandler.instance.inCaptions_;
   }
 
   isPrefEnabled(): boolean {
@@ -60,6 +65,17 @@ export class CaptionsHandler {
     return true;
   }
 
+  // ChromeVoxRangeObserver implementation.
+  onCurrentRangeChanged(range: CursorRange|null): void {
+    if (!range) {
+      return;
+    }
+
+    if (range.start.node.className !== CAPTION_BUBBLE_LABEL) {
+      this.onExitCaptions_();
+    }
+  }
+
   private disableLiveCaption_(): void {
     // TODO(crbug.com/395945468): Disable live caption when appropriate.
   }
@@ -72,7 +88,19 @@ export class CaptionsHandler {
 
   private jumpToCaptionBubble_(captionsLabel: AutomationNode): void {
     this.previousFocus_ = ChromeVoxRange.current;
+    this.onEnterCaptions_();
     ChromeVoxRange.navigateTo(CursorRange.fromNode(captionsLabel));
+  }
+
+  private onEnterCaptions_(): void {
+    this.inCaptions_ = true;
+    ChromeVoxRange.addObserver(this);
+  }
+
+  private onExitCaptions_(): void {
+    this.inCaptions_ = false;
+    ChromeVoxRange.removeObserver(this);
+    this.restoreFocus_();
   }
 
   private restoreFocus_(): void {
@@ -85,7 +113,7 @@ export class CaptionsHandler {
   }
 
   private tryFindCaptions_(node: AutomationNode): AutomationNode|undefined {
-    return node.find({attributes: {className: 'CaptionBubbleLabel'}});
+    return node.find({attributes: {className: CAPTION_BUBBLE_LABEL}});
   }
 
   /**
@@ -103,5 +131,7 @@ export class CaptionsHandler {
     this.jumpToCaptionBubble_(captionsLabel);
   }
 }
+
+const CAPTION_BUBBLE_LABEL = 'CaptionBubbleLabel';
 
 TestImportManager.exportForTesting(CaptionsHandler);
