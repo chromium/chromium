@@ -48,6 +48,12 @@ const OrtApi* GetOrtApi() {
   return platform_functions->ort_api();
 }
 
+const OrtDmlApi* GetOrtDmlApi() {
+  PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
+  CHECK(platform_functions);
+  return platform_functions->ort_dml_api(); 
+}
+
 const OrtModelEditorApi* GetOrtModelEditorApi() {
   PlatformFunctions* platform_functions = PlatformFunctions::GetInstance();
   CHECK(platform_functions);

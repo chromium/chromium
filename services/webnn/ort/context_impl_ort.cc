@@ -172,6 +172,21 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
           mojom::Error::New(mojom::Error::Code::kUnknownError,
                             "OnnxRuntime OpenVINO EP is not supported."));
     }
+#if BUILDFLAG(IS_WIN)
+  } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                 switches::kWebNNOrtUseDmlGpu) &&
+             device_type == mojom::CreateContextOptions::Device::kGpu) {
+    CALL_ORT_FUNC(ort_api->SetSessionGraphOptimizationLevel(
+        session_options.get(), GraphOptimizationLevel::ORT_ENABLE_BASIC));
+    const OrtDmlApi* ort_dml_api = GetOrtDmlApi();
+    CHECK(ort_dml_api);
+    // Currently use the default device_id=0, which is typically the primary
+    // display GPU installed on the system.
+    CALL_ORT_FUNC(ort_dml_api->SessionOptionsAppendExecutionProvider_DML(
+        session_options.get(), /*device_id=*/0));
+    CALL_ORT_FUNC(ort_api->AddSessionConfigEntry(
+        session_options.get(), "ep.dml.disable_graph_fusion", "1"));
+#endif  // BUILDFLAG(IS_WIN)
   } else {
     // Use CPU EP by default.
     //

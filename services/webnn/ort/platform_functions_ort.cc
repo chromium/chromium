@@ -68,6 +68,21 @@ PlatformFunctions* PlatformFunctions::GetInstance() {
   return instance.get();
 }
 
+const OrtDmlApi* PlatformFunctions::ort_dml_api() {
+  if (!ort_dml_api_.get()) {
+    const OrtDmlApi* ort_dml_api;
+    ort_api_->GetExecutionProviderApi(
+            "DML", ORT_API_VERSION,
+            reinterpret_cast<const void**>(&ort_dml_api));
+    if (!ort_dml_api) {
+      LOG(ERROR) << "[WebNN] Failed to get OrtDmlApi";
+      return nullptr;
+    }
+    ort_dml_api_ = ort_dml_api;
+  }
+  return ort_dml_api_.get();
+}
+
 bool PlatformFunctions::AllFunctionsLoaded() {
   return ort_get_api_base_proc_ && ort_api_ && ort_model_editor_api_;
 }

@@ -35,6 +35,9 @@ inline constexpr char kWebNNUseOrt[] = "webnn-use-ort";
 // Usage: --no-sandbox --webnn-ort-dump-model=./OnnxModels
 inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
 
+// Use DirectML EP of ONNX Runtime
+inline constexpr char kWebNNOrtUseDmlGpu[] = "webnn-ort-use-dml";
+
 // Use OpenVINO EP of ONNX Runtime, WebNN device type will map OpenVINO device
 // type.
 inline constexpr char kWebNNOrtUseOpenvino[] = "webnn-ort-use-openvino";
