@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_fre_controller.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 
 #include <memory>
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_FRE_PAGE_HANDLER_H_
-#define CHROME_BROWSER_GLIC_GLIC_FRE_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_GLIC_FRE_GLIC_FRE_PAGE_HANDLER_H_
+#define CHROME_BROWSER_GLIC_FRE_GLIC_FRE_PAGE_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/glic_fre.mojom.h"
@@ -49,4 +49,4 @@ class GlicFrePageHandler : public glic::mojom::FrePageHandler {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_FRE_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_GLIC_FRE_GLIC_FRE_PAGE_HANDLER_H_

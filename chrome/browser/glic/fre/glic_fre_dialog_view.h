@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_FRE_DIALOG_VIEW_H_
-#define CHROME_BROWSER_GLIC_GLIC_FRE_DIALOG_VIEW_H_
+#ifndef CHROME_BROWSER_GLIC_FRE_GLIC_FRE_DIALOG_VIEW_H_
+#define CHROME_BROWSER_GLIC_FRE_GLIC_FRE_DIALOG_VIEW_H_
 
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,4 +32,4 @@ class GlicFreDialogView : public views::DialogDelegateView {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_FRE_DIALOG_VIEW_H_
+#endif  // CHROME_BROWSER_GLIC_FRE_GLIC_FRE_DIALOG_VIEW_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_fre_page_handler.h"
+#include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/glic/glic_fre_controller.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_window_controller.h"

@@ -16,7 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/glic/fre_util.h"
+#include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/common/chrome_features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"

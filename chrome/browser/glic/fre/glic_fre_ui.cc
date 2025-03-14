@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_fre_ui.h"
+#include "chrome/browser/glic/fre/glic_fre_ui.h"
 
 #include <string>
 
 #include "base/command_line.h"
-#include "chrome/browser/glic/fre_util.h"
+#include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/fre/glic_fre_page_handler.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_fre_page_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_FRE_UI_H_
-#define CHROME_BROWSER_GLIC_GLIC_FRE_UI_H_
+#ifndef CHROME_BROWSER_GLIC_FRE_GLIC_FRE_UI_H_
+#define CHROME_BROWSER_GLIC_FRE_GLIC_FRE_UI_H_
 
 #include "chrome/browser/glic/glic_fre.mojom.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -44,4 +44,4 @@ class GlicFreUI : public ui::MojoWebUIController,
 };
 
 }  // namespace glic
-#endif  // CHROME_BROWSER_GLIC_GLIC_FRE_UI_H_
+#endif  // CHROME_BROWSER_GLIC_FRE_GLIC_FRE_UI_H_

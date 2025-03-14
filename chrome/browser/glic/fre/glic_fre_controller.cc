@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_fre_controller.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -12,9 +12,9 @@
 #include "base/version_info/channel.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/fre_util.h"
+#include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"

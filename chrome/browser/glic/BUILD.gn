@@ -10,11 +10,11 @@ assert(enable_glic)
 
 source_set("glic") {
   sources = [
+    "fre/glic_fre_ui.h",
     "glic_border_view.h",
     "glic_button_controller.h",
     "glic_button_controller_delegate.h",
     "glic_enabling.h",
-    "glic_fre_ui.h",
     "glic_iph_controller.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
@@ -76,18 +76,18 @@ source_set("impl") {
   sources = [
     "browser_conditions.cc",
     "browser_conditions.h",
-    "fre_util.cc",
-    "fre_util.h",
+    "fre/fre_util.cc",
+    "fre/fre_util.h",
+    "fre/glic_fre_controller.cc",
+    "fre/glic_fre_controller.h",
+    "fre/glic_fre_dialog_view.cc",
+    "fre/glic_fre_dialog_view.h",
+    "fre/glic_fre_page_handler.cc",
+    "fre/glic_fre_page_handler.h",
+    "fre/glic_fre_ui.cc",
     "glic_border_view.cc",
     "glic_button_controller.cc",
     "glic_enabling.cc",
-    "glic_fre_controller.cc",
-    "glic_fre_controller.h",
-    "glic_fre_dialog_view.cc",
-    "glic_fre_dialog_view.h",
-    "glic_fre_page_handler.cc",
-    "glic_fre_page_handler.h",
-    "glic_fre_ui.cc",
     "glic_iph_controller.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
@@ -201,9 +201,9 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "fre/glic_fre_controller_unittest.cc",
     "glic_button_controller_unittest.cc",
     "glic_enabling_unittest.cc",
-    "glic_fre_controller_unittest.cc",
     "glic_metrics_unittest.cc",
     "host/context/glic_screenshot_capturer_unittest.cc",
     "host/glic_cookie_synchronizer_unittest.cc",
@@ -227,9 +227,9 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "fre/glic_fre_controller_browsertest.cc",
     "glic_browsertest.cc",
     "glic_enabling_browsertest.cc",
-    "glic_fre_controller_browsertest.cc",
     "glic_policy_browsertest.cc",
     "glic_profile_manager_browsertest.cc",
     "host/guest_util_browsertest.cc",
@@ -259,8 +259,8 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "fre/glic_fre_controller_interactive_uitest.cc",
     "glic_border_view_interactive_uitest.cc",
-    "glic_fre_controller_interactive_uitest.cc",
     "glic_permission_enforcement_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
     "glic_tab_indicator_helper_interactive_uitest.cc",
