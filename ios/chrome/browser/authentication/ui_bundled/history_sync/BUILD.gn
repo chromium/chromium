@@ -45,7 +45,6 @@ source_set("history_sync") {
     "//ios/chrome/common/ui/promo_style:promo_style",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/authentication/ui_bundled/signin:interruptible_chrome_coordinator" ]
 }
 
 source_set("ui") {
