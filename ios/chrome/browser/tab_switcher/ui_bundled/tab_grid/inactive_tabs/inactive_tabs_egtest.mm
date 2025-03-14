@@ -116,10 +116,9 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // Ensure that inactive tabs preference settings is set to its default state.
   [ChromeEarlGrey setIntegerValue:0
-                forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
   GREYAssertEqual(
-      0,
-      [ChromeEarlGrey localStateIntegerPref:prefs::kInactiveTabsTimeThreshold],
+      0, [ChromeEarlGrey userIntegerPref:prefs::kInactiveTabsTimeThreshold],
       @"Inactive tabs preference is not set to default value.");
 
   // Mark the User Education screen as already-seen by default.
