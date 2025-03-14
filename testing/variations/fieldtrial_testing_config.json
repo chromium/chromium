@@ -9534,6 +9534,27 @@
             ]
         }
     ],
+    "ExportFrameTimingAfterFrameDoneExperiment": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExportFrameTimingAfterFrameDone"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtendedReportingRemovePrefDependency": [
         {
             "platforms": [
