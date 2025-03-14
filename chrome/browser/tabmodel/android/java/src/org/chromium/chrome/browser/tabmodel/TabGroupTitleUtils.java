@@ -8,14 +8,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.Objects;
 
 /** Helper class to handle tab group title related utilities. */
+@NullMarked
 public class TabGroupTitleUtils {
     private static final String TAB_GROUP_TITLES_FILE_NAME = "tab_group_titles";
 
@@ -51,14 +53,16 @@ public class TabGroupTitleUtils {
      *
      * @param context To load resources from.
      * @param tabGroupModelFilter To read tab and tab group data from.
-     * @param rootId The identifying id of the tab group.
+     * @param tabGroupId The identifying tab group id of the tab group.
      * @return A non-null string that can be shown to users.
      */
     public static String getDisplayableTitle(
-            Context context, TabGroupModelFilter tabGroupModelFilter, int rootId) {
-        @Nullable String explicitTitle = tabGroupModelFilter.getTabGroupTitle(rootId);
+            Context context, TabGroupModelFilter tabGroupModelFilter, Token tabGroupId) {
+        int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(tabGroupId);
+        @Nullable String explicitTitle =
+                rootId == Tab.INVALID_TAB_ID ? null : tabGroupModelFilter.getTabGroupTitle(rootId);
         if (TextUtils.isEmpty(explicitTitle)) {
-            int tabCount = tabGroupModelFilter.getRelatedTabCountForRootId(rootId);
+            int tabCount = tabGroupModelFilter.getTabCountForGroup(tabGroupId);
             return getDefaultTitle(context, tabCount);
         } else {
             return explicitTitle;
@@ -104,8 +108,7 @@ public class TabGroupTitleUtils {
     static @Nullable String getTabGroupTitle(int tabRootId) {
         assert tabRootId != Tab.INVALID_TAB_ID;
         // TODO(crbug.com/40895368): Consider checking if this looks like the default plural string
-        // and
-        // deleting and returning null if any users have saved tab group titles.
+        // and deleting and returning null if any users have saved tab group titles.
         return getSharedPreferences().getString(String.valueOf(tabRootId), null);
     }
 
