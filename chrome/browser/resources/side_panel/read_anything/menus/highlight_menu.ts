@@ -13,11 +13,11 @@ import type {SettingsPrefs} from '../common.js';
 import {getHtml} from './highlight_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem} from './menu_util.js';
-import type {SimpleActionMenu} from './simple_action_menu.js';
+import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface HighlightMenuElement {
   $: {
-    menu: SimpleActionMenu,
+    menu: SimpleActionMenuElement,
   };
 }
 
