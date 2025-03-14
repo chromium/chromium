@@ -89,10 +89,10 @@ criteria = []
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.31"]
+[policy."clap:4.5.32"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.31"]
+[policy."clap_builder:4.5.32"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.4"]

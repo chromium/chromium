@@ -99,7 +99,7 @@ blocks_in_conditions = "allow"
 
 [package]
 name = "clap"
-version = "4.5.31"
+version = "4.5.32"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -176,15 +176,15 @@ unstable-markdown = ["clap_derive/unstable-markdown"]
 bench = false
 
 [dependencies]
-clap_builder = { path = "./clap_builder", version = "=4.5.31", default-features = false }
-clap_derive = { path = "./clap_derive", version = "=4.5.28", optional = true }
+clap_builder = { path = "./clap_builder", version = "=4.5.32", default-features = false }
+clap_derive = { path = "./clap_derive", version = "=4.5.32", optional = true }
 
 [dev-dependencies]
 trybuild = "1.0.91"
 rustversion = "1.0.15"
 # Cutting out `filesystem` feature
 trycmd = { version = "0.15.3", default-features = false, features = ["color-auto", "diff", "examples"] }
-humantime = "2.1.0"
+jiff = "0.2.3"
 snapbox = { version = "0.6.16", features = ["term-svg"] }
 shlex = "1.3.0"
 automod = "1.0.14"
@@ -324,6 +324,12 @@ required-features = ["cargo"]
 doc-scrape-examples = true
 
 [[example]]
+name = "03_06_required"
+path = "examples/tutorial_builder/03_06_required.rs"
+required-features = ["cargo"]
+doc-scrape-examples = true
+
+[[example]]
 name = "04_01_possible"
 path = "examples/tutorial_builder/04_01_possible.rs"
 required-features = ["cargo"]
@@ -441,6 +447,12 @@ doc-scrape-examples = true
 [[example]]
 name = "03_05_default_values_derive"
 path = "examples/tutorial_derive/03_05_default_values.rs"
+required-features = ["derive"]
+doc-scrape-examples = true
+
+[[example]]
+name = "03_06_optional_derive"
+path = "examples/tutorial_derive/03_06_optional.rs"
 required-features = ["derive"]
 doc-scrape-examples = true
 

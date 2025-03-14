@@ -53,11 +53,11 @@ For more information, try '--help'.
 Time
 ```console
 $ typed-derive --sleep 10s
-Args { optimization: None, include: None, bind: None, sleep: Some(Duration(10s)), defines: [], port: 22, log_level: Info }
+Args { optimization: None, include: None, bind: None, sleep: Some(10s), defines: [], port: 22, log_level: Info }
 
 $ typed-derive --sleep forever
 ? failed
-error: invalid value 'forever' for '--sleep <SLEEP>': expected number at 0
+error: invalid value 'forever' for '--sleep <SLEEP>': failed to parse "forever" in the "friendly" format: parsing a friendly duration requires it to start with a unit value (a decimal integer) after an optional sign, but no integer was found
 
 For more information, try '--help'.
 
