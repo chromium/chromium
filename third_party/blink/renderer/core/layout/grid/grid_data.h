@@ -178,14 +178,14 @@ class GridLayoutTree : public RefCounted<GridLayoutTree> {
  public:
   struct GridTreeNode {
     GridTreeNode(const GridLayoutData& layout_data, wtf_size_t subtree_size)
-        : layout_data(layout_data),
-          subtree_size(subtree_size),
-          has_unresolved_geometry(layout_data.Columns().HasIndefiniteSet() ||
-                                  layout_data.Rows().HasIndefiniteSet()) {}
+        : has_unresolved_geometry(layout_data.Columns().HasIndefiniteSet() ||
+                                  layout_data.Rows().HasIndefiniteSet()),
+          layout_data(layout_data),
+          subtree_size(subtree_size) {}
 
+    bool has_unresolved_geometry;
     GridLayoutData layout_data;
     wtf_size_t subtree_size;
-    bool has_unresolved_geometry;
   };
 
   explicit GridLayoutTree(Vector<GridTreeNode, 16>&& tree_data)

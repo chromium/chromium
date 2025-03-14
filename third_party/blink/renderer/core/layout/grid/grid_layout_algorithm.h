@@ -58,7 +58,7 @@ class CORE_EXPORT GridLayoutAlgorithm
 
   // Aggregate all direct out of flow children from the current grid container
   // to `opt_oof_children`, unless it's not provided.
-  wtf_size_t BuildGridSizingSubtree(
+  void BuildGridSizingSubtree(
       GridSizingTree* sizing_tree,
       HeapVector<Member<LayoutBox>>* opt_oof_children,
       const SubgriddedItemData& opt_subgrid_data = kNoSubgriddedItemData,
