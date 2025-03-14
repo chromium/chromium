@@ -724,6 +724,7 @@
     {
       // crbug.com/389726691.
       name: "CanvasTextNg",
+      status: "experimental",
     },
     {
       // Kill switch for https://crbug.com/330506337.
