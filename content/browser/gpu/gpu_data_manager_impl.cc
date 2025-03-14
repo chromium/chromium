@@ -150,6 +150,11 @@ bool GpuDataManagerImpl::HardwareAccelerationEnabled() {
   return private_->HardwareAccelerationEnabled();
 }
 
+bool GpuDataManagerImpl::IsGpuRasterizationForUIEnabled() {
+  base::AutoLock auto_lock(lock_);
+  return private_->IsGpuRasterizationForUIEnabled();
+}
+
 void GpuDataManagerImpl::AppendGpuCommandLine(base::CommandLine* command_line,
                                               GpuProcessKind kind) {
   base::AutoLock auto_lock(lock_);
