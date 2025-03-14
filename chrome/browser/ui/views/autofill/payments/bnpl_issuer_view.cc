@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_linked_pill.h"
 #include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -124,10 +125,8 @@ BnplIssuerView::BnplIssuerView(
         views::Builder<views::ImageView>()
             .SetImage(ui::ImageModel::FromVectorIcon(
                 kChevronRightChromeRefreshIcon,
-                // TODO (crbug.com/402646513): Update color token to use a
-                // context-specific token.
-                issuer_eligible ? ui::kColorLabelForeground
-                                : ui::kColorLabelForegroundDisabled))
+                issuer_eligible ? kColorBnplIssuerLabelForeground
+                                : kColorBnplIssuerLabelForegroundDisabled))
             .SetProperty(views::kMarginsKey,
                          gfx::Insets::TLBR(
                              0,
@@ -138,10 +137,8 @@ BnplIssuerView::BnplIssuerView(
     if (!issuer_eligible) {
       issuer_button->SetEnabled(false);
       if (issuer_linked) {
-        // TODO (crbug.com/402646513): Update color token to use a
-        // context-specific token.
         issuer_button->SetBackground(views::CreateRoundedRectBackground(
-            ui::kColorSysSurface2, corner_radius));
+            kColorBnplIssuerLinkedIneligibleBackground, corner_radius));
       }
       image_view_ptr->SetPaintToLayer();
       image_view_ptr->layer()->SetOpacity(0.38f);  // 35% opacity.
@@ -152,10 +149,8 @@ BnplIssuerView::BnplIssuerView(
     }
     views::SetCascadingColorProviderColor(
         issuer_button.get(), views::kCascadingLabelEnabledColor,
-        // TODO (crbug.com/402646513): Update color token to use a
-        // context-specific token.
-        issuer_eligible ? ui::kColorLabelForeground
-                        : ui::kColorLabelForegroundDisabled);
+        issuer_eligible ? kColorBnplIssuerLabelForeground
+                        : kColorBnplIssuerLabelForegroundDisabled);
     AddChildView(std::move(issuer_button));
   }
 }

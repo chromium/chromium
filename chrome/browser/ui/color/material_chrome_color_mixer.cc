@@ -139,6 +139,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBatchUploadDataBackground] = {ui::kColorSysSurface3};
   mixer[kColorBatchUploadDataSeparator] = {ui::kColorSysOnHeaderDivider};
 
+  // BNPL Issuer dialog color tokens
+  mixer[kColorBnplIssuerLabelForeground] = {ui::kColorLabelForeground};
+  mixer[kColorBnplIssuerLabelForegroundDisabled] = {
+      ui::kColorLabelForegroundDisabled};
+  mixer[kColorBnplIssuerLinkedIneligibleBackground] = {ui::kColorSysSurface2};
+
   // Tab Search colors.
   mixer[kColorTabSearchButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorTabSearchButtonIcon] = {ui::kColorSysOnTonalContainer};
