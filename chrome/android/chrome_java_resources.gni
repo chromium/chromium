@@ -23,6 +23,7 @@ chrome_java_resources = [
   "java/res/color-night/widget_bg.xml",
   "java/res/color-night/widget_button_bg.xml",
   "java/res/color-night/widget_searchbox_bg.xml",
+  "java/res/color/tile_bg_color_list.xml",
   "java/res/color/widget_bg.xml",
   "java/res/color/widget_button_bg.xml",
   "java/res/color/widget_searchbox_bg.xml",

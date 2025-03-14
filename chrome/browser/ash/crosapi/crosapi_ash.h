@@ -43,13 +43,11 @@ class PrintPreviewWebcontentsAdapterAsh;
 
 namespace crosapi {
 
-class AudioServiceAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
 class ClipboardHistoryAsh;
-class ContentProtectionAsh;
 class DeskProfilesAsh;
 class DeviceAttributesAsh;
 class DeviceLocalAccountExtensionServiceAsh;
@@ -96,8 +94,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // crosapi::mojom::Crosapi:
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
-  void BindAudioService(
-      mojo::PendingReceiver<mojom::AudioService> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
@@ -112,8 +108,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::ChromeAppKioskService> receiver) override;
   void BindClipboardHistory(
       mojo::PendingReceiver<mojom::ClipboardHistory> receiver) override;
-  void BindContentProtection(
-      mojo::PendingReceiver<mojom::ContentProtection> receiver) override;
   void BindCrosDisplayConfigController(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
@@ -329,13 +323,11 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<AudioServiceAsh> audio_service_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
-  std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DeskProfilesAsh> desk_profiles_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceLocalAccountExtensionServiceAsh>

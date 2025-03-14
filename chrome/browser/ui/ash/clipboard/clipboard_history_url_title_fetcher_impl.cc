@@ -19,10 +19,6 @@
 
 namespace {
 
-// Arbitrarily chosen threshold after which we do not care to know the granular
-// number of profiles added to a session.
-constexpr int kMaxNumProfiles = 10;
-
 // Returns the history service for the primary user profile iff the session has
 // exactly one profile. Note that the logic of which profile(s) to query for
 // browsing history, and under what conditions, may change in the future.
@@ -36,17 +32,8 @@ history::HistoryService* GetHistoryService() {
       ++num_profiles;
     }
   }
-  base::UmaHistogramExactLinear(
-      "Ash.ClipboardHistory.UrlTitleFetcher.NumProfiles", num_profiles,
-      /*exclusive_max=*/kMaxNumProfiles + 1);
 
   auto* const profile = ProfileManager::GetPrimaryUserProfile();
-  if (profile) {
-    base::UmaHistogramBoolean(
-        "Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive",
-        profile == ProfileManager::GetActiveUserProfile());
-  }
-
   if (num_profiles != 1 || !profile) {
     return nullptr;
   }

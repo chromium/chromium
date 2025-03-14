@@ -4054,6 +4054,24 @@
             ]
         }
     ],
+    "CastStreamingMediaVideoEncoder": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CastStreamingMediaVideoEncoder"
+                    ]
+                }
+            ]
+        }
+    ],
     "CastStreamingVp9": [
         {
             "platforms": [
@@ -17727,6 +17745,26 @@
                     },
                     "enable_features": [
                         "PrefetchReusable"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrefetchServiceWorker": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrefetchServiceWorker"
                     ]
                 }
             ]

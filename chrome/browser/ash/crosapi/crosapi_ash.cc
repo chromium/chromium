@@ -14,13 +14,11 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/crosapi/audio_service_ash.h"
 #include "chrome/browser/ash/crosapi/cert_database_ash.h"
 #include "chrome/browser/ash/crosapi/cert_provisioning_ash.h"
 #include "chrome/browser/ash/crosapi/chaps_service_ash.h"
 #include "chrome/browser/ash/crosapi/chrome_app_kiosk_service_ash.h"
 #include "chrome/browser/ash/crosapi/clipboard_history_ash.h"
-#include "chrome/browser/ash/crosapi/content_protection_ash.h"
 #include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
@@ -126,14 +124,12 @@ Profile* GetAshProfile() {
 }  // namespace
 
 CrosapiAsh::CrosapiAsh()
-    : audio_service_ash_(std::make_unique<AudioServiceAsh>()),
-      cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
+    : cert_database_ash_(std::make_unique<CertDatabaseAsh>()),
       cert_provisioning_ash_(std::make_unique<CertProvisioningAsh>()),
       chaps_service_ash_(std::make_unique<ChapsServiceAsh>()),
       chrome_app_kiosk_service_ash_(
           std::make_unique<ChromeAppKioskServiceAsh>()),
       clipboard_history_ash_(std::make_unique<ClipboardHistoryAsh>()),
-      content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       desk_profiles_ash_(std::make_unique<DeskProfilesAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       device_local_account_extension_service_ash_(
@@ -206,13 +202,6 @@ void CrosapiAsh::BindAccountManager(
   account_manager_mojo_service->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindAudioService(
-    mojo::PendingReceiver<mojom::AudioService> receiver) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  audio_service_ash_->Initialize(profile);
-  audio_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) {
   if (auto r = receiver.As<chromeos::cdm::mojom::BrowserCdmFactory>()) {
     chromeos::CdmFactoryDaemonProxyAsh::Create(std::move(r));
@@ -248,11 +237,6 @@ void CrosapiAsh::BindChromeAppKioskService(
 void CrosapiAsh::BindClipboardHistory(
     mojo::PendingReceiver<mojom::ClipboardHistory> receiver) {
   clipboard_history_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindContentProtection(
-    mojo::PendingReceiver<mojom::ContentProtection> receiver) {
-  content_protection_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindCrosDisplayConfigController(

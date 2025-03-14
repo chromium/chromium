@@ -22,8 +22,8 @@
 #include "chrome/browser/glic/glic_view.h"
 #include "chrome/browser/glic/glic_widget.h"
 #include "chrome/browser/glic/glic_window_animator.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/scoped_glic_button_indicator.h"
-#include "chrome/browser/glic/webui_contents_container.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -921,6 +921,14 @@ void GlicWindowController::SetDraggableAreas(
   }
 
   glic_view->SetDraggableAreas(draggable_areas);
+}
+
+void GlicWindowController::SetMinimumWidgetSize(const gfx::Size& size) {
+  if (!GetGlicWidget()) {
+    return;
+  }
+
+  glic_widget_->SetMinimumSize(size);
 }
 
 void GlicWindowController::Close() {

@@ -71,9 +71,9 @@ base::expected<size_t, net::Error> MerkleIntegritySourceStream::FilterData(
   }
 
   base::span<const char> remaining_input =
-      base::as_chars(input_buffer->span().first(input_buffer_size));
+      base::as_chars(input_buffer->first(input_buffer_size));
   base::span<char> remaining_output =
-      base::as_writable_chars(output_buffer->span().first(output_buffer_size));
+      base::as_writable_chars(output_buffer->first(output_buffer_size));
 
   bool ok =
       FilterDataImpl(&remaining_output, &remaining_input, upstream_eof_reached);

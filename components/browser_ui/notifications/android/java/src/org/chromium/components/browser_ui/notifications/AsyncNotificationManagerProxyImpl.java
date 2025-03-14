@@ -14,13 +14,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -28,7 +26,6 @@ import java.util.function.Function;
  * Default implementation of the AsyncNotificationManagerProxy, which passes through all calls to
  * the normal Android Notification Manager.
  */
-@NullMarked
 /* package */ class AsyncNotificationManagerProxyImpl implements BaseNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
     private final NotificationManagerCompat mNotificationManager;
@@ -210,7 +207,7 @@ import java.util.function.Function;
                         result == null
                                 ? NotificationEvent.HAS_CALLBACK_FAILED
                                 : NotificationEvent.HAS_CALLBACK_SUCCESS);
-                callback.onResult(Objects.requireNonNullElse(result, null));
+                callback.onResult(result);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }

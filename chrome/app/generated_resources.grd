@@ -4944,7 +4944,11 @@ are declared in tools/grit/grit_args.gni.
         <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
       </message>
       <message name="IDS_TASK_MANAGER_TASK_GROUP_CONNECT_TEXT" desc="The text used to connect tasks in the same task group for accessibility features. [ICU_Syntax]">
-        {NUM_TASKS, plural, =1 {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>} other {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>. Other <ph name="OTHER_TASK_NUM">{OTHER_TASK_NUM}<ex>2</ex></ph> tasks in the same task group: <ph name="OTHER_TASKS">{OTHER_TASKS}<ex>TaskA TaskB</ex></ph>}}
+        {NUM_TASKS, plural,
+          =0 {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>}
+          =1 {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>. Another task in the same task group: <ph name="OTHER_TASKS">{OTHER_TASKS}<ex>TaskA</ex></ph>}
+          other {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>. Other # tasks in the same task group: <ph name="OTHER_TASKS">{OTHER_TASKS}<ex>TaskA, TaskB, and TaskC</ex></ph>}
+        }
       </message>
       <message name="IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT" desc="The text of the web browser process row">
         Browser

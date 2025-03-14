@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CONTROLLER_H_
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,6 +20,8 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/scanner/scanner_session.h"
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -26,6 +29,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -46,6 +50,11 @@ class FilePath;
 class Time;
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace network {
+class SimpleURLLoader;
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -78,7 +87,8 @@ class ASH_EXPORT CaptureModeController
       public recording::mojom::DriveFsQuotaDelegate,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer,
-      public crosapi::mojom::VideoConferenceManagerClient {
+      public crosapi::mojom::VideoConferenceManagerClient,
+      public ShellObserver {
  public:
   // Contains info about the folder used for saving the captured images and
   // videos.
@@ -416,6 +426,9 @@ class ASH_EXPORT CaptureModeController
       SetSystemMediaDeviceStatusCallback callback) override;
   void StopAllScreenShare() override;
 
+  // ShellObserver:
+  void OnPinnedStateChanged(aura::Window* pinned_window) override;
+
   // Skips the 3-second count down, and IsCaptureAllowed() checks, and starts
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
@@ -547,6 +560,13 @@ class ASH_EXPORT CaptureModeController
       const gfx::Image& original_image,
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       const std::string& access_token);
+
+  // Called after a resource request is dispatched by a `SimpleURLLoader` and a
+  // response is received.
+  void OnDispatchComplete(
+      base::WeakPtr<const network::SimpleURLLoader> url_loader,
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      std::unique_ptr<std::string> response_body);
 
   // Called back when on-device text detection is complete to show copy text and
   // smart actions buttons if needed. `image_search_token` is a weak pointer
@@ -914,6 +934,15 @@ class ASH_EXPORT CaptureModeController
   base::ObserverList<CaptureModeObserver> observers_;
 
   std::unique_ptr<CaptureModeEducationController> education_controller_;
+
+  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
+
+  std::list<std::unique_ptr<const network::SimpleURLLoader>>
+      uploads_in_progress_;
+
+  // URLLoaderFactory used for network requests. May be null initially if the
+  // creation is delayed.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

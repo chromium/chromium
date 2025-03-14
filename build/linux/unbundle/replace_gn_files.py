@@ -67,6 +67,7 @@ REPLACEMENTS = {
     'openh264': 'third_party/openh264/BUILD.gn',
     'opus': 'third_party/opus/BUILD.gn',
     're2': 'third_party/re2/BUILD.gn',
+    'simdutf': 'third_party/simdutf/BUILD.gn',
     'snappy': 'third_party/snappy/BUILD.gn',
     # Use system libSPIRV-Tools in Swiftshader.
     # These two shims MUST be used together.

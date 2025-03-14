@@ -19,6 +19,10 @@ ToastSpecification::Builder::Builder(const gfx::VectorIcon& icon,
                                                icon,
                                                body_string_id)) {}
 
+ToastSpecification::Builder::Builder(const gfx::VectorIcon& icon)
+    : toast_specification_(
+          std::make_unique<ToastSpecification>(base::PassKey<Builder>(),
+                                               icon)) {}
 ToastSpecification::Builder::~Builder() {
   // Verify that ToastSpecification::Builder::Build() has been called
   // so the toast specification is completely built.
@@ -72,6 +76,11 @@ ToastSpecification::ToastSpecification(
     const gfx::VectorIcon& icon,
     int string_id)
     : icon_(icon), body_string_id_(string_id) {}
+
+ToastSpecification::ToastSpecification(
+    base::PassKey<ToastSpecification::Builder>,
+    const gfx::VectorIcon& icon)
+    : icon_(icon) {}
 
 ToastSpecification::~ToastSpecification() = default;
 

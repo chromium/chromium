@@ -112,8 +112,10 @@ class CaptureModeBehavior {
   virtual bool ShouldShowCaptureButtonAfterRegionSelected() const;
   virtual bool ShouldEndSessionOnShowingSearchResults() const;
   virtual bool ShouldEndSessionOnSearchResultClicked() const;
-  virtual bool ShouldAnnounceCaptureModeOpenOnInit() const;
-  virtual bool ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed() const;
+  // Returns true if a disclaimer dialog needs to be shown when a capture mode
+  // session is initialized with this behavior.
+  virtual bool NeedsDisclaimerOnInit() const;
+  virtual bool ShouldAnnounceCaptureModeUIOnDisclaimerDismissed() const;
   // Returns the full path for the capture file. If the creation of the path
   // failed, the path provided will be empty.
   using OnCaptureFolderCreatedCallback =

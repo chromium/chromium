@@ -15,9 +15,11 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -33,6 +35,7 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -62,6 +65,11 @@ aura::Window* GetParentContainer(aura::Window* root, bool is_active) {
   return Shell::GetContainer(
       root, is_active ? kShellWindowId_CaptureModeSearchResultsPanel
                       : kShellWindowId_SystemModalContainer);
+}
+
+std::u16string GetSearchResultsPanelTitle() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_SCREEN_CAPTURE_SEARCH_RESULTS_PANEL_TITLE);
 }
 
 }  // namespace
@@ -190,7 +198,7 @@ SearchResultsPanel::SearchResultsPanel() {
                   .SetProperty(views::kMarginsKey, kHeaderIconSpacing),
               // Title.
               views::Builder<views::Label>()
-                  .SetText(u"Search with Lens")
+                  .SetText(GetSearchResultsPanelTitle())
                   .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                   .SetFontList(
                       TypographyProvider::Get()->ResolveTypographyToken(
@@ -281,6 +289,7 @@ views::UniqueWidgetPtr SearchResultsPanel::CreateWidget(aura::Window* root,
   params.name = "SearchResultsPanelWidget";
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->SetContentsView(std::make_unique<SearchResultsPanel>());
+  widget->widget_delegate()->SetTitle(GetSearchResultsPanelTitle());
   return widget;
 }
 

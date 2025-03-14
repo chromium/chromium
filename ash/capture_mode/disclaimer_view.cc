@@ -78,19 +78,23 @@ constexpr gfx::Insets kTextContainerInsets = gfx::Insets(kContainerPadding);
 constexpr gfx::Size kImagePreferredSize(/*width=*/kImageWidth,
                                         /*height=*/kImageHeight);
 
-std::u16string GetTextTitle() {
+std::u16string GetTextTitle(bool is_reminder) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TITLE);
+  return l10n_util::GetStringUTF16(
+      is_reminder ? IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TITLE_REMINDER
+                  : IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TITLE);
 #else
-  return u"Disclaimer title";
+  return is_reminder ? u"Reminder title" : u"Disclaimer title";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-std::u16string GetTextAcceptButton() {
+std::u16string GetTextAcceptButton(bool is_reminder) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return l10n_util::GetStringUTF16(IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_ACCEPT);
+  return l10n_util::GetStringUTF16(
+      is_reminder ? IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_TITLE_REMINDER_ACCEPT
+                  : IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_ACCEPT);
 #else
-  return u"Accept Button";
+  return is_reminder ? u"Acknowledge button" : u"Accept Button";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
@@ -151,7 +155,8 @@ views::StyledLabel::RangeStyleInfo GetLinkTextStyleInfo(
   return info;
 }
 
-views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
+views::Builder<views::StyledLabel> GetParagraphOneBuilder(
+    base::RepeatingClosure press_terms_of_service_callback) {
   std::vector<size_t> offsets;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::u16string link_text = l10n_util::GetStringUTF16(
@@ -166,11 +171,11 @@ views::Builder<views::StyledLabel> GetParagraphOneBuilder() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   CHECK_EQ(offsets.size(), 1u);
 
-  // TODO: b/401110577 - Pass a callback here for the terms and conditions.
   return GetTextBodyBuilder()
       .SetText(std::move(text))
-      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
-                     GetLinkTextStyleInfo(base::DoNothing()))
+      .AddStyleRange(
+          gfx::Range(offsets[0], offsets[0] + link_text.size()),
+          GetLinkTextStyleInfo(std::move(press_terms_of_service_callback)))
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphOneId);
 }
 
@@ -187,7 +192,8 @@ views::Builder<views::StyledLabel> GetParagraphTwoBuilder() {
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphTwoId);
 }
 
-views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
+views::Builder<views::StyledLabel> GetParagraphThreeBuilder(
+    base::RepeatingClosure press_learn_more_link_callback) {
   std::vector<size_t> offsets;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::u16string link_text = l10n_util::GetStringUTF16(
@@ -202,19 +208,22 @@ views::Builder<views::StyledLabel> GetParagraphThreeBuilder() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   CHECK_EQ(offsets.size(), 1u);
 
-  // TODO: b/401110577 - Pass a callback here for the learn more link.
   return GetTextBodyBuilder()
       .SetText(std::move(text))
-      .AddStyleRange(gfx::Range(offsets[0], offsets[0] + link_text.size()),
-                     GetLinkTextStyleInfo(base::DoNothing()))
+      .AddStyleRange(
+          gfx::Range(offsets[0], offsets[0] + link_text.size()),
+          GetLinkTextStyleInfo(std::move(press_learn_more_link_callback)))
       .SetID(DisclaimerViewId::kDisclaimerViewParagraphThreeId);
 }
 
 }  // namespace
 
 DisclaimerView::DisclaimerView(
+    bool is_reminder,
     base::RepeatingClosure press_accept_button_callback,
-    base::RepeatingClosure press_decline_button_callback) {
+    base::RepeatingClosure press_decline_button_callback,
+    base::RepeatingClosure press_terms_of_service_callback,
+    base::RepeatingClosure press_learn_more_link_callback) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
@@ -250,37 +259,42 @@ DisclaimerView::DisclaimerView(
                           .SetEnabledColor(cros_tokens::kCrosSysOnSurface)
                           .SetHorizontalAlignment(
                               gfx::HorizontalAlignment::ALIGN_LEFT)
-                          .SetText(GetTextTitle())
+                          .SetText(GetTextTitle(is_reminder))
                           .SetAccessibleRole(ax::mojom::Role::kHeading)
                           .CopyAddressTo(&title_),
-                      GetParagraphOneBuilder(), GetParagraphTwoBuilder(),
-                      GetParagraphThreeBuilder()))
+                      GetParagraphOneBuilder(
+                          std::move(press_terms_of_service_callback)),
+                      GetParagraphTwoBuilder(),
+                      GetParagraphThreeBuilder(
+                          std::move(press_learn_more_link_callback))))
           .Build());
 
-  AddChildView(
+  auto button_layout_builder =
       views::Builder<views::BoxLayoutView>()
           .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
           .SetBetweenChildSpacing(kBetweenButtonsSpacing)
-          .SetInsideBorderInsets(kButtonContainerInsets)
-          .AddChildren(
-              views::Builder<views::MdTextButton>()
-                  .SetText(GetTextDeclineButton())
-                  .SetAccessibleName(GetTextDeclineButton())
-                  .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
-                  .SetStyle(ui::ButtonStyle::kProminent)
-                  .SetCallback(std::move(press_decline_button_callback))
-                  .SetID(kDisclaimerViewDeclineButtonId),
-              views::Builder<views::MdTextButton>()
-                  .SetText(GetTextAcceptButton())
-                  .SetAccessibleName(GetTextAcceptButton())
-                  .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
-                  .SetStyle(ui::ButtonStyle::kProminent)
-                  .SetCallback(std::move(press_accept_button_callback))
-                  .CopyAddressTo(&accept_button_)
-                  .SetID(kDisclaimerViewAcceptButtonId))
-          .Build()
+          .SetInsideBorderInsets(kButtonContainerInsets);
+  if (!is_reminder) {
+    button_layout_builder.AddChild(
+        views::Builder<views::MdTextButton>()
+            .SetText(GetTextDeclineButton())
+            .SetAccessibleName(GetTextDeclineButton())
+            .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
+            .SetStyle(ui::ButtonStyle::kProminent)
+            .SetCallback(std::move(press_decline_button_callback))
+            .SetID(kDisclaimerViewDeclineButtonId));
+  }
+  button_layout_builder.AddChild(
+      views::Builder<views::MdTextButton>()
+          .SetText(GetTextAcceptButton(is_reminder))
+          .SetAccessibleName(GetTextAcceptButton(is_reminder))
+          .SetMaxSize(gfx::Size(kImageWidth, kButtonHeight))
+          .SetStyle(ui::ButtonStyle::kProminent)
+          .SetCallback(std::move(press_accept_button_callback))
+          .CopyAddressTo(&accept_button_)
+          .SetID(kDisclaimerViewAcceptButtonId));
 
-  );
+  AddChildView(std::move(button_layout_builder).Build());
 
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kRadius});
 }
@@ -290,16 +304,21 @@ DisclaimerView::~DisclaimerView() = default;
 // static
 std::unique_ptr<views::Widget> DisclaimerView::CreateWidget(
     aura::Window* const root,
+    bool is_reminder,
     base::RepeatingClosure press_accept_button_callback,
-    base::RepeatingClosure press_decline_button_callback) {
+    base::RepeatingClosure press_decline_button_callback,
+    base::RepeatingClosure press_terms_of_service_callback,
+    base::RepeatingClosure press_learn_more_link_callback) {
   auto disclaimer_view = std::make_unique<DisclaimerView>(
-      std::move(press_accept_button_callback),
-      std::move(press_decline_button_callback));
+      is_reminder, std::move(press_accept_button_callback),
+      std::move(press_decline_button_callback),
+      std::move(press_terms_of_service_callback),
+      std::move(press_learn_more_link_callback));
 
   auto delegate = std::make_unique<views::WidgetDelegate>();
   delegate->SetOwnedByWidget(true);
   delegate->SetAccessibleWindowRole(ax::mojom::Role::kDialog);
-  delegate->SetAccessibleTitle(GetTextTitle());
+  delegate->SetAccessibleTitle(GetTextTitle(is_reminder));
   delegate->SetInitiallyFocusedView(disclaimer_view->accept_button());
 
   views::Widget::InitParams params(

@@ -11,6 +11,8 @@ module color.mojom;
 enum RendererColorId {
   kColorCssSystemBtnFace,
   kColorCssSystemBtnText,
+  kColorCssSystemField,
+  kColorCssSystemFieldText,
   kColorCssSystemGrayText,
   kColorCssSystemHighlight,
   kColorCssSystemHighlightText,

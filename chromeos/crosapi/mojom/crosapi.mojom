@@ -9,16 +9,13 @@ import "chromeos/components/payments/mojom/payment_app.mojom";
 import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
-import "chromeos/crosapi/mojom/audio_service.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
 import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chaps_service.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
 import "chromeos/crosapi/mojom/clipboard_history.mojom";
-import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
-import "chromeos/crosapi/mojom/desk.mojom";
 import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_local_account_extension_service.mojom";
@@ -38,8 +35,6 @@ import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/login.mojom";
 import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
-import "chromeos/crosapi/mojom/magic_boost.mojom";
-import "chromeos/crosapi/mojom/mahi.mojom";
 import "chromeos/crosapi/mojom/multi_capture_service.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
@@ -56,14 +51,9 @@ import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
-import "chromeos/crosapi/mojom/video_conference.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
 import "chromeos/crosapi/mojom/media_ui.mojom";
-import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
-import "mojo/public/mojom/base/string16.mojom";
-import "mojo/public/mojom/base/token.mojom";
-import "mojo/public/mojom/base/values.mojom";
 import "services/device/public/mojom/hid.mojom";
 import "services/media_session/public/mojom/audio_focus.mojom";
 import "services/media_session/public/mojom/media_controller.mojom";
@@ -79,10 +69,7 @@ import "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom";
 [Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
-  // Binds the audio devices service which provides audio info to Lacros
-  [MinVersion=82] BindAudioService@85(
-      pending_receiver<AudioService> receiver);
-
+  // BindAudioService@85 was removed.
   // REMOVED_62@62 was removed.
 
   // Binds Chrome OS Account Manager for Identity management.
@@ -142,10 +129,7 @@ interface Crosapi {
   [MinVersion=23] BindClipboardHistory@28(
       pending_receiver<ClipboardHistory> receiver);
 
-  // Binds the ContentProtection interface which is one dependency of the
-  // content decryption module.
-  [MinVersion=26] BindContentProtection@31(
-      pending_receiver<ContentProtection> receiver);
+  // BindContentProtection@31 was removed.
 
   // Binds the CrosDisplayConfigController interface for querying display info.
   // Added in M106.

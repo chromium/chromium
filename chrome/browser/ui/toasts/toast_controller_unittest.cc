@@ -26,6 +26,9 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace {
+
+constexpr int kTestStringResId = 399;
+
 class TestToastController : public ToastController {
  public:
   explicit TestToastController(ToastRegistry* toast_registry)
@@ -70,7 +73,8 @@ TEST_F(ToastControllerUnitTest, ShowToast) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -85,11 +89,35 @@ TEST_F(ToastControllerUnitTest, ShowToast) {
   EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
 }
 
+TEST_F(ToastControllerUnitTest, ShowToastWithBodyStringOverride) {
+  ToastRegistry* const registry = toast_registry();
+  registry->RegisterToast(
+      ToastId::kLinkCopied,
+      ToastSpecification::Builder(vector_icons::kEmailIcon).Build());
+
+  auto controller = std::make_unique<TestToastController>(registry);
+
+  // We should be able to show the toast because there is no toast showing.
+  EXPECT_FALSE(controller->IsShowingToast());
+  EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
+
+  EXPECT_CALL(*controller, CreateToast);
+
+  ToastParams params = ToastParams(ToastId::kLinkCopied);
+  params.body_string_override = u"Some toast body";
+
+  EXPECT_TRUE(controller->MaybeShowToast(std::move(params)));
+  ::testing::Mock::VerifyAndClear(controller.get());
+  EXPECT_TRUE(controller->IsShowingToast());
+  EXPECT_TRUE(controller->CanShowToast(ToastId::kLinkCopied));
+}
+
 TEST_F(ToastControllerUnitTest, ShowToastWithImage) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -113,7 +141,8 @@ TEST_F(ToastControllerUnitTest, ToastAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
   EXPECT_CALL(*controller, CreateToast);
@@ -131,7 +160,8 @@ TEST_F(ToastControllerUnitTest, ToastWithActionButtonAutomaticallyCloses) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
   auto controller = std::make_unique<TestToastController>(registry);
 
   EXPECT_CALL(*controller, CreateToast);
@@ -148,10 +178,12 @@ TEST_F(ToastControllerUnitTest, CloseTimerResetsWhenToastShown) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
   registry->RegisterToast(
       ToastId::kImageCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
 
@@ -202,7 +234,8 @@ TEST_F(ToastControllerWithRefinementsUnitTest, DoesNotShowToastWhenDisabled) {
   ToastRegistry* const registry = toast_registry();
   registry->RegisterToast(
       ToastId::kLinkCopied,
-      ToastSpecification::Builder(vector_icons::kEmailIcon, 0).Build());
+      ToastSpecification::Builder(vector_icons::kEmailIcon, kTestStringResId)
+          .Build());
 
   auto controller = std::make_unique<TestToastController>(registry);
 

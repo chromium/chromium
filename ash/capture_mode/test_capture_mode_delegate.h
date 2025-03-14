@@ -165,6 +165,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       const gfx::Image& image,
       gfx::Size image_original_size,
       TemplateURLRef::PostContent* post_content) override;
+  scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
+      const override;
   void SendRegionSearch(const SkBitmap& image,
                         const gfx::Rect& region,
                         ash::OnSearchUrlFetchedCallback search_callback,

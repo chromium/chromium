@@ -89,4 +89,16 @@ display::Display GlicWidget::GetDisplay() {
   return display::Screen::GetScreen()->GetPrimaryDisplay();
 }
 
+void GlicWidget::SetMinimumSize(const gfx::Size& size) {
+  minimum_widget_size_ = size;
+  // TODO(sanaakbani): Set this to a more reasonable minimum fallback size.
+  minimum_widget_size_.SetToMax(gfx::Size(1, 1));
+}
+
+gfx::Size GlicWidget::GetMinimumSize() const {
+  return base::FeatureList::IsEnabled(features::kGlicUserResize)
+             ? minimum_widget_size_
+             : gfx::Size();
+}
+
 }  // namespace glic

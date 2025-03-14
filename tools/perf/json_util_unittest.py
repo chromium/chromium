@@ -362,12 +362,8 @@ class JsonUtilTest(unittest.TestCase):
           'measurements': {
               'stat': [
                   {
-                      'value': 'value',
+                      'value': 'average',
                       'measurement': 140.6900000002235
-                  },
-                  {
-                      'value': 'error',
-                      'measurement': 13.676537086499565
                   },
               ]
           },
@@ -385,10 +381,6 @@ class JsonUtilTest(unittest.TestCase):
                       'value': 'min',
                       'measurement': 130.90000000037253
                   },
-                  {
-                      'value': 'error',
-                      'measurement': 13.676537086499565
-                  },
               ]
           },
           'key': {
@@ -404,10 +396,6 @@ class JsonUtilTest(unittest.TestCase):
                   {
                       'value': 'max',
                       'measurement': 172.90000000130385
-                  },
-                  {
-                      'value': 'error',
-                      'measurement': 13.676537086499565
                   },
               ]
           },
@@ -425,10 +413,6 @@ class JsonUtilTest(unittest.TestCase):
                       'value': 'sum',
                       'measurement': 1406.9000000022352
                   },
-                  {
-                      'value': 'error',
-                      'measurement': 13.676537086499565
-                  },
               ]
           },
           'key': {
@@ -444,10 +428,6 @@ class JsonUtilTest(unittest.TestCase):
                   {
                       'value': 'count',
                       'measurement': 10.0
-                  },
-                  {
-                      'value': 'error',
-                      'measurement': 13.676537086499565
                   },
               ]
           },
@@ -672,12 +652,8 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'value',
+                              'value': 'average',
                               'measurement': 2.0
-                          },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
                           },
                       ],
                   },
@@ -692,10 +668,6 @@ class JsonUtilTest(unittest.TestCase):
                       'stat': [
                           {
                               'value': 'min',
-                              'measurement': 1.0
-                          },
-                          {
-                              'value': 'error',
                               'measurement': 1.0
                           },
                       ],
@@ -713,10 +685,6 @@ class JsonUtilTest(unittest.TestCase):
                               'value': 'max',
                               'measurement': 3.0
                           },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
-                          },
                       ],
                   },
                   'key': {
@@ -732,10 +700,6 @@ class JsonUtilTest(unittest.TestCase):
                               'value': 'sum',
                               'measurement': 6.0
                           },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
-                          },
                       ],
                   },
                   'key': {
@@ -750,10 +714,6 @@ class JsonUtilTest(unittest.TestCase):
                           {
                               'value': 'count',
                               'measurement': 3.0
-                          },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
                           },
                       ],
                   },
@@ -832,12 +792,8 @@ class JsonUtilTest(unittest.TestCase):
                   'measurements': {
                       'stat': [
                           {
-                              'value': 'value',
+                              'value': 'average',
                               'measurement': 2.0
-                          },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
                           },
                       ],
                   },
@@ -854,10 +810,6 @@ class JsonUtilTest(unittest.TestCase):
                       'stat': [
                           {
                               'value': 'min',
-                              'measurement': 1.0
-                          },
-                          {
-                              'value': 'error',
                               'measurement': 1.0
                           },
                       ],
@@ -877,10 +829,6 @@ class JsonUtilTest(unittest.TestCase):
                               'value': 'max',
                               'measurement': 3.0
                           },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
-                          },
                       ],
                   },
                   'key': {
@@ -898,10 +846,6 @@ class JsonUtilTest(unittest.TestCase):
                               'value': 'sum',
                               'measurement': 6.0
                           },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
-                          },
                       ],
                   },
                   'key': {
@@ -918,10 +862,6 @@ class JsonUtilTest(unittest.TestCase):
                           {
                               'value': 'count',
                               'measurement': 3.0
-                          },
-                          {
-                              'value': 'error',
-                              'measurement': 1.0
                           },
                       ],
                   },
