@@ -63,6 +63,7 @@ constexpr char kResultLastActivityFieldName[] = "lastActivitySec";
 
 constexpr int kAutoApproveDeviceIdlenessCutoff = 300;
 constexpr base::TimeDelta kAutoApproveConnectionTimeout = base::Seconds(30);
+constexpr base::TimeDelta kMaximumSessionDuration = base::Hours(8);
 
 constexpr RemoteCommandJob::UniqueIDType kUniqueID = 123456789;
 
@@ -832,6 +833,16 @@ TEST_F(DeviceCommandStartCrdSessionJobTest,
             std::nullopt);
 }
 
+TEST_F(DeviceCommandStartCrdSessionJobTest,
+       LimitSessionDurationForSharedCrdSession) {
+  LogInAsKioskUser();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult(Payload()));
+
+  EXPECT_EQ(delegate().session_parameters().maximum_session_duration,
+            kMaximumSessionDuration);
+}
+
 TEST_F(
     DeviceCommandStartCrdSessionJobTest,
     ShouldNotSetConnectionAutoApproveTimeoutIfDeviceIsIdleMoreThanTheCutoff) {
@@ -1315,6 +1326,16 @@ TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
 
   EXPECT_SUCCESS(RunJobAndWaitForResult(RemoteAccessPayload()));
   EXPECT_FALSE(delegate().session_parameters().show_confirmation_dialog);
+}
+
+TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
+       ShouldNotLimitSessionDuration) {
+  AddActiveManagedNetwork();
+
+  EXPECT_SUCCESS(RunJobAndWaitForResult(RemoteAccessPayload()));
+
+  EXPECT_EQ(delegate().session_parameters().maximum_session_duration,
+            std::nullopt);
 }
 
 TEST_F(DeviceCommandStartCrdSessionJobRemoteAccessTest,
