@@ -21,16 +21,15 @@
 #include "media/base/audio_bus.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
-#define USE_SIMD 1
+#include <immintrin.h>
 #include <xmmintrin.h>
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
-#define USE_SIMD 1
 #include <arm_neon.h>
 #endif
 
-namespace media {
+namespace media::internal {
 
-namespace internal {
+namespace {
 
 bool InInterval(int n, Interval q) {
   return n >= q.first && n <= q.second;
@@ -49,20 +48,14 @@ float MultiChannelSimilarityMeasure(const float* dot_prod_a_b,
   return similarity_measure;
 }
 
-void MultiChannelDotProduct(const AudioBus* a,
-                            int frame_offset_a,
-                            const AudioBus* b,
-                            int frame_offset_b,
-                            int num_frames,
-                            float* dot_product) {
-  DCHECK_EQ(a->channels(), b->channels());
-  DCHECK_GE(frame_offset_a, 0);
-  DCHECK_GE(frame_offset_b, 0);
-  DCHECK_LE(frame_offset_a + num_frames, a->frames());
-  DCHECK_LE(frame_offset_b + num_frames, b->frames());
-
-// SIMD optimized variants can provide a massive speedup to this operation.
-#if defined(USE_SIMD)
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+void MultiChannelDotProduct_SSE(const AudioBus* a,
+                                int frame_offset_a,
+                                const AudioBus* b,
+                                int frame_offset_b,
+                                int num_frames,
+                                float* dot_product) {
+  // SIMD optimized variants can provide a massive speedup to this operation.
   const int rem = num_frames % 4;
   const int last_index = num_frames - rem;
   const int channels = a->channels();
@@ -70,7 +63,6 @@ void MultiChannelDotProduct(const AudioBus* a,
     const float* a_src = a->channel(ch) + frame_offset_a;
     const float* b_src = b->channel(ch) + frame_offset_b;
 
-#if defined(ARCH_CPU_X86_FAMILY)
     // First sum all components.
     __m128 m_sum = _mm_setzero_ps();
     for (int s = 0; s < last_index; s += 4) {
@@ -83,34 +75,113 @@ void MultiChannelDotProduct(const AudioBus* a,
     m_sum = _mm_add_ps(_mm_movehl_ps(m_sum, m_sum), m_sum);
     _mm_store_ss(dot_product + ch,
                  _mm_add_ss(m_sum, _mm_shuffle_ps(m_sum, m_sum, 1)));
-#elif defined(ARCH_CPU_ARM_FAMILY)
-    // First sum all components.
-    float32x4_t m_sum = vmovq_n_f32(0);
-    for (int s = 0; s < last_index; s += 4)
-      m_sum = vmlaq_f32(m_sum, vld1q_f32(a_src + s), vld1q_f32(b_src + s));
-
-    // Reduce to a single float for this channel.
-    float32x2_t m_half = vadd_f32(vget_high_f32(m_sum), vget_low_f32(m_sum));
-    dot_product[ch] = vget_lane_f32(vpadd_f32(m_half, m_half), 0);
-#endif
   }
 
-  if (!rem)
+  if (!rem) {
     return;
-  num_frames = rem;
+  }
+
   frame_offset_a += last_index;
   frame_offset_b += last_index;
-#else
-  memset(dot_product, 0, sizeof(*dot_product) * a->channels());
-#endif  // defined(USE_SIMD)
 
   // C version is required to handle remainder of frames (% 4 != 0)
   for (int k = 0; k < a->channels(); ++k) {
     const float* ch_a = a->channel(k) + frame_offset_a;
     const float* ch_b = b->channel(k) + frame_offset_b;
-    for (int n = 0; n < num_frames; ++n)
+    for (int n = 0; n < rem; ++n) {
       dot_product[k] += *ch_a++ * *ch_b++;
+    }
   }
+}
+
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+void MultiChannelDotProduct_NEON(const AudioBus* a,
+                                 int frame_offset_a,
+                                 const AudioBus* b,
+                                 int frame_offset_b,
+                                 int num_frames,
+                                 float* dot_product) {
+  // SIMD optimized variants can provide a massive speedup to this operation.
+  const int rem = num_frames % 4;
+  const int last_index = num_frames - rem;
+  const int channels = a->channels();
+  for (int ch = 0; ch < channels; ++ch) {
+    const float* a_src = a->channel(ch) + frame_offset_a;
+    const float* b_src = b->channel(ch) + frame_offset_b;
+
+    // First sum all components.
+    float32x4_t m_sum = vmovq_n_f32(0);
+    for (int s = 0; s < last_index; s += 4) {
+      m_sum = vmlaq_f32(m_sum, vld1q_f32(a_src + s), vld1q_f32(b_src + s));
+    }
+
+    // Reduce to a single float for this channel.
+    float32x2_t m_half = vadd_f32(vget_high_f32(m_sum), vget_low_f32(m_sum));
+    dot_product[ch] = vget_lane_f32(vpadd_f32(m_half, m_half), 0);
+  }
+
+  if (!rem) {
+    return;
+  }
+  num_frames = rem;
+  frame_offset_a += last_index;
+  frame_offset_b += last_index;
+
+  // C version is required to handle remainder of frames (% 4 != 0)
+  for (int k = 0; k < a->channels(); ++k) {
+    const float* ch_a = a->channel(k) + frame_offset_a;
+    const float* ch_b = b->channel(k) + frame_offset_b;
+    for (int n = 0; n < num_frames; ++n) {
+      dot_product[k] += *ch_a++ * *ch_b++;
+    }
+  }
+}
+#else
+
+void MultiChannelDotProduct_C(const AudioBus* a,
+                              int frame_offset_a,
+                              const AudioBus* b,
+                              int frame_offset_b,
+                              int num_frames,
+                              float* dot_product) {
+  // Zero out the memory we will accumulate into.
+  memset(dot_product, 0, sizeof(*dot_product) * a->channels());
+
+  for (int k = 0; k < a->channels(); ++k) {
+    const float* ch_a = a->channel(k) + frame_offset_a;
+    const float* ch_b = b->channel(k) + frame_offset_b;
+    for (int n = 0; n < num_frames; ++n) {
+      dot_product[k] += *ch_a++ * *ch_b++;
+    }
+  }
+}
+#endif
+}  // namespace
+
+void MultiChannelDotProduct(const AudioBus* a,
+                            int frame_offset_a,
+                            const AudioBus* b,
+                            int frame_offset_b,
+                            int num_frames,
+                            float* dot_product) {
+  DCHECK_EQ(a->channels(), b->channels());
+  DCHECK_GE(frame_offset_a, 0);
+  DCHECK_GE(frame_offset_b, 0);
+  DCHECK_LE(frame_offset_a + num_frames, a->frames());
+  DCHECK_LE(frame_offset_b + num_frames, b->frames());
+
+  static const auto dot_product_func = [] {
+#if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+    return MultiChannelDotProduct_SSE;
+#elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+    return MultiChannelDotProduct_NEON;
+#else
+    return MultiChannelDotProduct_C;
+#endif
+  }();
+
+  return dot_product_func(a, frame_offset_a, b, frame_offset_b, num_frames,
+                          dot_product);
 }
 
 void MultiChannelMovingBlockEnergies(const AudioBus* input,
@@ -132,8 +203,9 @@ void MultiChannelMovingBlockEnergies(const AudioBus* input,
     const float* slide_out = input_channel;
     const float* slide_in = input_channel + frames_per_block;
     for (int n = 1; n < num_blocks; ++n, ++slide_in, ++slide_out) {
-      energy[k + n * channels] = energy[k + (n - 1) * channels] - *slide_out *
-          *slide_out + *slide_in * *slide_in;
+      energy[k + n * channels] = energy[k + (n - 1) * channels] -
+                                 *slide_out * *slide_out +
+                                 *slide_in * *slide_in;
     }
   }
 }
@@ -218,8 +290,9 @@ int DecimatedSearch(int decimation,
       QuadraticInterpolation(similarity, &normalized_candidate_index,
                              &candidate_similarity);
 
-      int candidate_index = n - decimation + static_cast<int>(
-          normalized_candidate_index * decimation +  0.5f);
+      int candidate_index =
+          n - decimation +
+          static_cast<int>(normalized_candidate_index * decimation + 0.5f);
       if (candidate_similarity > best_similarity &&
           !InInterval(candidate_index, exclude_interval)) {
         optimal_index = candidate_index;
@@ -297,17 +370,16 @@ int OptimalIndex(const AudioBus* search_block,
                                   energy_candidate_blocks.get());
 
   // Energy of target frame.
-  MultiChannelDotProduct(target_block, 0, target_block, 0,
-                         target_size, energy_target_block.get());
+  MultiChannelDotProduct(target_block, 0, target_block, 0, target_size,
+                         energy_target_block.get());
 
-  int optimal_index = DecimatedSearch(kSearchDecimation,
-                                      exclude_interval, target_block,
-                                      search_block, energy_target_block.get(),
-                                      energy_candidate_blocks.get());
+  int optimal_index = DecimatedSearch(
+      kSearchDecimation, exclude_interval, target_block, search_block,
+      energy_target_block.get(), energy_candidate_blocks.get());
 
   int lim_low = std::max(0, optimal_index - kSearchDecimation);
-  int lim_high = std::min(num_candidate_blocks - 1,
-                          optimal_index + kSearchDecimation);
+  int lim_high =
+      std::min(num_candidate_blocks - 1, optimal_index + kSearchDecimation);
   return FullSearch(lim_low, lim_high, exclude_interval, target_block,
                     search_block, energy_target_block.get(),
                     energy_candidate_blocks.get());
@@ -315,11 +387,9 @@ int OptimalIndex(const AudioBus* search_block,
 
 void GetPeriodicHanningWindow(int window_length, float* window) {
   const float scale = 2.0f * std::numbers::pi_v<float> / window_length;
-  for (int n = 0; n < window_length; ++n)
+  for (int n = 0; n < window_length; ++n) {
     window[n] = 0.5f * (1.0f - std::cos(n * scale));
+  }
 }
 
-}  // namespace internal
-
-}  // namespace media
-
+}  // namespace media::internal

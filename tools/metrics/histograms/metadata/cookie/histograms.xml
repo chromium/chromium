@@ -604,6 +604,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.IsPersistentWhenSet.Subsampled" enum="Boolean"
+    expires_after="2025-10-31">
+  <owner>arichiv@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Whether a cookie set via CookieMonster::SetCanonicalCookie or
+    CookieMonster::SetAllCookies is persistent (true) or session (false).
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
     expires_after="2025-08-17">
   <owner>morlovich@chromium.org</owner>

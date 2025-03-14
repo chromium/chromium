@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActInFocusedTabErrorReason) -->
+
+<enum name="ActInFocusedTabErrorReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Get context failed"/>
+  <int value="2" label="Invalid action proto"/>
+  <int value="3" label="Target not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:ActInFocusedTabErrorReason) -->
+
 <!-- LINT.IfChange(GlicEntryPointImpression) -->
 
 <enum name="GlicEntryPointImpression">

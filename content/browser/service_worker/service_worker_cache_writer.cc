@@ -741,9 +741,9 @@ class ServiceWorkerCacheWriter::DataPipeReader {
 
  private:
   void ReadInternal(MojoResult) {
-    MojoResult result = data_->ReadData(
-        MOJO_READ_DATA_FLAG_NONE, buffer_->span().first(num_bytes_to_read_),
-        num_bytes_to_read_);
+    MojoResult result =
+        data_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                        buffer_->first(num_bytes_to_read_), num_bytes_to_read_);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       watcher_.ArmOrNotify();
       return;

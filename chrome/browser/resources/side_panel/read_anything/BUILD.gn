@@ -43,7 +43,7 @@ build_webui("build") {
     "language_menu.css",
     "language_toast.css",
     "read_anything_toolbar.css",
-    "toolbar_styles_shared.css",
+    "menus/simple_action_menu.css",
     "toolbar_styles_shared_lit.css",
     "voice_selection_menu.css",
   ]

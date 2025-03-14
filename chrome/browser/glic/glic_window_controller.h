@@ -14,9 +14,9 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_web_client_access.h"
+#include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -112,6 +112,10 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Sets the areas of the view from which it should be draggable.
   void SetDraggableAreas(const std::vector<gfx::Rect>& draggable_areas);
+
+  // Sets the minimum widget size that the widget will allow the user to resize
+  // to.
+  void SetMinimumWidgetSize(const gfx::Size& size);
 
   // Close the panel but keep the glic WebContents alive in the background.
   void Close();

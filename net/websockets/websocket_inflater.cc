@@ -31,7 +31,7 @@ class ShrinkableIOBufferWithSize : public IOBufferWithSize {
   void Shrink(int new_size) {
     // The `checked_cast` addresses the < 0 case.
     CHECK_LE(new_size, size());
-    SetSpan(span().first(base::checked_cast<size_t>(new_size)));
+    SetSpan(first(base::checked_cast<size_t>(new_size)));
   }
 
  private:

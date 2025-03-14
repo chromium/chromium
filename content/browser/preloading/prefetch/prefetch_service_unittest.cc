@@ -814,7 +814,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
             // `CreateRequestHandler()` to simulate
             // `PrefetchURLLoaderInterceptor::OnGetPrefetchComplete()` behavior,
             // which is the primary non-test `GetPrefetchToServe()` code path.
-            auto request_handler = prefetch_to_serve.CreateRequestHandler();
+            auto request_handler =
+                prefetch_to_serve.CreateRequestHandler().first;
             CHECK(request_handler);
             // Keep-alive the PrefetchRequestHandler, because destructing
             // `request_handler` here can signal that the serving is finished,

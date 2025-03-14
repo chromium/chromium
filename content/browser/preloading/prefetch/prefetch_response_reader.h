@@ -20,6 +20,8 @@
 namespace content {
 
 class PrefetchStreamingURLLoader;
+class ServiceWorkerClient;
+class ServiceWorkerMainResourceHandle;
 
 // `PrefetchResponseReader` stores the prefetched data needed for serving, and
 // serves URLLoaderClients (`serving_url_loader_clients_`). One
@@ -64,9 +66,11 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // `PrefetchStreamingURLLoader` to `event_queue_` and existing
   // `serving_url_loader_clients_`.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void OnReceiveResponse(std::optional<PrefetchErrorOnResponseReceived> status,
-                         network::mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body);
+  void OnReceiveResponse(
+      std::optional<PrefetchErrorOnResponseReceived> status,
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle);
   void HandleRedirect(PrefetchRedirectStatus redirect_status,
                       const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
@@ -89,7 +93,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   //   checks.
   // - Checking `Servable()`/`GetServableState()`.
   //   `cacheable_duration` is checked only there.
-  PrefetchRequestHandler CreateRequestHandler();
+  std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+  CreateRequestHandler();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
@@ -272,6 +277,12 @@ class CONTENT_EXPORT PrefetchResponseReader final
   scoped_refptr<PrefetchResponseReader> self_pointer_;
 
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader_;
+
+  // TODO(https://crbug.com/40947546): Currently redirects are not supported for
+  // ServiceWorker-controlled prefetches and thus we don't care about alignment
+  // between `PrefetchResponseReader`, `PrefetchStreamingURLLoader` and
+  // `PrefetchContainer` in terms of `ServiceWorkerMainResourceHandle`.
+  std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   base::WeakPtrFactory<PrefetchResponseReader> weak_ptr_factory_{this};
 };

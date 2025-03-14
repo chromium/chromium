@@ -8,7 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/glic/glic_tab_data.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 
 namespace glic {

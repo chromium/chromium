@@ -10,31 +10,32 @@ assert(enable_glic)
 
 source_set("glic") {
   sources = [
-    "auth_controller.h",
-    "glic_annotation_manager.cc",
     "glic_border_view.h",
     "glic_button_controller.h",
     "glic_button_controller_delegate.h",
-    "glic_cookie_synchronizer.h",
     "glic_enabling.h",
-    "glic_focused_tab_manager.h",
     "glic_fre_ui.h",
     "glic_iph_controller.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
-    "glic_page_context_fetcher.h",
-    "glic_page_handler.h",
     "glic_pref_names.h",
     "glic_profile_manager.h",
     "glic_settings_util.h",
-    "glic_tab_data.h",
     "glic_tab_indicator_helper.h",
-    "glic_ui.h",
     "glic_vector_icon_manager.h",
     "glic_view.h",
-    "glic_web_client_access.h",
     "glic_window_controller.h",
-    "guest_util.h",
+    "host/auth_controller.h",
+    "host/context/glic_focused_tab_manager.h",
+    "host/context/glic_page_context_fetcher.h",
+    "host/context/glic_tab_data.h",
+    "host/glic_annotation_manager.cc",
+    "host/glic_annotation_manager.h",
+    "host/glic_cookie_synchronizer.h",
+    "host/glic_page_handler.h",
+    "host/glic_ui.h",
+    "host/glic_web_client_access.h",
+    "host/guest_util.h",
     "scoped_glic_button_indicator.h",
   ]
   public_deps = [
@@ -72,16 +73,13 @@ source_set("enum") {
 
 source_set("impl") {
   sources = [
-    "auth_controller.cc",
     "browser_conditions.cc",
     "browser_conditions.h",
     "fre_util.cc",
     "fre_util.h",
     "glic_border_view.cc",
     "glic_button_controller.cc",
-    "glic_cookie_synchronizer.cc",
     "glic_enabling.cc",
-    "glic_focused_tab_manager.cc",
     "glic_fre_controller.cc",
     "glic_fre_controller.h",
     "glic_fre_dialog_view.cc",
@@ -94,18 +92,10 @@ source_set("impl") {
     "glic_keyed_service_factory.cc",
     "glic_metrics.cc",
     "glic_metrics.h",
-    "glic_page_context_fetcher.cc",
-    "glic_page_handler.cc",
     "glic_pref_names.cc",
     "glic_profile_manager.cc",
-    "glic_screenshot_capturer.cc",
-    "glic_screenshot_capturer.h",
     "glic_settings_util.cc",
-    "glic_synthetic_trial_manager.cc",
-    "glic_synthetic_trial_manager.h",
-    "glic_tab_data.cc",
     "glic_tab_indicator_helper.cc",
-    "glic_ui.cc",
     "glic_vector_icon_manager.cc",
     "glic_view.cc",
     "glic_widget.cc",
@@ -115,10 +105,21 @@ source_set("impl") {
     "glic_window_controller.cc",
     "glic_window_resize_animation.cc",
     "glic_window_resize_animation.h",
-    "guest_util.cc",
+    "host/auth_controller.cc",
+    "host/context/glic_focused_tab_manager.cc",
+    "host/context/glic_page_context_fetcher.cc",
+    "host/context/glic_screenshot_capturer.cc",
+    "host/context/glic_screenshot_capturer.h",
+    "host/context/glic_tab_data.cc",
+    "host/glic_cookie_synchronizer.cc",
+    "host/glic_page_handler.cc",
+    "host/glic_synthetic_trial_manager.cc",
+    "host/glic_synthetic_trial_manager.h",
+    "host/glic_ui.cc",
+    "host/guest_util.cc",
+    "host/webui_contents_container.cc",
+    "host/webui_contents_container.h",
     "scoped_glic_button_indicator.cc",
-    "webui_contents_container.cc",
-    "webui_contents_container.h",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
@@ -199,11 +200,11 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "glic_button_controller_unittest.cc",
-    "glic_cookie_synchronizer_unittest.cc",
     "glic_enabling_unittest.cc",
     "glic_fre_controller_unittest.cc",
     "glic_metrics_unittest.cc",
-    "glic_screenshot_capturer_unittest.cc",
+    "host/context/glic_screenshot_capturer_unittest.cc",
+    "host/glic_cookie_synchronizer_unittest.cc",
   ]
   deps = [
     ":glic",
@@ -229,7 +230,7 @@ source_set("browser_tests") {
     "glic_fre_controller_browsertest.cc",
     "glic_policy_browsertest.cc",
     "glic_profile_manager_browsertest.cc",
-    "guest_util_browsertest.cc",
+    "host/guest_util_browsertest.cc",
   ]
   deps = [
     ":glic",
@@ -256,16 +257,16 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
-    "glic_annotation_manager_interactive_uitest.cc",
-    "glic_api_uitest.cc",
     "glic_border_view_interactive_uitest.cc",
     "glic_fre_controller_interactive_uitest.cc",
     "glic_permission_enforcement_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
     "glic_tab_indicator_helper_interactive_uitest.cc",
-    "glic_ui_interactive_uitest.cc",
     "glic_window_controller_interactive_uitest.cc",
     "glic_window_resize_animation_interactive_uitest.cc",
+    "host/glic_annotation_manager_interactive_uitest.cc",
+    "host/glic_api_uitest.cc",
+    "host/glic_ui_interactive_uitest.cc",
   ]
   deps = [
     ":glic",

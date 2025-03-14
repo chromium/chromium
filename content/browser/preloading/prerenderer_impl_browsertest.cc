@@ -212,7 +212,10 @@ class PrerendererImplBrowserTestPrefetchAhead
               {"prefetch_timeout_ms", "1500"},
               {"block_until_head_timeout_moderate_prefetch", "500"},
           }}},
-        {blink::features::kLCPTimingPredictorPrerender2});
+        {blink::features::kLCPTimingPredictorPrerender2,
+         // `kPrefetchServiceWorker` is disabled to make the prefetch fail due
+         // to ServiceWorker-related ineligibility.
+         features::kPrefetchServiceWorker});
   }
 };
 

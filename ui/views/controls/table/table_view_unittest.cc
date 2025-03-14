@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -23,6 +24,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/display/screen.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/text_utils.h"
@@ -170,15 +172,23 @@ class TableViewTestHelper {
     return table_->hovered_rows_;
   }
 
-  void UpdateHover(std::optional<gfx::Point> view_coordinates) {
-    table_->UpdateHover(view_coordinates);
+  gfx::Transform GetHoverLayerTransform() const {
+    return table_->hover_layer_.transform();
   }
 
-  void UpdateHoverAtMouseLocation(gfx::Point mouse_location) {
-    display::Screen::GetScreen()->SetCursorScreenPointForTesting(
-        mouse_location);
+  void SetHover(gfx::Point view_coordinates) {
+    table_->SetHover(view_coordinates);
+  }
 
-    table_->UpdateHoverAtMouseLocation();
+  void ClearHover() { table_->ClearHover(); }
+
+  gfx::Point GetScrollOffset() { return table_->scroll_offset_; }
+
+  void ScrollTableTo(gfx::PointF offset) {
+    ScrollView* scroll_view = ScrollView::GetScrollViewForContents(table_);
+    EXPECT_NE(scroll_view, nullptr);
+
+    scroll_view->ScrollToOffset(offset);
   }
 
  private:
@@ -2632,6 +2642,12 @@ class TableViewMouseHoverTest : public ViewsTestBase {
   ~TableViewMouseHoverTest() override = default;
 
   void SetUp() override {
+// MacOS needs it's own custom test screen defined, otherwise it defaults to
+// using the real screen.
+#if BUILDFLAG(IS_MAC)
+    test_screen_ = std::make_unique<display::test::TestScreen>();
+    display::Screen::SetScreenInstance(test_screen_.get());
+#endif
     ViewsTestBase::SetUp();
 
     model_ = std::make_unique<TestTableModel3>();
@@ -2646,6 +2662,7 @@ class TableViewMouseHoverTest : public ViewsTestBase {
                                              TableType::kIconAndText, false);
     table_ = table.get();
     auto scroll_view = TableView::CreateScrollViewWithTable(std::move(table));
+    scroll_view_ = scroll_view.get();
     scroll_view->SetBounds(0, 0, 1000, 1000);
     helper_ = std::make_unique<TableViewTestHelper>(table_);
 
@@ -2668,17 +2685,71 @@ class TableViewMouseHoverTest : public ViewsTestBase {
 
   void TearDown() override {
     table_ = nullptr;
+    scroll_view_ = nullptr;
     helper_.reset();
     widget_.reset();
     ViewsTestBase::TearDown();
+    display::Screen::SetScreenInstance(nullptr);
+    test_screen_.reset();
+  }
+
+  void VerifyTableViewOrder(std::string expected_view_order) {
+    // The table views should match the expected view order.
+    EXPECT_EQ(expected_view_order, GetRowsInViewOrderAsString(table_));
+
+    // Update the expected view order to have header information if exists.
+    if (helper_->header()) {
+      expected_view_order =
+          GetHeaderRowAsString(table_) + ", " + expected_view_order;
+    }
+
+    EXPECT_EQ(expected_view_order, GetRowsInVirtualViewAsString(table_));
+  }
+
+  void MoveMouseTo(gfx::Point point_in_table_view) {
+    const gfx::NativeWindow& window = GetRootWindow(widget_.get());
+    ui::test::EventGenerator generator(window);
+
+    // Account for window position.
+    gfx::Rect table_rect = table_->GetBoundsInScreen();
+    point_in_table_view.Offset(table_rect.x(), table_rect.y());
+
+    // Perform move (note: this will trigger OnMouseMoved()).
+    generator.MoveMouseTo(point_in_table_view);
+
+    // Send appropriate events.
+    if (table_->GetLocalBounds().Intersects(gfx::Rect(
+            point_in_table_view.x(), point_in_table_view.y(), 1, 1))) {
+      generator.SendMouseEnter();
+    } else {
+      generator.SendMouseExit();
+    }
+  }
+
+  gfx::Point GetPointForRow(size_t row) {
+    return gfx::Point(10, (row * table_->GetRowHeight()) + 10);
   }
 
  protected:
   std::unique_ptr<TestTableModel2> model_;
   raw_ptr<TableView> table_ = nullptr;
+  raw_ptr<ScrollView> scroll_view_ = nullptr;
   std::unique_ptr<TableViewTestHelper> helper_;
   UniqueWidgetPtr widget_;
+
+  // Only used on MacOS.
+  std::unique_ptr<display::test::TestScreen> test_screen_;
 };
+
+#define EXPECT_HOVERED_ROWS(range) EXPECT_EQ(helper_->GetHoveredRows(), (range))
+#define EXPECT_HOVERED_TRANSFORM(x, y, width, height)                     \
+  EXPECT_EQ(helper_->GetHoverLayerTransform(),                            \
+            gfx::Transform(gfx::AxisTransform2d::FromScaleAndTranslation( \
+                gfx::Vector2dF((width), (height)), gfx::Vector2dF((x), (y)))))
+#define EXPECT_SCROLL_OFFSET(x, y) \
+  EXPECT_EQ(helper_->GetScrollOffset(), gfx::Point(x, y))
+#define EXPECT_SCROLL_OFFSET_NE(x, y) \
+  EXPECT_NE(helper_->GetScrollOffset(), gfx::Point(x, y))
 
 TEST_F(TableViewMouseHoverTest, TestMouseHoverKillSwitch) {
   EXPECT_EQ(4u, model_->RowCount());
@@ -2686,16 +2757,16 @@ TEST_F(TableViewMouseHoverTest, TestMouseHoverKillSwitch) {
 
   // Test Killswitch
   table_->SetMouseHoveringEnabled(false);
-  EXPECT_FALSE(table_->IsHoveringEnabled());
+  EXPECT_FALSE(table_->IsHoverEffectEnabled());
 
   // Test that the hovered rows get reset, even if mouse hovering gets disabled
   // while hovering a group.
   table_->SetMouseHoveringEnabled(true);
-  helper_->UpdateHover(
-      std::make_optional<gfx::Point>(10, table_->GetRowHeight() - 10));
-  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(0, 1));
+  MoveMouseTo(GetPointForRow(0));
+  EXPECT_HOVERED_ROWS(GroupRange(0, 1));
+
   table_->SetMouseHoveringEnabled(false);
-  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
+  EXPECT_HOVERED_ROWS(std::nullopt);
 }
 
 TEST_F(TableViewMouseHoverTest, TestMouseHoverSingleRow) {
@@ -2703,40 +2774,28 @@ TEST_F(TableViewMouseHoverTest, TestMouseHoverSingleRow) {
   EXPECT_EQ(2u, helper_->visible_col_count());
 
   // Hover the first row.
-  // Rows start from y = 0.
-  // Therefore, y = GetRowHeight() - x, (where 0 < x <= GetRowHeight())
-  // should compute a y-coordinate that corresponds with the first row.
-  helper_->UpdateHover(
-      std::make_optional<gfx::Point>(10, table_->GetRowHeight() - 10));
-  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(0, 1));
+  MoveMouseTo(GetPointForRow(0));
+  EXPECT_HOVERED_ROWS(GroupRange(0, 1));
 
   // Explicitly unhover the mouse.
-  helper_->UpdateHover(std::nullopt);
-  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
+  helper_->ClearHover();
+  EXPECT_HOVERED_ROWS(std::nullopt);
 
   // Hover the second row.
-  // Same math, except instead of GetRowHeight() - x, its GetRowHeight() + x.
-  helper_->UpdateHover(
-      std::make_optional<gfx::Point>(10, table_->GetRowHeight() + 10));
-
-  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(1, 1));
+  MoveMouseTo(GetPointForRow(1));
+  EXPECT_HOVERED_ROWS(GroupRange(1, 1));
 
   // Out of bounds hover.
-  helper_->UpdateHover(std::make_optional<gfx::Point>(
-      10, (table_->GetRowCount() * table_->GetRowHeight()) + 10));
-  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
-  helper_->UpdateHover(std::make_optional<gfx::Point>(10, -10));
-  EXPECT_EQ(helper_->GetHoveredRows(), std::nullopt);
+  MoveMouseTo(GetPointForRow(table_->GetRowCount()));
+  EXPECT_HOVERED_ROWS(std::nullopt);
+
+  MoveMouseTo(GetPointForRow(-1));
+  EXPECT_HOVERED_ROWS(std::nullopt);
 }
 
 TEST_F(TableViewMouseHoverTest, TestMouseHoverMultiRow) {
   EXPECT_EQ(4u, model_->RowCount());
   EXPECT_EQ(2u, helper_->visible_col_count());
-
-  const int third_row_y =
-      ((table_->GetRowCount() - 1) * table_->GetRowHeight()) - 10;
-  const int fourth_row_y =
-      (table_->GetRowCount() * table_->GetRowHeight()) - 10;
 
   // Configure the grouper so that there is one group at the end:
   // A 1
@@ -2747,13 +2806,173 @@ TEST_F(TableViewMouseHoverTest, TestMouseHoverMultiRow) {
   grouper.SetRanges({1, 1, 2});
   table_->SetGrouper(&grouper);
 
-  // Hover the last row (4), and expect that (3) is also hovered.
-  helper_->UpdateHover(std::make_optional<gfx::Point>(10, fourth_row_y));
-  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(2, 2));
+  // Hover the last row (4 in diagram), and expect that (3) is also hovered.
+  MoveMouseTo(GetPointForRow(3));
+  EXPECT_HOVERED_ROWS(GroupRange(2, 2));
 
-  // Hover the second to last row (3), and expect that (4) is also hovered.
-  helper_->UpdateHover(std::make_optional<gfx::Point>(10, third_row_y));
-  EXPECT_EQ(helper_->GetHoveredRows(), GroupRange(2, 2));
+  // Hover the second to last row (3 in diagram), and expect (3, 4) is hovered.
+  MoveMouseTo(GetPointForRow(2));
+  EXPECT_HOVERED_ROWS(GroupRange(2, 2));
+}
+
+TEST_F(TableViewMouseHoverTest, TestHoverWhileSorting) {
+  // The hovered row(s) can be tricky to find, since the data in the model vs.
+  // the data onscreen have different indices based on the sort. This test
+  // ensures `hovered_rows_` is operating on model indices, and the hover layer
+  // receives the correct transform.
+
+  // Configure the grouper so that there is one group at the end:
+  // A 0 1
+  // B 1 1
+  // C 2 2
+  //   3 0
+  TableGrouperImpl grouper;
+  grouper.SetRanges({1, 1, 2});
+  table_->SetGrouper(&grouper);
+
+  // Rows should be in default order.
+  ASSERT_EQ(0u, table_->sort_descriptors().size());
+  VerifyTableViewOrder("[0, 1], [1, 1], [2, 2], [3, 0]");
+
+  // First, Expect that hovering the second row only highlights that row.
+  //
+  // A 0 1
+  // B 1 1 <- Data under cursor
+  // C 2 2
+  //   3 0
+  MoveMouseTo(GetPointForRow(1));
+  EXPECT_HOVERED_ROWS(GroupRange(1, 1));
+
+  // Assert Hover Layer Bounds encapsulate the second row.
+  //
+  // A 0 1
+  // B 1 1 <- Hovered
+  // C 2 2
+  //   3 0
+  EXPECT_HOVERED_TRANSFORM(/*x=*/0, /*y=*/table_->GetRowHeight(),
+                           /*width=*/table_->bounds().width(),
+                           /*height=*/table_->GetRowHeight());
+
+  // Next, Toggle the sort (first column descending).
+  //
+  // C 2 2
+  //   3 0
+  // B 1 1
+  // A 0 1
+  table_->ToggleSortOrder(0);
+  table_->ToggleSortOrder(0);
+  ASSERT_EQ(1u, table_->sort_descriptors().size());
+  EXPECT_FALSE(table_->sort_descriptors()[0].ascending);
+  VerifyTableViewOrder("[2, 2], [3, 0], [1, 1], [0, 1]");
+
+  // Expect that the hover updates automatically (no explicit mouse movement),
+  // and highlights the group it's under (which should be rows {2,3} in terms
+  // of model indices, and {0, 1} in terms of view indices).
+  //
+  // C 2 2
+  //   3 0 <- Data under cursor
+  // B 1 1
+  // A 0 1
+  EXPECT_HOVERED_ROWS(GroupRange(2, 2));
+
+  // Assert Hover Layer Bounds encapsulates the first and second row.
+  //
+  // C 2 2 <- Hovered
+  //   3 0 <- Hovered
+  // B 1 1
+  // A 0 1
+  EXPECT_HOVERED_TRANSFORM(/*x=*/0, /*y=*/0,
+                           /*width=*/table_->bounds().width(),
+                           /*height=*/table_->GetRowHeight() * 2);
+}
+
+TEST_F(TableViewMouseHoverTest, TestScrollingHoverInteraction) {
+  EXPECT_NE(ScrollView::GetScrollViewForContents(table_), nullptr);
+
+  // The cursor is stationary on the first row. Coordinates = ScrollView bounds
+  //
+  // (0,0)
+  //      A 0 <- Cursor
+  //      B 1
+  //      C 2
+  //      D 3
+  // (0, height)
+  MoveMouseTo(GetPointForRow(0));
+  EXPECT_HOVERED_ROWS(GroupRange(0, 1));
+  EXPECT_HOVERED_TRANSFORM(/*x=*/0, /*y=*/0,
+                           /*width=*/table_->GetLocalBounds().width(),
+                           /*height=*/table_->GetRowHeight());
+
+  // The ScrollView is being scrolled (via trackpad, mousewheel, etc.). The
+  // hovered row should change, and the transform should adjust based on the
+  // scroll offset.
+  //
+  //      A 0
+  // (0,0)
+  //      B 1  <- Cursor
+  //      C 2
+  //      D 3
+  //     <empty space>
+  // (0, height)
+  helper_->ScrollTableTo(gfx::PointF(0, table_->GetRowHeight()));
+  EXPECT_SCROLL_OFFSET(0, table_->GetRowHeight());
+  EXPECT_HOVERED_ROWS(GroupRange(1, 1));
+  EXPECT_HOVERED_TRANSFORM(/*x=*/0, /*y=*/0,
+                           /*width=*/table_->GetLocalBounds().width(),
+                           /*height=*/table_->GetRowHeight());
+}
+
+TEST_F(TableViewMouseHoverTest, TestUpdatingScrollOffsetUponLayoutDeprecation) {
+  // When a layout shift occurs in TableView, if it is part of a ScrollView, the
+  // scroll offset should be updated.
+  EXPECT_NE(ScrollView::GetScrollViewForContents(table_), nullptr);
+
+  // There should be no starting offset.
+  EXPECT_SCROLL_OFFSET(0, 0);
+
+  // After scrolling, there should be some offset.
+  helper_->ScrollTableTo(gfx::PointF(0, 100));
+  EXPECT_SCROLL_OFFSET(0, 100);
+
+  // Then verify that a layout shift caused the offset to be updated (only
+  // devices with kScrollWithLayers disabled.)
+  table_->SetBounds(table_->GetLocalBounds().x(), table_->GetLocalBounds().y(),
+                    table_->GetLocalBounds().width(),
+                    table_->GetLocalBounds().height() - 10);
+  if (base::FeatureList::IsEnabled(features::kUiCompositorScrollWithLayers)) {
+    EXPECT_SCROLL_OFFSET(0, 100);
+  } else {
+    EXPECT_SCROLL_OFFSET_NE(0, 100);
+  }
+}
+
+TEST_F(TableViewMouseHoverTest, TestHoveringSelectedGroup) {
+  // Sort by default on column 0, ascending.
+  table_->ToggleSortOrder(0);
+  ASSERT_EQ(1u, table_->sort_descriptors().size());
+  EXPECT_TRUE(table_->sort_descriptors()[0].ascending);
+  VerifyTableViewOrder("[0, 1], [1, 1], [2, 2], [3, 0]");
+
+  // User hovers over first row.
+  MoveMouseTo(GetPointForRow(0));
+  EXPECT_HOVERED_ROWS(GroupRange(0, 1));
+
+  // User selects first row; hover should be cleared upon selection.
+  ui::ListSelectionModel new_selection;
+  helper_->SelectRowsInRangeFrom(0, true, &new_selection);
+  helper_->SetSelectionModel(new_selection);
+  EXPECT_HOVERED_ROWS(std::nullopt);
+
+  // User hovers over second row.
+  MoveMouseTo(GetPointForRow(1));
+  EXPECT_HOVERED_ROWS(GroupRange(1, 1));
+
+  // Update second row (model index) so that first (selected) and second
+  // (non-selected, hovered) rows swap. The hover should be cleared since the
+  // first row is selected, but it's now underneath the second row.
+  model_->ChangeRow(1, -1, 1);
+  VerifyTableViewOrder("[-1, 1], [0, 1], [2, 2], [3, 0]");
+  EXPECT_HOVERED_ROWS(std::nullopt);
 }
 
 // The test calculation paint icon bounds.

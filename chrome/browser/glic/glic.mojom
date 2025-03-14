@@ -98,6 +98,21 @@ enum GetTabContextErrorReason {
   [ MinVersion=1 ] kNoFocusableTabs = 4,
 };
 
+// Reason for failure while acting in a focused tab. This MUST be kept in
+// sync with the glic_api.ts enum.
+// LINT.IfChange(ActInFocusedTabErrorReason)
+[Stable, Extensible]
+enum ActInFocusedTabErrorReason {
+  [Default] kUnknown = 0,
+  // Capturing Context after acting failed.
+  kGetContextFailed = 1,
+  // The action proto is invalid.
+  kInvalidActionProto = 2,
+  // Action target is not found.
+  kTargetNotFound = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActInFocusedTabErrorReason)
+
 // Reason why a focused tab candidate is not valid for focus.
 [Stable, Extensible]
 enum InvalidCandidateError {
@@ -136,6 +151,11 @@ union GetContextResult {
 union CaptureScreenshotResult {
   CaptureScreenshotErrorReason error_reason;
   Screenshot screenshot;
+};
+
+union ActInFocusedTabResult {
+  ActInFocusedTabErrorReason error_reason;
+  ActInFocusedTabResponse act_in_focused_tab_response;
 };
 
 // Information about the user profile.
@@ -291,6 +311,11 @@ interface WebClientHandler {
   GetContextFromFocusedTab(GetTabContextOptions options)
       => (GetContextResult result);
 
+  // Returns the result of acting in the currently active tab.
+  // Action proto is a serialized proto of type .....
+  ActInFocusedTab(array<uint8> action_proto, GetTabContextOptions options)
+      => (ActInFocusedTabResult result);
+
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   // If the widget doesn't exist yet, `size` will be used as its initial size
@@ -318,6 +343,10 @@ interface WebClientHandler {
   // to avoid conflicting with dragging the Glic panel. Also, elements with text
   // like <h1> should have style 'user-select: none'.
   SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas) => ();
+
+  // Sets the minimum possible size that a user can manually resize to for the
+  // widget hosting the WebUI.
+  SetMinimumPanelSize(gfx.mojom.Size size);
 
   // Set the state of the Microphone permission pref:
   // prefs::kGlicMicrophoneEnabled. Returns when the browser has stored the new
@@ -535,6 +564,11 @@ struct TabContext {
   // Information about the annotated page content. Provided if the document is
   // a web page and annotated page content was requested.
   AnnotatedPageData? annotated_page_data;
+};
+
+struct ActInFocusedTabResponse {
+  // The context of the focused tab after the action was completed.
+  TabContext tab_context;
 };
 
 // Information about a web page being rendered in a tab.

@@ -2,7 +2,7 @@ file://storage/OWNERS
 
 # Emeritus
 ayui@chromium.org
-estade@chromium.org
+evanstade@microsoft.com
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

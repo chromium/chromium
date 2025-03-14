@@ -112,7 +112,10 @@ enum class LobsterMetricState {
   kBlockedByHardware = 40,
   // recorded when the feature is blocked when in Kiosk mode.
   kBlockedByKioskMode = 41,
-  kMaxValue = kBlockedByKioskMode,
+  // recorded when the feature is blocked when in unsupported form factors, i.e.
+  // tablet mode.
+  kBlockedByFormFactor = 42,
+  kMaxValue = kBlockedByFormFactor,
 };
 
 }  // namespace ash

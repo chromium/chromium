@@ -54,7 +54,7 @@ class CORE_EXPORT AbstractInlineTextBox final
   Node* GetNode() const;
   LayoutText* GetLayoutText() const { return layout_text_.Get(); }
   AXObjectCache* ExistingAXObjectCache() const;
-  void CharacterWidths(Vector<float>&) const;
+  void GetCharacterLayoutPixelOffsets(Vector<int>&) const;
   void GetWordBoundaries(Vector<WordBoundaries>&) const;
   String GetText() const;
 
@@ -64,11 +64,6 @@ class CORE_EXPORT AbstractInlineTextBox final
   // between layoutObjects.
   bool IsFirstForLayoutObject() const;
 
-  // Deprecated. These are just used in the comparison between the current
-  // algorithm with the new one. See
-  // features::IsAccessibilityBlockFlowIteratorEnabled().
-  AbstractInlineTextBox* NextOnLine() const;
-  AbstractInlineTextBox* PreviousOnLine() const;
   bool IsLineBreak() const;
   bool NeedsTrailingSpace() const;
   InlineCursor GetCursor() const;

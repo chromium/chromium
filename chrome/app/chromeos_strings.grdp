@@ -6855,7 +6855,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Quick Insert
   </message>
   <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TEXT" desc="Text inside the first description section.">
-    Insert links, emojis, and more. You can also get help writing with Google AI.
+    Insert links, emojis, and more. You can also get help writing and creating images with Google AI.
   </message>
   <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the first description section.">
     Quick insert key is located beneath the tab key

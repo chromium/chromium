@@ -15,11 +15,11 @@ import {ReadAnythingLogger} from '../read_anything_logger.js';
 import {getHtml} from './letter_spacing_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem} from './menu_util.js';
-import type {SimpleActionMenu} from './simple_action_menu.js';
+import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface LetterSpacingMenuElement {
   $: {
-    menu: SimpleActionMenu,
+    menu: SimpleActionMenuElement,
   };
 }
 

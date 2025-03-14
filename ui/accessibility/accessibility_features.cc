@@ -75,7 +75,7 @@ bool IsAccessibilityTreeForViewsEnabled() {
 
 BASE_FEATURE(kViewsAccessibilitySerializeOnDataChanged,
              "ViewsAccessibilitySerializeOnDataChanged",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsViewsAccessibilitySerializeOnDataChangeEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kViewsAccessibilitySerializeOnDataChanged);

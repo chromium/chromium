@@ -782,6 +782,45 @@ void PrefetchService::CheckHasServiceWorker(
   CHECK(prefetch_container);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "loading", "PrefetchService::CheckHasServiceWorker", this);
+
+  if (redirect_data) {
+    switch (prefetch_container->service_worker_state()) {
+      case PrefetchServiceWorkerState::kDisallowed:
+        break;
+
+      case PrefetchServiceWorkerState::kAllowed:
+        // Should have been transitioned out already.
+        NOTREACHED();
+
+      case PrefetchServiceWorkerState::kControlled:
+        // Currently we disallow redirects for ServiceWorker-controlled
+        // prefetches.
+        // TODO(https://crbug.com/40947546): Supply an appropriate eligibility
+        // value if needed.
+        OnGotEligibility(std::move(prefetch_container),
+                         std::move(redirect_data),
+                         PreloadingEligibility::kUserHasServiceWorker);
+        return;
+    }
+  } else {
+    switch (prefetch_container->service_worker_state()) {
+      case PrefetchServiceWorkerState::kDisallowed:
+        break;
+
+      case PrefetchServiceWorkerState::kAllowed:
+        // The controlling ServiceWorker will be checked by
+        // `ServiceWorkerMainResourceLoaderInterceptor` from
+        // `PrefetchStreamingURLLoader`, not here during eligibility check.
+        OnGotServiceWorkerResult(std::move(prefetch_container), url,
+                                 std::move(redirect_data), base::Time::Now(),
+                                 ServiceWorkerCapability::NO_SERVICE_WORKER);
+        return;
+
+      case PrefetchServiceWorkerState::kControlled:
+        NOTREACHED();
+    }
+  }
+
   // This service worker check assumes that the prefetch will only ever be
   // performed in a first-party context (main frame prefetch). At the moment
   // that is true but if it ever changes then the StorageKey will need to be
@@ -1454,7 +1493,10 @@ void PrefetchService::SendPrefetchRequest(
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                           base::Unretained(this), prefetch_container),
       base::BindOnce(&PrefetchContainer::OnDeterminedHead, prefetch_container),
-      prefetch_container->GetResponseReaderForCurrentPrefetch());
+      prefetch_container->GetResponseReaderForCurrentPrefetch(),
+      prefetch_container->service_worker_state(), browser_context_,
+      base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
+                     prefetch_container));
   prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
