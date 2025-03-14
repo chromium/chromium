@@ -2277,6 +2277,10 @@
       },
     },
     {
+      name: "HarfBuzzBufferPool",
+      status: "stable",
+    },
+    {
       name: "HasUAVisualTransition",
       status: "stable",
     },
