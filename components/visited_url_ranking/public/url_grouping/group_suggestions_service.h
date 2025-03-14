@@ -47,6 +47,9 @@ class GroupSuggestionsService : public KeyedService,
     SessionID tab_session_id = SessionID::InvalidValue();
 
     bool operator==(const Scope&) const = default;
+    bool operator<(const Scope& o) const {
+      return tab_session_id.id() < o.tab_session_id.id();
+    }
   };
 
   // Delegate can be registered when the window/activity is running and

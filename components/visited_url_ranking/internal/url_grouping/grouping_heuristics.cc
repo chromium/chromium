@@ -21,6 +21,7 @@ namespace {
 
 using HeuristicResults =
     base::flat_map<GroupSuggestion::SuggestionReason, std::vector<float>>;
+UrlGroupingSuggestionId::Generator g_id_generator;
 
 constexpr base::TimeDelta kRecencyTabTimeLimit = base::Seconds(600);
 
@@ -96,6 +97,7 @@ std::optional<GroupSuggestion> GetSuggestionFromHeuristicResult(
   if (suggestion.tab_ids.size() <= 1) {
     return std::nullopt;
   }
+  suggestion.suggestion_id = g_id_generator.GenerateNextId();
   return suggestion;
 }
 
