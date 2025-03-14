@@ -3375,6 +3375,7 @@ static_library("browser") {
       "//components/content_capture/android",
       "//components/content_settings/android",
       "//components/crash/android:crash_android",
+      "//components/credential_management/android:features",
       "//components/data_sharing/public:android_utils",
       "//components/device_reauth",
       "//components/embedder_support/android:context_menu",

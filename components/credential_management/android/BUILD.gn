@@ -6,6 +6,15 @@ import("//build/buildflag_header.gni")
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+static_library("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 generate_jni("jni_headers") {
   visibility = [ ":*" ]
   sources = [ "java/src/org/chromium/components/credential_management/ThirdPartyCredentialManagerBridge.java" ]

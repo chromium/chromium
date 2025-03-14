@@ -196,6 +196,12 @@ extern const char kContentSettingsPartitioningDescription[];
 extern const char kCopyImageFilenameToClipboardName[];
 extern const char kCopyImageFilenameToClipboardDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kCredentialManagementThirdPartyWebApiRequestForwardingName[];
+extern const char
+    kCredentialManagementThirdPartyWebApiRequestForwardingDescription[];
+#endif  // IS_ANDROID
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrosSwitcherName[];
 extern const char kCrosSwitcherDescription[];

@@ -1634,6 +1634,13 @@
     "expiry_milestone": 150
   },
   {
+    "name": "credential-management-third-party-web-api-request-forwarding",
+    "owners": [
+      "izuzic@google.com",
+      "friedrichh@chromium.org" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cros-apps-background-event-handling",
     "owners": [
       "clamclamyan@chromium.org",
