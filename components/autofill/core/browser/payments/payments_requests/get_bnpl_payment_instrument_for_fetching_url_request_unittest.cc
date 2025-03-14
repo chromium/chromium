@@ -4,14 +4,13 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/get_bnpl_payment_instrument_for_fetching_url_request.h"
 
-#include "base/json/json_writer.h"
-#include "base/strings/escape.h"
 #include "base/test/mock_callback.h"
 #include "base/test/values_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 using base::MockCallback;
+using base::test::IsJson;
 using testing::Field;
 using Dict = base::Value::Dict;
 using base::OnceCallback;
@@ -65,18 +64,16 @@ class GetBnplPaymentInstrumentForFetchingUrlRequestTest : public testing::Test {
 
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, GetRequestUrlPath) {
   EXPECT_EQ(request_->GetRequestUrlPath(),
-            "payments/apis-secure/chromepaymentsservice/"
-            "getpaymentinstrument?s7e_suffix=chromewallet");
+            "payments/apis-secure/chromepaymentsservice/getpaymentinstrument");
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
        GetRequestContentType) {
-  EXPECT_EQ(request_->GetRequestContentType(),
-            "application/json/x-www-form-urlencoded");
+  EXPECT_EQ(request_->GetRequestContentType(), "application/json");
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, GetRequestContent) {
-  Dict request_dict =
+  Dict expected_request_dict =
       Dict()
           .Set("context",
                Dict()
@@ -102,12 +99,7 @@ TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, GetRequestContent) {
                                          request_details_.total_amount))
                                 .Set("currency", request_details_.currency))));
 
-  EXPECT_EQ(request_->GetRequestContent(),
-            base::StringPrintf(
-                "requestContentType=application/json; charset=utf-8&request=%s",
-                base::EscapeUrlEncodedData(
-                    base::WriteJson(request_dict).value(), /*use_plus=*/true)
-                    .c_str()));
+  EXPECT_THAT(request_->GetRequestContent(), IsJson(expected_request_dict));
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
