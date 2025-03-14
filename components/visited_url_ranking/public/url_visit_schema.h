@@ -39,8 +39,6 @@ enum URLVisitAggregateRankingModelInputSignals {
   kSameDayGroupVisitCount = 24,
 };
 
-static constexpr size_t kNumInputs = 25;
-
 // Represents a field's metadata and is leveraged for the processing and
 // serialization of `URLVisitAggregate` fields participating in ML models.
 struct FieldSchema {
@@ -52,7 +50,14 @@ struct FieldSchema {
 
 // A collection of relevant fields present in the `URLVisitAggregate` to be
 // leveraged for ML use cases.
-extern const std::array<FieldSchema, kNumInputs> kURLVisitAggregateSchema;
+static constexpr size_t kTabResumptionNumInputs = 25;
+extern const std::array<FieldSchema, kTabResumptionNumInputs>
+    kURLVisitAggregateSchema;
+
+// Collection of relevant fields for URL grouping computation.
+static constexpr size_t kSuggestionsNumInputs = 2;
+extern const std::array<FieldSchema, kSuggestionsNumInputs>
+    kSuggestionsPredictionSchema;
 
 }  // namespace visited_url_ranking
 

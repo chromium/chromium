@@ -27,7 +27,7 @@ TEST_F(URLVisitResumptionRankerTest, VerifyMetadata) {
   ASSERT_TRUE(fetched_metadata_);
 
   ASSERT_EQ(fetched_metadata_->input_features_size(),
-            static_cast<int>(visited_url_ranking::kNumInputs));
+            static_cast<int>(visited_url_ranking::kTabResumptionNumInputs));
   for (int i = 0; i < fetched_metadata_->input_features_size(); i++) {
     const proto::CustomInput& input =
         fetched_metadata_->input_features(i).custom_input();
@@ -39,13 +39,15 @@ TEST_F(URLVisitResumptionRankerTest, ModelScore) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  ModelProvider::Request inputs(visited_url_ranking::kNumInputs, -1);
+  ModelProvider::Request inputs(visited_url_ranking::kTabResumptionNumInputs,
+                                -1);
   ExpectExecutionWithInput(inputs, false, {0});
 
   for (const auto& input_signal :
        {visited_url_ranking::kTimeSinceLastActiveSec,
         visited_url_ranking::kTimeSinceLastModifiedSec}) {
-    ModelProvider::Request request_inputs(visited_url_ranking::kNumInputs, -1);
+    ModelProvider::Request request_inputs(
+        visited_url_ranking::kTabResumptionNumInputs, -1);
     request_inputs[input_signal] = 0;
     ExpectExecutionWithInput(request_inputs, false, {1});
 
