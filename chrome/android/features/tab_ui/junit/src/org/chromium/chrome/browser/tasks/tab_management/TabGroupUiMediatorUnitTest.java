@@ -24,7 +24,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,9 +32,7 @@ import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABO
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
-import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.view.View;
 
@@ -53,7 +50,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
@@ -66,6 +62,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -149,6 +146,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    @Mock private SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
     @Mock private ObservableSupplierImpl<TabModel> mTabModelSupplier;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ColorStateList mTintList1;
@@ -253,6 +251,7 @@ public class TabGroupUiMediatorUnitTest {
                         mDialogControllerSupplier,
                         mOmniboxFocusStateSupplier,
                         mSharedImageTilesCoordinator,
+                        mSharedImageTilesConfigBuilder,
                         mThemeColorProvider,
                         mOnSnapshotTokenChange,
                         mChildTokenSupplier);
@@ -288,11 +287,6 @@ public class TabGroupUiMediatorUnitTest {
      */
     @Before
     public void setUp() {
-        Context context = spy(RuntimeEnvironment.application);
-        Resources resources = spy(context.getResources());
-        when(resources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(1);
-        when(context.getResources()).thenReturn(resources);
-
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -303,7 +297,7 @@ public class TabGroupUiMediatorUnitTest {
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
 
-        // Set up Tabs
+        // Set up Tabs.
         mTab1 = prepareTab(TAB1_ID, TAB1_ROOT_ID);
         mTab2 = prepareTab(TAB2_ID, TAB2_ROOT_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB2_GROUP_ID);
@@ -373,17 +367,22 @@ public class TabGroupUiMediatorUnitTest {
                 .when(mTabGroupModelFilterProvider)
                 .addTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
 
-        // Set up OverviewModeBehavior
+        // Set up OverviewModeBehavior.
         doNothing().when(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
         mLayoutStateProviderSupplier.set(mLayoutManager);
 
-        // Set up ResetHandler
+        // Set up ResetHandler.
         doNothing().when(mResetHandler).resetStripWithListOfTabs(any());
         doNothing().when(mResetHandler).resetGridWithListOfTabs(any());
 
-        // Set up TabCreatorManager
+        // Set up TabCreatorManager.
         doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
         doReturn(null).when(mTabCreator).createNewTab(any(), anyInt(), any());
+
+        when(mSharedImageTilesConfigBuilder.setBorderColor(anyInt()))
+                .thenReturn(mSharedImageTilesConfigBuilder);
+        when(mSharedImageTilesConfigBuilder.setBackgroundColor(anyInt()))
+                .thenReturn(mSharedImageTilesConfigBuilder);
 
         mResetHandlerInOrder = inOrder(mResetHandler);
         mVisibilityControllerInOrder = inOrder(mVisibilityController);
@@ -1163,7 +1162,22 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
-    public void testTintChange() {
+    public void testThemeColorChanged() {
+        doReturn(Color.RED).when(mThemeColorProvider).getThemeColor();
+        initAndAssertProperties(mTab1);
+        verify(mSharedImageTilesConfigBuilder).setBorderColor(Color.RED);
+        verify(mSharedImageTilesConfigBuilder).setBackgroundColor(Color.RED);
+        verify(mSharedImageTilesCoordinator).updateConfig(any());
+
+        doReturn(Color.BLUE).when(mThemeColorProvider).getThemeColor();
+        mTabGroupUiMediator.onThemeColorChanged(Color.BLUE, /* shouldAnimate= */ false);
+        verify(mSharedImageTilesConfigBuilder).setBorderColor(Color.BLUE);
+        verify(mSharedImageTilesConfigBuilder).setBackgroundColor(Color.BLUE);
+        verify(mSharedImageTilesCoordinator, times(2)).updateConfig(any());
+    }
+
+    @Test
+    public void testTintChanged() {
         doReturn(mTintList1).when(mThemeColorProvider).getTint();
         initAndAssertProperties(mTab2);
         assertEquals(mTintList1, mModel.get(TabGroupUiProperties.TINT));
