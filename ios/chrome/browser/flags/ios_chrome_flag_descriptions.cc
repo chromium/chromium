@@ -493,6 +493,10 @@ const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+const char kFeedSwipeInProductHelpName[] = "Enable Feed Swipe IPH";
+const char kFeedSwipeInProductHelpDescription[] =
+    "Presents an in-product help on the NTP to promote swiping on the Feed";
+
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "

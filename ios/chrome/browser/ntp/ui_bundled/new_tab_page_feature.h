@@ -9,6 +9,14 @@
 
 class PrefService;
 
+// Enum to represent arms of feature kFeedSwipeInProductHelp.
+enum class FeedSwipeIPHVariation {
+  kDisabled,
+  kStaticAfterFRE,
+  kStaticInSecondRun,
+  kAnimated,
+};
+
 #pragma mark - Feature declarations
 
 // Feature flag to enable static resource serving for the Discover feed.
@@ -43,6 +51,9 @@ BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
 // Feature flag to enable account-switching UI when tapping the NTP identity
 // disc.
 BASE_DECLARE_FEATURE(kIdentityDiscAccountMenu);
+
+// Feature flag to enable in-product help for swipe action on the Feed.
+BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
 
 #pragma mark - Feature parameters
 
@@ -91,6 +102,10 @@ extern const char kDisableAccountMenuEllipsisParam[];
 // Parameter to show the settings button in the account menu.
 extern const char kShowSettingsInAccountMenuParam[];
 
+// Parameter to indicate which arm of feature kFeedSwipeInProductHelp is
+// enabled.
+extern const char kFeedSwipeInProductHelpArmParam[];
+
 #pragma mark - Helpers
 
 // Whether the NTP view hierarchy repair is enabled.
@@ -126,5 +141,8 @@ bool IdentityDiscAccountMenuEnabledWithoutEllipsis();
 
 // YES if the account menu is enabled with the settings button.
 bool IdentityDiscAccountMenuEnabledWithSettings();
+
+// Returns the enabled variation of feature kFeedSwipeInProductHelp.
+FeedSwipeIPHVariation GetFeedSwipeIPHVariation();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

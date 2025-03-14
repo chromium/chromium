@@ -4593,6 +4593,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "feed-swipe-iph",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "feedback-include-variations",
     "owners": [ "svenzheng@google.com", "chrome-metrics-team@google.com" ],
     "expiry_milestone": 145
