@@ -144,7 +144,8 @@ void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
   MaybeReleaseSoonSelfPointer();
 }
 
-PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
+std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+PrefetchResponseReader::CreateRequestHandler() {
   mojo::ScopedDataPipeConsumerHandle body;
 
   // Returns a null handler if some checks fail here.
@@ -189,8 +190,11 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
     streaming_url_loader_->OnStartServing();
   }
 
-  return base::BindOnce(&PrefetchResponseReader::BindAndStart,
-                        base::WrapRefCounted(this), std::move(body));
+  return std::make_pair(
+      base::BindOnce(&PrefetchResponseReader::BindAndStart,
+                     base::WrapRefCounted(this), std::move(body)),
+      service_worker_handle_ ? service_worker_handle_->service_worker_client()
+                             : nullptr);
 }
 
 void PrefetchResponseReader::BindAndStart(

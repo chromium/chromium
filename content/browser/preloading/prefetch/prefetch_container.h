@@ -52,6 +52,7 @@ class PreloadingAttempt;
 class ProxyLookupClientImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
+class ServiceWorkerClient;
 
 // Holds the relevant size information of the prefetched response. The struct is
 // installed onto `PrefetchContainer`, and gets passed into
@@ -674,7 +675,8 @@ class CONTENT_EXPORT PrefetchContainer {
     const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
     // See the comment for `PrefetchResponseReader::CreateRequestHandler()`.
-    PrefetchRequestHandler CreateRequestHandler();
+    std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+    CreateRequestHandler();
 
     // See the corresponding functions on `PrefetchResponseReader`.
     // These apply to the current `SinglePrefetch` (and so, may change as the

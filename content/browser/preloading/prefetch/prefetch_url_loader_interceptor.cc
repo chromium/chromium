@@ -180,7 +180,13 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   TRACE_EVENT0("loading",
                "PrefetchURLLoaderInterceptor::OnGetPrefetchComplete");
   PrefetchRequestHandler request_handler;
-  if (!reader || !(request_handler = reader.CreateRequestHandler())) {
+  base::WeakPtr<ServiceWorkerClient> client_for_prefetch;
+  if (reader) {
+    std::tie(request_handler, client_for_prefetch) =
+        reader.CreateRequestHandler();
+  }
+
+  if (!request_handler) {
     // Do not intercept the request.
     redirect_reader_ = PrefetchContainer::Reader();
     if (GetPrefetchCompleteCallbackForTesting()) {

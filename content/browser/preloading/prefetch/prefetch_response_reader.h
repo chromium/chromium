@@ -20,6 +20,7 @@
 namespace content {
 
 class PrefetchStreamingURLLoader;
+class ServiceWorkerClient;
 class ServiceWorkerMainResourceHandle;
 
 // `PrefetchResponseReader` stores the prefetched data needed for serving, and
@@ -92,7 +93,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   //   checks.
   // - Checking `Servable()`/`GetServableState()`.
   //   `cacheable_duration` is checked only there.
-  PrefetchRequestHandler CreateRequestHandler();
+  std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+  CreateRequestHandler();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
