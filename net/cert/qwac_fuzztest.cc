@@ -80,32 +80,22 @@ FUZZ_TEST(QwacFuzzTest, FuzzParseQcStatements)
         base::ToVector(kQcStatementsValue),
     });
 
-void FuzzParseQcTypeInfo(std::vector<uint8_t> statement_info_value) {
-  const auto parsed = ParseQcTypeInfo(bssl::der::Input(statement_info_value));
-  if (!parsed.has_value()) {
-    return;
+void FuzzHasQwacQcStatements(
+    const std::vector<std::pair<std::vector<uint8_t>, std::vector<uint8_t>>>&
+        qc_statements_input) {
+  std::vector<QcStatement> qc_statements;
+  for (const auto& statement : qc_statements_input) {
+    qc_statements.emplace_back(bssl::der::Input(statement.first),
+                               bssl::der::Input(statement.second));
   }
-  for (const auto& qc_type : parsed.value()) {
-    ASSERT_TRUE(IsSubSpan(qc_type, statement_info_value));
-  }
+  std::ignore = HasQwacQcStatements(qc_statements);
 }
 
-// SEQUENCE {
-//   OBJECT_IDENTIFIER { 1.2.3 }
-//   OBJECT_IDENTIFIER { 2.1.6 }
-//   OBJECT_IDENTIFIER { 1.2.4 }
-// }
-constexpr uint8_t kQcTypeInfoMultiple[] = {0x30, 0x0c, 0x06, 0x02, 0x2a,
-                                           0x03, 0x06, 0x02, 0x51, 0x06,
-                                           0x06, 0x02, 0x2a, 0x04};
-
-FUZZ_TEST(QwacFuzzTest, FuzzParseQcTypeInfo)
-    .WithSeeds({
-        base::ToVector(kEmptySequence),
-        base::ToVector(kInvalidStatementSequence),
-        base::ToVector(kInvalidStatementOid),
-        base::ToVector(kQcTypeInfoMultiple),
-    });
+// TODO(crbug.com/392931068): Use initial seeds and/or seeded domains?
+// TODO(crbug.com/392931068): not sure how useful this fuzzer actually is.
+// Maybe refactor things (extract the QcType parsing into a separate function?)
+// so that the fuzzer can be more focused?
+FUZZ_TEST(QwacFuzzTest, FuzzHasQwacQcStatements);
 
 }  // namespace
 
