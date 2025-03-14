@@ -2621,10 +2621,10 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-writing-modes/available-size-020.html [ Failure ]
-external/wpt/css/css-writing-modes/available-size-021.html [ Failure ]
-external/wpt/css/css-writing-modes/available-size-022.html [ Failure ]
-external/wpt/css/css-writing-modes/available-size-023.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-020.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-021.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-022.html [ Failure ]
+crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-023.html [ Failure ]
 crbug.com/403340566 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
 crbug.com/403340566 [ Win11-arm64 ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
 crbug.com/402195188 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/iframe-popup-same-origin-to-unsafe-none.https.html?5-6 [ Crash ]
