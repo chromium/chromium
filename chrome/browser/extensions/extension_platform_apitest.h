@@ -5,24 +5,14 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_PLATFORM_APITEST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_PLATFORM_APITEST_H_
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/desktop_android/desktop_android_extension_apitest.h"
-#else
 #include "chrome/browser/extensions/extension_apitest.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace extensions {
 
-// TODO(https://crbug.com/401522580): Use ExtensionApiTest in both of these now
-// that it cross-compiles.
-
-#if BUILDFLAG(IS_ANDROID)
-using ExtensionPlatformApiTest = DesktopAndroidExtensionApiTest;
-#else
+// TODO(https://crbug.com/401522580): Delete this file. We don't need it
+// anymore, now that ExtensionApiTest is compiled for both desktop android and
+// other platforms.
 using ExtensionPlatformApiTest = ExtensionApiTest;
-#endif
 
 }  // namespace extensions
 
