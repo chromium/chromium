@@ -51,7 +51,7 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   void ReceivedInnerText(
       std::unique_ptr<content_extraction::InnerTextResult> result);
   void ReceivedAnnotatedPageContent(
-      std::optional<optimization_guide::proto::AnnotatedPageContent>);
+      std::optional<optimization_guide::AIPageContentResult>);
   void RunCallbackIfComplete();
   void ReceivedPdfBytes(pdf::mojom::PdfListener_GetPdfBytesStatus status,
                         const std::vector<uint8_t>& pdf_bytes,
@@ -81,8 +81,8 @@ class GlicPageContextFetcher : public content::WebContentsObserver {
   std::unique_ptr<content_extraction::InnerTextResult> inner_text_result_;
   std::vector<uint8_t> pdf_bytes_;
   std::optional<pdf::mojom::PdfListener_GetPdfBytesStatus> pdf_status_;
-  std::optional<optimization_guide::proto::AnnotatedPageContent>
-      annotated_page_content_;
+  std::optional<optimization_guide::AIPageContentResult>
+      annotated_page_content_result_;
   base::TimeTicks start_time_;
 
   base::WeakPtrFactory<GlicPageContextFetcher> weak_ptr_factory_{this};

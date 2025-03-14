@@ -201,9 +201,9 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
 }
 
 void AnnotatedPageContentRequest::OnPageContentReceived(
-    std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {
+    std::optional<optimization_guide::AIPageContentResult> page_content) {
   lifecycle_ = Lifecycle::kDone;
-  if (!proto) {
+  if (!page_content) {
     return;
   }
 
@@ -212,7 +212,7 @@ void AnnotatedPageContentRequest::OnPageContentReceived(
   auto* page_content_extraction_service = page_content_annotations::
       PageContentExtractionServiceFactory::GetForProfile(profile);
   page_content_extraction_service->OnPageContentExtracted(
-      web_contents_->GetPrimaryPage(), *proto);
+      web_contents_->GetPrimaryPage(), page_content->proto);
 }
 
 void AnnotatedPageContentRequest::OnInnerTextReceived(
