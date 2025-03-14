@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/ad_auction.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
@@ -195,8 +196,16 @@ interface URLLoaderNetworkServiceObserver {
   // triggered by response headers and Shared Storage calls from the same
   // renderer process where this request originated.
   OnSharedStorageHeaderReceived(url.mojom.Origin request_origin,
-                 array<SharedStorageModifierMethodWithOptions> methods_with_options,
-                 network.mojom.LockName? with_lock) => ();
+      array<SharedStorageModifierMethodWithOptions> methods_with_options,
+      network.mojom.LockName? with_lock) => ();
+
+  // Notifies the browser of the results of successful parsing of
+  // a Ad-Auction-Record-Event header. The browser stores information from
+  // `ad_auction_event_record` in the interest group database, for use in
+  // generateBid() browser signals during interest group auctions, providing
+  // bidders view and click signals.
+  OnAdAuctionEventRecordHeaderReceived(
+      AdAuctionEventRecord ad_auction_event_record);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's
