@@ -12,8 +12,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LevelListDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -57,7 +55,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.Toast;
 
@@ -132,26 +129,6 @@ public class ToolbarTablet extends ToolbarLayout
         mBackButton = findViewById(R.id.back_button);
         mForwardButton = findViewById(R.id.forward_button);
         mReloadButton = findViewById(R.id.refresh_button);
-
-        // ImageView tinting doesn't work with LevelListDrawable, use Drawable tinting instead.
-        // See https://crbug.com/891593 for details.
-        // Also, using Drawable tinting doesn't work correctly with LevelListDrawable on Android L
-        // and M. As a workaround, we are constructing the LevelListDrawable programmatically. See
-        // https://crbug.com/958031 for details.
-        final LevelListDrawable reloadIcon = new LevelListDrawable();
-        final int reloadLevel = getResources().getInteger(R.integer.reload_button_level_reload);
-        final int stopLevel = getResources().getInteger(R.integer.reload_button_level_stop);
-        final Drawable reloadLevelDrawable =
-                UiUtils.getTintedDrawable(
-                        getContext(),
-                        R.drawable.btn_toolbar_reload,
-                        R.color.default_icon_color_tint_list);
-        reloadIcon.addLevel(reloadLevel, reloadLevel, reloadLevelDrawable);
-        final Drawable stopLevelDrawable =
-                UiUtils.getTintedDrawable(
-                        getContext(), R.drawable.btn_close, R.color.default_icon_color_tint_list);
-        reloadIcon.addLevel(stopLevel, stopLevel, stopLevelDrawable);
-        mReloadButton.setImageDrawable(reloadIcon);
 
         mBookmarkButton = findViewById(R.id.bookmark_button);
         mSaveOfflineButton = findViewById(R.id.save_offline_button);
