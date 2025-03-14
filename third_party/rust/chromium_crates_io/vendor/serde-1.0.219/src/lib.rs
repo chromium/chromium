@@ -95,7 +95,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // Serde types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/serde/1.0.218")]
+#![doc(html_root_url = "https://docs.rs/serde/1.0.219")]
 // Support using Serde without the standard library!
 #![cfg_attr(not(feature = "std"), no_std)]
 // Show which crate feature enables conditionally compiled APIs in documentation.
@@ -144,6 +144,7 @@
     clippy::too_many_lines,
     // preference
     clippy::doc_markdown,
+    clippy::elidable_lifetime_names,
     clippy::needless_lifetimes,
     clippy::unseparated_literal_suffix,
     // false positive

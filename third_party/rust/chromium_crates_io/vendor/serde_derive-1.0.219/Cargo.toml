@@ -10,31 +10,32 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.31"
-name = "serde"
-version = "1.0.218"
+edition = "2015"
+rust-version = "1.61"
+name = "serde_derive"
+version = "1.0.219"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
 ]
-build = "build.rs"
+build = false
+exclude = ["build.rs"]
 autolib = false
 autobins = false
 autoexamples = false
 autotests = false
 autobenches = false
-description = "A generic serialization/deserialization framework"
+description = "Macros 1.1 implementation of #[derive(Serialize, Deserialize)]"
 homepage = "https://serde.rs"
-documentation = "https://docs.rs/serde"
+documentation = "https://serde.rs/derive.html"
 readme = "crates-io.md"
 keywords = [
     "serde",
     "serialization",
     "no_std",
+    "derive",
 ]
 categories = [
-    "encoding",
     "no-std",
     "no-std::no-alloc",
 ]
@@ -42,43 +43,44 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/serde-rs/serde"
 
 [package.metadata.docs.rs]
-features = [
-    "derive",
-    "rc",
-    "unstable",
-]
 rustdoc-args = [
     "--generate-link-to-definition",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
+    "--extern-html-root-url=proc_macro=https://doc.rust-lang.org",
 ]
 targets = ["x86_64-unknown-linux-gnu"]
 
-[package.metadata.playground]
-features = [
-    "derive",
-    "rc",
-]
-
 [features]
-alloc = []
-default = ["std"]
-derive = ["serde_derive"]
-rc = []
-std = []
-unstable = []
+default = []
+deserialize_in_place = []
 
 [lib]
-name = "serde"
+name = "serde_derive"
 path = "src/lib.rs"
+proc-macro = true
 
-[dependencies.serde_derive]
+[dependencies.proc-macro2]
+version = "1.0.74"
+features = ["proc-macro"]
+default-features = false
+
+[dependencies.quote]
+version = "1.0.35"
+features = ["proc-macro"]
+default-features = false
+
+[dependencies.syn]
+version = "2.0.81"
+features = [
+    "clone-impls",
+    "derive",
+    "parsing",
+    "printing",
+    "proc-macro",
+]
+default-features = false
+
+[dev-dependencies.serde]
 version = "1"
-optional = true
-
-[dev-dependencies.serde_derive]
-version = "1"
-
-[target."cfg(any())".dependencies.serde_derive]
-version = "=1.0.218"
