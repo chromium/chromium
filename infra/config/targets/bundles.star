@@ -14,6 +14,13 @@ load("//lib/targets.star", "targets")
 # go/keep-sorted start newline_separated=yes numeric=yes skip_lines=1 group_prefixes=)
 
 targets.bundle(
+    name = "android_10_emulator_fyi_gtests",
+    targets = [
+        "android_content_browsertests_fyi",
+    ],
+)
+
+targets.bundle(
     name = "android_10_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
@@ -32,13 +39,6 @@ targets.bundle(
             ],
         ),
         "webview_ui_instrumentation_tests",
-    ],
-)
-
-targets.bundle(
-    name = "android_10_emulator_fyi_gtests",
-    targets = [
-        "android_content_browsertests_fyi",
     ],
 )
 
