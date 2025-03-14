@@ -25,6 +25,9 @@ struct IconVariantsInfo : public Extension::ManifestData {
   // Get IconVariants for the given `extension`, if they exist.
   static const IconVariantsInfo* GetIconVariants(const Extension& extension);
 
+  // Available e.g. when the extension feature enabled.
+  static bool SupportsIconVariants(const Extension& extension);
+
   // Retrieve a matching ExtensionIconSet.
   const ExtensionIconSet& Get(
       std::optional<ExtensionIconVariant::ColorScheme> color_scheme =

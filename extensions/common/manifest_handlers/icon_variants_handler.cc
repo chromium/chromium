@@ -89,6 +89,11 @@ const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
       extension.GetManifestData(IconVariantsManifestKeys::kIconVariants));
 }
 
+// static
+bool IconVariantsInfo::SupportsIconVariants(const Extension& extension) {
+  return extension.manifest_version() >= 3 && extension.is_extension();
+}
+
 void IconVariantsInfo::InitializeIconSets() {
   for (const auto& icon_variant : icon_variants->GetList()) {
     const auto color_schemes = icon_variant.GetColorSchemes();
