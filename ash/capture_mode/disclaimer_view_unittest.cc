@@ -8,9 +8,11 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -33,36 +35,33 @@ class DisclaimerViewTest : public AshTestBase {
   MOCK_METHOD(void, OnAcceptButtonPressed, (), ());
   MOCK_METHOD(void, OnDeclineButtonPressed, (), ());
 
+  // Creates a widget with a `DisclaimerView` as the contents view and shows it.
+  std::unique_ptr<views::Widget> CreateAndShowWidget() {
+    auto widget = DisclaimerView::CreateWidget(
+        Shell::GetPrimaryRootWindow(),
+        base::BindRepeating(&DisclaimerViewTest::OnAcceptButtonPressed,
+                            base::Unretained(this)),
+        base::BindRepeating(&DisclaimerViewTest::OnDeclineButtonPressed,
+                            base::Unretained(this)));
+    widget->Show();
+    views::test::WidgetVisibleWaiter(widget.get()).Wait();
+    return widget;
+  }
+
  private:
 };
 
 TEST_F(DisclaimerViewTest, AcceptButton) {
-  auto widget = CreateFramelessTestWidget();
-  widget->SetBounds(gfx::Rect(/*x=*/0, /*y=*/0,
-                              /*width=*/1000,
-                              /*height=*/800));
-
-  auto* disclaimer_view =
-      widget->SetContentsView(std::make_unique<DisclaimerView>(
-          base::BindRepeating(&DisclaimerViewTest::OnAcceptButtonPressed,
-                              base::Unretained(this)),
-          base::BindRepeating(&DisclaimerViewTest::OnDeclineButtonPressed,
-                              base::Unretained(this))));
+  std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnAcceptButtonPressed);
-  LeftClickOn(disclaimer_view->GetViewByID(kDisclaimerViewAcceptButtonId));
+  LeftClickOn(disclaimer_widget->GetContentsView()->GetViewByID(
+      kDisclaimerViewAcceptButtonId));
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
 TEST_F(DisclaimerViewTest, AcceptButtonKeyboardNavigation) {
-  auto widget = DisclaimerView::CreateWidget(
-      Shell::GetPrimaryRootWindow(),
-      base::BindRepeating(&DisclaimerViewTest::OnAcceptButtonPressed,
-                          base::Unretained(this)),
-      base::BindRepeating(&DisclaimerViewTest::OnDeclineButtonPressed,
-                          base::Unretained(this)));
-  widget->Show();
-  views::test::WidgetVisibleWaiter(widget.get()).Wait();
+  std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnAcceptButtonPressed);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -70,32 +69,16 @@ TEST_F(DisclaimerViewTest, AcceptButtonKeyboardNavigation) {
 }
 
 TEST_F(DisclaimerViewTest, DeclineButton) {
-  auto widget = CreateFramelessTestWidget();
-  widget->SetBounds(gfx::Rect(/*x=*/0, /*y=*/0,
-                              /*width=*/1000,
-                              /*height=*/800));
-
-  auto* disclaimer_view =
-      widget->SetContentsView(std::make_unique<DisclaimerView>(
-          base::BindRepeating(&DisclaimerViewTest::OnAcceptButtonPressed,
-                              base::Unretained(this)),
-          base::BindRepeating(&DisclaimerViewTest::OnDeclineButtonPressed,
-                              base::Unretained(this))));
+  std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnDeclineButtonPressed);
-  LeftClickOn(disclaimer_view->GetViewByID(kDisclaimerViewDeclineButtonId));
+  LeftClickOn(disclaimer_widget->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId));
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
 TEST_F(DisclaimerViewTest, DeclineButtonKeyboardNavigation) {
-  auto widget = DisclaimerView::CreateWidget(
-      Shell::GetPrimaryRootWindow(),
-      base::BindRepeating(&DisclaimerViewTest::OnAcceptButtonPressed,
-                          base::Unretained(this)),
-      base::BindRepeating(&DisclaimerViewTest::OnDeclineButtonPressed,
-                          base::Unretained(this)));
-  widget->Show();
-  views::test::WidgetVisibleWaiter(widget.get()).Wait();
+  std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnDeclineButtonPressed);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
