@@ -3868,6 +3868,11 @@ who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "0.8.0"
 
+[[audits.tinystr]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "0.8.0 -> 0.8.1"
+
 [[audits.tinyvec]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["ub-risk-0", "safe-to-deploy", "does-not-implement-crypto"]

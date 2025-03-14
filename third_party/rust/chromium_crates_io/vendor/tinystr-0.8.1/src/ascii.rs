@@ -5,6 +5,7 @@
 use crate::asciibyte::AsciiByte;
 use crate::int_ops::{Aligned4, Aligned8};
 use crate::ParseError;
+use core::borrow::Borrow;
 use core::fmt;
 use core::ops::Deref;
 use core::str::{self, FromStr};
@@ -770,6 +771,13 @@ impl<const N: usize> Deref for TinyAsciiStr<N> {
     type Target = str;
     #[inline]
     fn deref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl<const N: usize> Borrow<str> for TinyAsciiStr<N> {
+    #[inline]
+    fn borrow(&self) -> &str {
         self.as_str()
     }
 }

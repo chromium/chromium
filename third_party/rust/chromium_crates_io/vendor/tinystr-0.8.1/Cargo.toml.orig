@@ -5,7 +5,7 @@
 [package]
 name = "tinystr"
 description = "A small ASCII-only bounded length string representation."
-version = "0.8.0"
+version = "0.8.1"
 keywords = ["string", "str", "small", "tiny", "no_std"]
 categories = ["data-structures"]
 
@@ -40,13 +40,12 @@ criterion = { workspace = true }
 
 [features]
 default = ["alloc"]
-alloc = []
-bench = []
+alloc = ["zerovec?/alloc"]
+zerovec = ["dep:zerovec"]
+databake = ["dep:databake"]
+serde = ["dep:serde"]
+# No longer does anything
 std = []
-
-[package.metadata.cargo-all-features]
-# Bench feature gets tested separately and is only relevant for CI
-denylist = ["bench"]
 
 [lib]
 bench = false  # This option is required for Benchmark CI
@@ -62,14 +61,12 @@ harness = false
 [[bench]]
 name = "construct"
 harness = false
-required-features = ["bench"]
 
 [[bench]]
 name = "read"
 harness = false
-required-features = ["bench"]
 
 [[bench]]
 name = "serde"
 harness = false
-required-features = ["bench", "serde"]
+required-features = ["serde"]

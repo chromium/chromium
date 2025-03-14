@@ -1315,7 +1315,7 @@ dependencies = [
 
 [[package]]
 name = "tinystr"
-version = "0.8.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "displaydoc",
