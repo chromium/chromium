@@ -5,6 +5,7 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_CONTROLLER_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CONTROLLER_H_
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -49,6 +50,11 @@ class FilePath;
 class Time;
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace network {
+class SimpleURLLoader;
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -555,6 +561,13 @@ class ASH_EXPORT CaptureModeController
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
       const std::string& access_token);
 
+  // Called after a resource request is dispatched by a `SimpleURLLoader` and a
+  // response is received.
+  void OnDispatchComplete(
+      base::WeakPtr<const network::SimpleURLLoader> url_loader,
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      std::unique_ptr<std::string> response_body);
+
   // Called back when on-device text detection is complete to show copy text and
   // smart actions buttons if needed. `image_search_token` is a weak pointer
   // which is invalidated every time the selected region or session changes. If
@@ -923,6 +936,13 @@ class ASH_EXPORT CaptureModeController
   std::unique_ptr<CaptureModeEducationController> education_controller_;
 
   base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
+
+  std::list<std::unique_ptr<const network::SimpleURLLoader>>
+      uploads_in_progress_;
+
+  // URLLoaderFactory used for network requests. May be null initially if the
+  // creation is delayed.
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

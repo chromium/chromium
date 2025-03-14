@@ -136,6 +136,8 @@ constexpr int kSmallRegionEdgeLength = 20;
 // The number of focusable points for the search results panel.
 constexpr int kSearchResultsPanelFocusCount = 2;
 
+// TODO: crbug.com/402548933 - Update this to work when the Lens Web API
+// integration is enabled.
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
   CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
@@ -2807,24 +2809,17 @@ class SunfishLensWebTest : public SunfishTestBase {
 // Tests that the native search box is removed from the search results panel
 // when the Lens Web API implementation is enabled.
 TEST_F(SunfishLensWebTest, NoNativeSearchBox) {
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
-  VerifyActiveBehavior(BehaviorType::kDefault);
-  auto* controller = CaptureModeController::Get();
-  auto* session =
-      static_cast<CaptureModeSession*>(controller->capture_mode_session());
-
-  // Open the search results panel.
-  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
-  WaitForCaptureModeWidgetsVisible();
-  CaptureModeSessionTestApi session_test_api(session);
-  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
-  LeftClickOn(session_test_api.GetActionButtons()[0]);
-  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
-  auto* search_results_panel = controller->GetSearchResultsPanel();
-  ASSERT_TRUE(search_results_panel);
-
-  // The panel should not have a native textfield as it will be using the web
-  // view textfield.
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  params.bounds = gfx::Rect{capture_mode::kSearchResultsPanelTotalWidth,
+                            capture_mode::kSearchResultsPanelTotalHeight};
+  params.parent =
+      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                          kShellWindowId_CaptureModeSearchResultsPanel);
+  auto widget = std::make_unique<views::Widget>(std::move(params));
+  auto* search_results_panel =
+      widget->SetContentsView(std::make_unique<SearchResultsPanel>());
   EXPECT_FALSE(search_results_panel->GetSearchBoxTextfield());
 }
 
