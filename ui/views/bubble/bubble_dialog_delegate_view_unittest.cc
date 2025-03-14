@@ -1029,7 +1029,8 @@ TEST_F(BubbleDialogDelegateViewTest, WithClientLayerTest) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
-      nullptr, BubbleBorder::TOP_LEFT);
+      BubbleDialogDelegateView::CreatePassKey(), nullptr,
+      BubbleBorder::TOP_LEFT);
   bubble_delegate->SetPaintClientToLayer(true);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
 
@@ -1045,7 +1046,8 @@ TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
-      nullptr, BubbleBorder::TOP_LEFT);
+      BubbleDialogDelegateView::CreatePassKey(), nullptr,
+      BubbleBorder::TOP_LEFT);
   bubble_delegate->SetPaintClientToLayer(false);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
 

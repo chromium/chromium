@@ -175,8 +175,9 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest,
 
   // Temporarily owned.
   views::BubbleDialogDelegateView* const bubble =
-      new views::BubbleDialogDelegateView(anchor_view,
-                                          views::BubbleBorder::TOP_RIGHT);
+      new views::BubbleDialogDelegateView(
+          views::BubbleDialogDelegateView::CreatePassKey(), anchor_view,
+          views::BubbleBorder::TOP_RIGHT);
   LayoutTrackingView* layout_tracker =
       bubble->AddChildView(std::make_unique<LayoutTrackingView>());
 

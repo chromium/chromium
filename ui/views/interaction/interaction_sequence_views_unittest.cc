@@ -91,7 +91,8 @@ class InteractionSequenceViewsTest
 
   void ShowBubble(ui::ElementIdentifier id) {
     auto delegate = std::make_unique<BubbleDialogDelegateView>(
-        contents(), BubbleBorder::Arrow::TOP_LEFT);
+        BubbleDialogDelegateView::CreatePassKey(), contents(),
+        BubbleBorder::Arrow::TOP_LEFT);
     label_button_ = delegate->AddChildView(std::make_unique<LabelButton>());
     label_button_->SetProperty(kElementIdentifierKey, id);
     no_id_view_ = delegate->AddChildView(std::make_unique<LabelButton>());
