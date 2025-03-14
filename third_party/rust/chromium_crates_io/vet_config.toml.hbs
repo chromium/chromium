@@ -300,6 +300,15 @@ Requires unsafe review audit. Authored in Google and audit should come from ther
 https://crbug.com/366411886
 """
 
+[[exemptions.zerocopy]]
+version = "0.8.23"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
 [[exemptions.zerocopy-derive]]
 version = "0.7.35"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]

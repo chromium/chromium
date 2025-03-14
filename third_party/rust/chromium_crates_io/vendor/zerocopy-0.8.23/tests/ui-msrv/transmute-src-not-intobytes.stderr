@@ -1,0 +1,25 @@
+error[E0277]: the trait bound `NotZerocopy<AU16>: zerocopy::IntoBytes` is not satisfied
+  --> tests/ui-msrv/transmute-src-not-intobytes.rs:19:32
+   |
+19 | const SRC_NOT_AS_BYTES: AU16 = transmute!(NotZerocopy(AU16(0)));
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `zerocopy::IntoBytes` is not implemented for `NotZerocopy<AU16>`
+   |
+note: required by `AssertIsIntoBytes`
+  --> tests/ui-msrv/transmute-src-not-intobytes.rs:19:32
+   |
+19 | const SRC_NOT_AS_BYTES: AU16 = transmute!(NotZerocopy(AU16(0)));
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: this error originates in the macro `transmute` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+error[E0277]: the trait bound `NotZerocopy<AU16>: zerocopy::IntoBytes` is not satisfied
+  --> tests/ui-msrv/transmute-src-not-intobytes.rs:19:32
+   |
+19 | const SRC_NOT_AS_BYTES: AU16 = transmute!(NotZerocopy(AU16(0)));
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the trait `zerocopy::IntoBytes` is not implemented for `NotZerocopy<AU16>`
+   |
+note: required by a bound in `AssertIsIntoBytes`
+  --> tests/ui-msrv/transmute-src-not-intobytes.rs:19:32
+   |
+19 | const SRC_NOT_AS_BYTES: AU16 = transmute!(NotZerocopy(AU16(0)));
+   |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `AssertIsIntoBytes`
+   = note: this error originates in the macro `transmute` (in Nightly builds, run with -Z macro-backtrace for more info)

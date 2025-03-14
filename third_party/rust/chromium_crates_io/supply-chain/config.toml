@@ -332,7 +332,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."potential_utf:0.1.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ppv-lite86:0.2.20"]
+[policy."ppv-lite86:0.2.21"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."proc-macro2:1.0.94"]
@@ -536,8 +536,14 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerocopy-derive:0.7.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."zerocopy-derive:0.8.23"]
+criteria = []
+
 [policy."zerocopy:0.7.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."zerocopy:0.8.23"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."zerofrom-derive:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -789,6 +795,15 @@ https://crbug.com/366411886
 
 [[exemptions.zerocopy]]
 version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerocopy]]
+version = "0.8.23"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Authored in Google and audit should come from there as well.
