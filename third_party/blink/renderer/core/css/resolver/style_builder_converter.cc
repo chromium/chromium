@@ -176,7 +176,7 @@ Color ResolveQuirkOrLinkOrFocusRingColor(
 
 }  // namespace
 
-scoped_refptr<StyleReflection> StyleBuilderConverter::ConvertBoxReflect(
+StyleReflection* StyleBuilderConverter::ConvertBoxReflect(
     StyleResolverState& state,
     const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
@@ -185,7 +185,7 @@ scoped_refptr<StyleReflection> StyleBuilderConverter::ConvertBoxReflect(
   }
 
   const auto& reflect_value = To<cssvalue::CSSReflectValue>(value);
-  scoped_refptr<StyleReflection> reflection = StyleReflection::Create();
+  StyleReflection* reflection = MakeGarbageCollected<StyleReflection>();
   reflection->SetDirection(
       reflect_value.Direction()->ConvertTo<CSSReflectionDirection>());
   if (reflect_value.Offset()) {
