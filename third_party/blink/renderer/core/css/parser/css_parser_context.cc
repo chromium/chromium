@@ -258,6 +258,25 @@ bool CSSParserContext::IsForMarkupSanitization() const {
   return document_ && document_->IsForMarkupSanitization();
 }
 
+bool CSSParserContext::InElementContext() const {
+  switch (Mode()) {
+    case kCSSFontFaceRuleMode:
+    case kCSSPropertyRuleMode:
+    case kCSSFontPaletteValuesRuleMode:
+      return false;
+    case kHTMLStandardMode:
+    case kHTMLQuirksMode:
+    case kSVGAttributeMode:
+    case kCSSKeyframeRuleMode:
+    case kCSSPositionTryRuleMode:
+    case kCSSFunctionDescriptorsMode:
+    case kUASheetMode:
+      return true;
+    case kNumCSSParserModes:
+      NOTREACHED();
+  }
+}
+
 void CSSParserContext::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(world_);

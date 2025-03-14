@@ -46,6 +46,7 @@ class ContainerQueryParserTest : public PageTestBase {
       return false;
     }
     bool SupportsRange() const override { return true; }
+    bool SupportsElementDependent() const override { return true; }
   };
 
   // E.g. https://drafts.csswg.org/css-contain-3/#typedef-style-query
