@@ -5594,23 +5594,6 @@
             ]
         }
     ],
-    "ClientSideDetectionBrandAndIntentForScamDetection": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionBrandAndIntentForScamDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection": [
         {
             "platforms": [
@@ -5697,9 +5680,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithWarning",
                     "enable_features": [
+                        "ClientSideDetectionBrandAndIntentForScamDetection",
                         "ClientSideDetectionShowScamVerdictWarning"
+                    ]
+                },
+                {
+                    "name": "EnabledMetricsCollection",
+                    "enable_features": [
+                        "ClientSideDetectionBrandAndIntentForScamDetection"
                     ]
                 }
             ]
