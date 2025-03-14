@@ -344,6 +344,7 @@ bool BrowserAccessibilityStateImpl::IsKnownScreenReaderActiveSlow() {
     case kSupernova:
     case kTalkback:
     case kVoiceOver:
+    case kZdsr:
       return true;
   }
 }

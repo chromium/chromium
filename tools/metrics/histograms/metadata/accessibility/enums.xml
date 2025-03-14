@@ -997,6 +997,7 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Talkback"/>
   <int value="9" label="VoiceOver"/>
   <int value="10" label="ZoomText"/>
+  <int value="11" label="ZDSR"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/browser_accessibility_state.h:AssistiveTech) -->

@@ -3479,6 +3479,7 @@ even if they fit the naming pattern. -->
                  such as Accessibility.WinJAWS/WinNVDA, or
                  Accessibility.ModeFlag"/>
     <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
+    <variant name="WinZDSR" summary="Windows, specifically ZDSR (Zhengdu)"/>
   </token>
   <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>
