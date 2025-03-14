@@ -1238,12 +1238,6 @@ extern const char kContextualPageActionsReaderModeDescription[];
 extern const char kContextualPageActionsShareModelName[];
 extern const char kContextualPageActionsShareModelDescription[];
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-extern const char kEnableSearchAggregatorPolicyName[];
-extern const char kEnableSearchAggregatorPolicyDescription[];
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kFlexFirmwareUpdateName[];
 extern const char kFlexFirmwareUpdateDescription[];
@@ -1571,6 +1565,9 @@ extern const char kOmniboxStarterPackExpansionDescription[];
 
 extern const char kOmniboxStarterPackIPHName[];
 extern const char kOmniboxStarterPackIPHDescription[];
+
+extern const char kOmniboxSearchAggregatorName[];
+extern const char kOmniboxSearchAggregatorDescription[];
 
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
