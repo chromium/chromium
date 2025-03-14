@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -237,9 +236,9 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   }
 
   void OnDidCreateBnplPaymentInstrument(PaymentsRpcResult result,
-                                        std::u16string instrument_id) {
+                                        std::string instrument_id) {
     result_ = result;
-    instrument_id_ = base::UTF16ToUTF8(instrument_id);
+    instrument_id_ = std::move(instrument_id);
   }
 
   void OnDidGetBnplPaymentInstrumentForFetchingVcn(

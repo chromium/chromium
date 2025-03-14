@@ -220,7 +220,7 @@ void PaymentsNetworkInterface::GetDetailsForCreateBnplPaymentInstrument(
 
 void PaymentsNetworkInterface::CreateBnplPaymentInstrument(
     const CreateBnplPaymentInstrumentRequestDetails& request_details,
-    base::OnceCallback<void(PaymentsRpcResult, std::u16string instrument_id)>
+    base::OnceCallback<void(PaymentsRpcResult, std::string instrument_id)>
         callback) {
   IssueRequest(std::make_unique<CreateBnplPaymentInstrumentRequest>(
       request_details,
