@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+shim_headers("header") {
+  root_path = "."
+  headers = [ "simdutf.h" ]
+}
+
+pkg_config("system_simdutf") {
+  packages = [ "simdutf" ]
+}
+
+source_set("simdutf") {
+  public_configs = [ ":system_simdutf" ]
+  public_deps = [ ":header" ]
+}
