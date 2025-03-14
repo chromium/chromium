@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/webui/shared_resources_data_source.h"
 
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -43,7 +39,7 @@ void AddResources(const std::set<int>& resource_ids,
                   size_t resources_size,
                   WebUIDataSource* source) {
   for (size_t i = 0; i < resources_size; ++i) {
-    const auto& resource = resources[i];
+    const auto& resource = UNSAFE_TODO(resources[i]);
 
     const auto it = resource_ids.find(resource.id);
     if (it == resource_ids.end())
