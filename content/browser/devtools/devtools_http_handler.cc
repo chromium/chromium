@@ -643,9 +643,11 @@ void DevToolsHttpHandler::OnJsonRequest(
       url = GURL(url::kAboutBlankURL);
     // TODO(dsv): Remove for "for_tab" support once DevTools Frontend
     // no longer needs it for e2e tests
-    scoped_refptr<DevToolsAgentHost> agent_host = delegate_->CreateNewTarget(
-        url, for_tab ? DevToolsManagerDelegate::kTab
-                     : DevToolsManagerDelegate::kFrame);
+    scoped_refptr<DevToolsAgentHost> agent_host =
+        delegate_->CreateNewTarget(url,
+                                   for_tab ? DevToolsManagerDelegate::kTab
+                                           : DevToolsManagerDelegate::kFrame,
+                                   /*new_window=*/false);
     if (!agent_host) {
       SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, std::nullopt,
                "Could not create new page");

@@ -36,7 +36,8 @@ void HeadlessDevToolsManagerDelegate::HandleCommand(
 scoped_refptr<content::DevToolsAgentHost>
 HeadlessDevToolsManagerDelegate::CreateNewTarget(
     const GURL& url,
-    content::DevToolsManagerDelegate::TargetType target_type) {
+    content::DevToolsManagerDelegate::TargetType target_type,
+    bool new_window) {
   if (!browser_)
     return nullptr;
 

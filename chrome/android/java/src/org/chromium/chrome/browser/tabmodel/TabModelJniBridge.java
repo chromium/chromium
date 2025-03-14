@@ -15,8 +15,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
@@ -177,13 +175,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     /**
      * Creates a Tab with the given WebContents for DevTools.
+     *
      * @param url URL to show.
+     * @param newWindow Whether to open the new tab in a new window.
      */
     @CalledByNative
-    protected Tab createNewTabForDevTools(GURL url) {
-        return getTabCreator(/* incognito= */ false)
-                .createNewTab(new LoadUrlParams(url), TabLaunchType.FROM_CHROME_UI, null);
-    }
+    protected abstract Tab createNewTabForDevTools(GURL url, boolean newWindow);
 
     /** Returns whether supplied Tab instance has been grouped together with other Tabs. */
     @CalledByNative
