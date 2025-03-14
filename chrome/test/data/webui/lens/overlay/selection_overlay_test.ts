@@ -925,6 +925,49 @@ suite('SelectionOverlay', function() {
       assertNotEquals(postSelectionBounds.x, newPostSelectionBounds.x);
       assertNotEquals(postSelectionBounds.y, newPostSelectionBounds.y);
     });
+
+    test('OnCopyCommandCopiesWordsAfterSelection', async () => {
+      // Drag that starts on a word but finishes on empty space.
+      const wordEl = getWordNodes()[0]!;
+      await simulateDrag(
+          selectionOverlayElement, {
+            x: wordEl.getBoundingClientRect().left + 15,
+            y: wordEl.getBoundingClientRect().top + 5,
+          },
+          {x: 0, y: 0});
+
+      const textQuery = await testBrowserProxy.handler.whenCalled(
+          'issueTextSelectionRequest');
+      assertDeepEquals('hello', textQuery);
+      assertEquals(
+          0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.UserAction', UserAction.kTextSelection));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+              UserAction.kTextSelection));
+
+      // Copy command should copy text.
+      callbackRouterRemote.onCopyCommand();
+
+      const copiedText = await testBrowserProxy.handler.whenCalled('copyText');
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertEquals('hello', copiedText);
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.UserAction', UserAction.kCopyText));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+              UserAction.kCopyText));
+    });
   });
 
   suite('WithObjects', function() {
@@ -1811,6 +1854,66 @@ suite('SelectionOverlay', function() {
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
       assertFalse(selectionOverlayElement
                       .getShowDetectedTextContextMenuOptionsForTesting());
+    });
+
+    test('OnCopyCommandCopiesImage', async () => {
+      await addEmptyTextToPage(callbackRouterRemote);
+      await simulateDrag(
+          selectionOverlayElement, {x: 5, y: 15}, {x: 75, y: 25});
+      await addGenericWordsToPage(
+          callbackRouterRemote, selectionOverlayElement);
+      await waitAfterNextRender(selectionOverlayElement);
+
+      loadTimeData.overrideValues({
+        shouldCopyAsImage: true,
+      });
+
+      callbackRouterRemote.onCopyCommand();
+      await flushTasks();
+
+      await testBrowserProxy.handler.whenCalled('copyImage');
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.UserAction', UserAction.kCopyAsImage));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+              UserAction.kCopyAsImage));
+    });
+
+    test('OnCopyCommandCopiesText', async () => {
+      await addEmptyTextToPage(callbackRouterRemote);
+      await simulateDrag(
+          selectionOverlayElement, {x: 5, y: 15}, {x: 75, y: 25});
+      await addGenericWordsToPage(
+          callbackRouterRemote, selectionOverlayElement);
+      await waitAfterNextRender(selectionOverlayElement);
+
+      loadTimeData.overrideValues({
+        shouldCopyAsImage: false,
+      });
+
+      callbackRouterRemote.onCopyCommand();
+      await flushTasks();
+
+      const copiedWords = await testBrowserProxy.handler.whenCalled('copyText');
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+      assertEquals('hello there\r\ntest', copiedWords);
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.UserAction', UserAction.kCopyText));
+      assertEquals(
+          1,
+          metrics.count(
+              'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+              UserAction.kCopyText));
     });
   });
 

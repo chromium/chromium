@@ -704,6 +704,12 @@ extern int GetCopyTextReceivedTimeout();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetTranslateTextReceivedTimeout();
 
+// Whether the copy keyboard command (ex: CMD+C) should copy the selected region
+// as an image or copy the text within the region when the simplified selection
+// feature is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetShouldCopyAsImage();
+
 // Whether to fix the request id for page content upload requests. When enabled,
 // this will not increment the image upload request ID when the page content
 // upload request is sent.
