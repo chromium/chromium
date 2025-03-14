@@ -71,10 +71,8 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
       content::StoragePartition* storage_partition) override;
 
   void HostRanInsecureContent(const std::string& host,
-                              int child_id,
                               InsecureContentType content_type) override;
   bool DidHostRunInsecureContent(const std::string& host,
-                                 int child_id,
                                  InsecureContentType content_type) override;
 
   void AllowHttpForHost(const std::string& host,
@@ -194,18 +192,13 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
   std::map<std::string /* host */, std::set<AllowedCert>>
       allowed_certs_for_non_default_storage_partitions_;
 
-  // A BrokenHostEntry is a pair of (host, child_id) that indicates the host
-  // contains insecure content in that renderer process.
-  using BrokenHostEntry = std::pair<std::string, int>;
+  // Hosts which have been contaminated with insecure mixed content. Running
+  // insecure content is remembered for a host but not persisted across browser
+  // restarts.
+  std::set<std::string> ran_mixed_content_hosts_;
 
-  // Hosts which have been contaminated with insecure mixed content in the
-  // specified process.  Note that insecure content can travel between
-  // same-origin frames in one processs but cannot jump between processes.
-  std::set<BrokenHostEntry> ran_mixed_content_hosts_;
-
-  // Hosts which have been contaminated with content with certificate errors in
-  // the specific process.
-  std::set<BrokenHostEntry> ran_content_with_cert_errors_hosts_;
+  // Hosts which have been contaminated with content with certificate errors.
+  std::set<std::string> ran_content_with_cert_errors_hosts_;
 
   // Tracks how many times an error page has been shown for a given error, up
   // to a certain threshold value.
