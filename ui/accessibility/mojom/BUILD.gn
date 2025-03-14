@@ -163,6 +163,8 @@ mojom("mojom") {
         {
           mojom = "ax.mojom.AXTreeData"
           cpp = "::ui::AXTreeData"
+          forward_declaration = "namespace ui { struct AXTreeData; }"
+          move_only = true
         },
       ]
       traits_sources = [ "ax_tree_data_mojom_traits.cc" ]
