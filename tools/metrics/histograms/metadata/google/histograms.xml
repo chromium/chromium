@@ -65,6 +65,50 @@ chromium-metrics-reviews@google.com.
   <summary>The error code for a failed on-demand update check.</summary>
 </histogram>
 
+<histogram name="GoogleUpdate.UpdaterHealth.ScheduledTaskCount" units="tasks"
+    expires_after="2026-03-12">
+  <owner>ganesh@chromium.org</owner>
+  <owner>omaha-support@google.com</owner>
+  <summary>
+    Number of scheduled tasks registered for the updater in the Windows task
+    scheduler. Recorded when the browser creates the main loop, and subsequently
+    at 5 hour intervals as long as the browser is running.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.UpdaterHealth.ScheduledTaskEnabled"
+    enum="BooleanEnabled" expires_after="2026-03-12">
+  <owner>ganesh@chromium.org</owner>
+  <owner>omaha-support@google.com</owner>
+  <summary>
+    Records true if the scheduled task is enabled for the active updater in the
+    Windows task scheduler. Recorded when the browser creates the main loop, and
+    subsequently at 5 hour intervals as long as the browser is running.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.UpdaterHealth.ScheduledTaskPresent"
+    enum="BooleanPresent" expires_after="2026-03-12">
+  <owner>ganesh@chromium.org</owner>
+  <owner>omaha-support@google.com</owner>
+  <summary>
+    Records true if the scheduled task is present for the active updater in the
+    Windows task scheduler. Recorded when the browser creates the main loop, and
+    subsequently at 5 hour intervals as long as the browser is running.
+  </summary>
+</histogram>
+
+<histogram name="GoogleUpdate.UpdaterHealth.UpdaterValid" enum="BooleanValid"
+    expires_after="2026-03-12">
+  <owner>ganesh@chromium.org</owner>
+  <owner>omaha-support@google.com</owner>
+  <summary>
+    Records true if there is an active updater present on the system. Recorded
+    when the browser creates the main loop, and subsequently at 5 hour intervals
+    as long as the browser is running.
+  </summary>
+</histogram>
+
 <histogram name="GoogleUpdate.UpgradeResult" enum="GoogleUpdateUpgradeStatus"
     expires_after="never">
 <!-- expires-never: Core metric for monitoring on-demand updates. -->

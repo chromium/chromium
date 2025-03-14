@@ -339,8 +339,6 @@ if (is_win || is_mac || is_linux) {
         "win/setup/uninstall.h",
         "win/setup/win_setup.cc",
         "win/setup/win_setup.h",
-        "win/task_scheduler.cc",
-        "win/task_scheduler.h",
         "win/ui/complete_wnd.cc",
         "win/ui/complete_wnd.h",
         "win/ui/l10n_util.cc",
@@ -385,12 +383,8 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:wrl_strict",
       ]
 
-      defines += [ "SECURITY_WIN32" ]
-
       libs = [
         "msxml2.lib",
-        "secur32.lib",
-        "taskschd.lib",
         "wtsapi32.lib",
       ]
     }
@@ -606,6 +600,8 @@ if (is_win || is_mac || is_linux) {
         "util/win_util.cc",
         "util/win_util.h",
         "win/scoped_handle.h",
+        "win/task_scheduler.cc",
+        "win/task_scheduler.h",
         "win/user_info.cc",
         "win/user_info.h",
         "win/win_constants.cc",
@@ -623,7 +619,13 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:wrl_strict",
       ]
 
-      libs = [ "wtsapi32.lib" ]
+      defines = [ "SECURITY_WIN32" ]
+
+      libs = [
+        "secur32.lib",
+        "taskschd.lib",
+        "wtsapi32.lib",
+      ]
     }
 
     if (is_linux) {
