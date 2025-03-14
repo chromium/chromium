@@ -1194,11 +1194,6 @@ void ScrollView::UpdateScrollBarPositions() {
   GetViewAccessibility().SetScrollYMax(vert_sb_->GetMaxPosition());
 }
 
-gfx::PointF ScrollView::CurrentOffset() const {
-  return ScrollsWithLayers() ? contents_->layer()->CurrentScrollOffset()
-                             : gfx::PointF(-contents_->x(), -contents_->y());
-}
-
 void ScrollView::ScrollByOffset(const gfx::PointF& offset) {
   if (!contents_) {
     return;
@@ -1218,6 +1213,11 @@ void ScrollView::ScrollToOffset(const gfx::PointF& offset) {
   GetViewAccessibility().SetScrollX(offset.x());
   GetViewAccessibility().SetScrollY(offset.y());
   OnScrolled(offset);
+}
+
+gfx::PointF ScrollView::CurrentOffset() const {
+  return ScrollsWithLayers() ? contents_->layer()->CurrentScrollOffset()
+                             : gfx::PointF(-contents_->x(), -contents_->y());
 }
 
 bool ScrollView::ScrollsWithLayers() const {
