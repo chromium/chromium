@@ -1157,6 +1157,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.141 -> 1.0.143"
 notes = "Clippy lint suppression and... a C++ deduction guide for cxx::Slice."
 
+[[audits.cxxbridge-cmd]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.143 -> 1.0.146"
+notes = "Only propagating `cxx.h` change from the main `cxx` roll."
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1243,6 +1249,12 @@ who = "Daniel Cheng <dcheng@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.141 -> 1.0.143"
 notes = "Only changes for rustdoc generation."
+
+[[audits.cxxbridge-flags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.143 -> 1.0.146"
+notes = "No actual changes in this delta - just a version bump."
 
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"

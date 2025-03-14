@@ -72,7 +72,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.cxx]]
-version = "1.0.143"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -96,10 +96,11 @@ Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
 Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.143"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -123,6 +124,7 @@ Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
 Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
 """
 
 [[exemptions.icu_experimental]]
@@ -274,19 +276,6 @@ crabal member, but a formal audit is yet to be performed.
 Part of Google-co-maintained ICU4X project.
 
 https://crbug.com/393810918
-"""
-
-[[exemptions.utf16_iter]]
-version = "1.0.5"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, but needs comments.
-
-Is not needed by the actual packages enabled in the ICU4X import.
-
-Sister crate of Google-co-maintained ICU4X project, maintained by Mozillian ICU4X team members.
-
-https://crbug.com/366411886
 """
 
 [[exemptions.utf8_iter]]
