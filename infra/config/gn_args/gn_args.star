@@ -857,6 +857,7 @@ gn_args.config(
         "ozone_platform_wayland": True,
         "ozone_platform": "wayland",
         "use_bundled_weston": True,
+        "use_bundled_mutter": True,
     },
 )
 

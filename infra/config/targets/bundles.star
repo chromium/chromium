@@ -1631,6 +1631,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_gtests_for_linux_wayland_mutter",
+    targets = [
+        "interactive_ui_tests",
+    ],
+)
+
+targets.bundle(
     name = "chromium_ios_scripts",
     targets = [
         "check_static_initializers",

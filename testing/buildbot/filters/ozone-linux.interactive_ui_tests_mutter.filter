@@ -1,0 +1,78 @@
+############################################################
+# Tests that were failing on weston and still fail on mutter
+############################################################
+
+# TODO(crbug.com/40759171): implement the feature for Wayland.
+-GlobalCommandsApiTest.GlobalCommand
+
+# TODO(crbug.com/373738727): Extremely flaky on the bot, locally only sometimes times out.
+-BookmarkBarViewTest4.ContextMenus
+
+# Failing interactive ui tests
+-BookmarkBarViewTest29.DNDToEmptyMenu
+-BookmarkBarViewTest7.DNDToDifferentMenu
+-BookmarkBarViewTest8.DNDBackToOriginatingMenu
+-BrowserFocusTest.BackgroundBrowserDontStealFocus
+-ChromeVisibilityObserverInteractiveTest.VisibilityTest
+-DesktopWidgetTestInteractive.DesktopNativeWidgetWithModalTransientChild
+-DesktopWindowTreeHostPlatformImplTest.CaptureEventForwarding
+-DesktopWindowTreeHostPlatformImplTest.Deactivate
+-DesktopWindowTreeHostPlatformImplTest.InputMethodFocus
+-ExtensionApiTest.WindowOpenFocus
+-MediaDialogViewBrowserTest.PictureInPicture
+-NotificationsTestWithFakeMediaStream.ShouldQueueDuringScreenPresent
+-PasswordBubbleInteractiveUiTest.AutoSigninNoFocus
+-PopupBlockerBrowserTest.ModalPopUnder
+-StartupBrowserCreatorTest.LastUsedProfileActivated
+-WebAppProfileSwitcherBrowserTest.SwitchWebAppProfileActivateWindowOnly
+-WidgetInputMethodInteractiveTest.Activation
+-WidgetInputMethodInteractiveTest.OneWindow
+-WidgetInputMethodInteractiveTest.TwoWindows
+
+# Extremely flaky.
+-BookmarkBarViewTest18.BookmarkBarViewTest18_SiblingMenu
+
+# TODO(crbug.com/40758956): flaky fullscreen notification test
+-NotificationsTest.TestShouldDisplayMultiFullscreen
+
+# TODO(crbug.com/40175111): Flaky.
+-BrowserActionInteractiveTest.TestOpenPopup
+
+# TODO(crbug.com/40923067): Enable when feature isn't buggy any more. (Used to pass with Weston 9,
+# but doesn't pass with Weston 12. Flaky on mutter as well.)
+-FullscreenControlViewTest.MouseAndTouchInteraction_NoInterference
+-FullscreenControlViewTest.MouseExitFullscreen_TimeoutAndRetrigger
+
+# These cannot work because they rely on receiving key events during a DnD session, which isn't
+# possible on Linux Wayland.
+-TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/*
+-TabDragging/DetachToBrowserTabDragControllerTest.Revert*
+
+# TODO(crbug.com/40800718): Enable once the xdg desktop portal backed implementation is in place.
+-EyeDropperViewAuraInteractiveTest.*
+
+########################################################
+# Tests that have regressed in mutter compared to weston
+########################################################
+
+# TODO(crbug.com/391903220) Now flaky on mutter
+-GlicBorderViewUiTest.BorderResize
+-ExtensionsMenuMainPageViewInteractiveTest.ContextMenuButtonOpensContextMenu
+-AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/WithoutContentSettingView_WithoutBackToTabButton
+-AnimationTimingTestSuiteInstantiation/PictureInPictureBrowserFrameViewTest.TestAnimationTiming/WithoutContentSettingView_WithBackToTabButton
+-PictureInPictureBrowserFrameViewTest.RespectsUserLocationChangesAfterChildDialogCloses
+-BrowserFocusTest.ClickingMovesFocus
+-BrowserViewTest.FullscreenClearsFocus
+-ToastControllerInteractiveTest.HidesWhenOmniboxPopupShows
+-All/TypedNavigationUpgradeThrottleBrowserTest.PasteUrlWithoutASchemeAndHitEnter_GoodHttps/1
+# Pointer lock tests are unstable and some crash on exit
+-FullscreenControllerInteractiveTest.*PointerLock*
+
+# TODO(crbug.com/391907155) These tab drag tests are failing.
+-TabDragging/DetachToBrowserTabDragControllerTest.DragAllToSeparateWindow/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragAllToSeparateWindowThenDrop/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderToSeparateWindow/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindowAttemptToSpawnDoubleNestedRunLoop/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindowDuringDragEnd/*
+-TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/*
