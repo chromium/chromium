@@ -214,6 +214,7 @@ BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUpdateCompositorForSurfaceControl);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kWebOtpCrossDeviceSimpleString);
+BASE_DECLARE_FEATURE(kAndroidWebAppLaunchHandler);
 
 // For FeatureParam, Alphabetical:
 constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(

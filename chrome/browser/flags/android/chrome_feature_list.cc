@@ -360,6 +360,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkMinShellVersion,
+    &kAndroidWebAppLaunchHandler,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
     &language::kCctAutoTranslate,
@@ -1216,6 +1217,11 @@ BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid,
 // a descriptive text.
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString,
              "WebOtpCrossDeviceSimpleString",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A feature to enable launch handler and file handler api for Chrome on Android
+BASE_FEATURE(kAndroidWebAppLaunchHandler,
+             "AndroidWebAppLaunchHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace android

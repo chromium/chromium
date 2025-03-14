@@ -608,6 +608,7 @@ public abstract class ChromeFeatureList {
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
     public static final String POST_GET_MEMORY_PRESSURE_TO_BACKGROUND =
             BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND;
+    public static final String ANDROID_WEB_APP_LAUNCH_HANDLER = "AndroidWebAppLaunchHandler";
 
     /* Alphabetical: */
     public static final CachedFlag sAndroidAppIntegration =
