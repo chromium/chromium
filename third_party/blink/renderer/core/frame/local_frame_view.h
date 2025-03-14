@@ -116,6 +116,7 @@ class RemoteFrameView;
 class RootFrameViewport;
 class ScrollableArea;
 class Scrollbar;
+class ScrollMarkerGroupPseudoElement;
 class TapFriendlinessChecker;
 class TransformState;
 class WebPluginContainerImpl;
@@ -837,6 +838,13 @@ class CORE_EXPORT LocalFrameView final
 
   void NotifyElementWithRememberedSizeDisconnected(Element*);
 
+  void AddPendingScrollMarkerSelectionUpdate(
+      ScrollMarkerGroupPseudoElement* scroll_marker_group,
+      bool apply_snap);
+  void RemovePendingScrollMarkerSelectionUpdate(
+      ScrollMarkerGroupPseudoElement* scroll_marker_group);
+  void ExecutePendingScrollMarkerSelectionUpdates();
+
  protected:
   void FrameRectsChanged(const gfx::Rect&) override;
   void SelfVisibleChanged() override;
@@ -1282,6 +1290,12 @@ class CORE_EXPORT LocalFrameView final
   // size. We need to clear the remembered at resize observer timing,
   // assuming they are still disconnected.
   HeapHashSet<WeakMember<Element>> disconnected_elements_with_remembered_size_;
+
+  // These scroll-marker-groups which have a newly selected scroll-marker and
+  // should scroll it into view. The boolean values indicate whether snap
+  // alignment should be used in the scroll.
+  Member<GCedHeapHashMap<Member<ScrollMarkerGroupPseudoElement>, bool>>
+      pending_scroll_marker_selection_updates_;
 
 #if DCHECK_IS_ON()
   bool is_updating_descendant_dependent_flags_;

@@ -118,6 +118,10 @@ void ScrollMarkerGroupPseudoElement::Dispose() {
     scroll_marker_group_data_->SetSelected(nullptr);
   }
   scroll_marker_group_data_->ClearFocusGroup();
+  if (GetLayoutBox() && GetLayoutBox()->GetFrameView()) {
+    GetLayoutBox()->GetFrameView()->RemovePendingScrollMarkerSelectionUpdate(
+        this);
+  }
   PseudoElement::Dispose();
 }
 
@@ -148,6 +152,12 @@ void ScrollMarkerGroupPseudoElement::DetachLayoutTree(
   scroll_marker_group_data_->SetSelected(nullptr);
   scroll_marker_group_data_->ClearFocusGroup();
   PseudoElement::DetachLayoutTree(performing_reattach);
+}
+
+void ScrollMarkerGroupPseudoElement::ScrollSelectedIntoView(bool apply_snap) {
+  if (ScrollMarkerPseudoElement* selected = Selected()) {
+    selected->ScrollIntoView(apply_snap);
+  }
 }
 
 }  // namespace blink

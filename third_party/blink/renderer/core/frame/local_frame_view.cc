@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -351,6 +352,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(pending_snap_updates_);
   visitor->Trace(pending_perform_snap_);
   visitor->Trace(disconnected_elements_with_remembered_size_);
+  visitor->Trace(pending_scroll_marker_selection_updates_);
 }
 
 void LocalFrameView::ForAllChildViewsAndPlugins(
@@ -2547,6 +2549,8 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
 
   // Fire scrollsnapchanging events based on the new layout if necessary.
   EnqueueScrollSnapChangingFromImplIfNecessary();
+
+  ExecutePendingScrollMarkerSelectionUpdates();
 
   EnqueueScrollEvents();
 
@@ -5171,6 +5175,35 @@ void LocalFrameView::ExecutePendingSnapUpdates() {
 void LocalFrameView::NotifyElementWithRememberedSizeDisconnected(
     Element* element) {
   disconnected_elements_with_remembered_size_.insert(element);
+}
+
+void LocalFrameView::AddPendingScrollMarkerSelectionUpdate(
+    ScrollMarkerGroupPseudoElement* scroll_marker_group,
+    bool apply_snap) {
+  if (!pending_scroll_marker_selection_updates_) {
+    pending_scroll_marker_selection_updates_ = MakeGarbageCollected<
+        GCedHeapHashMap<Member<ScrollMarkerGroupPseudoElement>, bool>>();
+  }
+  pending_scroll_marker_selection_updates_->insert(scroll_marker_group,
+                                                   apply_snap);
+}
+
+void LocalFrameView::RemovePendingScrollMarkerSelectionUpdate(
+    ScrollMarkerGroupPseudoElement* scroll_marker_group) {
+  if (pending_scroll_marker_selection_updates_) {
+    pending_scroll_marker_selection_updates_->erase(scroll_marker_group);
+  }
+}
+
+void LocalFrameView::ExecutePendingScrollMarkerSelectionUpdates() {
+  if (pending_scroll_marker_selection_updates_) {
+    for (const auto& update : *pending_scroll_marker_selection_updates_) {
+      ScrollMarkerGroupPseudoElement* scroll_marker_group = update.key;
+      scroll_marker_group->ScrollSelectedIntoView(
+          /*apply_snap_alignment*/ update.value);
+    }
+    pending_scroll_marker_selection_updates_->clear();
+  }
 }
 
 }  // namespace blink
