@@ -297,40 +297,40 @@ void PopFromCollection() {
 }
 
 template <typename T, wtf_size_t inlineCapacity>
-struct MethodAdapter<HeapVector<T, inlineCapacity>>
-    : public MethodAdapterBase<HeapVector<T, inlineCapacity>> {
+struct MethodAdapter<GCedHeapVector<T, inlineCapacity>>
+    : public MethodAdapterBase<GCedHeapVector<T, inlineCapacity>> {
   template <typename U>
-  static void insert(HeapVector<T, inlineCapacity>& vector, U&& u) {
+  static void insert(GCedHeapVector<T, inlineCapacity>& vector, U&& u) {
     vector.push_back(std::forward<U>(u));
   }
 };
 
 TEST_F(ConcurrentMarkingTest, AddToVector) {
-  AddToCollection<HeapVector<Member<IntegerObject>>>();
+  AddToCollection<GCedHeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromBeginningOfVector) {
-  RemoveFromBeginningOfCollection<HeapVector<Member<IntegerObject>>>();
+  RemoveFromBeginningOfCollection<GCedHeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromMiddleOfVector) {
-  RemoveFromMiddleOfCollection<HeapVector<Member<IntegerObject>>>();
+  RemoveFromMiddleOfCollection<GCedHeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, RemoveFromEndOfVector) {
-  RemoveFromEndOfCollection<HeapVector<Member<IntegerObject>>>();
+  RemoveFromEndOfCollection<GCedHeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, ClearVector) {
-  ClearCollection<HeapVector<Member<IntegerObject>>>();
+  ClearCollection<GCedHeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, SwapVector) {
-  SwapCollections<HeapVector<Member<IntegerObject>>>();
+  SwapCollections<GCedHeapVector<Member<IntegerObject>>>();
 }
 TEST_F(ConcurrentMarkingTest, PopFromVector) {
-  PopFromCollection<HeapVector<Member<IntegerObject>>>();
+  PopFromCollection<GCedHeapVector<Member<IntegerObject>>>();
 }
 
 // HeapVector with inlined buffer
 
 template <typename T>
-using HeapVectorWithInlineStorage = HeapVector<T, 10>;
+using HeapVectorWithInlineStorage = GCedHeapVector<T, 10>;
 
 TEST_F(ConcurrentMarkingTest, AddToInlinedVector) {
   AddToCollection<HeapVectorWithInlineStorage<Member<IntegerObject>>>();
@@ -360,13 +360,14 @@ TEST_F(ConcurrentMarkingTest, PopFromInlinedVector) {
 // HeapVector of std::pairs
 
 template <typename T>
-using HeapVectorOfPairs = HeapVector<std::pair<T, T>>;
+using HeapVectorOfPairs = GCedHeapVector<std::pair<T, T>>;
 
 template <typename T, wtf_size_t inlineCapacity>
-struct MethodAdapter<HeapVector<std::pair<T, T>, inlineCapacity>>
-    : public MethodAdapterBase<HeapVector<std::pair<T, T>, inlineCapacity>> {
+struct MethodAdapter<GCedHeapVector<std::pair<T, T>, inlineCapacity>>
+    : public MethodAdapterBase<
+          GCedHeapVector<std::pair<T, T>, inlineCapacity>> {
   template <typename U>
-  static void insert(HeapVector<std::pair<T, T>, inlineCapacity>& vector,
+  static void insert(GCedHeapVector<std::pair<T, T>, inlineCapacity>& vector,
                      U&& u) {
     vector.push_back(std::make_pair<U&, U&>(u, u));
   }
