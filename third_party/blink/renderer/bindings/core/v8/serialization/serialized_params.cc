@@ -57,39 +57,39 @@ PredefinedColorSpace DeserializeColorSpace(
 
 SerializedImageDataSettings::SerializedImageDataSettings(
     PredefinedColorSpace color_space,
-    V8ImageDataStorageFormat storage_format)
+    V8ImageDataPixelFormat pixel_format)
     : color_space_(SerializeColorSpace(color_space)) {
-  switch (storage_format.AsEnum()) {
-    case V8ImageDataStorageFormat::Enum::kUint8:
-      storage_format_ = SerializedImageDataStorageFormat::kUint8Clamped;
+  switch (pixel_format.AsEnum()) {
+    case V8ImageDataPixelFormat::Enum::kRgbaUnorm8:
+      pixel_format_ = SerializedImageDataPixelFormat::kRgbaUnorm8;
       break;
-    case V8ImageDataStorageFormat::Enum::kUint16:
-      storage_format_ = SerializedImageDataStorageFormat::kUint16;
+    case V8ImageDataPixelFormat::Enum::kRgbaFloat16:
+      pixel_format_ = SerializedImageDataPixelFormat::kRgbaFloat16;
       break;
-    case V8ImageDataStorageFormat::Enum::kFloat32:
-      storage_format_ = SerializedImageDataStorageFormat::kFloat32;
+    case V8ImageDataPixelFormat::Enum::kRgbaFloat32:
+      pixel_format_ = SerializedImageDataPixelFormat::kRgbaFloat32;
       break;
   }
 }
 
 SerializedImageDataSettings::SerializedImageDataSettings(
     SerializedPredefinedColorSpace color_space,
-    SerializedImageDataStorageFormat storage_format)
-    : color_space_(color_space), storage_format_(storage_format) {}
+    SerializedImageDataPixelFormat pixel_format)
+    : color_space_(color_space), pixel_format_(pixel_format) {}
 
 ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
   ImageDataSettings* settings = ImageDataSettings::Create();
   settings->setColorSpace(
       PredefinedColorSpaceToV8(DeserializeColorSpace(color_space_)));
-  switch (storage_format_) {
-    case SerializedImageDataStorageFormat::kUint8Clamped:
-      settings->setStorageFormat(V8ImageDataStorageFormat::Enum::kUint8);
+  switch (pixel_format_) {
+    case SerializedImageDataPixelFormat::kRgbaUnorm8:
+      settings->setPixelFormat(V8ImageDataPixelFormat::Enum::kRgbaUnorm8);
       break;
-    case SerializedImageDataStorageFormat::kUint16:
-      settings->setStorageFormat(V8ImageDataStorageFormat::Enum::kUint16);
+    case SerializedImageDataPixelFormat::kRgbaFloat16:
+      settings->setPixelFormat(V8ImageDataPixelFormat::Enum::kRgbaFloat16);
       break;
-    case SerializedImageDataStorageFormat::kFloat32:
-      settings->setStorageFormat(V8ImageDataStorageFormat::Enum::kFloat32);
+    case SerializedImageDataPixelFormat::kRgbaFloat32:
+      settings->setPixelFormat(V8ImageDataPixelFormat::Enum::kRgbaFloat32);
       break;
   }
   return settings;

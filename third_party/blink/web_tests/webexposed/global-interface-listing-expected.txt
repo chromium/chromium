@@ -5652,7 +5652,7 @@ interface ImageData
     getter colorSpace
     getter data
     getter height
-    getter storageFormat
+    getter pixelFormat
     getter width
     method constructor
 interface ImageDecoder
