@@ -3623,6 +3623,14 @@ be describing additional metrics about the same event.
       Records a 1 each time an accounts dialog is shown.
     </summary>
   </metric>
+  <metric name="AccountSelectionScrollPosition">
+    <summary>
+      Records the page scroll (y-axis) position upon account selection. Records
+      once per user selecting an account by clicking on a FedCM dialog.
+      Bucketized exponentially with a standard bucket spacing of 1.15. This is
+      in units of pixels.
+    </summary>
+  </metric>
   <metric name="AccountsRequestSent" enum="BooleanHit">
     <summary>
       Records a 1 each time a request is sent to the accounts endpoint.
