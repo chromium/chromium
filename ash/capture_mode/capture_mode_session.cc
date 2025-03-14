@@ -35,10 +35,12 @@
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/url_constants.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -1574,9 +1576,12 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
       base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(decline_callback)),
-      // TODO: crbug.com/401110577 - Pass a callback here to open a link.
-      /*press_terms_of_service_callback=*/base::DoNothing(),
-      /*press_learn_more_link_callback=*/base::DoNothing());
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          chrome::kGooglePrivacyPolicyUrl),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          chrome::kScannerLearnMoreUrl));
   disclaimer_->Show();
   focus_cycler_->OnDisclaimerWidgetOpened(disclaimer_.get());
 }
@@ -1679,6 +1684,15 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
   if (callback) {
     std::move(callback).Run();
   }
+}
+
+void CaptureModeSession::OnDisclaimerLinkPressed(const char* url) {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+
+  // End the session. `this` is destroyed here.
+  controller_->Stop();
 }
 
   void CaptureModeSession::OnSmartActionsButtonPressed() {

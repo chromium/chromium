@@ -453,6 +453,9 @@ class ASH_EXPORT CaptureModeSession
   // Called by the consent disclaimer on decline.
   void OnDisclaimerDeclined(base::RepeatingClosure callback);
 
+  // Called by the consent disclaimer when a user clicks a link.
+  void OnDisclaimerLinkPressed(const char* url);
+
   // Called back when the smart actions button is pressed.
   void OnSmartActionsButtonPressed();
 

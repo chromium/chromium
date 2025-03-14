@@ -37,12 +37,14 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_controller.h"
@@ -177,6 +179,15 @@ Matcher<ActionButtonView*> ActionButtonIsCollapsed() {
   return Property(&ActionButtonView::label_for_testing,
                   Property(&views::Label::GetVisible, false));
 }
+
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
 
 class SunfishTestBase : public AshTestBase {
  public:
@@ -2940,8 +2951,11 @@ class ScannerTest : public AshTestBase {
         kSunfishConsentDisclaimerAccepted, true);
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kScannerUpdate};
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 // Tests that a Scanner session is created when a Sunfish session begins.
@@ -4930,6 +4944,124 @@ TEST_F(ScannerTest, KeyboardNavigationDisclaimerFromSmartActionsButton) {
   // paragraph one again.
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_TRUE(paragraph_one_first_link->HasFocus());
+}
+
+TEST_F(ScannerTest, DisclaimerTosLinkFromScreenshotMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  ASSERT_TRUE(smart_actions_button);
+  auto* controller = CaptureModeController::Get();
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  LeftClickOn(smart_actions_button);
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  auto* paragraph_one = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphOneId));
+  ASSERT_TRUE(paragraph_one);
+
+  paragraph_one->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kScannerEnabled));
+}
+
+TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromScreenshotMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+  ActionButtonView* smart_actions_button = GetSmartActionsButton();
+  ASSERT_TRUE(smart_actions_button);
+  auto* controller = CaptureModeController::Get();
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  LeftClickOn(smart_actions_button);
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  auto* paragraph_three = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphThreeId));
+  ASSERT_TRUE(paragraph_three);
+
+  paragraph_three->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kScannerEnabled));
+}
+
+TEST_F(ScannerTest, DisclaimerTosLinkFromSunfishMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kGooglePrivacyPolicyUrl), _, _));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  auto* paragraph_one = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphOneId));
+  ASSERT_TRUE(paragraph_one);
+
+  paragraph_one->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kScannerEnabled));
+}
+
+TEST_F(ScannerTest, DisclaimerLearnMoreLinkFromSunfishMode) {
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL(chrome::kScannerLearnMoreUrl), _, _));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  ASSERT_TRUE(controller->IsActive());
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
+  ASSERT_TRUE(disclaimer);
+  auto* paragraph_three = views::AsViewClass<views::StyledLabel>(
+      disclaimer->GetContentsView()->GetViewByID(
+          kDisclaimerViewParagraphThreeId));
+  ASSERT_TRUE(paragraph_three);
+
+  paragraph_three->ClickFirstLinkForTesting();
+
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          prefs::kScannerEnabled));
 }
 
 TEST_F(ScannerTest, DisclaimerAcceptRecordsHistogramOnce) {
