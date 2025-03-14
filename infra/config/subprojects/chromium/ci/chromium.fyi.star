@@ -728,6 +728,7 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
+            "no_secondary_abi",
             "webview_shell",
         ],
     ),
