@@ -840,14 +840,15 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
 
   // If the current mouse event is on capture label button, and capture label
   // button can handle the event, show the hand mouse cursor.
-  DCHECK(capture_label_view_);
-  const bool is_event_on_capture_button =
-      capture_label_widget_->GetWindowBoundsInScreen().Contains(
-          location_in_screen) &&
-      capture_label_view_->ShouldHandleEvent();
-  if (is_event_on_capture_button) {
-    cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
-    return;
+  if (capture_label_view_) {
+    const bool is_event_on_capture_button =
+        capture_label_widget_->GetWindowBoundsInScreen().Contains(
+            location_in_screen) &&
+        capture_label_view_->ShouldHandleEvent();
+    if (is_event_on_capture_button) {
+      cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
+      return;
+    }
   }
 
   // TODO: crbug.com/375696216 - Further refine this so the area between buttons
@@ -1643,9 +1644,11 @@ void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
 
   disclaimer_.reset();
 
-  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()) {
+  if (active_behavior_->ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()) {
     capture_mode_util::TriggerAccessibilityAlert(
         active_behavior_->GetCaptureModeOpenAnnouncement());
+    // Create the capture label widget and announce it if needed.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   }
 
   focus_cycler_->OnDisclaimerWidgetClosed();
@@ -1662,9 +1665,11 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
 
   disclaimer_.reset();
 
-  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()) {
+  if (active_behavior_->ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()) {
     capture_mode_util::TriggerAccessibilityAlert(
         active_behavior_->GetCaptureModeOpenAnnouncement());
+    // Create the capture label widget and announce it if needed.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   }
 
   focus_cycler_->OnDisclaimerWidgetClosed();
@@ -3847,7 +3852,7 @@ void CaptureModeSession::InitInternal() {
   // Trigger this before creating `capture_mode_bar_widget_` as we want to read
   // out this message before reading out the first view of
   // `capture_mode_bar_widget_`.
-  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnInit()) {
+  if (!active_behavior_->NeedsDisclaimerOnInit()) {
     capture_mode_util::TriggerAccessibilityAlert(
         active_behavior_->GetCaptureModeOpenAnnouncement());
   }
@@ -3904,7 +3909,11 @@ void CaptureModeSession::InitInternal() {
   }
   // Update the capture label widget after the action buttons, as the action
   // buttons get priority around the edges of the capture region.
-  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  if (!active_behavior_->NeedsDisclaimerOnInit()) {
+    // Don't create the capture label yet if a disclaimer needs to be shown, to
+    // avoid the label being announced while the disclaimer is still visible.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  }
   UpdateFeedbackButtonWidget();
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
