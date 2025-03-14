@@ -1570,6 +1570,7 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
   }
   disclaimer_ = DisclaimerView::CreateWidget(
       capture_mode_util::GetPreferredRootWindow(),
+      /*is_reminder=*/false,
       base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(accept_callback)),

@@ -27,9 +27,9 @@
 
 namespace ash {
 
-class DisclaimerViewTest : public AshTestBase {
+class DisclaimerViewTestBase : public AshTestBase {
  public:
-  DisclaimerViewTest() = default;
+  DisclaimerViewTestBase() = default;
 
   // Mock callbacks:
   MOCK_METHOD(void, OnAcceptButtonPressed, (), ());
@@ -40,24 +40,50 @@ class DisclaimerViewTest : public AshTestBase {
   // Creates a widget with a `DisclaimerView` as the contents view and shows it.
   std::unique_ptr<views::Widget> CreateAndShowWidget() {
     auto widget = DisclaimerView::CreateWidget(
-        Shell::GetPrimaryRootWindow(),
-        base::BindRepeating(&DisclaimerViewTest::OnAcceptButtonPressed,
+        Shell::GetPrimaryRootWindow(), is_reminder(),
+        base::BindRepeating(&DisclaimerViewTestBase::OnAcceptButtonPressed,
                             base::Unretained(this)),
-        base::BindRepeating(&DisclaimerViewTest::OnDeclineButtonPressed,
+        base::BindRepeating(&DisclaimerViewTestBase::OnDeclineButtonPressed,
                             base::Unretained(this)),
-        base::BindRepeating(&DisclaimerViewTest::OnTermsOfServiceLinkPressed,
-                            base::Unretained(this)),
-        base::BindRepeating(&DisclaimerViewTest::OnLearnMoreLinkPressed,
+        base::BindRepeating(
+            &DisclaimerViewTestBase::OnTermsOfServiceLinkPressed,
+            base::Unretained(this)),
+        base::BindRepeating(&DisclaimerViewTestBase::OnLearnMoreLinkPressed,
                             base::Unretained(this)));
     widget->Show();
     views::test::WidgetVisibleWaiter(widget.get()).Wait();
     return widget;
   }
 
+  virtual bool is_reminder() = 0;
+
  private:
 };
 
-TEST_F(DisclaimerViewTest, AcceptButton) {
+class DisclaimerViewTest : public DisclaimerViewTestBase,
+                           public testing::WithParamInterface<bool> {
+ public:
+  bool is_reminder() override { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DisclaimerViewTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Reminder" : "NoReminder";
+                         });
+
+class DisclaimerViewNoReminderTest : public DisclaimerViewTestBase {
+ public:
+  bool is_reminder() override { return false; }
+};
+
+class DisclaimerViewReminderTest : public DisclaimerViewTestBase {
+ public:
+  bool is_reminder() override { return true; }
+};
+
+TEST_P(DisclaimerViewTest, AcceptButton) {
   std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnAcceptButtonPressed);
@@ -66,7 +92,7 @@ TEST_F(DisclaimerViewTest, AcceptButton) {
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
-TEST_F(DisclaimerViewTest, AcceptButtonKeyboardNavigation) {
+TEST_P(DisclaimerViewTest, AcceptButtonKeyboardNavigation) {
   std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnAcceptButtonPressed);
@@ -74,7 +100,7 @@ TEST_F(DisclaimerViewTest, AcceptButtonKeyboardNavigation) {
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
-TEST_F(DisclaimerViewTest, DeclineButton) {
+TEST_F(DisclaimerViewNoReminderTest, DeclineButton) {
   std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnDeclineButtonPressed);
@@ -83,7 +109,7 @@ TEST_F(DisclaimerViewTest, DeclineButton) {
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
-TEST_F(DisclaimerViewTest, DeclineButtonKeyboardNavigation) {
+TEST_F(DisclaimerViewNoReminderTest, DeclineButtonKeyboardNavigation) {
   std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
 
   EXPECT_CALL(*this, OnDeclineButtonPressed);
@@ -92,7 +118,14 @@ TEST_F(DisclaimerViewTest, DeclineButtonKeyboardNavigation) {
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
-TEST_F(DisclaimerViewTest, TermsOfServiceLink) {
+TEST_F(DisclaimerViewReminderTest, DeclineButtonHidden) {
+  std::unique_ptr<views::Widget> disclaimer_widget = CreateAndShowWidget();
+
+  EXPECT_FALSE(disclaimer_widget->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId));
+}
+
+TEST_P(DisclaimerViewTest, TermsOfServiceLink) {
   std::unique_ptr<views::Widget> widget = CreateAndShowWidget();
   auto* disclaimer_view =
       views::AsViewClass<DisclaimerView>(widget->GetContentsView());
@@ -106,7 +139,7 @@ TEST_F(DisclaimerViewTest, TermsOfServiceLink) {
   LeftClickOn(link);
 }
 
-TEST_F(DisclaimerViewTest, LearnMoreLink) {
+TEST_P(DisclaimerViewTest, LearnMoreLink) {
   std::unique_ptr<views::Widget> widget = CreateAndShowWidget();
   auto* disclaimer_view =
       views::AsViewClass<DisclaimerView>(widget->GetContentsView());
