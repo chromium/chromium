@@ -15,7 +15,8 @@ namespace password_manager {
 // ContentCredentialManager -------------------------------------------------
 
 ContentCredentialManager::ContentCredentialManager(
-    std::unique_ptr<CredentialManagerInterface> credential_manager)
+    std::unique_ptr<credential_management::CredentialManagerInterface>
+        credential_manager)
     : credential_manager_(std::move(credential_manager)) {}
 
 ContentCredentialManager::~ContentCredentialManager() = default;

@@ -11,7 +11,7 @@ BrowserCredentialManagerFactory::BrowserCredentialManagerFactory(
     PasswordManagerClient* client)
     : client_(client) {}
 
-std::unique_ptr<CredentialManagerInterface>
+std::unique_ptr<credential_management::CredentialManagerInterface>
 BrowserCredentialManagerFactory::CreateCredentialManager() {
   return std::make_unique<password_manager::CredentialManagerImpl>(client_);
 }
