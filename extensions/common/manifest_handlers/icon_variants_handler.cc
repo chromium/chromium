@@ -31,10 +31,10 @@ IconVariantsInfo::~IconVariantsInfo() = default;
 IconVariantsHandler::IconVariantsHandler() = default;
 IconVariantsHandler::~IconVariantsHandler() = default;
 
-using IconVariantsManifestKeys = extensions::api::icon_variants::ManifestKeys;
-using Id = extensions::diagnostics::icon_variants::Id;
-using Severity = extensions::diagnostics::icon_variants::Severity;
-using Feature = extensions::diagnostics::icon_variants::Feature;
+using extensions::api::icon_variants::ManifestKeys;
+using extensions::diagnostics::icon_variants::Id;
+using extensions::diagnostics::icon_variants::Severity;
+using extensions::diagnostics::icon_variants::Feature;
 
 namespace {
 void AddInstallWarning(Extension& extension, const std::string& warning) {
@@ -86,7 +86,7 @@ bool IconVariantsInfo::HasIconVariants(const Extension* extension) {
 const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
     const Extension& extension) {
   return static_cast<IconVariantsInfo*>(
-      extension.GetManifestData(IconVariantsManifestKeys::kIconVariants));
+      extension.GetManifestData(ManifestKeys::kIconVariants));
 }
 
 // static
@@ -137,8 +137,8 @@ bool IconVariantsHandler::Parse(Extension* extension, std::u16string* error) {
   // json_schema_compiler. The manifest_keys wouldn't contain icon sizes, so
   // all keys will be parsed from the same source list after this verification.
   std::u16string ignore_generated_parsing_errors;
-  IconVariantsManifestKeys manifest_keys;
-  if (!IconVariantsManifestKeys::ParseFromDictionary(
+  ManifestKeys manifest_keys;
+  if (!ManifestKeys::ParseFromDictionary(
           extension->manifest()->available_values(), manifest_keys,
           ignore_generated_parsing_errors)) {
     // `ParseFromDictionary` returns false if .e.g. a manifest string doesn't
