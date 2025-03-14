@@ -22,6 +22,8 @@
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/time_formatting.h"
+#include "base/i18n/unicodestring.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -42,6 +44,8 @@
 #include "components/nacl/common/nacl_switches.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/common/result_codes.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
+#include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
@@ -723,7 +727,7 @@ std::u16string TaskManagerTableModel::GetAXNameForHeader(
   }
 
   CHECK(!visible_column_titles.empty());
-  return base::JoinString(visible_column_titles, u" ");
+  return FormatListToString(visible_column_titles);
 }
 
 std::u16string TaskManagerTableModel::GetAXNameForRow(
@@ -779,13 +783,35 @@ std::u16string TaskManagerTableModel::GetAXNameForRow(
     }
   }
 
-  const int other_tasks_size = static_cast<int>(other_task_titles.size());
-
   return base::i18n::MessageFormatter::FormatWithNamedArgs(
       l10n_util::GetStringUTF16(IDS_TASK_MANAGER_TASK_GROUP_CONNECT_TEXT),
-      "NUM_TASKS", other_tasks_size + 1, "TASK_ROW",
-      base::JoinString(column_names, u" "), "OTHER_TASK_NUM", other_tasks_size,
-      "OTHER_TASKS", base::JoinString(other_task_titles, u" "));
+      "NUM_TASKS", base::checked_cast<int>(other_task_titles.size()),
+      "TASK_ROW", FormatListToString(column_names), "OTHER_TASKS",
+      FormatListToString(other_task_titles));
+}
+
+std::u16string TaskManagerTableModel::FormatListToString(
+    base::span<const std::u16string> items) {
+  if (items.empty()) {
+    return std::u16string();
+  }
+
+  std::vector<icu::UnicodeString> strings;
+  strings.reserve(items.size());
+  for (const auto& item : items) {
+    strings.emplace_back(item.data(), item.size());
+  }
+
+  UErrorCode status = U_ZERO_ERROR;
+  const auto formatter =
+      base::WrapUnique(icu::ListFormatter::createInstance(status));
+  CHECK(U_SUCCESS(status));
+
+  icu::UnicodeString formatted;
+  formatter->format(strings.data(), strings.size(), formatted, status);
+  CHECK(U_SUCCESS(status));
+
+  return base::i18n::UnicodeStringToString16(formatted);
 }
 
 void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
