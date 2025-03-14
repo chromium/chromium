@@ -10,16 +10,15 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Bottom sheet content of the new tab page customization. */
-public class NtpCustomizationMainBottomSheetContent implements BottomSheetContent {
+/** Bottom sheet content of the NTP customization. */
+public class NtpCustomizationBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
-    public NtpCustomizationMainBottomSheetContent(@NonNull View view) {
-        mContentView = view;
+    public NtpCustomizationBottomSheetContent(View contentView) {
+        mContentView = contentView;
     }
 
     @Override
@@ -66,19 +65,19 @@ public class NtpCustomizationMainBottomSheetContent implements BottomSheetConten
     }
 
     @Override
-    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+    public int getSheetHalfHeightAccessibilityStringId() {
         // Half-height is disabled so no need for an accessibility string.
         assert false : "This method should not be called";
         return Resources.ID_NULL;
     }
 
     @Override
-    public @StringRes int getSheetFullHeightAccessibilityStringId() {
+    public int getSheetFullHeightAccessibilityStringId() {
         return R.string.ntp_customization_main_bottom_sheet_opened_full;
     }
 
     @Override
-    public @StringRes int getSheetClosedAccessibilityStringId() {
+    public int getSheetClosedAccessibilityStringId() {
         return R.string.ntp_customization_main_bottom_sheet_closed;
     }
 }

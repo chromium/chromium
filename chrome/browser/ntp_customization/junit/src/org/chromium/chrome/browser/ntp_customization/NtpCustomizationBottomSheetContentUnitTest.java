@@ -28,51 +28,46 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Unit tests for {@link NtpCustomizationMainBottomSheetContent}. */
+/** Unit tests for {@link NtpCustomizationBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public final class NtpCustomizationMainBottomSheetContentUnitTest {
+public final class NtpCustomizationBottomSheetContentUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private View mView;
+
     private Context mContext;
+    private NtpCustomizationBottomSheetContent mBottomSheetContent;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mView =
+        View view =
                 LayoutInflater.from(mContext)
-                        .inflate(R.layout.ntp_customization_main_bottom_sheet, /* root= */ null);
+                        .inflate(R.layout.ntp_customization_bottom_sheet, /* root= */ null);
+        mBottomSheetContent = new NtpCustomizationBottomSheetContent(view);
     }
 
     @Test
     @SmallTest
     public void testBasics() {
-        NtpCustomizationMainBottomSheetContent mNtpCustomizationMainBottomSheetContent =
-                new NtpCustomizationMainBottomSheetContent(mView);
-
-        assertNotNull(mNtpCustomizationMainBottomSheetContent.getContentView());
-        assertNull(mNtpCustomizationMainBottomSheetContent.getToolbarView());
-        assertEquals(0, mNtpCustomizationMainBottomSheetContent.getVerticalScrollOffset());
-        assertEquals(
-                BottomSheetContent.ContentPriority.HIGH,
-                mNtpCustomizationMainBottomSheetContent.getPriority());
-        assertFalse(mNtpCustomizationMainBottomSheetContent.swipeToDismissEnabled());
-        assertEquals(
-                BottomSheetContent.HeightMode.DISABLED,
-                mNtpCustomizationMainBottomSheetContent.getPeekHeight());
+        assertNotNull(mBottomSheetContent.getContentView());
+        assertNull(mBottomSheetContent.getToolbarView());
+        assertEquals(0, mBottomSheetContent.getVerticalScrollOffset());
+        assertEquals(BottomSheetContent.ContentPriority.HIGH, mBottomSheetContent.getPriority());
+        assertFalse(mBottomSheetContent.swipeToDismissEnabled());
+        assertEquals(BottomSheetContent.HeightMode.DISABLED, mBottomSheetContent.getPeekHeight());
         assertEquals(
                 (float) BottomSheetContent.HeightMode.WRAP_CONTENT,
-                mNtpCustomizationMainBottomSheetContent.getFullHeightRatio(),
+                mBottomSheetContent.getFullHeightRatio(),
                 MathUtils.EPSILON);
 
         assertEquals(
                 mContext.getString(
                         R.string.ntp_customization_main_bottom_sheet_content_description),
-                mNtpCustomizationMainBottomSheetContent.getSheetContentDescription(mContext));
+                mBottomSheetContent.getSheetContentDescription(mContext));
         assertEquals(
                 R.string.ntp_customization_main_bottom_sheet_opened_full,
-                mNtpCustomizationMainBottomSheetContent.getSheetFullHeightAccessibilityStringId());
+                mBottomSheetContent.getSheetFullHeightAccessibilityStringId());
         assertEquals(
                 R.string.ntp_customization_main_bottom_sheet_closed,
-                mNtpCustomizationMainBottomSheetContent.getSheetClosedAccessibilityStringId());
+                mBottomSheetContent.getSheetClosedAccessibilityStringId());
     }
 }
