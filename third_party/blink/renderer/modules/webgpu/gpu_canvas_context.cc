@@ -287,6 +287,9 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
       black_bitmap.eraseARGB(0, 0, 0, 0);
     }
 
+    // Mark the bitmap as immutable to avoid an unnecessary copy in the
+    // following RasterFromBitmap() call.
+    black_bitmap.setImmutable();
     return MakeGarbageCollected<ImageBitmap>(
         UnacceleratedStaticBitmapImage::Create(
             SkImages::RasterFromBitmap(black_bitmap)));
