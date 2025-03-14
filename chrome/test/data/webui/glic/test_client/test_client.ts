@@ -48,6 +48,8 @@ interface PageElementTypes {
   getlocation: HTMLButtonElement;
   location: HTMLElement;
   locationStatus: HTMLDivElement;
+  locationErrorUI: HTMLDivElement;
+  openOsLocationSettingsButton: HTMLButtonElement;
   permissionSelect: HTMLSelectElement;
   enabledSelect: HTMLSelectElement;
   closebn: HTMLButtonElement;
@@ -89,6 +91,12 @@ interface PageElementTypes {
   dump: HTMLElement;
   fitWindow: HTMLInputElement;
   fitContent: HTMLInputElement;
+  startMic: HTMLButtonElement;
+  successUI: HTMLDivElement;
+  localDenialUI: HTMLDivElement;
+  osDenialUI: HTMLDivElement;
+  openLocalSettingsButton: HTMLButtonElement;
+  openOsSettingsButton: HTMLButtonElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -276,6 +284,27 @@ createGlicHostRegistryOnLoad().then((registry) => {
     registry.registerWebClient(client);
   }
 });
+
+async function checkMicrophonePermission():
+    Promise<'success'|'localDenial'|'osDenial'|'unknown'> {
+  try {
+    await navigator.mediaDevices.getUserMedia({audio: true});
+    return 'success';
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'NotAllowedError') {
+      // Use the GlicBrowserHost to check the permission state.
+      const micPermissionStatus = permissionSwitches['microphone'].checked;
+      if (!micPermissionStatus) {
+        return 'localDenial';
+      } else {
+        return 'osDenial';
+      }
+    } else {
+      console.error(error);
+    }
+    return 'unknown';
+  }
+}
 
 // Test Sizing:
 $.enableTestSizingMode.addEventListener('click', () => {
@@ -511,6 +540,10 @@ $.getlocation.addEventListener('click', async () => {
       if (error instanceof GeolocationPositionError) {
         if (error.code === 1) {
           $.locationStatus.innerText = `Permission Denied.`;
+          const locPermissionStatus = permissionSwitches['geolocation'].checked;
+          if (locPermissionStatus) {
+            $.locationErrorUI.style.display = 'block';
+          }
         }
       }
     }
@@ -753,6 +786,29 @@ window.addEventListener('load', () => {
         `\nSetting experiment: ${trialName} ${groupName}`;
     await getBrowser()!.setSyntheticExperimentState!(trialName, groupName);
     $.setExperimentStatus!.innerText += '\nExperiment State Set.';
+  });
+  $.startMic.addEventListener('click', async () => {
+    const permissionResult = await checkMicrophonePermission();
+
+    $.startMic.style.display = 'none';
+
+    if (permissionResult === 'success') {
+      $.successUI.style.display = 'block';
+    } else if (permissionResult === 'localDenial') {
+      $.localDenialUI.style.display = 'block';
+    } else if (permissionResult === 'osDenial') {
+      $.osDenialUI.style.display = 'block';
+    }
+  });
+
+  $.openLocalSettingsButton.addEventListener('click', () => {
+    getBrowser()!.openGlicSettingsPage!();
+  });
+  $.openOsSettingsButton.addEventListener('click', () => {
+    getBrowser()!.openOsPermissionSettingsMenu!('media');
+  });
+  $.openOsLocationSettingsButton.addEventListener('click', () => {
+    getBrowser()!.openOsPermissionSettingsMenu!('geolocation');
   });
 });
 

@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -32,10 +33,12 @@
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/media/audio_ducker.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -448,6 +451,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     g_browser_process->GetFeatures()
         ->glic_synthetic_trial_manager()
         ->SetSyntheticExperimentState(trial_name, group_name);
+  }
+
+  void OpenOsPermissionSettingsMenu(ContentSettingsType type) override {
+    if (type == ContentSettingsType::MEDIASTREAM_MIC ||
+        type == ContentSettingsType::GEOLOCATION) {
+      system_permission_settings::OpenSystemSettings(
+          page_handler_->webui_contents(), type);
+    } else {
+      NOTIMPLEMENTED();
+    }
   }
 
   // GlicWindowController::StateObserver implementation.

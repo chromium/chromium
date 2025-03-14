@@ -15,6 +15,7 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
+import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {ActInFocusedTabParams, DraggableArea, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
@@ -453,6 +454,18 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }) {
     return this.handler.setSyntheticExperimentState(
         request.trialName, request.groupName);
+  }
+
+  glicBrowserOpenOsPermissionSettingsMenu(request: {permission: string}) {
+    switch (request.permission) {
+      case 'media':
+        return this.handler.openOsPermissionSettingsMenu(
+            ContentSettingsType.MEDIASTREAM_MIC);
+      case 'geolocation':
+        return this.handler.openOsPermissionSettingsMenu(
+            ContentSettingsType.GEOLOCATION);
+    }
+    return Promise.resolve();
   }
 }
 

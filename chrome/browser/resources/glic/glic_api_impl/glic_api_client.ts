@@ -406,6 +406,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.sender.requestNoResponse(
         'glicBrowserSetSyntheticExperimentState', {trialName, groupName});
   }
+
+  openOsPermissionSettingsMenu(permission: string): void {
+    this.sender.requestNoResponse(
+        'glicBrowserOpenOsPermissionSettingsMenu', {permission});
+  }
 }
 
 class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {

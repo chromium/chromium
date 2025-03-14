@@ -45,6 +45,7 @@ source_set("glic") {
     "//chrome/browser:shell_integration",
     "//chrome/browser/content_extraction:content_extraction",
     "//chrome/browser/glic/resources:browser_resources",
+    "//chrome/browser/permissions/system:system",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window:browser_window",
@@ -166,6 +167,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   public_deps = [
+    "//components/content_settings/core/common:content_settings_types",
     "//mojo/public/mojom/base",
     "//mojo/public/mojom/base:protobuf_support",
     "//skia/public/mojom",
