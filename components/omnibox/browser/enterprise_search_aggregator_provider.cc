@@ -44,15 +44,20 @@ namespace {
 // guard.
 constexpr size_t kMaxMatchesCreatedPerType = 40;
 
-// Limit the number of matches shown for each type, not total, for unscoped
-// inputs. Needed to prevent inputs like 'joe' or 'doc' from flooding the
-// results with `PEOPLE` or `CONTENT` suggestions. More matches may be created
-// in order to ensure the best matches are shown.
+// Limit the number of matches shown for each type, not total. Needed to prevent
+// inputs like 'joe' or 'doc' from flooding the results with `PEOPLE` or
+// `CONTENT` suggestions. More matches may be created in order to ensure the
+// best matches are shown.
+constexpr size_t kMaxScopedMatchesShownPerType = 4;
 constexpr size_t kMaxUnscopedMatchesShownPerType = 2;
 
 // Score matches based on text similarity of the input and match fields.
 // - Strong matches are input words at least 3 chars long that match the
 //   suggestion content or description.
+// - For PEOPLE suggestions, input words of 1 or 2 chars are strong matches if
+//   they fully match (rather than prefix match) the suggestion content or
+//   description. E.g. "jo" will be a strong match for "Jo Jacob", but "ja"
+//   won't.
 // - Weak matches are input words shorter than 3 chars or that match elsewhere
 //   in the match fields.
 constexpr size_t kMinCharForStrongTextMatch = 3;
@@ -72,9 +77,17 @@ constexpr int kMaxTextScore = 800;
 // these 800 wouldn't reliably allow them to make it to the final results.
 constexpr int kPeopleScoreBoost = 100;
 
-// Always show at least 2 suggestions if available. Only show more if they're
-// scored at least 500; i.e. had at least 1 strong and 1 weak match.
-constexpr size_t kMaxLowQualityMatches = 2;
+// When suggestions equally match the input, prefer showing content over query
+// suggestions. This wont affect ranking due to grouping, only which suggestions
+// are shown. This won't affect people suggestions unless `kPeopleScoreBoost` is
+// 0.
+constexpr bool kPreferContentsOverQueries = true;
+
+// Always show at least 2 (unscoped) or 6 (scoped) suggestions if available.
+// Only show more if they're scored at least 500; i.e. had at least 1 strong and
+// 1 weak match.
+constexpr size_t kScopedMaxLowQualityMatches = 6;
+constexpr size_t kUnscopedMaxLowQualityMatches = 2;
 constexpr int kLowQualityThreshold =
     kScorePerStrongTextMatch + kScorePerWeakTextMatch;
 
@@ -112,14 +125,25 @@ std::set<std::u16string> GetWords(std::vector<std::string> strings) {
   return GetWords(u16strings);
 }
 
-// Whether `word` prefixes any of `potential_match_words. E.g. 'goo' prefixes
-// 'goo' and 'google'.
-bool WordMatchesAnyOf(std::u16string word,
-                      std::set<std::u16string> potential_match_words) {
-  return std::ranges::any_of(
-      potential_match_words, [&](const auto& match_word) {
-        return base::StartsWith(match_word, word, base::CompareCase::SENSITIVE);
-      });
+// Whether `word` matches any of `potential_match_words`.
+enum class MatchType {
+  NONE = 0,
+  PREFIX,  // E.g. 'goo' prefixes 'goo' and 'google'.
+  EXACT,   // E.g. 'goo' exactly matches 'goo' but not 'google'.
+};
+MatchType GetWordMatchType(std::u16string word,
+                           std::set<std::u16string> potential_match_words) {
+  auto it = potential_match_words.lower_bound(word);
+  if (it == potential_match_words.end()) {
+    return MatchType::NONE;
+  }
+  if (word == *it) {
+    return MatchType::EXACT;
+  }
+  if (base::StartsWith(*it, word, base::CompareCase::SENSITIVE)) {
+    return MatchType::PREFIX;
+  }
+  return MatchType::NONE;
 }
 
 // Returns 0 if the match should be filtered out.
@@ -140,13 +164,20 @@ int CalculateRelevance(
   size_t strong_matches = 0;
   size_t weak_matches = 0;
   for (const auto& input_word : input_words) {
-    if (WordMatchesAnyOf(input_word, strong_scoring_words)) {
+    MatchType strong_match_type =
+        GetWordMatchType(input_word, strong_scoring_words);
+    if (strong_match_type == MatchType::EXACT &&
+        suggestion_type ==
+            AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
+      strong_matches++;
+    } else if (strong_match_type != MatchType::NONE) {
       if (input_word.size() >= kMinCharForStrongTextMatch) {
         strong_matches++;
       } else {
         weak_matches++;
       }
-    } else if (WordMatchesAnyOf(input_word, weak_scoring_words)) {
+    } else if (GetWordMatchType(input_word, weak_scoring_words) !=
+               MatchType::NONE) {
       weak_matches++;
     }
   }
@@ -189,6 +220,13 @@ int CalculateRelevance(
       // See comment for `kPeopleScoreBoost`.
       relevance += kPeopleScoreBoost;
     }
+  }
+
+  // See comment for `kPreferContentsOverQueries`.
+  if (suggestion_type ==
+          AutocompleteMatch::EnterpriseSearchAggregatorType::CONTENT &&
+      kPreferContentsOverQueries) {
+    relevance += 1;
   }
 
   return relevance;
@@ -419,10 +457,13 @@ void EnterpriseSearchAggregatorProvider::
                   /*suggestion_type=*/SuggestionType::CONTENT,
                   /*is_navigation=*/true);
 
-  // Limit low-quality suggestions. See comment for `kMaxLowQualityMatches`.
+  // Limit low-quality suggestions. See comment for
+  // `kScopedMaxLowQualityMatches`.
   std::ranges::sort(matches_, std::ranges::greater{},
                     &AutocompleteMatch::relevance);
-  size_t matches_to_keep = kMaxLowQualityMatches;
+  size_t matches_to_keep = adjusted_input_.InKeywordMode()
+                               ? kScopedMaxLowQualityMatches
+                               : kUnscopedMaxLowQualityMatches;
   if (matches_.size() > matches_to_keep) {
     for (; matches_to_keep < matches_.size(); ++matches_to_keep) {
       if (matches_[matches_to_keep].relevance < kLowQualityThreshold) {
@@ -498,14 +539,15 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
   }
 
   // Limit # of matches added. See comment for
-  // `kMaxUnscopedMatchesShownPerType`.
-  if (!adjusted_input_.InKeywordMode() &&
-      kMaxUnscopedMatchesShownPerType < matches.size()) {
-    std::ranges::partial_sort(
-        matches, matches.begin() + kMaxUnscopedMatchesShownPerType,
-        std::ranges::greater{}, &AutocompleteMatch::relevance);
-    matches.erase(matches.begin() + kMaxUnscopedMatchesShownPerType,
-                  matches.end());
+  // `kMaxScopedMatchesShownPerType`.
+  size_t matches_to_add = adjusted_input_.InKeywordMode()
+                              ? kMaxScopedMatchesShownPerType
+                              : kMaxUnscopedMatchesShownPerType;
+  if (matches_to_add < matches.size()) {
+    std::ranges::partial_sort(matches, matches.begin() + matches_to_add,
+                              std::ranges::greater{},
+                              &AutocompleteMatch::relevance);
+    matches.erase(matches.begin() + matches_to_add, matches.end());
   }
 
   std::ranges::move(matches, std::back_inserter(matches_));
