@@ -740,9 +740,7 @@ pub trait Visit<'ast> {
     fn visit_signature(&mut self, i: &'ast crate::Signature) {
         visit_signature(self, i);
     }
-    fn visit_span(&mut self, i: &proc_macro2::Span) {
-        visit_span(self, i);
-    }
+    fn visit_span(&mut self, i: &proc_macro2::Span) {}
     #[cfg(feature = "full")]
     #[cfg_attr(docsrs, doc(cfg(feature = "full")))]
     fn visit_static_mutability(&mut self, i: &'ast crate::StaticMutability) {
@@ -758,6 +756,7 @@ pub trait Visit<'ast> {
     fn visit_stmt_macro(&mut self, i: &'ast crate::StmtMacro) {
         visit_stmt_macro(self, i);
     }
+    fn visit_token_stream(&mut self, i: &'ast proc_macro2::TokenStream) {}
     #[cfg(any(feature = "derive", feature = "full"))]
     #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
     fn visit_trait_bound(&mut self, i: &'ast crate::TraitBound) {
@@ -1421,7 +1420,7 @@ where
             full!(v.visit_expr_unsafe(_binding_0));
         }
         crate::Expr::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
         crate::Expr::While(_binding_0) => {
             full!(v.visit_expr_while(_binding_0));
@@ -2137,7 +2136,7 @@ where
             v.visit_foreign_item_macro(_binding_0);
         }
         crate::ForeignItem::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
     }
 }
@@ -2288,7 +2287,7 @@ where
             v.visit_impl_item_macro(_binding_0);
         }
         crate::ImplItem::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
     }
 }
@@ -2426,7 +2425,7 @@ where
             v.visit_item_use(_binding_0);
         }
         crate::Item::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
     }
 }
@@ -2845,7 +2844,7 @@ where
     v.visit_path(&node.path);
     skip!(node.bang_token);
     v.visit_macro_delimiter(&node.delimiter);
-    skip!(node.tokens);
+    v.visit_token_stream(&node.tokens);
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
@@ -2906,7 +2905,7 @@ where
 {
     v.visit_path(&node.path);
     v.visit_macro_delimiter(&node.delimiter);
-    skip!(node.tokens);
+    v.visit_token_stream(&node.tokens);
 }
 #[cfg(any(feature = "derive", feature = "full"))]
 #[cfg_attr(docsrs, doc(cfg(any(feature = "derive", feature = "full"))))]
@@ -2987,7 +2986,7 @@ where
             v.visit_pat_type(_binding_0);
         }
         crate::Pat::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
         crate::Pat::Wild(_binding_0) => {
             v.visit_pat_wild(_binding_0);
@@ -3438,7 +3437,7 @@ where
             v.visit_trait_item_macro(_binding_0);
         }
         crate::TraitItem::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
     }
 }
@@ -3562,7 +3561,7 @@ where
             v.visit_type_tuple(_binding_0);
         }
         crate::Type::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
     }
 }
@@ -3683,7 +3682,7 @@ where
             full!(v.visit_precise_capture(_binding_0));
         }
         crate::TypeParamBound::Verbatim(_binding_0) => {
-            skip!(_binding_0);
+            v.visit_token_stream(_binding_0);
         }
     }
 }

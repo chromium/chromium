@@ -455,7 +455,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."strum_macros:0.25.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."syn:2.0.99"]
+[policy."syn:2.0.100"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."synstructure:0.13.1"]
@@ -722,7 +722,7 @@ This feature is banned in gnrt_config.toml.
 """
 
 [[exemptions.syn]]
-version = "2.0.99"
+version = "2.0.100"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -757,6 +757,7 @@ Exemption updated to 2.0.95 when updating the crate in January 2025.
 Exemption updated to 2.0.96 when updating the crate in January 2025.
 Exemption updated to 2.0.98 when updating the crate in February 2025.
 Exemption updated to 2.0.99 when updating the crate in February 2025.
+Exemption updated to 2.0.100 when updating the crate in March 2025.
 """
 
 [[exemptions.tinystr]]
