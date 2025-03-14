@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/embedded_permission_prompt_flow_model.h"
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/color/color_id.h"
@@ -237,6 +238,14 @@ void EmbeddedPermissionPrompt::ShowSystemSettings() {
   system_permission_settings::OpenSystemSettings(
       delegate()->GetAssociatedWebContents(),
       Requests()[0]->GetContentSettingsType());
+}
+
+void EmbeddedPermissionPrompt::SystemPermissionsAllowed() {
+  CHECK(prompt_model_->prompt_variant() ==
+        permissions::EmbeddedPermissionPromptFlowModel::Variant::
+            kOsSystemSettings);
+  prompt_model_->PrecalculateVariantsForMetrics();
+  CloseCurrentViewAndMaybeShowNext(/*first_prompt=*/false);
 }
 
 base::WeakPtr<permissions::PermissionPrompt::Delegate>
