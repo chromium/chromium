@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -715,4 +716,37 @@ TEST_F(AIWriterTest, WriterDisconnected) {
   streaming_callback.Run(CreateExecutionResult("Result text",
                                                /*is_complete=*/true));
   run_loop_for_response.Run();
+}
+
+TEST_F(AIWriterTest, MeasureUsage) {
+  uint64_t expected_usage = 100;
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) { std::move(callback).Run(expected_usage); }));
+
+  auto writer_remote = GetAIWriterRemote();
+  base::test::TestFuture<std::optional<uint64_t>> future;
+  writer_remote->MeasureUsage(kInputString, kContextString,
+                              future.GetCallback());
+  ASSERT_EQ(future.Get<0>(), expected_usage);
+}
+
+TEST_F(AIWriterTest, MeasureUsageFails) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+  EXPECT_CALL(session_, GetExecutionInputSizeInTokens(_, _))
+      .WillOnce(testing::Invoke(
+          [&](optimization_guide::MultimodalMessageReadView request_metadata,
+              optimization_guide::OptimizationGuideModelSizeInTokenCallback
+                  callback) { std::move(callback).Run(std::nullopt); }));
+
+  auto writer_remote = GetAIWriterRemote();
+  base::test::TestFuture<std::optional<uint64_t>> future;
+  writer_remote->MeasureUsage(kInputString, kContextString,
+                              future.GetCallback());
+  ASSERT_EQ(future.Get<0>(), std::nullopt);
 }

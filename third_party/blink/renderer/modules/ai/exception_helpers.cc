@@ -53,6 +53,8 @@ const char kExceptionMessageInitialPromptTooLarge[] =
     "context.";
 const char kExceptionMessageUnableToCloneSession[] =
     "The session cannot be cloned.";
+const char kExceptionMessageUnableToCalculateUsage[] =
+    "The usage cannot be calculated.";
 const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[] =
     "The system prompt should not be defined in both systemPrompt and "
     "initialPrompts.";

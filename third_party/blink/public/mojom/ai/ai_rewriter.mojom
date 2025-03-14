@@ -56,4 +56,8 @@ interface AIRewriter {
     string input,
     string? context,
     pending_remote<ModelStreamingResponder> pending_responder);
+
+  // Returns the usage size of `input` and `context`, or std::nullopt if
+  // unable to retrieve the usage.
+  MeasureUsage(string input, string context) => (uint64? usage);
 };

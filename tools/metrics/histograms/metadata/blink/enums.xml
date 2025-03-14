@@ -5968,6 +5968,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5363" label="CrossOriginOwnerInterestGroupSubframeCheckFailed"/>
   <int value="5364" label="PreferredAudioOutputDevices"/>
   <int value="5365" label="SharedStorageAPI_SelectURL_Method_CalledWithOneURL"/>
+  <int value="5366" label="V8AIRewriter_MeasureInputUsage_Method"/>
+  <int value="5367" label="V8AIRewriter_InputQuota_AttributeGetter"/>
+  <int value="5368" label="V8AISummarizer_MeasureInputUsage_Method"/>
+  <int value="5369" label="V8AISummarizer_InputQuota_AttributeGetter"/>
+  <int value="5370" label="V8AIWriter_MeasureInputUsage_Method"/>
+  <int value="5371" label="V8AIWriter_InputQuota_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
