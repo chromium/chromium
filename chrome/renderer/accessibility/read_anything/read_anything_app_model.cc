@@ -75,6 +75,45 @@ ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
 
 ReadAnythingAppModel::AXTreeInfo::~AXTreeInfo() = default;
 
+void ReadAnythingAppModel::InsertIdIfNotIgnored(
+    ui::AXNodeID id,
+    std::set<ui::AXNodeID>& non_ignored_ids) {
+  // If the node is not in the active tree (this could happen when RM is still
+  // loading), ignore it.
+  const ui::AXNode* const ax_node = GetAXNode(id);
+  if (!ax_node) {
+    return;
+  }
+
+  // PDFs processed with OCR have additional nodes that mark the start and end
+  // of a page. The start of a page is indicated with a `kBanner` node that has
+  // a child static text node. Ignore both. The end of a page is indicated with
+  // a `kContentInfo` node that has a child static text node. Ignore the static
+  // text node but keep the `kContentInfo` so a line break can be inserted in
+  // between pages during `a11y::GetHtmlTagForPDF()`.
+  const ax::mojom::Role role = ax_node->GetRole();
+  if (is_pdf_) {
+    // The text content of the aforementioned `kBanner` or `kContentInfo` node
+    // is the same as the text content of its child static text node.
+    const ui::AXNode* const parent = ax_node->GetParent();
+    if (const std::string_view text = ax_node->GetTextContentUTF8();
+        text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN)) {
+      if (role == ax::mojom::Role::kBanner ||
+          (parent && parent->GetRole() == ax::mojom::Role::kBanner)) {
+        return;
+      }
+    } else if (text == l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END) &&
+               parent && parent->GetRole() == ax::mojom::Role::kContentInfo) {
+      return;
+    }
+  }
+
+  // Ignore interactive elements, except for text fields.
+  if ((!ui::IsControl(role) || ui::IsTextField(role)) && !ui::IsSelect(role)) {
+    non_ignored_ids.insert(id);
+  }
+}
+
 void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing,
@@ -90,14 +129,6 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   links_enabled_ = links_enabled;
   images_enabled_ = images_enabled;
   color_theme_ = static_cast<size_t>(color);
-}
-
-void ReadAnythingAppModel::InsertDisplayNode(const ui::AXNodeID& node) {
-  display_node_ids_.insert(node);
-}
-
-void ReadAnythingAppModel::InsertSelectionNode(const ui::AXNodeID& node) {
-  selection_node_ids_.insert(node);
 }
 
 void ReadAnythingAppModel::Reset(
@@ -216,9 +247,7 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   while (!ancestors.empty()) {
     ui::AXNodeID ancestor_id = ancestors.front()->id();
     ancestors.pop();
-    if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(ancestor_id), is_pdf_)) {
-      InsertSelectionNode(ancestor_id);
-    }
+    InsertIdIfNotIgnored(ancestor_id, selection_node_ids_);
   }
 
   // Find the parent of the start and end nodes so we can look at nearby sibling
@@ -255,11 +284,7 @@ void ReadAnythingAppModel::ComputeSelectionNodeIds() {
   while (first_sibling_node &&
          first_sibling_node->CompareTo(*deepest_last_descendant).value_or(1) <=
              0) {
-    if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(first_sibling_node->id()),
-                                            is_pdf_)) {
-      InsertSelectionNode(first_sibling_node->id());
-    }
-
+    InsertIdIfNotIgnored(first_sibling_node->id(), selection_node_ids_);
     first_sibling_node = first_sibling_node->GetNextUnignoredInTreeOrder();
   }
 }
@@ -349,11 +374,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
       ancestors.pop();
       // For certain PDFs, the ancestor may not be in the same tree. Ignore if
       // so.
-      ui::AXNode* ancestor_node = GetAXNode(ancestor_id);
-      if (ancestor_node &&
-          !a11y::IsNodeIgnoredForReadAnything(ancestor_node, is_pdf_)) {
-        InsertDisplayNode(ancestor_id);
-      }
+      InsertIdIfNotIgnored(ancestor_id, display_node_ids_);
     }
 
     // Add all descendant ids to the set.
@@ -365,10 +386,7 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     }
     while (next_node != deepest_last_descendant) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
-      if (!a11y::IsNodeIgnoredForReadAnything(GetAXNode(next_node->id()),
-                                              is_pdf_)) {
-        InsertDisplayNode(next_node->id());
-      }
+      InsertIdIfNotIgnored(next_node->id(), display_node_ids_);
     }
   }
 }
