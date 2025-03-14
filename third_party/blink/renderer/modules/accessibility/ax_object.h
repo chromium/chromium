@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/accessibility.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_enums.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -335,6 +336,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Wrappers that retrieve either an Accessibility Object Model property,
   // or the equivalent ARIA attribute, in that order.
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
+  virtual std::optional<AXBlockFlowIterator::FragmentIndex> GetFragmentIndex()
+      const {
+    return std::nullopt;
+  }
 
   static const HeapVector<Member<Element>>* ElementsFromAttributeOrInternals(
       const Element* from,
