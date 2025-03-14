@@ -78,7 +78,8 @@ void OnDeviceInternalsPageHandler::LoadModel(
   base::Uuid uuid = base::Uuid::ParseLowercase(model_path.value());
   if (!uuid.is_valid()) {
     std::move(callback).Run(
-        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
+        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary,
+        on_device_model::Capabilities());
     return;
   }
   GetService().LoadPlatformModel(
