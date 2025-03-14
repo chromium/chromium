@@ -12814,6 +12814,9 @@
             "experiments": [
                 {
                     "name": "EnabledWithSettings",
+                    "params": {
+                        "identity-disc-account-menu-with-settings-button": "true"
+                    },
                     "enable_features": [
                         "IdentityConfirmationSnackbar",
                         "IdentityDiscAccountMenu"
