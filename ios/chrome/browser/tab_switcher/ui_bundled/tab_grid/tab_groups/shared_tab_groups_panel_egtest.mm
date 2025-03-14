@@ -91,15 +91,7 @@ void AddSharedGroup() {
 }
 
 // Tests that deleting a shared tab group from groups panel works.
-// TODO:(crbug.com/403510030): The test is flaky on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testSharedTabGroupsPanelDeleteSharedGroup \
-  testSharedTabGroupsPanelDeleteSharedGroup
-#else
-#define MAYBE_testSharedTabGroupsPanelDeleteSharedGroup \
-  FLAKY_testSharedTabGroupsPanelDeleteSharedGroup
-#endif
-- (void)MAYBE_testSharedTabGroupsPanelDeleteSharedGroup {
+- (void)testSharedTabGroupsPanelDeleteSharedGroup {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
