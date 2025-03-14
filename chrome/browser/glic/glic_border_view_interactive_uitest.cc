@@ -21,6 +21,7 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -116,12 +117,15 @@ class TesterImpl : public GlicBorderView::Tester {
 
 class GlicBorderViewUiTest : public test::InteractiveGlicTest {
  public:
-  GlicBorderViewUiTest() = default;
+  GlicBorderViewUiTest() {
+    // Toggling this feature is only possible via command line.
+    features_.InitFromCommandLine("UiGpuRasterization", "");
+  }
   ~GlicBorderViewUiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    test::InteractiveGlicTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
+    test::InteractiveGlicTest::SetUpCommandLine(command_line);
   }
 
   void StartBorderAnimation() {
@@ -137,6 +141,9 @@ class GlicBorderViewUiTest : public test::InteractiveGlicTest {
     RunTestSequence(ExecuteJsAt(test::kGlicContentsElementId,
                                 kCloseWindowButton, kClickFn));
   }
+
+ private:
+  base::test::ScopedFeatureList features_;
 };
 }  // namespace
 
@@ -213,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, SmokeTest) {
   // Manually stepping the animation code to mimic the behavior of the
   // compositor. As a part of crbug.com/384712084, testing via requesting
   // screenshot from the browser window was explored however, was failed due to
-  // test falkiness (crbug.com/387386303).
+  // test flakiness (crbug.com/387386303).
 
   // T=0s.
   tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
@@ -631,7 +638,7 @@ class GlicBorderViewPrefersReducedMotionUiTest : public GlicBorderViewUiTest {
 
 // Ensures that when PrefersReducedMotion is true, the emphasis animation is
 // skipped and we just show an opacity ramp up and ramp down animation.
-// Note: Ramp up and ramp down duration in PrefersReducedMotion is 200ms..
+// Note: Ramp up and ramp down duration in PrefersReducedMotion is 200ms.
 IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
                        BasicRampingUpAndDown) {
   ASSERT_TRUE(gfx::Animation::PrefersReducedMotion());
@@ -670,6 +677,80 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewPrefersReducedMotionUiTest,
   // Set the start time of ramping down.
   // For opacity T=0s.
   tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // For opacity, T=0.123s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(0.123));
+  // 1-(0.123/0.2)=0.385
+  EXPECT_NEAR(border->opacity_for_testing(), 0.385, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=1.134s. For opacity, T=0.134s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(0.011));
+  // 1-(0.134/0.2)=0.33
+  EXPECT_NEAR(border->opacity_for_testing(), 0.33, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=2s. For opacity, T=1s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(0.866));
+  EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+  EXPECT_FALSE(border->IsShowing());
+}
+
+namespace {
+class GlicBorderViewWithoutHardwareAccelerationUiTest
+    : public GlicBorderViewUiTest {
+ public:
+  GlicBorderViewWithoutHardwareAccelerationUiTest() = default;
+  ~GlicBorderViewWithoutHardwareAccelerationUiTest() override = default;
+
+  void SetUp() override {
+    UseSoftwareCompositing();
+    test::InteractiveGlicTest::SetUp();
+  }
+};
+}  // namespace
+
+// Ensures that when there is no hardware acceleration, the emphasis animation
+// is skipped and we just show an opacity ramp up and ramp down animation.
+// Note: Ramp up and ramp down duration in this case is 200ms.
+IN_PROC_BROWSER_TEST_F(GlicBorderViewWithoutHardwareAccelerationUiTest,
+                       BasicRampingUpAndDown) {
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  TesterImpl tester(border);
+
+  StartBorderAnimation();
+  tester.WaitForAnimationStart();
+  EXPECT_TRUE(border->IsShowing());
+
+  // T=0s.
+  tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
+
+  // T=0.123s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(0.123));
+  // Opacity ramp up is 0.2; 0.123/0.2=0.615
+  EXPECT_NEAR(border->opacity_for_testing(), 0.615, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=0.146s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(0.023));
+  // 0.146/0.2=0.73
+  EXPECT_NEAR(border->opacity_for_testing(), 0.73, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  // T=1s.
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(0.854));
+  EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
+  EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
+
+  CloseGlicWindow();
+  tester.WaitForRampDownStarted();
+
+  // Set the start time of ramping down.
+  // For opacity T=0s.
   tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
   EXPECT_NEAR(border->opacity_for_testing(), 1.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);

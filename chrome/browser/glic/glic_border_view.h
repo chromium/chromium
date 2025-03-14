@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_
 #define CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_
 
+#include "base/scoped_observation.h"
+#include "content/public/browser/gpu_data_manager_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/compositor_observer.h"
@@ -18,11 +20,16 @@ namespace gfx {
 class Canvas;
 }  // namespace gfx
 
+namespace content {
+class GpuDataManager;
+}  // namespace content
+
 namespace glic {
 
 class GlicBorderView : public views::View,
                        public ui::CompositorAnimationObserver,
-                       public ui::CompositorObserver {
+                       public ui::CompositorObserver,
+                       public content::GpuDataManagerObserver {
   METADATA_HEADER(GlicBorderView, views::View)
 
  public:
@@ -39,6 +46,9 @@ class GlicBorderView : public views::View,
 
   // `ui::CompositorObserver`:
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
+
+  // `content::GpuDataManagerObserver`:
+  void OnGpuInfoUpdate() override;
 
   bool IsShowing() const;
 
@@ -91,7 +101,7 @@ class GlicBorderView : public views::View,
   class BorderViewUpdater;
   const std::unique_ptr<BorderViewUpdater> updater_;
 
-  const std::string shader_;
+  std::string shader_;
 
   // When it is true, the class directly presents a static border and when it is
   // false, it animates the border first.
@@ -109,6 +119,11 @@ class GlicBorderView : public views::View,
 
   bool record_first_ramp_down_frame_ = false;
   base::TimeTicks first_ramp_down_frame_;
+
+  bool has_hardware_acceleration_ = false;
+  base::ScopedObservation<content::GpuDataManager,
+                          content::GpuDataManagerObserver>
+      gpu_data_manager_observer_{this};
 
   raw_ptr<Tester> tester_ = nullptr;
   raw_ptr<ui::Compositor> compositor_ = nullptr;

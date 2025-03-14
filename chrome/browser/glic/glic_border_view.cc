@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "content/public/browser/context_factory.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
@@ -287,16 +288,25 @@ class GlicBorderView::BorderViewUpdater {
 
 GlicBorderView::GlicBorderView(Browser* browser)
     : updater_(std::make_unique<BorderViewUpdater>(browser, this)),
-      shader_(
-          content::GpuDataManager::GetInstance()->HardwareAccelerationEnabled()
-              ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                    IDR_GLIC_BORDER_SHADER)
-              : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-                    IDR_GLIC_SIMPLIFIED_BORDER_SHADER)),
       creation_time_(base::TimeTicks::Now()),
       theme_service_(ThemeServiceFactory::GetForProfile(browser->GetProfile())),
       browser_(browser) {
+  auto* gpu_data_manager = content::GpuDataManager::GetInstance();
+  has_hardware_acceleration_ =
+      gpu_data_manager->IsGpuRasterizationForUIEnabled();
+
+  // Upon GPU crashing, the hardware acceleration status might change. This will
+  // observe GPU changes to keep hardware acceleration status updated.
+  gpu_data_manager_observer_.Observe(gpu_data_manager);
+
+  shader_ =
+      has_hardware_acceleration_
+          ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                IDR_GLIC_BORDER_SHADER)
+          : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                IDR_GLIC_SIMPLIFIED_BORDER_SHADER);
   CHECK(!shader_.empty()) << "Shader not initialized.";
+
   auto* glic_service =
       GlicKeyedServiceFactory::GetGlicKeyedService(browser->GetProfile());
   // Post-initialization updates. Don't do the update in the updater's ctor
@@ -456,6 +466,26 @@ void GlicBorderView::OnCompositingShuttingDown(ui::Compositor* compositor) {
   StopShowing();
 }
 
+void GlicBorderView::OnGpuInfoUpdate() {
+  auto* gpu_data_manager = content::GpuDataManager::GetInstance();
+  bool has_hardware_acceleration =
+      gpu_data_manager->IsGpuRasterizationForUIEnabled();
+
+  if (has_hardware_acceleration_ != has_hardware_acceleration) {
+    has_hardware_acceleration_ = has_hardware_acceleration;
+    shader_ =
+        has_hardware_acceleration_
+            ? ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                  IDR_GLIC_BORDER_SHADER)
+            : ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+                  IDR_GLIC_SIMPLIFIED_BORDER_SHADER);
+
+    if (IsShowing()) {
+      SchedulePaint();
+    }
+  }
+}
+
 bool GlicBorderView::IsShowing() const {
   // `compositor_` is set when the border starts to show and unset when the
   // border stops to show.
@@ -482,7 +512,8 @@ void GlicBorderView::Show() {
   layer()->SetFillsBoundsOpaquely(false);
   SetVisible(true);
 
-  skip_emphasis_animation_ = gfx::Animation::PrefersReducedMotion();
+  skip_emphasis_animation_ =
+      gfx::Animation::PrefersReducedMotion() || !has_hardware_acceleration_;
 
   ui::Compositor* compositor = layer()->GetCompositor();
   if (!compositor) {
