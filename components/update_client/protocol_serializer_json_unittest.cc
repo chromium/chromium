@@ -158,12 +158,13 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       R"("os":{"arch":"[,-.\w]+","platform":"OS",("sp":"[\s\w]+",)?)"
       R"("version":"[+-.\w]+"},"prodchannel":"channel","prodversion":"1.0",)"
       R"("protocol":"4.0","requestid":"{[-\w]{36}}","sessionid":"{[-\w]{36}}",)"
+      R"("updaterchannel":"channel",)"
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      R"("updater":{"autoupdatecheckenabled":false,"ismachine":true,)"
+      R"("updaters":{"autoupdatecheckenabled":false,"ismachine":true,)"
       R"("lastchecked":2,"laststarted":1,"name":"Omaha","updatepolicy":-1,)"
       R"("version":"1\.2\.3\.4"},)"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      R"("updaterchannel":"channel","updaterversion":"1.0"(,"wow64":true)?}})";
+      R"("updaterversion":"1.0"(,"wow64":true)?}})";
   EXPECT_TRUE(RE2::FullMatch(request, regex)) << request << "\n VS \n" << regex;
 }
 
