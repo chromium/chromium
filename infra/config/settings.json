@@ -7,14 +7,6 @@
     "platforms": {
         "cros-lts": {
             "description": "LTS"
-        },
-        "mac": {
-            "description": "extended stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "extended stable",
-            "gardener_rotation": "chrome_browser_release"
         }
     }
 }

@@ -1,4 +1,0 @@
-try/mac14-blink-rel
-try/mac14.arm64-blink-rel
-try/mac15-blink-rel
-try/mac15.arm64-blink-rel
