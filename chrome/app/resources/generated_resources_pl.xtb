@@ -16,7 +16,7 @@
 <translation id="1006873397406093306">To rozszerzenie może odczytywać i zmieniać Twoje dane na stronach. Możesz określić, do których stron rozszerzenie ma dostęp.</translation>
 <translation id="1007057452468855774">Włącz Sklep Google Play</translation>
 <translation id="1008186147501209563">Eksportuj zakładki</translation>
-<translation id="1008261151167010035">Aplikacja <ph name="BRAND" /> pamięta Twoje dane logowania i automatycznie loguje Cię, gdy jest to możliwe. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o potwierdzenie.</translation>
+<translation id="1008261151167010035"><ph name="BRAND" /> pamięta Twoje dane logowania i automatycznie loguje Cię, gdy jest to możliwe. Jeśli ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o potwierdzenie.</translation>
 <translation id="1008544602823861396">nie może używać Twoich danych na</translation>
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="100881991356161927">Nazwa witryny</translation>
@@ -2213,7 +2213,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2521427645491031107">Synchronizacja aplikacji jest konfigurowana w ustawieniach urządzenia</translation>
 <translation id="2521835766824839541">poprzedni utwór</translation>
 <translation id="2521854691574443804">Sprawdzam zgodność pliku <ph name="FILE_NAME" /> z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…</translation>
-<translation id="252277619743753687">Wybierz hasła.</translation>
+<translation id="252277619743753687">Wybierz hasła</translation>
 <translation id="2523184218357549926">Adresy URL odwiedzanych stron będą wysyłane do Google</translation>
 <translation id="2524093372979370955">Spowoduje to wyłączenie powiadomień o wszystkich nowych urządzeniach peryferyjnych USB w systemie. Na pewno chcesz kontynuować?</translation>
 <translation id="252418934079508528">Zainstaluj aplikację <ph name="DEVICE_OS" /></translation>
@@ -3103,7 +3103,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3165734944977250074">Nie można przenieść pliku, bo już nie istnieje</translation>
 <translation id="3166443275568926403">Wydajność i stan baterii</translation>
 <translation id="3167446923957429259">Porusz ustami w lewo</translation>
-<translation id="3167562202484086668">Usuń wszystkie dane z aplikacji: <ph name="BRAND" /></translation>
+<translation id="3167562202484086668">Usuń wszystkie dane z aplikacji <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Wybierz motyw, który pasuje do Twoich potrzeb. Aby zmienić motyw, tapetę, wygaszacz ekranu i inne opcje, naciśnij i przytrzymaj pulpit.</translation>
 <translation id="3170072451822350649">Możesz też pominąć logowanie i <ph name="LINK_START" />przeglądać internet jako gość<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Treść</translation>
@@ -3317,7 +3317,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3335947283844343239">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="3336855445806447827">Nie wiem</translation>
 <translation id="3337568642696914359">Nie zezwalaj witrynom na obsługiwanie protokołów</translation>
-<translation id="333863344734218290">Ostrzega przed niebezpiecznymi witrynami publicznymi i prywatnymi</translation>
+<translation id="333863344734218290">Ostrzegaj przed niebezpiecznymi witrynami publicznymi i prywatnymi</translation>
 <translation id="3340620525920140773">Ukończono pobieranie: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">ustawienia</translation>
 <translation id="3341091511696469129">Chrome może tworzyć i tłumaczyć napisy w tych językach</translation>
@@ -7343,7 +7343,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6215039389782910006">{1,plural, =1{Aby chronić Twoje hasła, <ph name="BRAND" /> blokuje się po minucie bezczynności}few{Aby chronić Twoje hasła, aplikacja <ph name="BRAND" /> blokuje się po # minutach bezczynności}many{Aby chronić Twoje hasła, aplikacja <ph name="BRAND" /> blokuje się po # minutach bezczynności}other{Aby chronić Twoje hasła, aplikacja <ph name="BRAND" /> blokuje się po # minuty bezczynności}}</translation>
 <translation id="6216239400972191926">Odrzucone strony i aplikacje</translation>
 <translation id="6216601812881225442">Kontener nie obsługuje zmiany rozmiaru. Aby zmienić ilość miejsca wstępnie przydzielonego dla Linuksa, utwórz kopię zapasową i przywróć ją w nowym kontenerze.</translation>
-<translation id="6216696360484424239">Logowanie automatyczne</translation>
+<translation id="6216696360484424239">Loguj się automatycznie</translation>
 <translation id="6217806119082621377">Foldery udostępnione znajdują się tutaj: <ph name="BASE_DIR" /> – <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> jest offline. Połącz się z internetem i spróbuj ponownie.</translation>
 <translation id="6220413761270491930">Błąd podczas ładowania rozszerzenia</translation>
@@ -10716,7 +10716,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8634703204743010992">Klawiatura wirtualna ChromeOS</translation>
 <translation id="8635628933471165173">Ładuję ponownie…</translation>
 <translation id="8636284842992792762">Inicjuję rozszerzenia…</translation>
-<translation id="8636323803535540285">Aby móc szybciej otwierać tę stronę, dodaj skrót do: <ph name="BRAND" /></translation>
+<translation id="8636323803535540285">Aby szybciej otwierać tę stronę, dodaj skrót do: <ph name="BRAND" /></translation>
 <translation id="8636500887554457830">Nie zezwalaj witrynom na otwieranie wyskakujących okienek ani używanie przekierowań</translation>
 <translation id="8636514272606969031">Panel boczny został przypięty</translation>
 <translation id="8637688295594795546">Jest dostępna aktualizacja systemu. Trwa przygotowanie do pobrania…</translation>

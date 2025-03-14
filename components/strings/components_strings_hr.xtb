@@ -344,7 +344,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1569694109004336106">Google Chrome pokušava uključiti Windows Hello za unos zaporki.</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1574714699824202614">Potvrđivanje načina plaćanja</translation>
-<translation id="1576277203042721907">Uvidi za Shopping</translation>
+<translation id="1576277203042721907">Uvidi u kupnju</translation>
 <translation id="1579189948231786790">Vaša organizacija blokirala je ovu web-lokaciju</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1581172376168798878">Ne istječe</translation>
@@ -776,7 +776,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2337852623177822836">Postavkom upravlja administrator</translation>
 <translation id="2340263603246777781">Web-lokacija <ph name="ORIGIN" /> želi se upariti</translation>
 <translation id="2346319942568447007">Slika koju ste kopirali</translation>
-<translation id="2348509731468399833">Praćenje cijene zaustavljeno.</translation>
+<translation id="2348509731468399833">Praćenje cijene je zaustavljeno.</translation>
 <translation id="2349957959687031096">Gumb Otvori anonimnu karticu, aktivirajte ga za otvaranje nove anonimne kartice za anonimno pregledavanje</translation>
 <translation id="2350796302381711542">Želite li dopustiti da <ph name="HANDLER_HOSTNAME" /> otvori sve veze protokola <ph name="PROTOCOL" /> umjesto da to učini <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Dopušteni su kamera i mikrofon</translation>
@@ -1231,7 +1231,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3182185041786697613">Želite li spremiti sigurnosni kôd?</translation>
 <translation id="3185635157430775689">Računalne komponente</translation>
 <translation id="3187472288455401631">Mjerenje izvedbe oglasa</translation>
-<translation id="3190736958609431397">Poništavanje praćenja</translation>
+<translation id="3190736958609431397">Poništi praćenje</translation>
 <translation id="3194737229810486521"><ph name="URL" /> želi trajno pohraniti podatke na vaš uređaj</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> na poslužitelju <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Može tražiti dopuštenje da zna kad aktivno koristite ovaj uređaj</translation>
@@ -3883,7 +3883,7 @@ Dodatne pojedinosti:
 <translation id="782886543891417279">Za Wi-Fi koji upotrebljavate (<ph name="WIFI_NAME" />) možda ćete morati posjetiti stranicu za prijavu.</translation>
 <translation id="7831993212387676366">Što je popis za kupnju?</translation>
 <translation id="7840103971441592723">Snimanje zaslona je počelo</translation>
-<translation id="784137052867620416">Uvidi za Shopping</translation>
+<translation id="784137052867620416">Uvidi u kupnju</translation>
 <translation id="7841633276323004751">Načini plaćanja dostupni za odabir radi nastavljanja s plaćanjem. Tipkovnica je skrivena.</translation>
 <translation id="7842611866969435396">Započnimo</translation>
 <translation id="784404208867107517">Grupirana povijest</translation>

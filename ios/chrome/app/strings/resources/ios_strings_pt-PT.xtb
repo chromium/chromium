@@ -514,7 +514,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174662312949010067">Também pode utilizar palavras-passe guardadas nos outros dispositivos.</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
-<translation id="3190736958609431397">Desativar monitorização</translation>
+<translation id="3190736958609431397">Desativar acompanhamento</translation>
 <translation id="3208260410153224535">A sua organização desativou o início de sessão. Os novos marcadores, palavras-passe e muito mais são guardados apenas neste dispositivo.</translation>
 <translation id="3213807041830307252">Compre, traduza e identifique o que vê com a câmara e a galeria de fotos.</translation>
 <translation id="3214379938835224220">Como parte da reposição do iPad, a sua sessão foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
@@ -659,7 +659,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3922395466317605522">Personalize o menu</translation>
 <translation id="3929457972718048006">Moradas</translation>
 <translation id="3931215329146376310">{count,plural, =1{Nova palavra-passe para este site}other{Novas palavras-passe para este site}}</translation>
-<translation id="3940195383040445971">Monitorize os preços nos separadores.</translation>
+<translation id="3940195383040445971">Acompanhe os preços nos separadores</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Fechar {COUNT} separador}other{Fechar {COUNT} separadores}}</translation>
 <translation id="3948600256434252210">Pode deslizar rapidamente para a direita para navegar na Navegação anónima.</translation>
 <translation id="3950820424414687140">Iniciar sessão</translation>

@@ -2801,7 +2801,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5967592137238574583">Edytuj dane kontaktowe</translation>
 <translation id="5967867314010545767">Usuń z historii</translation>
 <translation id="5968022600320704045">Brak wyników wyszukiwania</translation>
-<translation id="5969199813874624822">Zapisz i obserwuj cenę</translation>
+<translation id="5969199813874624822">Zapisz i śledź cenę</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Rolka 6</translation>
 <translation id="5974745851230707809">Opcje płatności w ratach</translation>
@@ -3121,7 +3121,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6490119919181773296">Niemowlęta i małe dzieci</translation>
 <translation id="6493924760403974580">Ta aplikacja obsługuje tylko ten rozmiar.</translation>
 <translation id="6494750904506170417">pop-upy i przekierowania</translation>
-<translation id="6495664197699704593">To hasło zostało zapisane tylko na tym urządzeniu. Aby móc go używać na innych urządzeniach, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
+<translation id="6495664197699704593">To hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="6499038740797743453">Zresetować hasło?</translation>
 <translation id="6502510275417601303">Panel alertu o nowych ustawieniach płatności jest zamknięty</translation>
 <translation id="6502991525169604759">Bez Twoich zmian</translation>
@@ -4002,7 +4002,7 @@ Dodatkowe informacje:
 <translation id="8057711352706143257">Oprogramowanie „<ph name="SOFTWARE_NAME" />” nie jest prawidłowo skonfigurowane. Odinstalowanie oprogramowania „<ph name="SOFTWARE_NAME" />” zwykle rozwiązuje problem. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Niewymagana</translation>
 <translation id="8061691770921837575">Makijaż i kosmetyki</translation>
-<translation id="8063875539456488183">Zapisz i obserwuj cenę</translation>
+<translation id="8063875539456488183">Zapisz i śledź cenę</translation>
 <translation id="8066225060526005217">Zarządzanie przez ustawienia plików cookie</translation>
 <translation id="8067872629359326442">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Chromium może pomóc. Aby zmienić hasło i powiadomić Google, że Twoje konto może być zagrożone, kliknij Chroń konto.</translation>
 <translation id="8070439594494267500">Ikona aplikacji</translation>

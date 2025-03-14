@@ -659,7 +659,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="4062305924942672200">Pravne informacije</translation>
 <translation id="4070897657850712662">{NUM_SITES,plural, =1{Približno jedna obavijest dnevno}one{Približno # obavijest dnevno}few{Približno # obavijesti dnevno}other{Približno # obavijesti dnevno}}</translation>
 <translation id="4072805772816336153">Pokušajte ponovo kasnije</translation>
-<translation id="4084682180776658562">Oznaka</translation>
+<translation id="4084682180776658562">Označi</translation>
 <translation id="4084712963632273211">Objavio <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />omogućio Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Da biste pomogli Google upravitelju zaporki da spremi vaše podatke za prijavu, dodajte svoje korisničko ime za ovu web-lokaciju</translation>
 <translation id="4095146165863963773">Želite li izbrisati podatke aplikacije?</translation>
@@ -774,7 +774,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4624065194742029982">Chromeov anonimni način</translation>
 <translation id="4634124774493850572">Upotrijebi zaporku</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Jedna ugrožena zaporka}one{# ugrožena zaporka}few{# ugrožene zaporke}other{# ugroženih zaporki}}</translation>
-<translation id="4642472735733036929">Praćenje cijene zaustavljeno</translation>
+<translation id="4642472735733036929">Praćenje cijene je zaustavljeno</translation>
 <translation id="4645146721047390964">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na različitim web-lokacijama, primjerice radi prilagođavanja oglasa. Značajke na nekim web-lokacijama mogu prestati funkcionirati.</translation>
 <translation id="4650364565596261010">Zadana postavka sustava</translation>
 <translation id="465657074423018424">Sigurno pregledavanje štiti vas od obmanjujućih web-lokacija. Ako ga isključite, budite posebno oprezni dok pregledavate, osobito prije unošenja zaporki.</translation>

@@ -1231,7 +1231,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3182185041786697613">Guardar o código de segurança?</translation>
 <translation id="3185635157430775689">Componentes informáticos</translation>
 <translation id="3187472288455401631">Medição de anúncios</translation>
-<translation id="3190736958609431397">Desativar monitorização</translation>
+<translation id="3190736958609431397">Desativar acompanhamento</translation>
 <translation id="3194737229810486521"><ph name="URL" /> quer armazenar permanentemente dados no seu dispositivo.</translation>
 <translation id="3195213714973468956"><ph name="PRINTER_NAME" /> no servidor <ph name="SERVER_NAME" /></translation>
 <translation id="3197136577151645743">Pode pedir para saber quando está a utilizar ativamente este dispositivo</translation>
@@ -4001,7 +4001,7 @@ Detalhes adicionais:
 <translation id="8057711352706143257">O "<ph name="SOFTWARE_NAME" />" não está configurado corretamente. Normalmente, a desinstalação do "<ph name="SOFTWARE_NAME" />" resolve o problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058603697124206642">Não obrigatório</translation>
 <translation id="8061691770921837575">Maquilhagem e cosméticos</translation>
-<translation id="8063875539456488183">Guarde e monitorize o preço</translation>
+<translation id="8063875539456488183">Guarde e acompanhe o preço</translation>
 <translation id="8066225060526005217">Gerido pelas definições de cookies</translation>
 <translation id="8067872629359326442">Acabou de introduzir a sua palavra-passe num site fraudulento. O Chromium pode ajudar. Para alterar a sua palavra-passe e notificar a Google de que a sua conta pode estar em risco, clique em Proteger conta.</translation>
 <translation id="8070439594494267500">Ícone da app</translation>
