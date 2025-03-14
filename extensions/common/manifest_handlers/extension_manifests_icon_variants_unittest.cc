@@ -271,8 +271,7 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
     const ExtensionIconSet& icons =
         !test_case.color_scheme.has_value()
             ? IconsInfo::GetIcons(extension.get())
-            : IconsInfo::GetIcons(extension.get(),
-                                  test_case.color_scheme.value());
+            : IconsInfo::GetIcons(*extension, test_case.color_scheme.value());
     EXPECT_EQ(test_case.expected,
               icons.Get(extension_misc::EXTENSION_ICON_BITTY,
                         ExtensionIconSet::Match::kExactly));
