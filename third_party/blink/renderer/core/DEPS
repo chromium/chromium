@@ -137,13 +137,6 @@ include_rules = [
     "+ui/gfx/selection_bound.h",
     "+ui/strings/grit/ax_strings.h",
     "-web",
-    # We do not want any new dependencies into core/exported until we resolve
-    # controller layer.
-    "!third_party/blink/renderer/core/exported",
-    # We do not want any new dependencies on Web(Local|Remote)FrameBase.h until
-    # we resolve the control layer.
-    "!third_party/blink/renderer/core/frame/web_local_frame_impl.h",
-    "!third_party/blink/renderer/core/frame/web_remote_frame_impl.h",
 ]
 
 specific_include_rules = {
