@@ -18129,21 +18129,6 @@
             ]
         }
     ],
-    "PrivacyHubGeolocation": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosPrivacyHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacyIndicators": [
         {
             "platforms": [
