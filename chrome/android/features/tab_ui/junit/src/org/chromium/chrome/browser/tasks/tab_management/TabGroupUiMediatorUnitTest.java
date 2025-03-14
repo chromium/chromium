@@ -88,6 +88,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabUiUnitTestUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.collaboration.CollaborationService;
@@ -163,6 +165,8 @@ public class TabGroupUiMediatorUnitTest {
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<Object> mTokenCaptor;
+    @Captor private ArgumentCaptor<ThemeColorObserver> mThemeColorObserverCaptor;
+    @Captor private ArgumentCaptor<TintObserver> mTintObserverCaptor;
 
     private final ObservableSupplierImpl<Boolean> mOmniboxFocusStateSupplier =
             new ObservableSupplierImpl<>();
@@ -905,6 +909,8 @@ public class TabGroupUiMediatorUnitTest {
     @Test
     public void destroy_TabGroup() {
         initAndAssertProperties(mTab1);
+        verify(mThemeColorProvider).addThemeColorObserver(mThemeColorObserverCaptor.capture());
+        verify(mThemeColorProvider).addTintObserver(mTintObserverCaptor.capture());
 
         mTabGroupUiMediator.destroy();
 
@@ -914,8 +920,8 @@ public class TabGroupUiMediatorUnitTest {
         verify(mTabModelSupplier).removeObserver(mTabModelSupplierObserverCaptor.capture());
         verify(mTabGroupModelFilter, times(2))
                 .removeTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
-        verify(mThemeColorProvider).removeThemeColorObserver(any());
-        verify(mThemeColorProvider).removeTintObserver(any());
+        verify(mThemeColorProvider).removeThemeColorObserver(mThemeColorObserverCaptor.getValue());
+        verify(mThemeColorProvider).removeTintObserver(mTintObserverCaptor.getValue());
     }
 
     @Test
@@ -1137,7 +1143,10 @@ public class TabGroupUiMediatorUnitTest {
 
         reset(mOnSnapshotTokenChange);
         doReturn(Color.BLUE).when(mThemeColorProvider).getThemeColor();
-        mTabGroupUiMediator.onThemeColorChanged(Color.BLUE, false);
+        verify(mThemeColorProvider).addThemeColorObserver(mThemeColorObserverCaptor.capture());
+        mThemeColorObserverCaptor
+                .getValue()
+                .onThemeColorChanged(Color.BLUE, /* shouldAnimate= */ false);
         verify(mOnSnapshotTokenChange).onResult(mTokenCaptor.capture());
         Object composite2 = mTokenCaptor.getValue();
         assertNotNull(composite2);
@@ -1170,7 +1179,10 @@ public class TabGroupUiMediatorUnitTest {
         verify(mSharedImageTilesCoordinator).updateConfig(any());
 
         doReturn(Color.BLUE).when(mThemeColorProvider).getThemeColor();
-        mTabGroupUiMediator.onThemeColorChanged(Color.BLUE, /* shouldAnimate= */ false);
+        verify(mThemeColorProvider).addThemeColorObserver(mThemeColorObserverCaptor.capture());
+        mThemeColorObserverCaptor
+                .getValue()
+                .onThemeColorChanged(Color.BLUE, /* shouldAnimate= */ false);
         verify(mSharedImageTilesConfigBuilder).setBorderColor(Color.BLUE);
         verify(mSharedImageTilesConfigBuilder).setBackgroundColor(Color.BLUE);
         verify(mSharedImageTilesCoordinator, times(2)).updateConfig(any());
@@ -1183,7 +1195,10 @@ public class TabGroupUiMediatorUnitTest {
         assertEquals(mTintList1, mModel.get(TabGroupUiProperties.TINT));
 
         doReturn(mTintList2).when(mThemeColorProvider).getTint();
-        mTabGroupUiMediator.onTintChanged(mTintList2, mTintList2, BrandedColorScheme.APP_DEFAULT);
+        verify(mThemeColorProvider).addTintObserver(mTintObserverCaptor.capture());
+        mTintObserverCaptor
+                .getValue()
+                .onTintChanged(mTintList2, mTintList2, BrandedColorScheme.APP_DEFAULT);
         assertEquals(mTintList2, mModel.get(TabGroupUiProperties.TINT));
     }
 }

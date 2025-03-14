@@ -367,8 +367,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
-    // TODO(skym): Should be private.
-    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
+    private void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
         mModel.set(BACKGROUND_COLOR, color);
         if (mSharedImageTilesCoordinator != null && mSharedImageTilesConfigBuilder != null) {
             mSharedImageTilesConfigBuilder.setBorderColor(color).setBackgroundColor(color);
@@ -377,8 +376,7 @@ public class TabGroupUiMediator implements BackPressHandler {
         publishSnapshotToken();
     }
 
-    // TODO(skym): Should be private.
-    public void onTintChanged(
+    private void onTintChanged(
             ColorStateList tint, ColorStateList activityFocusTint, int brandedColorScheme) {
         mModel.set(TINT, mThemeColorProvider.getTint());
     }
