@@ -604,6 +604,10 @@ class CSSProperties(object):
             sorted(prefixed, key=sorting_name)
 
     @property
+    def includes_currentcolor(self):
+        return [p for p in self._longhands if p.includes_currentcolor]
+
+    @property
     def shorthands(self):
         return self._shorthands
 

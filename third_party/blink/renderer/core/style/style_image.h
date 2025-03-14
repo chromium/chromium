@@ -171,6 +171,9 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
     return default_orientation;
   }
 
+  // Whether this <image> depends on the current color.
+  virtual bool DependsOnCurrentColor() const { return false; }
+
   ALWAYS_INLINE bool IsImageResource() const { return is_image_resource_; }
   ALWAYS_INLINE bool IsPendingImage() const { return is_pending_image_; }
   ALWAYS_INLINE bool IsGeneratedImage() const { return is_generated_image_; }

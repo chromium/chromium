@@ -228,10 +228,12 @@ class ComputedStyle final : public ComputedStyleBase {
   // Color properties need access to private color utils.
   friend class css_longhand::AccentColor;
   friend class css_longhand::BackgroundColor;
+  friend class css_longhand::BackgroundImage;
   friend class css_longhand::BorderBottomColor;
   friend class css_longhand::BorderLeftColor;
   friend class css_longhand::BorderRightColor;
   friend class css_longhand::BorderTopColor;
+  friend class css_longhand::BoxShadow;
   friend class css_longhand::CaretColor;
   friend class css_longhand::Clear;
   friend class css_longhand::Color;
@@ -267,6 +269,7 @@ class ComputedStyle final : public ComputedStyleBase {
   friend class css_longhand::Stroke;
   friend class css_longhand::TextDecorationColor;
   friend class css_longhand::TextEmphasisColor;
+  friend class css_longhand::TextShadow;
   friend class css_longhand::WebkitTapHighlightColor;
   friend class css_longhand::WebkitTextFillColor;
   friend class css_longhand::WebkitTextStrokeColor;
@@ -591,6 +594,18 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // row-rule-width
   GapDataList<int> RowRuleWidth() const { return RowRuleWidthInternal(); }
+
+  bool HasGapDecoration() const {
+    // Various layouts in CSS such as multicol containers, flex containers, grid
+    // containers, and masonry containers position child boxes adjacent to each
+    // other with gaps, also known as gutters, between them. Each such gap may
+    // contain a gap decoration, which is a visible separator (such as a line)
+    // painted between adjacent boxes.
+    // See https://drafts.csswg.org/css-gaps-1/#gap-decorations
+    return (!HasAutoColumnCount() || !HasAutoColumnWidth()) ||
+           IsDisplayFlexibleBox() || IsDisplayGridBox() ||
+           IsDisplayMasonryBox();
+  }
 
   // content
   ContentData* GetContentData() const { return ContentInternal().Get(); }
@@ -1422,7 +1437,7 @@ class ComputedStyle final : public ComputedStyleBase {
     return OutlineWidth() > 0 && OutlineStyle() > EBorderStyle::kHidden;
   }
   bool HasOutlineWithCurrentColor() const {
-    return HasOutline() && OutlineColor().IsCurrentColor();
+    return HasOutline() && OutlineColor().DependsOnCurrentColor();
   }
 
   // Position utility functions.
@@ -2515,6 +2530,8 @@ class ComputedStyle final : public ComputedStyleBase {
            display == EDisplay::kTableCell ||
            display == EDisplay::kTableCaption;
   }
+
+  [[nodiscard]] bool HasPropertyDependingOnCurrentColor() const;
 
   bool BorderOutlineVisitedColorChanged(const ComputedStyle& other) const {
     // Only invalidate if the border/outline is present.
