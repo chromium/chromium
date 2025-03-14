@@ -259047,6 +259047,58 @@
        {}
       ]
      ],
+     "available-size-020.html": [
+      "bf09886f30a0762e8a56d0ad01a335b263280b39",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-020-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "available-size-021.html": [
+      "4547ba1934f8ec3432f1f09dfda0c06f84494026",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-020-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "available-size-022.html": [
+      "5e6e684adae62960c3abb8b8d4e3a14bc7d72c78",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-022-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "available-size-023.html": [
+      "a1be62a27e2395a243410fe89a0d662db5e4a535",
+      [
+       null,
+       [
+        [
+         "/css/css-writing-modes/reference/available-size-022-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "background-position-vrl-018.xht": [
       "d4e76334b7647340282d732692f08b6691437930",
       [
@@ -308957,6 +309009,19 @@
         [
          [
           "/svg/shapes/reftests/pathlength-004-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "pathlength-005.html": [
+       "59d4ae5fa6443bd971856c6c2e385026d9002c9f",
+       [
+        null,
+        [
+         [
+          "/svg/shapes/reftests/pathlength-005-ref.html",
           "=="
          ]
         ],
@@ -369272,6 +369337,14 @@
        "ef66b4e0d6248a8bc5b49c2654bfc77a2ac2e298",
        []
       ],
+      "available-size-020-ref.html": [
+       "ecd3ac273a2be4c198abba2730ef8355f4b52111",
+       []
+      ],
+      "available-size-022-ref.html": [
+       "c1e492ef24d2c9bae39611d26f4b8ca0db7d426b",
+       []
+      ],
       "baseline-with-orthogonal-flow-001-ref.html": [
        "dda75ca1ef495507c75c27f4a1de638bbf5506f8",
        []
@@ -421620,6 +421693,10 @@
       ],
       "pathlength-004-ref.svg": [
        "4b166e0cae0729babc69732c33fa7d5baaf19b20",
+       []
+      ],
+      "pathlength-005-ref.html": [
+       "b99474aa4667f94beace3d59465fa187a4f3a490",
        []
       ],
       "reference": {
