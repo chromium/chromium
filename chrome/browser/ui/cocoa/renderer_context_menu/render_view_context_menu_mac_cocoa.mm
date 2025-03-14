@@ -81,7 +81,8 @@ void RenderViewContextMenuMacCocoa::Show() {
       initWithParams:MenuControllerParamsForWidget(widget)];
   menu_controller_ =
       [[MenuControllerCocoa alloc] initWithModel:&menu_model_
-                                        delegate:menu_controller_delegate_];
+                                        delegate:menu_controller_delegate_
+                          useWithPopUpButtonCell:NO];
 
   NSPoint position =
       NSMakePoint(params_.x, NSHeight(parent_view_.bounds) - params_.y);
