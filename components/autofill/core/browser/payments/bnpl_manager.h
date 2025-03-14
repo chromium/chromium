@@ -147,6 +147,11 @@ class BnplManager {
   void OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult result,
                            const BnplFetchVcnResponseDetails& response_details);
 
+  // Cancels in-progress requests to `PaymentsNetworkInterface` and resets the
+  // BNPL flow state. Also invalidates `BnplManager` weak pointers from the
+  // factory.
+  void Reset();
+
   // Runs after users select a BNPL issuer, and will redirect to plan selection
   // or terms of services depending on the issuer.
   void OnIssuerSelected(const BnplIssuer& selected_issuer);
