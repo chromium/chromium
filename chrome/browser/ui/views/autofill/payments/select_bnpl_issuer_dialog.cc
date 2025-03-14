@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "bnpl_issuer_view.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"

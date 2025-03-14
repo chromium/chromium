@@ -23,6 +23,7 @@ class SelectBnplIssuerDialogController {
 
   // List of issuers to be displayed.
   virtual const std::vector<BnplIssuer>& GetIssuers() const = 0;
+  virtual bool IssuerEligible(std::string_view issuer_id) const = 0;
 
  protected:
   virtual ~SelectBnplIssuerDialogController() = default;
