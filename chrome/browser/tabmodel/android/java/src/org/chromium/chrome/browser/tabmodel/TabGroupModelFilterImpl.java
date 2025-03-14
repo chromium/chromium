@@ -1433,12 +1433,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public boolean tabGroupExistsForRootId(int rootId) {
-        TabGroup group = mRootIdToGroupMap.get(rootId);
-        return group != null;
-    }
-
-    @Override
     public boolean tabGroupExists(@Nullable Token tabGroupId) {
         boolean foundKey = mGroupIdToRootIdMap.containsKey(tabGroupId);
         // Guards are in place to ensure this doesn't happen, assert if it does.
