@@ -150,7 +150,7 @@
   }
 
   // After signout, the managed account should be moved into a separate profile.
-  [SigninEarlGreyUI signOut];
+  [SigninEarlGreyUI signOutWithClearDataConfirmation:YES];
   {
     NSSet<NSString*>* accountsInProfile =
         [SigninEarlGrey accountsInProfileGaiaIDs];

@@ -583,7 +583,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   PrefService* profilePrefService = profile->GetPrefs();
   SignedInUserState signedInUserState = GetSignedInUserState(
       authenticationService, identityManager, profilePrefService);
-  if (!ForceLeavingPrimaryAccountConfirmationDialog(signedInUserState) &&
+  if (!ForceLeavingPrimaryAccountConfirmationDialog(
+          signedInUserState, profile->GetProfileName()) &&
       _unsyncedDataTypes.value().empty()) {
     [self continueFlow];
     return;

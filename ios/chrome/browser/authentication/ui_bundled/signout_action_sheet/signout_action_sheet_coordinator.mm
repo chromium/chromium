@@ -96,7 +96,8 @@ using signin_metrics::SignoutDataLossAlertReason;
   PrefService* profilePrefService = self.browser->GetProfile()->GetPrefs();
   _signedInUserState = GetSignedInUserState(
       self.authenticationService, self.identityManager, profilePrefService);
-  if (ForceLeavingPrimaryAccountConfirmationDialog(_signedInUserState)) {
+  if (ForceLeavingPrimaryAccountConfirmationDialog(
+          _signedInUserState, self.browser->GetProfile()->GetProfileName())) {
     [self startActionSheetCoordinatorForSignout];
   } else {
     [self checkForUnsyncedDataAndSignOut];
