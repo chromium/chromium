@@ -276,12 +276,14 @@ struct Dpi {
   int32_t vertical;
 };
 
+// This deviates from the CDD#Margins now as the values field have been renamed.
+// TODO(316999874, 308709702): update the spec to reflect this change.
 enum class FitToPageType {
-  NO_FITTING,
-  FIT_TO_PAGE,
-  GROW_TO_PAGE,
-  SHRINK_TO_PAGE,
-  FILL_PAGE,
+  AUTO,
+  AUTO_FIT,
+  FILL,
+  FIT,
+  NONE,
 };
 
 enum class MediaSize {

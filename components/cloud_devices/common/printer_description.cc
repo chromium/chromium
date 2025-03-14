@@ -128,11 +128,11 @@ constexpr char kTypeDuplexLongEdge[] = "LONG_EDGE";
 constexpr char kTypeDuplexNoDuplex[] = "NO_DUPLEX";
 constexpr char kTypeDuplexShortEdge[] = "SHORT_EDGE";
 
-constexpr char kTypeFitToPageFillPage[] = "FILL_PAGE";
-constexpr char kTypeFitToPageFitToPage[] = "FIT_TO_PAGE";
-constexpr char kTypeFitToPageGrowToPage[] = "GROW_TO_PAGE";
-constexpr char kTypeFitToPageNoFitting[] = "NO_FITTING";
-constexpr char kTypeFitToPageShrinkToPage[] = "SHRINK_TO_PAGE";
+constexpr char kTypeFitToPageAuto[] = "AUTO";
+constexpr char kTypeFitToPageAutoFit[] = "AUTO_FIT";
+constexpr char kTypeFitToPageFill[] = "FILL";
+constexpr char kTypeFitToPageFit[] = "FIT";
+constexpr char kTypeFitToPageNone[] = "NONE";
 
 constexpr char kTypeOrientationAuto[] = "AUTO";
 constexpr char kTypeOrientationLandscape[] = "LANDSCAPE";
@@ -211,11 +211,11 @@ constexpr struct FitToPageNames {
   FitToPageType id;
   const char* const json_name;
 } kFitToPageNames[] = {
-    {FitToPageType::NO_FITTING, kTypeFitToPageNoFitting},
-    {FitToPageType::FIT_TO_PAGE, kTypeFitToPageFitToPage},
-    {FitToPageType::GROW_TO_PAGE, kTypeFitToPageGrowToPage},
-    {FitToPageType::SHRINK_TO_PAGE, kTypeFitToPageShrinkToPage},
-    {FitToPageType::FILL_PAGE, kTypeFitToPageFillPage},
+    {FitToPageType::AUTO, kTypeFitToPageAuto},
+    {FitToPageType::AUTO_FIT, kTypeFitToPageAutoFit},
+    {FitToPageType::FILL, kTypeFitToPageFill},
+    {FitToPageType::FIT, kTypeFitToPageFit},
+    {FitToPageType::NONE, kTypeFitToPageNone},
 };
 
 constexpr struct DocumentSheetBackNames {

@@ -108,15 +108,15 @@ const char kCdd[] = R"(
         "fit_to_page": {
           "option": [ {
             "is_default": true,
-            "type": "NO_FITTING"
+            "type": "AUTO"
           }, {
-            "type": "FIT_TO_PAGE"
+            "type": "AUTO_FIT"
           }, {
-            "type": "GROW_TO_PAGE"
+            "type": "FILL"
           }, {
-            "type": "SHRINK_TO_PAGE"
+            "type": "FIT"
           }, {
-            "type": "FILL_PAGE"
+            "type": "NONE"
           } ]
         },
         "page_range": {
@@ -653,7 +653,7 @@ const char kCjt[] = R"(
           "vertical_dpi": 125
         },
         "fit_to_page": {
-          "type": "SHRINK_TO_PAGE"
+          "type": "FIT"
         },
         "page_range": {
           "interval": [ {
@@ -821,11 +821,11 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   dpi.AddOption(Dpi(150, 250));
   dpi.AddDefaultOption(Dpi(600, 1600), true);
 
-  fit_to_page.AddDefaultOption(FitToPageType::NO_FITTING, true);
-  fit_to_page.AddOption(FitToPageType::FIT_TO_PAGE);
-  fit_to_page.AddOption(FitToPageType::GROW_TO_PAGE);
-  fit_to_page.AddOption(FitToPageType::SHRINK_TO_PAGE);
-  fit_to_page.AddOption(FitToPageType::FILL_PAGE);
+  fit_to_page.AddDefaultOption(FitToPageType::AUTO, true);
+  fit_to_page.AddOption(FitToPageType::AUTO_FIT);
+  fit_to_page.AddOption(FitToPageType::FILL);
+  fit_to_page.AddOption(FitToPageType::FIT);
+  fit_to_page.AddOption(FitToPageType::NONE);
 
   media.AddDefaultOption(MediaBuilder()
                              .WithStandardName(MediaSize::NA_LETTER)
@@ -1350,12 +1350,12 @@ TEST(PrinterDescriptionTest, CddGetAll) {
   EXPECT_TRUE(dpi.Contains(Dpi(600, 1600)));
   EXPECT_EQ(Dpi(600, 1600), dpi.GetDefault());
 
-  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::NO_FITTING));
-  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::FIT_TO_PAGE));
-  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::GROW_TO_PAGE));
-  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::SHRINK_TO_PAGE));
-  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::FILL_PAGE));
-  EXPECT_EQ(FitToPageType::NO_FITTING, fit_to_page.GetDefault());
+  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::AUTO));
+  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::AUTO_FIT));
+  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::FILL));
+  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::FIT));
+  EXPECT_TRUE(fit_to_page.Contains(FitToPageType::NONE));
+  EXPECT_EQ(FitToPageType::AUTO, fit_to_page.GetDefault());
 
   Media default_media = MediaBuilder()
                             .WithStandardName(MediaSize::NA_LETTER)
@@ -1457,7 +1457,7 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   copies.set_value(123);
   margins.set_value(Margins(7, 6, 3, 1));
   dpi.set_value(Dpi(562, 125));
-  fit_to_page.set_value(FitToPageType::SHRINK_TO_PAGE);
+  fit_to_page.set_value(FitToPageType::FIT);
   PageRange page_ranges;
   page_ranges.push_back(Interval(1, 99));
   page_ranges.push_back(Interval(150));
@@ -1534,7 +1534,7 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   EXPECT_EQ(copies.value(), 123);
   EXPECT_EQ(margins.value(), Margins(7, 6, 3, 1));
   EXPECT_EQ(dpi.value(), Dpi(562, 125));
-  EXPECT_EQ(fit_to_page.value(), FitToPageType::SHRINK_TO_PAGE);
+  EXPECT_EQ(fit_to_page.value(), FitToPageType::FIT);
   PageRange page_ranges;
   page_ranges.push_back(Interval(1, 99));
   page_ranges.push_back(Interval(150));
