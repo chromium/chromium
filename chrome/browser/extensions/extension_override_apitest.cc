@@ -10,7 +10,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/chrome_manifest_url_handlers.h"
@@ -40,10 +40,10 @@ using content::WebContents;
 
 namespace extensions {
 
-class ExtensionOverrideTest : public ExtensionPlatformApiTest {
+class ExtensionOverrideTest : public ExtensionApiTest {
  protected:
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
 
 namespace extensions {
 
-using SharedModuleTest = ExtensionPlatformApiTest;
+using SharedModuleTest = ExtensionApiTest;
 
 // NB: We use LoadExtension instead of InstallExtension for shared modules so
 // the public-keys in their manifests are used to generate the extension ID, so
