@@ -253,6 +253,8 @@
     "prioritychange",
     "processorerror",
     "progress",
+    "promptaction",
+    "promptdismiss",
     "push",
     "pushsubscriptionchange",
     "quicstream",
