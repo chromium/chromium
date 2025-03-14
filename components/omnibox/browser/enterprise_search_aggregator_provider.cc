@@ -577,9 +577,16 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
       continue;
     }
 
-    matches.push_back(CreateMatch(
-        suggestion_type, is_navigation, relevance, url, image_url, icon_url,
-        base::UTF8ToUTF16(description), base::UTF8ToUTF16(contents)));
+    std::u16string fill_into_edit;
+    if (adjusted_input_.InKeywordMode()) {
+      fill_into_edit.append(template_url_->keyword() + u' ');
+    }
+    fill_into_edit.append(base::UTF8ToUTF16(is_navigation ? url : contents));
+
+    matches.push_back(CreateMatch(suggestion_type, is_navigation, relevance,
+                                  url, image_url, icon_url,
+                                  base::UTF8ToUTF16(description),
+                                  base::UTF8ToUTF16(contents), fill_into_edit));
   }
 
   // Limit # of matches added. See comment for
@@ -680,13 +687,13 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
     const std::string& image_url,
     const std::string& icon_url,
     const std::u16string& description,
-    const std::u16string& contents) {
+    const std::u16string& contents,
+    const std::u16string& fill_into_edit) {
   auto type = is_navigation ? AutocompleteMatchType::NAVSUGGEST
                             : AutocompleteMatchType::SEARCH_SUGGEST;
   AutocompleteMatch match(this, relevance, false, type);
 
   match.destination_url = GURL(url);
-  match.fill_into_edit = base::UTF8ToUTF16(url);
 
   if (!image_url.empty()) {
     match.image_url = GURL(image_url);
@@ -717,9 +724,12 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
                                 : secondary_text_class;
   match.contents_class =
       is_navigation ? secondary_text_class : primary_text_class(match.contents);
+  match.fill_into_edit = fill_into_edit;
 
   match.keyword = template_url_->keyword();
-  match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  match.transition = adjusted_input_.InKeywordMode()
+                         ? ui::PAGE_TRANSITION_KEYWORD
+                         : ui::PAGE_TRANSITION_GENERATED;
 
   if (adjusted_input_.InKeywordMode()) {
     match.from_keyword = true;
