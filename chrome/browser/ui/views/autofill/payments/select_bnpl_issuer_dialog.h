@@ -45,6 +45,9 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
   // DialogDelegateView:
   bool Accept() override;
 
+  // View:
+  void AddedToWidget() override;
+
  private:
   raw_ptr<views::View> container_view_ = nullptr;
   raw_ptr<BnplIssuerView> bnpl_issuer_view_ = nullptr;

@@ -14,12 +14,14 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_dialog_footnote.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_view.h"
+#include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -115,8 +117,6 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kText));
-  // TODO(crbug.com/356443046): Move to resources and translate string.
-  SetTitle(u"Choose a pay over time provider");
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
@@ -150,6 +150,16 @@ bool SelectBnplIssuerDialog::Accept() {
   // TODO(kylixrd): Should eventually return false and require the controller to
   // dismiss the dialog. This will eventually display a spinner.
   return views::DialogDelegate::Accept();
+}
+
+void SelectBnplIssuerDialog::AddedToWidget() {
+  // The BubbleFrameView is only available after this view is added to the
+  // Widget.
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          // TODO(crbug.com/356443046): Move to resources and translate string.
+          u"Choose a pay over time provider",
+          TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 BEGIN_METADATA(SelectBnplIssuerDialog)
