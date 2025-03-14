@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/query_title_server_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -687,6 +688,41 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // The Inactive Tabs grid should no longer be visible.
   [[EarlGrey selectElementWithMatcher:InactiveTabGrid()]
+      assertWithMatcher:grey_notVisible()];
+
+  // There should be no inactive tab, just 2 active tabs.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
+                 @"Main tab count should be 2");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
+                 @"Inactive tab count should be 0");
+}
+
+// Checks that changing settings from another window updates the regular grid.
+- (void)testSettingsChangesInBackgroundUpdates {
+  CreateRegularTabs(1, self.testServer);
+  [self relaunchAppWithInactiveTabsTestMode];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check that the Inactive Tabs button is present.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // There should be one inactive tab, and the active NTP.
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Main tab count should be 1");
+  GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
+                 @"Incognito tab count should be 0");
+  GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 1,
+                 @"Inactive tab count should be 1");
+
+  // Simulate disabling Inactive Tabs from another window.
+  [ChromeEarlGrey setIntegerValue:kInactiveTabsDisabledByUser
+                      forUserPref:prefs::kInactiveTabsTimeThreshold];
+
+  // The Inactive Tabs button should no longer be visible.
+  [[EarlGrey selectElementWithMatcher:TabGridInactiveTabsButton()]
       assertWithMatcher:grey_notVisible()];
 
   // There should be no inactive tab, just 2 active tabs.
