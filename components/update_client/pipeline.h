@@ -53,7 +53,6 @@ void MakePipeline(
     const std::string& id,
     const std::vector<uint8_t>& pk_hash,
     const std::string& install_data_index,
-    const std::string& prev_fp,
     scoped_refptr<CrxInstaller> installer,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
@@ -62,9 +61,7 @@ void MakePipeline(
     base::RepeatingCallback<void(const CrxInstaller::Result&)>
         install_complete_callback,
     scoped_refptr<ActionHandler> action_handler,
-    base::RepeatingCallback<void(const CategorizedError&)>
-        diff_outcome_recorder,
-    const ProtocolParser::Result& result,
+    const ProtocolParser::App& result,
     base::OnceCallback<void(
         base::expected<PipelineStartCallback, CategorizedError>)> callback);
 

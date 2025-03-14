@@ -81,12 +81,24 @@ class CallbackChecker : public base::RefCountedThreadSafe<CallbackChecker> {
 
 // Runs on the original sequence.
 void InstallComplete(
-    base::OnceCallback<void(const CrxInstaller::Result&)> callback,
+    base::OnceCallback<void(const CrxInstaller::Result&)>
+        installer_result_callback,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::FilePath crx_file,
     const CrxInstaller::Result& result) {
   // TODO(crbug.com/353249967): Add an event describing the install's outcome.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+      FROM_HERE, base::BindOnce(std::move(installer_result_callback), result));
+  if (result.result.category_ != ErrorCategory::kNone) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), base::unexpected(result.result)));
+    return;
+  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), crx_file));
 }
 
 // Runs in the blocking thread pool.
@@ -95,27 +107,14 @@ void InstallBlocking(
     base::OnceCallback<void(const CrxInstaller::Result&)> callback,
     const base::FilePath& unpack_path,
     const std::string& public_key,
-    const std::string& next_fp,
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
     scoped_refptr<CrxInstaller> installer) {
-  // Write manifest.fingerprint.
-  if (!base::WriteFile(
-          unpack_path.Append(FILE_PATH_LITERAL("manifest.fingerprint")),
-          next_fp)) {
-    std::move(callback).Run(CrxInstaller::Result(
-        {.category_ = ErrorCategory::kInstall,
-         .code_ = static_cast<int>(InstallError::FINGERPRINT_WRITE_FAILED),
-         .extra_ = static_cast<int>(logging::GetLastSystemErrorCode())}));
-    return;
-  }
-
   installer->Install(unpack_path, public_key, std::move(install_params),
                      progress_callback, std::move(callback));
 }
 
 // Runs on the original sequence.
 void Install(base::OnceCallback<void(const CrxInstaller::Result&)> callback,
-             const std::string& next_fp,
              std::unique_ptr<CrxInstaller::InstallParams> install_params,
              scoped_refptr<CrxInstaller> installer,
              CrxInstaller::ProgressCallback progress_callback,
@@ -154,7 +153,7 @@ void Install(base::OnceCallback<void(const CrxInstaller::Result&)> callback,
                          &CallbackChecker::Progress, checker)),
                      base::BindPostTaskToCurrentDefault(
                          base::BindOnce(&CallbackChecker::Done, checker)),
-                     result.unpack_path, result.public_key, next_fp,
+                     result.unpack_path, result.public_key,
                      std::move(install_params), installer));
 }
 
@@ -203,20 +202,26 @@ base::OnceClosure InstallOperation(
     const std::vector<uint8_t>& pk_hash,
     scoped_refptr<CrxInstaller> installer,
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
-    const std::string& next_fp,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
     CrxInstaller::ProgressCallback progress_callback,
-    base::OnceCallback<void(const CrxInstaller::Result&)> callback,
-    const base::FilePath& crx_file) {
+    base::OnceCallback<void(const CrxInstaller::Result&)>
+        installer_result_callback,
+    const base::FilePath& crx_file,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback) {
+  state_tracker.Run(ComponentState::kUpdating);
   crx_cache->Put(
-      crx_file, id, file_hash, next_fp,
+      // TODO(crbug.com/399617574): Remove FP.
+      crx_file, id, file_hash, /*fp=*/{},
       base::BindOnce(
           &Unpack,
-          base::BindOnce(&Install,
-                         base::BindOnce(&InstallComplete, std::move(callback),
-                                        event_adder),
-                         next_fp, std::move(install_params), installer,
-                         progress_callback),
+          base::BindOnce(
+              &Install,
+              base::BindOnce(&InstallComplete,
+                             std::move(installer_result_callback),
+                             std::move(callback), event_adder, crx_file),
+              std::move(install_params), installer, progress_callback),
           crx_file, std::move(unzipper), pk_hash, crx_format));
   return base::DoNothing();
 }

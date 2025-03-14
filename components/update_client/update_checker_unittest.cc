@@ -202,7 +202,6 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
   crx_component.pk_hash.assign(std::begin(jebg_hash), std::end(jebg_hash));
   crx_component.installer = nullptr;
   crx_component.version = base::Version("0.9");
-  crx_component.fingerprint = "fp1";
   crx_component.allow_updates_on_metered_connection =
       allow_updates_on_metered_connection;
 
@@ -229,7 +228,7 @@ std::optional<base::Value::Dict> UpdateCheckerTest::ParseRequest(
 base::Value UpdateCheckerTest::GetFirstAppAsValue(
     const base::Value::Dict& request) {
   const base::Value::List* app_list =
-      request.FindDict("request")->FindList("app");
+      request.FindDict("request")->FindList("apps");
   return CHECK_DEREF(app_list)[0].Clone();
 }
 
@@ -285,7 +284,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(request->FindString("@updater"));
   EXPECT_EQ("fake_prodid", *request->FindString("@updater"));
   ASSERT_TRUE(request->FindString("acceptformat"));
-  EXPECT_EQ("crx3,puff", *request->FindString("acceptformat"));
+  EXPECT_EQ("crx3,download,puff,run", *request->FindString("acceptformat"));
   EXPECT_TRUE(request->contains("arch"));
   ASSERT_TRUE(request->FindString("dedup"));
   EXPECT_EQ("cr", *request->FindString("dedup"));
@@ -299,7 +298,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(request->FindString("prodversion"));
   EXPECT_EQ("30.0", *request->FindString("prodversion"));
   ASSERT_TRUE(request->FindString("protocol"));
-  EXPECT_EQ("3.1", *request->FindString("protocol"));
+  EXPECT_EQ("4.0", *request->FindString("protocol"));
   EXPECT_TRUE(request->contains("requestid"));
   EXPECT_TRUE(request->contains("sessionid"));
   ASSERT_TRUE(request->FindString("testrequest"));
@@ -320,9 +319,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
             *request->FindStringByDottedPath("os.platform"));
   ASSERT_TRUE(request->FindStringByDottedPath("os.version"));
 
-  ASSERT_TRUE(request->FindList("app"));
-  ASSERT_FALSE(request->FindList("app")->empty());
-  const auto* app = request->FindList("app")->front().GetIfDict();
+  ASSERT_TRUE(request->FindList("apps"));
+  ASSERT_FALSE(request->FindList("apps")->empty());
+  const auto* app = request->FindList("apps")->front().GetIfDict();
   ASSERT_TRUE(app);
   ASSERT_TRUE(app->FindString("appid"));
   EXPECT_EQ(kUpdateItemId, *app->FindString("appid"));
@@ -359,19 +358,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   ASSERT_TRUE(app->FindIntByDottedPath("ping.r").has_value());
   EXPECT_EQ(-2, app->FindIntByDottedPath("ping.r").value());
 
-  ASSERT_TRUE(app->FindListByDottedPath("packages.package"));
-  ASSERT_FALSE(app->FindListByDottedPath("packages.package")->empty());
-  ASSERT_TRUE(
-      app->FindListByDottedPath("packages.package")->front().GetIfDict());
-  ASSERT_TRUE(app->FindListByDottedPath("packages.package")
-                  ->front()
-                  .GetIfDict()
-                  ->FindString("fp"));
-  EXPECT_EQ("fp1", *app->FindListByDottedPath("packages.package")
-                        ->front()
-                        .GetIfDict()
-                        ->FindString("fp"));
-
 #if BUILDFLAG(IS_WIN)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const auto* updater = request->FindDict("updater");
@@ -388,16 +374,15 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
   EXPECT_EQ(0, error_);
   EXPECT_TRUE(results_);
-  EXPECT_EQ(1u, results_->list.size());
-  const auto& result = results_->list.front();
-  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id);
-  EXPECT_EQ("1.0", result.manifest.version);
-  EXPECT_EQ(1u, result.manifest.packages.size());
-  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf.crx",
-            result.manifest.packages.front().name);
-  EXPECT_EQ(1u, result.crx_urls.size());
-  EXPECT_EQ(GURL("http://localhost/download/"), result.crx_urls.front());
-  EXPECT_EQ("this", result.action_run);
+  EXPECT_EQ(1u, results_->apps.size());
+  const auto& result = results_->apps.front();
+  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", result.app_id);
+  EXPECT_EQ(base::Version("1.0"), result.nextversion);
+  EXPECT_EQ(1u, result.pipelines.size());
+  EXPECT_EQ(
+      GURL("http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx3"),
+      result.pipelines[0].operations[0].urls[0]);
+  EXPECT_EQ(result.pipelines[0].operations[2].path, "this");
 
   // Check the DDOS protection header values.
   const auto extra_request_headers =
@@ -451,11 +436,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
   EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
-                                   .FindByDottedPath("packages.package")
-                                   ->GetList()[0]
-                                   .GetDict()
-                                   .FindString("fp")));
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
@@ -489,11 +469,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
   EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
-                                   .FindByDottedPath("packages.package")
-                                   ->GetList()[0]
-                                   .GetDict()
-                                   .FindString("fp")));
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckFallback) {
@@ -613,11 +588,6 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
   EXPECT_TRUE(app.contains("updatecheck"));
   EXPECT_TRUE(app.contains("ping"));
   EXPECT_EQ(-2, app_as_val.GetDict().FindByDottedPath("ping.r")->GetInt());
-  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.GetDict()
-                                   .FindByDottedPath("packages.package")
-                                   ->GetList()[0]
-                                   .GetDict()
-                                   .FindString("fp")));
 
   // Expect an error since the response is not trusted.
   EXPECT_EQ(ErrorCategory::kUpdateCheck, error_category_);
@@ -1165,7 +1135,7 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto& app =
-        (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
+        (*root->GetDict().FindListByDottedPath("request.apps"))[0].GetDict();
     EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
     EXPECT_TRUE(app.FindDict("updatecheck"));
     EXPECT_FALSE(app.FindByDottedPath("updatecheck.sameversionupdate"));
@@ -1189,40 +1159,10 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto& app =
-        (*root->GetDict().FindListByDottedPath("request.app"))[0].GetDict();
+        (*root->GetDict().FindListByDottedPath("request.apps"))[0].GetDict();
     EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ(app.FindBoolByDottedPath("updatecheck.sameversionupdate"), true);
   }
-}
-
-TEST_P(UpdateCheckerTest, NoUpdateActionRun) {
-  EXPECT_TRUE(post_interceptor_->ExpectRequest(
-      std::make_unique<PartialMatch>("updatecheck"),
-      GetTestFilePath("updatecheck_reply_noupdate.json")));
-  update_checker_ = UpdateChecker::Create(config_);
-
-  update_context_->components[kUpdateItemId] = MakeComponent();
-
-  update_checker_->CheckForUpdates(
-      update_context_, {},
-      base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
-                     base::Unretained(this)));
-  RunThreads();
-
-  EXPECT_EQ(1, post_interceptor_->GetHitCount())
-      << post_interceptor_->GetRequestsAsString();
-  ASSERT_EQ(1, post_interceptor_->GetCount())
-      << post_interceptor_->GetRequestsAsString();
-
-  // Check the arguments of the callback after parsing.
-  EXPECT_EQ(ErrorCategory::kNone, error_category_);
-  EXPECT_EQ(0, error_);
-  EXPECT_TRUE(results_);
-  EXPECT_EQ(1u, results_->list.size());
-  const auto& result = results_->list.front();
-  EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", result.extension_id);
-  EXPECT_EQ("noupdate", result.status);
-  EXPECT_EQ("this", result.action_run);
 }
 
 TEST_P(UpdateCheckerTest, UpdatePauseResume) {
@@ -1259,10 +1199,6 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
   EXPECT_EQ(true, app.FindBool("enabled"));
   EXPECT_TRUE(app.FindDict("updatecheck")->empty());
   EXPECT_EQ(-2, app_as_val.GetDict().FindIntByDottedPath("ping.r").value());
-
-  const base::Value::List& packages =
-      CHECK_DEREF(app.FindDict("packages")->FindList("package"));
-  EXPECT_EQ("fp1", CHECK_DEREF(packages[0].GetDict().FindString("fp")));
 }
 
 // Tests that an update checker object and its underlying SimpleURLLoader can
@@ -1342,8 +1278,8 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
   EXPECT_EQ(ErrorCategory::kNone, error_category_);
   EXPECT_EQ(0, error_);
   EXPECT_TRUE(results_);
-  EXPECT_EQ(1u, results_->list.size());
-  const auto& result = results_->list.front();
+  EXPECT_EQ(1u, results_->apps.size());
+  const auto& result = results_->apps.front();
   EXPECT_EQ("error-unknownApplication", result.status);
 }
 

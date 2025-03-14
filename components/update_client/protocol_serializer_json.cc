@@ -24,7 +24,7 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("protocol", request.protocol_version);
   request_node.Set("ismachine", request.is_machine);
   request_node.Set("dedup", "cr");
-  request_node.Set("acceptformat", "crx3,puff");
+  request_node.Set("acceptformat", "crx3,download,puff,run");
   if (!request.additional_attributes.empty()) {
     for (const auto& [name, value] : request.additional_attributes) {
       request_node.Set(name, value);
@@ -98,7 +98,7 @@ std::string ProtocolSerializerJSON::Serialize(
     if (updater.last_started) {
       updater_node.Set("laststarted", *updater.last_started);
     }
-    request_node.Set("updater", std::move(updater_node));
+    request_node.Set("updaters", std::move(updater_node));
   }
 #endif
 
@@ -144,6 +144,16 @@ std::string ProtocolSerializerJSON::Serialize(
     }
     if (app.enabled) {
       app_node.Set("enabled", *app.enabled);
+    }
+
+    if (!app.cached_hashes.empty()) {
+      base::Value::List hash_list;
+      for (const auto& hash : app.cached_hashes) {
+        base::Value::Dict node;
+        node.Set("sha256", hash);
+        hash_list.Append(std::move(node));
+      }
+      app_node.Set("cached_items", std::move(hash_list));
     }
 
     if (app.disabled_reasons && !app.disabled_reasons->empty()) {
@@ -221,30 +231,20 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("ping", std::move(ping_node));
     }
 
-    if (!app.fingerprint.empty()) {
-      base::Value::List package_nodes;
-      base::Value::Dict package;
-      package.Set("fp", app.fingerprint);
-      package_nodes.Append(std::move(package));
-      base::Value::Dict packages_node;
-      packages_node.Set("package", std::move(package_nodes));
-      app_node.Set("packages", std::move(packages_node));
-    }
-
     if (app.events) {
       base::Value::List event_nodes;
       for (const auto& event : *app.events) {
         CHECK(!event.empty());
         event_nodes.Append(event.Clone());
       }
-      app_node.Set("event", std::move(event_nodes));
+      app_node.Set("events", std::move(event_nodes));
     }
 
     app_nodes.Append(std::move(app_node));
   }
 
   if (!app_nodes.empty()) {
-    request_node.Set("app", std::move(app_nodes));
+    request_node.Set("apps", std::move(app_nodes));
   }
 
   root_node.Set("request", std::move(request_node));

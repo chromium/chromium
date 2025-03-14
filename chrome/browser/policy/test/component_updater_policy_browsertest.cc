@@ -256,7 +256,7 @@ void ComponentUpdaterPolicyTest::VerifyExpectations(bool update_disabled) {
     const auto root = base::JSONReader::Read(request);
     ASSERT_TRUE(root);
     const auto* update_check =
-        (*root->GetDict().FindDict("request")->FindList("app"))[0]
+        (*root->GetDict().FindDict("request")->FindList("apps"))[0]
             .GetDict()
             .FindDict("updatecheck");
     ASSERT_TRUE(update_check);
