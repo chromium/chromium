@@ -1466,7 +1466,6 @@ interface CaptureController : EventTarget
     method getSupportedZoomLevels
     method increaseZoomLevel
     method resetZoomLevel
-    method sendWheel
     method setFocusBehavior
     setter oncapturedmousechange
     setter onzoomlevelchange
