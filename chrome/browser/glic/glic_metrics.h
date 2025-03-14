@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
+#include <set>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -86,6 +87,19 @@ enum class ResponseSegmentation {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 
+// LINT.IfChange(GlicInputModesUsed)
+
+enum class InputModesUsed {
+  kNone = 0,
+  kOnlyText = 1,
+  kOnlyAudio = 2,
+  kTextAndAudio = 3,
+
+  kMaxValue = kTextAndAudio,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInputModesUsed)
+
 class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicWindowController;
@@ -141,6 +155,7 @@ class GlicMetrics {
   base::TimeTicks input_submitted_time_;
   mojom::WebClientMode input_mode_;
   bool did_request_context_ = false;
+  std::set<mojom::WebClientMode> inputs_modes_used_;
 
   // Session state. `session_start_time_` is a sentinel that is cleared in
   // OnGlicWindowClose() and is used to determine whether OnGlicWindowOpen was

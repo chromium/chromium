@@ -106,6 +106,7 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
   input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
+  inputs_modes_used_.insert(mode);
 }
 
 void GlicMetrics::OnResponseStarted() {
@@ -231,6 +232,19 @@ void GlicMetrics::OnGlicWindowClose() {
   }
   session_responses_ = 0;
   session_start_time_ = base::TimeTicks();
+
+  InputModesUsed modes_used = InputModesUsed::kNone;
+  if (!inputs_modes_used_.empty()) {
+    if (inputs_modes_used_.size() == 2) {
+      modes_used = InputModesUsed::kTextAndAudio;
+    } else {
+      modes_used = inputs_modes_used_.contains(mojom::WebClientMode::kAudio)
+                       ? InputModesUsed::kOnlyAudio
+                       : InputModesUsed::kOnlyText;
+    }
+  }
+  inputs_modes_used_.clear();
+  base::UmaHistogramEnumeration("Glic.Session.InputModesUsed", modes_used);
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,

@@ -412,5 +412,31 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
       /*expected_count=*/1);
 }
 
+TEST_F(GlicMetricsTest, InputModesUsed) {
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 1);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kOnlyText, 1);
+
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 2);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kNone, 1);
+
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 3);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kTextAndAudio, 1);
+
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 4);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kOnlyAudio, 1);
+}
+
 }  // namespace
 }  // namespace glic
