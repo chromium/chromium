@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Apabila dihidupkan, laman dapat meminta untuk menggunakan peranti NFC. Apabila dimatikan, laman tidak dapat menggunakan peranti NFC.</translation>
 <translation id="1660204651932907780">Benarkan tapak untuk memainkan bunyi (disyorkan)</translation>
 <translation id="1677097821151855053">Kuki dan data tapak lain digunakan untuk mengingat anda, misalnya untuk log anda masuk atau memperibadikan iklan. Untuk mengurus kuki bagi semua tapak, lihat <ph name="BEGIN_LINK" />Tetapan<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Laman boleh meminta untuk menggunakan peranti NFC</translation>
 <translation id="1686785653877010442">Biasanya laman menghantar pemberitahuan untuk memberitahu anda tentang berita mutakhir atau mesej sembang.</translation>
 <translation id="169515064810179024">Sekat tapak daripada mengakses penderia gerakan</translation>
 <translation id="1703666494654169921">Jangan benarkan laman menggunakan peranti atau data realiti maya</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Tindakan ini akan memadamkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh laman atau apl pada Skrin utama anda.</translation>
 <translation id="2194856509914051091">Perkara yang perlu dipertimbangkan</translation>
 <translation id="2215727959747642672">Pengeditan fail</translation>
+<translation id="2218389616572918761">Laman boleh meminta untuk menggunakan mikrofon anda</translation>
 <translation id="2228071138934252756">Untuk membolehkan <ph name="APP_NAME" /> mengakses kamera anda, hidupkan juga kamera dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kuki pihak ketiga disekat</translation>
 <translation id="2238944249568001759">Carian cadangan berdasarkan tab terakhir anda</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Lancarkan Chrome dengan Omnibox difokuskan dapat mengurangkan masa permulaan pada peranti bawahan.</translation>
 <translation id="2750481671343847896">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti.</translation>
 <translation id="2787357173144933081">Mulakan Omnibox</translation>
+<translation id="2789132527330338807">Laman boleh meminta untuk membuat peta 3D persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="2790501146643349491">Apabila dihidupkan, laman yang ditutup baru-baru ini dapat menyelesaikan penghantaran dan penerimaan data. Apabila dimatikan, laman yang ditutup baru-baru ini tidak dapat menyelesaikan penghantaran atau penerimaan data.</translation>
 <translation id="2795716239552913152">Tapak biasanya menggunakan lokasi anda untuk ciri atau maklumat yang berkaitan, seperti berita tempatan atau kedai berdekatan</translation>
+<translation id="2802908157808345702">Jangan benarkan laman menghantar kandungan timbul dan menggunakan ubah hala</translation>
 <translation id="2814830417943086299">Kini Chrome memaparkan tab terbaharu anda dalam senarai apl dan hasil carian peranti anda. Anda boleh mematikan ciri ini dalam tetapan Chrome pada bila-bila masa.</translation>
 <translation id="2822354292072154809">Adakah anda pasti mahu menetapkan semula semua kebenaran tapak untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Minta paparan mudah alih</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda merentas beberapa laman, walaupun laman berkaitan. Aktiviti penyemakan imbas anda tidak digunakan untuk perkara seperti memeribadikan iklan. Ciri pada sesetengah laman mungkin tidak berfungsi.</translation>
 <translation id="461356340001513807">Membolehkan anda log masuk ke laman web menggunakan akaun anda yang memiliki perkhidmatan identiti</translation>
 <translation id="4619615317237390068">Tab daripada peranti lain</translation>
+<translation id="4635969503923889910">Jangan benarkan laman menggunakan peranti NFC</translation>
 <translation id="4644713492825682049">Padam &amp; tetapkan semula</translation>
 <translation id="4645575059429386691">Diurus oleh ibu bapa anda</translation>
 <translation id="4670064810192446073">Realiti maya</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Kuncupkan semua permintaan</translation>
 <translation id="5884085660368669834">Pilihan laman</translation>
 <translation id="5887687176710214216">Terakhir dilawati semalam</translation>
+<translation id="5908617755156109052">Jangan benarkan laman membuat peta 3D persekitaran anda atau menjejaki kedudukan kamera</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5922853908706496913">Berkongsi skrin anda</translation>
 <translation id="5922967540311291836">Sekat kuki pihak ketiga:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Kosongkan input</translation>
 <translation id="8681886425883659911">Iklan disekat di laman yang diketahui memaparkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="868929229000858085">Cari dalam kenalan anda</translation>
+<translation id="8707904142362025782">Laman boleh meminta untuk menggunakan kamera anda</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8715862698998036666">Seret daripada bahagian atas dan leret dari sisi kiri atau kanan untuk keluar daripada skrin penuh.</translation>
 <translation id="8719283222052720129">Hidupkan kebenaran untuk <ph name="APP_NAME" /> dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>

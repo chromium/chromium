@@ -2363,11 +2363,6 @@ Android アプリの場合はパッケージ名（「com.google.android.gm」な
 <translation id="2812417768214606683">このポリシーでは、<ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> ポリシーと <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" /> ポリシーの対象から除外する USB ストレージ デバイスのリストを指定します。
 
 リストの項目には、特定の USB デバイスモデルを表す USB ベンダー ID とプロダクト ID の組み合わせを指定します。</translation>
-<translation id="2815701930753942156">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> デバイスを使用できない週単位の期間のリストを指定します。進行中のセッションはすべて終了し、ログインはブロックされます。
-
-重複する期間はサポートされていません。
-
-<ph name="PRODUCT_OS_NAME" /> デバイスでは、システムのタイムゾーンを使用してこれらの期間を適用します。</translation>
 <translation id="2816964824289752181">サードパーティの <ph name="PRODUCT_OS_NAME" /> 制御機能に対して <ph name="DESK_API_NAME" /> を有効にする</translation>
 <translation id="2818074121667686266">このポリシーを有効に設定するか未設定のままにした場合、AudioCaptureAllowedUrls リストで指定されている URL 以外では、ユーザーに音声キャプチャのアクセスを確認するメッセージが表示されます。
 
@@ -7167,7 +7162,6 @@ DevTools の生成 AI 機能は次のとおりです。
 <translation id="6398489342702562818">このポリシーでは、ファスト ペアリングを強制的に有効または無効にできます。ファスト ペアリングは、ペア設定済みの周辺機器と GAIA アカウントをリンクする新しい Bluetooth ペア設定フローです。これにより、同じ GAIA アカウントでログインしている他の ChromeOS（および Android）デバイスを自動的にペア設定できるようになります。未設定のままにした場合、デフォルト値は企業ユーザーでは無効となり、管理対象外アカウントでは有効となります。</translation>
 <translation id="6401669939808766804">ユーザーをログアウトする</translation>
 <translation id="640244877779556713">絵文字の候補を有効にします</translation>
-<translation id="6402928885627067154">ChromeOS デバイスを使用できない週単位の期間を指定します</translation>
 <translation id="6403114173011456561">タップ仮想キーボードを制御し、<ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> ポリシーの補助ポリシーとして機能します。
 
       ユーザー補助仮想キーボードがオンになっている場合、このポリシーは無視されます。

@@ -2795,7 +2795,6 @@
 <translation id="2921081876747860777">તમારો સ્થાનિક ડેટા સુરક્ષિત કરવા માટે કૃપા કરીને એક પાસવર્ડ બનાવો.</translation>
 <translation id="2923006468155067296">હવે તમારું <ph name="DEVICE_TYPE" /> લૉક થઈ જશે.
 <ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારું સ્માર્ટ કાર્ડ દાખલ કરેલું રાખો.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. એ જ ટાસ્ક ગ્રૂપમાં અન્ય <ph name="OTHER_TASK_NUM" /> ટાસ્ક: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. એ જ ટાસ્ક ગ્રૂપમાં અન્ય <ph name="OTHER_TASK_NUM" /> ટાસ્ક: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">આ એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="2923644930701689793">તમારા ફોનના કૅમેરા રોલને ઍક્સેસ કરો</translation>
 <translation id="292371311537977079">Chrome સેટિંગ</translation>
@@ -10625,7 +10624,6 @@ USB ડિવાઇસ</translation>
 <translation id="8524841856047224176">વીડિયો કૉલ અને વધુ માટે તમારા કૅમેરાના બૅકગ્રાઉન્ડને મનગમતા બનાવો</translation>
 <translation id="8525306231823319788">પૂર્ણ સ્ક્રીન</translation>
 <translation id="8525461909394569609">આ ઍપમાં આના પરનું વેબ કન્ટેન્ટ શામેલ છે</translation>
-<translation id="8526313996927074827">લિંક, ઇમોજી અને બીજું ઘણું દાખલ કરો. Google AI વડે લખવા માટે તમે સહાય પણ મેળવી શકો છો.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">સ્પીકર</translation>
 <translation id="8527257351549797148">તમારી સંસ્થાએ નોંધણી કરવાની જરૂર પડી શકે છે, જેથી તમે ઍપ, એક્સ્ટેન્શન અને બીજું ઘણું ઍક્સેસ કરી શકો. આમ કરવાથી તમારી સંસ્થાને સુરક્ષા અને ડિવાઇસના સેટિંગ જેવી બાબતો મેનેજ કરવાની પણ મંજૂરી મળે છે.</translation>

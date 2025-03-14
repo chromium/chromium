@@ -2796,7 +2796,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2921081876747860777">Yerli datanı qorumaq üçün parol yaradın.</translation>
 <translation id="2923006468155067296">İndi <ph name="DEVICE_TYPE" /> kilidlənəcək.
 <ph name="DOMAIN" /> smart kartınızın taxılı qalmasını tələb edir.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Eyni tapşırıq qrupunda digər <ph name="OTHER_TASK_NUM" /> tapşırıq: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Bu hesabı silin</translation>
 <translation id="2923644930701689793">Telefonunuzun foto lentinə giriş edin</translation>
 <translation id="292371311537977079">Chrome ayarları</translation>
@@ -10622,7 +10621,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8524841856047224176">Video zəng və s. üçün kamera arxa fonlarını fərdiləşdirin</translation>
 <translation id="8525306231823319788">Tam ekran</translation>
 <translation id="8525461909394569609">Bu tətbiqdə veb-kontent var</translation>
-<translation id="8526313996927074827">Link, emoji və s. daxil edin. Google Sİ ilə yazmaq üçün kömək ala bilərsiniz.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Dinamiklər</translation>
 <translation id="8527257351549797148">Tətbiq, artırma və s. dataya giriş üçün təşkilat qeydiyyat tələb edə bilər. Bununla təşkilata güvənlik və cihaz ayarları kimi parametrləri idarə etmək imkanı da verilir.</translation>

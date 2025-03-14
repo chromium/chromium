@@ -2796,7 +2796,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2921081876747860777">Crea un contrasinal para protexer os teus datos locais.</translation>
 <translation id="2923006468155067296">O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase agora.
 <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tarefas máis no mesmo grupo: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Quitar esta conta</translation>
 <translation id="2923644930701689793">Accede ao carrete do teu teléfono</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
@@ -10626,7 +10625,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8524841856047224176">Personaliza o fondo da túa cámara para as videochamadas e moito máis</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8525461909394569609">Esta aplicación inclúe contido web de</translation>
-<translation id="8526313996927074827">Insire ligazóns, emojis e moito máis. Tamén podes obter axuda para escribir coa IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altofalantes</translation>
 <translation id="8527257351549797148">Pode que a túa organización necesite que te rexistres para poder acceder ás aplicacións e extensións, entre outras cousas. Desta maneira pode xestionar a configuración de seguranza e do dispositivo, entre outras opcións.</translation>

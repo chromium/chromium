@@ -2703,7 +2703,7 @@
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> でログイン</translation>
 <translation id="2856776373509145513">新しいコンテナの作成</translation>
-<translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポート</translation>
+<translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポートします</translation>
 <translation id="2860710618359053450">あごを右に動かす</translation>
 <translation id="2861301611394761800">システムの更新が完了しました。システムを再起動してください。</translation>
 <translation id="2861402191395139055">Passpoint の登録</translation>
@@ -2791,7 +2791,6 @@
 <translation id="2921081876747860777">ローカルデータを保護するパスワードを作成してください。</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> は今すぐロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />。同じタスクグループ内の他 <ph name="OTHER_TASK_NUM" /> 件のタスク: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">このアカウントを削除</translation>
 <translation id="2923644930701689793">スマートフォンのカメラロールにアクセス</translation>
 <translation id="292371311537977079">Chrome の設定</translation>
@@ -10611,7 +10610,6 @@
 <translation id="8524841856047224176">ビデオ通話などのカメラの背景をカスタマイズできます</translation>
 <translation id="8525306231823319788">全画面表示</translation>
 <translation id="8525461909394569609">このアプリには、次のウェブ コンテンツが含まれています</translation>
-<translation id="8526313996927074827">リンクや絵文字などを挿入したり、Google AI を使用して文章を作成したりできます。</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">スピーカー</translation>
 <translation id="8527257351549797148">アプリや拡張機能などにアクセスできるように組織から登録を求められる場合があります。登録により、セキュリティやデバイス設定なども組織で管理できるようになります。</translation>

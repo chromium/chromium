@@ -39,6 +39,7 @@
 <translation id="1497802159252041924">შეცდომა ინსტალაციისას: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">მოირგეთ თქვენი ახალი Chrome პროფილი</translation>
 <translation id="1547295885616600893">ChromeOS მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
+<translation id="1547469039832541117">დაასრულებს მონიშნულ ამოცანას.</translation>
 <translation id="1553358976309200471">Chrome-ის განახლება</translation>
 <translation id="1587223624401073077">Google Chrome იყენებს თქვენს კამერას.</translation>
 <translation id="1587325591171447154">Chrome-მა დაბლოკა <ph name="FILE_NAME" />, რადგან ის სახიფათოა.</translation>
@@ -175,6 +176,7 @@
 <translation id="3140883423282498090">თქვენი ცვლილებები Google Chrome.ის გადატვირთვის შემდეგ შევა ძალაში.</translation>
 <translation id="3149510190863420837">Chrome-ის პროგრამები</translation>
 <translation id="3161522574479303604">ყველა ენა</translation>
+<translation id="319199214552513804">ამ გაფართოების და სხვა ერთეულების თქვენს კომპიუტერზე მისაღებად შედით Chrome-ში</translation>
 <translation id="3196187562065225381">Chrome-მა დაბლოკა ეს ჩამოტვირთვა, რადგან ეს ფაილი სახიფათოა</translation>
 <translation id="3222857603094643834">მოძებნეთ ნებისმიერი რამ ამ გვერდზე Google Lens-ით</translation>
 <translation id="3226612997184048185">თუ თქვენს სანიშნეებს Google ანგარიშშიც ინახავთ, შეგიძლიათ თვალი მიადევნოთ პროდუქტების ფასებს Chrome-ში და შეიტყოთ, როცა ფასი დაიკლებს</translation>

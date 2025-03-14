@@ -2797,7 +2797,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2921081876747860777">Crea una password per proteggere i tuoi dati locali.</translation>
 <translation id="2923006468155067296">Il tuo <ph name="DEVICE_TYPE" /> verrà bloccato adesso.
 <ph name="DOMAIN" /> richiede di lasciare la smart card inserita.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Altre <ph name="OTHER_TASK_NUM" /> attività nello stesso gruppo di attività: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Rimuovi questo account</translation>
 <translation id="2923644930701689793">Accedi al rullino del telefono</translation>
 <translation id="292371311537977079">Impostazioni di Chrome</translation>
@@ -10625,7 +10624,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8524841856047224176">Personalizza gli sfondi della fotocamera per le videochiamate e molto altro</translation>
 <translation id="8525306231823319788">Schermo intero</translation>
 <translation id="8525461909394569609">Questa app include contenuti web di</translation>
-<translation id="8526313996927074827">Inserisci link, emoji e altro ancora. Puoi anche ricevere aiuto con la scrittura con Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altoparlanti</translation>
 <translation id="8527257351549797148">La tua organizzazione potrebbe richiedere la registrazione per poter accedere ad app, estensioni e altro ancora. Inoltre ciò consente alla tua organizzazione di gestire elementi come la sicurezza e le impostazioni del dispositivo.</translation>

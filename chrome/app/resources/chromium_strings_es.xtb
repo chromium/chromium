@@ -34,6 +34,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1478370723027452770">Obtener ayuda con Chrome for Testing</translation>
 <translation id="1497802159252041924">Error de instalación: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Compartir una pestaña de Chromium</translation>
+<translation id="1547469039832541117">Finaliza la tarea resaltada.</translation>
 <translation id="1553461853655228091">Para crear un mapa 3D de tu entorno, Chromium necesita permiso para acceder a tu cámara</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no se admite. Chromium te recomienda que la elimines.}other{Estas extensiones ya no se admiten. Chromium te recomienda que las elimines.}}</translation>
 <translation id="1574377791422810894">Herramientas de seguridad de Chromium</translation>
@@ -226,6 +227,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" />, inicio de sesión en la red, Chromium</translation>
 <translation id="421369550622382712">Descubre aplicaciones, juegos, extensiones y temas increíbles para Chromium.</translation>
+<translation id="4217080900579554343">Para obtener esta extensión y más en todos tus ordenadores, inicia sesión en Chromium</translation>
 <translation id="4217972271355023382">Para tener más protección online con las opciones de tus padres, cambia a tu perfil de Chromium, donde ya has iniciado sesión como <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Cancelando...</translation>
 <translation id="4224210481850767180">Se ha cancelado la instalación.</translation>

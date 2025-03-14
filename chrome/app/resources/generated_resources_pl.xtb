@@ -2783,7 +2783,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2921081876747860777">Utwórz hasło, by chronić swoje dane lokalne.</translation>
 <translation id="2923006468155067296">Twoje urządzenie <ph name="DEVICE_TYPE" /> zostanie teraz zablokowane.
 Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieździe.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}few{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> inne zadania w tej samej grupie zadań: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> innych zadań w tej samej grupie zadań: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> innego zadania w tej samej grupie zadań: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Usuń to konto</translation>
 <translation id="2923644930701689793">Uzyskaj dostęp do rolki z aparatu telefonu</translation>
 <translation id="292371311537977079">Ustawienia Chrome</translation>
@@ -10609,7 +10608,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8524841856047224176">Spersonalizuj tło kamery, m.in. aby prowadzić rozmowy wideo</translation>
 <translation id="8525306231823319788">Pełny ekran</translation>
 <translation id="8525461909394569609">Ta aplikacja zawiera treści z internetu z:</translation>
-<translation id="8526313996927074827">Wstawiaj linki, emotikony i inne elementy Możesz też korzystać z pomocy AI od Google podczas pisania.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Głośniki</translation>
 <translation id="8527257351549797148">Twoja organizacja może wymagać zarejestrowania się, aby udostępniać Ci aplikacje, rozszerzenia i inne funkcje. Dzięki temu będzie też mogła zarządzać m.in. ustawieniami zabezpieczeń i urządzeń.</translation>

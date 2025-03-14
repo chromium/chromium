@@ -194,6 +194,7 @@ Agar tark etsangiz, “<ph name="TITLE_OF_GROUP" />” varaqlar guruhiga boshqa 
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yoyish, guruh varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{<ph name="TITLE_OF_GROUP" /> varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> daqiqa oldin yangilangan}other{<ph name="NUM_MINS_MANY" /> daqiqa oldin yangilangan}}</translation>
+<translation id="8236097722223016103">Bukmarklash</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8338427544764842461">Varaqlar guruhi shu yerda saqlanadi va hisobga kirilgan barcha qurilmalarda yangilanib turadi</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Umumiy varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_ONE" /> ta, rangi: <ph name="COLOR_NAME" />.}other{Umumiy varaqlar guruhini yoyish, varaqlari: <ph name="TABS_COUNT_MANY" /> ta, rangi: <ph name="COLOR_NAME" />.}}</translation>
