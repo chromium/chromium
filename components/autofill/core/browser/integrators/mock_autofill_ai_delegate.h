@@ -27,7 +27,7 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
   MOCK_METHOD(bool, MaybeImportForm, (const FormStructure&), (override));
   MOCK_METHOD(bool,
               ShouldDisplayIph,
-              (const AutofillField& field),
+              (autofill::FormGlobalId, autofill::FieldGlobalId),
               (const override));
   MOCK_METHOD(void,
               OnSuggestionsShown,
