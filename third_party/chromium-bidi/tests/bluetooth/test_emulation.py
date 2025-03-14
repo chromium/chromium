@@ -40,7 +40,6 @@ async def setup_device(websocket, context_id):
             'method': 'bluetooth.simulateAdapter',
             'params': {
                 'context': context_id,
-                'type': 'create',
                 'state': 'powered-on',
             }
         })
@@ -84,7 +83,6 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
             'params': {
                 'context': context_id,
                 'state': state_1,
-                'type': 'create',
             }
         })
 
@@ -94,7 +92,6 @@ async def test_simulate_create_adapter_twice(websocket, context_id, state_1,
             'params': {
                 'context': context_id,
                 'state': state_2,
-                'type': 'create',
             }
         })
 
