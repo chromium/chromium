@@ -38,7 +38,7 @@ const ExtensionIconSet& IconsInfo::GetIcons(
   DCHECK(extension);
   // Prefer `icon_variants` over `icons`.
   const IconVariantsInfo* icon_variants_info =
-      IconVariantsInfo::GetIconVariants(extension);
+      IconVariantsInfo::GetIconVariants(*extension);
   if (icon_variants_info) {
     return icon_variants_info->Get(color_scheme);
   }

@@ -23,7 +23,7 @@ struct IconVariantsInfo : public Extension::ManifestData {
   static bool HasIconVariants(const Extension* extension);
 
   // Get IconVariants for the given `extension`, if they exist.
-  static const IconVariantsInfo* GetIconVariants(const Extension* extension);
+  static const IconVariantsInfo* GetIconVariants(const Extension& extension);
 
   // Retrieve a matching ExtensionIconSet.
   const ExtensionIconSet& Get(

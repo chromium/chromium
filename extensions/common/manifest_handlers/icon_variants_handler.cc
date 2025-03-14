@@ -79,14 +79,14 @@ ExtensionIconVariants GetIconVariants(Extension& extension) {
 // static
 bool IconVariantsInfo::HasIconVariants(const Extension* extension) {
   DCHECK(extension);
-  const IconVariantsInfo* info = IconVariantsInfo::GetIconVariants(extension);
+  const IconVariantsInfo* info = IconVariantsInfo::GetIconVariants(*extension);
   return info && info->icon_variants && !info->icon_variants->IsEmpty();
 }
 
 const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
-    const Extension* extension) {
+    const Extension& extension) {
   return static_cast<IconVariantsInfo*>(
-      extension->GetManifestData(IconVariantsManifestKeys::kIconVariants));
+      extension.GetManifestData(IconVariantsManifestKeys::kIconVariants));
 }
 
 void IconVariantsInfo::InitializeIconSets() {
