@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,63 @@
 #include "url/gurl.h"
 
 namespace content {
+
+namespace {
+
+using AccessScope = blink::SharedStorageAccessScope;
+using AccessMethod = TestSharedStorageObserver::AccessMethod;
+
+std::string SerializeScope(AccessScope scope) {
+  switch (scope) {
+    case AccessScope::kWindow:
+      return "Window";
+    case AccessScope::kSharedStorageWorklet:
+      return "SharedStorageWorklet";
+    case AccessScope::kProtectedAudienceWorklet:
+      return "ProtectedAudienceWorklet";
+    case AccessScope::kHeader:
+      return "Header";
+  }
+  NOTREACHED();
+}
+
+std::string SerializeMethod(AccessMethod method) {
+  switch (method) {
+    case AccessMethod::kAddModule:
+      return "AddModule";
+    case AccessMethod::kCreateWorklet:
+      return "CreateWorklet";
+    case AccessMethod::kSelectURL:
+      return "SelectURL";
+    case AccessMethod::kRun:
+      return "Run";
+    case AccessMethod::kBatchUpdate:
+      return "BatchUpdate";
+    case AccessMethod::kSet:
+      return "Set";
+    case AccessMethod::kAppend:
+      return "Append";
+    case AccessMethod::kDelete:
+      return "Delete";
+    case AccessMethod::kClear:
+      return "Clear";
+    case AccessMethod::kGet:
+      return "Get";
+    case AccessMethod::kKeys:
+      return "Keys";
+    case AccessMethod::kValues:
+      return "Values";
+    case AccessMethod::kEntries:
+      return "Entries";
+    case AccessMethod::kLength:
+      return "Length";
+    case AccessMethod::kRemainingBudget:
+      return "RemainingBudget";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 TestSharedStorageObserver::TestSharedStorageObserver() = default;
 TestSharedStorageObserver::~TestSharedStorageObserver() = default;
@@ -52,5 +110,15 @@ void TestSharedStorageObserver::ExpectAccessObserved(
 
 bool operator==(const TestSharedStorageObserver::Access& lhs,
                 const TestSharedStorageObserver::Access& rhs) = default;
+
+std::ostream& operator<<(std::ostream& os,
+                         const TestSharedStorageObserver::Access& access) {
+  os << "{ Access Scope: " << SerializeScope(access.scope)
+     << "; Access Method: " << SerializeMethod(access.method)
+     << "; Main Frame Id: " << access.main_frame_id.GetUnsafeValue()
+     << "; Owner Origin: " << access.owner_origin
+     << "; Params: " << access.params << " }";
+  return os;
+}
 
 }  // namespace content
