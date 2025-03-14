@@ -171,7 +171,6 @@ class BinaryUploadService : public KeyedService {
     void set_csd(ClientDownloadRequest csd);
     void add_tag(const std::string& tag);
     void set_email(const std::string& email);
-    void set_fcm_token(const std::string& token);
     void set_device_token(const std::string& token);
     void set_filename(const std::string& filename);
     void set_digest(const std::string& digest);
@@ -203,7 +202,6 @@ class BinaryUploadService : public KeyedService {
     enterprise_connectors::AnalysisConnector analysis_connector();
     const std::string& device_token() const;
     const std::string& request_token() const;
-    const std::string& fcm_notification_token() const;
     const std::string& filename() const;
     const std::string& digest() const;
     const std::string& content_type() const;
@@ -227,8 +225,7 @@ class BinaryUploadService : public KeyedService {
     // Calls SerializeToString on the appropriate proto request.
     void SerializeToString(std::string* destination) const;
 
-    // Method used to identify authentication requests. This is used for
-    // optimizations such as omitting FCM code paths for auth requests.
+    // Method used to identify authentication requests.
     virtual bool IsAuthRequest() const;
 
     const std::string& access_token() const;
