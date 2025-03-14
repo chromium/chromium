@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_linked_pill.h"
+#include "chrome/browser/ui/views/autofill/payments/select_bnpl_issuer_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -46,8 +47,9 @@
 namespace autofill::payments {
 
 BnplIssuerView::BnplIssuerView(
-    base::WeakPtr<SelectBnplIssuerDialogController> controller)
-    : controller_(controller) {
+    base::WeakPtr<SelectBnplIssuerDialogController> controller,
+    SelectBnplIssuerDialog* issuer_dialog)
+    : issuer_dialog_(issuer_dialog), controller_(controller) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   auto* layout_provider = ChromeLayoutProvider::Get();
   int corner_radius =
@@ -176,8 +178,8 @@ void BnplIssuerView::AddedToWidget() {
 
 void BnplIssuerView::IssuerSelected(BnplIssuer issuer, const ui::Event& event) {
   if (controller_) {
+    issuer_dialog_->DisplayThrobber();
     controller_->OnAccepted(std::string(issuer.issuer_id()));
-    controller_->OnDialogClosed();
   }
 }
 

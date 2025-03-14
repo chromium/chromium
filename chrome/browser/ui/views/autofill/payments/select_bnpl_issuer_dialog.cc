@@ -20,7 +20,9 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
@@ -118,13 +120,31 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
-  bnpl_issuer_view_ =
-      AddChildView(std::make_unique<BnplIssuerView>(controller_));
+  container_view_ = AddChildView(std::make_unique<views::View>());
+  container_view_->SetUseDefaultFillLayout(true);
+
+  bnpl_issuer_view_ = container_view_->AddChildView(
+      std::make_unique<BnplIssuerView>(controller_, this));
   bnpl_footnote_view_ =
       SetFootnoteView(views::Builder<BnplDialogFootnote>().Build());
 }
 
 SelectBnplIssuerDialog::~SelectBnplIssuerDialog() = default;
+
+void SelectBnplIssuerDialog::DisplayThrobber() {
+  bnpl_issuer_view_->SetVisible(false);
+  views::Throbber* throbber = nullptr;
+  container_view_->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
+          .AddChild(views::Builder<views::Throbber>(
+                        std::make_unique<views::Throbber>(24))
+                        .CopyAddressTo(&throbber))
+          .Build());
+  throbber->Start();
+  throbber->SizeToPreferredSize();
+}
 
 bool SelectBnplIssuerDialog::Accept() {
   // TODO(kylixrd): Should eventually return false and require the controller to
