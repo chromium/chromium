@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Changing the query of a URL with an opaque path can impact the path
+  assert_equals: expected "space" but got "space    "
+Harness: the test ran to completion.
+

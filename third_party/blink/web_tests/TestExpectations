@@ -2615,8 +2615,8 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 # ====== New tests from wpt-importer added here ======
 crbug.com/403364345 [ Win11-arm64 ] external/wpt/css/css-page/monolithic-overflow-022-print.html [ Failure ]
 crbug.com/403364345 [ Linux ] external/wpt/css/css-page/monolithic-overflow-022-print.html [ Failure ]
-crbug.com/403340566 [ Win11-arm64 ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
 crbug.com/403340566 [ Webview ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
+crbug.com/403340566 [ Win11-arm64 ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Timeout ]
 crbug.com/403358035 [ Win11-arm64 ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Timeout ]
 crbug.com/403358035 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Timeout ]
 crbug.com/402853477 external/wpt/css/css-will-change/will-change-stacking-context-z-index-4.html [ Failure ]
@@ -9077,5 +9077,5 @@ crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sine.html 
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
 crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-sideways-lr.html [ Failure ]
 crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Failure ]
-crbug.com/391006701 [ Mac Debug ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
-crbug.com/391006701 [ Mac Debug ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
+crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
+crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
