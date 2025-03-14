@@ -367528,6 +367528,12 @@
        []
       ]
      },
+     "tree-counting": {
+      "sibling-function-descriptors.tentative-expected.txt": [
+       "af9e75c66ba1693a8135b1f34424a9f28c2426ff",
+       []
+      ]
+     },
      "urls": {
       "fragment-only-expected.txt": [
        "e79da1e4b879f3f871eb3f2fb2627fbd4f98297b",
@@ -420696,6 +420702,10 @@
      []
     ],
     "signatures": {
+     "accept-signature-script.py": [
+      "a1c61f396d50332831d1af1d3749e2c790454a7a",
+      []
+     ],
      "query-resource.py": [
       "dea586937454298f137e9c34d8ecee2262b70c98",
       []
@@ -423453,6 +423463,10 @@
     ]
    },
    "urlpattern": {
+    "META.yml": [
+     "ad348f6dfd778f953d8f55405b2ea3198dbff0d3",
+     []
+    ],
     "WEB_FEATURES.yml": [
      "cb82ba5cda2918be080e10ab8bbd4c145e05b790",
      []
@@ -491036,28 +491050,28 @@
     },
     "css-color-hdr": {
      "computed.html": [
-      "48076da6b6a9f7eece37c6e701ef1a7c5ed96e91",
+      "47021144087d8fe6976ee7a06a187e85665b8fdf",
       [
        null,
        {}
       ]
      ],
      "inheritance.html": [
-      "4f7a44a77290736703b170425f5b15e0ca445039",
+      "6f893b6b68a8cd450871b18143a6f59b4345d402",
       [
        null,
        {}
       ]
      ],
      "interpolation.html": [
-      "62e079f6366d7979e130e72dfec8d7f9fede07b7",
+      "41ee84210196946b222f74c6ac964d20e724382e",
       [
        null,
        {}
       ]
      ],
      "parsing.html": [
-      "caf3e86a27c00862902e107b3219338633c795d6",
+      "e165a60d7edb9f7599608f6d4749ca640bfa9635",
       [
        null,
        {}
@@ -521368,8 +521382,22 @@
         {}
        ]
       ],
+      "sibling-function-descriptors.tentative.html": [
+       "d31d4acf499fb62f777817f24186e394626d507e",
+       [
+        null,
+        {}
+       ]
+      ],
       "sibling-function-invalidation.html": [
        "3c75c78530dca4cfb30dfc0c17c0ad2049cfb087",
+       [
+        null,
+        {}
+       ]
+      ],
+      "sibling-function-media-query.tentative.html": [
+       "c76ac449e48493c396d9aea0ab8f04dde27092c5",
        [
         null,
         {}
@@ -661759,7 +661787,7 @@
      ]
     ],
     "VideoTrackGenerator-with-window-tracks.https.html": [
-     "dfe000fbddb6cddd52538dfdcb686c2357ca1ff7",
+     "1c5560f6964aac0c6506a531619392a318756c8b",
      [
       null,
       {}
@@ -718462,6 +718490,27 @@
    "subresource-integrity": {
     "signatures": {
      "tentative": {
+      "accept-signature.parser-inserted.html": [
+       "ccedc5ce4f9213e748611cb305892a87950978f6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "accept-signature.window.js": [
+       "efcbf0cdad6cb2816b47e989701835a30b777639",
+       [
+        "subresource-integrity/signatures/tentative/accept-signature.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "helper.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "authority.https.window.js": [
        "9f05359d43222250c9392bdf1598a8a33724ac97",
        [
@@ -803198,7 +803247,7 @@
      ]
     ],
     "WorkerGlobalScope_ErrorEvent_message.htm": [
-     "bc1d2c45b42cb0e3cb96a243d00f2b7351e8b1d3",
+     "27d4dda5114cfe0ff5ebab090d0c41dfebf0a256",
      [
       null,
       {}
