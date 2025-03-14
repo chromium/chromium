@@ -568,7 +568,6 @@ public class TabGroupUiMediatorUnitTest {
     public void tabClosure_NotLastTabInGroup_Selection_SingleTabGroupsEnabled() {
         initAndAssertProperties(mTab2);
 
-        doReturn(mTab3).when(mTabGroupModelFilter).getGroupLastShownTab(TAB2_ROOT_ID);
         doReturn(false).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab3);

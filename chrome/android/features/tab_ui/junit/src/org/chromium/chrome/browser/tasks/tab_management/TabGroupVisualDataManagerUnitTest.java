@@ -317,7 +317,6 @@ public class TabGroupVisualDataManagerUnitTest {
         createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
 
         // Mock the situation that the root tab is not the tab being moved out.
-        when(mTabGroupModelFilter.getGroupLastShownTab(TAB2_ID)).thenReturn(mTab2);
         when(mTab1.getRootId()).thenReturn(TAB2_ID);
         when(mTab2.getRootId()).thenReturn(TAB2_ID);
 
@@ -333,7 +332,6 @@ public class TabGroupVisualDataManagerUnitTest {
         // Actually move tab 1 out of the group.
         when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(false);
         when(mTab1.getTabGroupId()).thenReturn(null);
-        when(mTabGroupModelFilter.getGroupLastShownTab(TAB1_ID)).thenReturn(mTab1);
 
         when(mTabGroupModelFilter.getTabGroupTitle(TAB2_ID)).thenReturn(CUSTOMIZED_TITLE1);
         when(mTabGroupModelFilter.getTabGroupColor(TAB2_ID)).thenReturn(COLOR1_ID);
@@ -376,7 +374,6 @@ public class TabGroupVisualDataManagerUnitTest {
 
     private void createTabGroup(List<Tab> tabs, int rootId, Token groupId) {
         Tab lastTab = tabs.isEmpty() ? null : tabs.get(0);
-        when(mTabGroupModelFilter.getGroupLastShownTab(rootId)).thenReturn(lastTab);
         when(mTabGroupModelFilter.getTabCountForGroup(groupId)).thenReturn(tabs.size());
         for (Tab tab : tabs) {
             when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);

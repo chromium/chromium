@@ -150,13 +150,6 @@ public interface TabGroupModelFilter extends TabList {
     int getGroupLastShownTabId(int rootId);
 
     /**
-     * @param rootId The rootId of the group to lookup.
-     * @return the last shown tab in that group or null otherwise.
-     */
-    @Nullable
-    Tab getGroupLastShownTab(int rootId);
-
-    /**
      * This method moves the tab group which contains the tab with tab {@code id} to {@code
      * newIndex} in TabModel.
      *
