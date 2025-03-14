@@ -28,10 +28,6 @@ using ::testing::_;
 using ::testing::Optional;
 
 const std::u16string kUrlTitle = u"Title";
-constexpr char kIsPrimaryProfileActiveHistogramName[] =
-    "Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive";
-constexpr char kNumProfilesHistogramName[] =
-    "Ash.ClipboardHistory.UrlTitleFetcher.NumProfiles";
 constexpr char kUrlFoundHistogramName[] =
     "Ash.ClipboardHistory.UrlTitleFetcher.UrlFound";
 
@@ -167,7 +163,6 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest,
 }
 
 TEST_F(ClipboardHistoryUrlTitleFetcherTest, HistoryQueryFailsWithMultiProfile) {
-  base::HistogramTester histogram_tester;
   const GURL kTestUrl("https://www.url.com");
   EXPECT_CALL(*history_service(), QueryURL(kTestUrl, false, _, _))
       .WillRepeatedly(&RunHistoryEntryFoundCallback);
@@ -179,16 +174,6 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest, HistoryQueryFailsWithMultiProfile) {
     // Querying the browsing history is allowed when exactly one profile has
     // been added to the session.
     EXPECT_THAT(title_future.Take(), Optional(kUrlTitle));
-
-    histogram_tester.ExpectTotalCount(kIsPrimaryProfileActiveHistogramName,
-                                      /*expected_count=*/1);
-    histogram_tester.ExpectBucketCount(kIsPrimaryProfileActiveHistogramName,
-                                       true, /*expected_count=*/1);
-
-    histogram_tester.ExpectTotalCount(kNumProfilesHistogramName,
-                                      /*expected_count=*/1);
-    histogram_tester.ExpectBucketCount(kNumProfilesHistogramName, 1,
-                                       /*expected_count=*/1);
   }
 
   CreateAndSwitchToSecondaryProfile();
@@ -199,16 +184,6 @@ TEST_F(ClipboardHistoryUrlTitleFetcherTest, HistoryQueryFailsWithMultiProfile) {
     // Querying the browsing history is not allowed when more than one profile
     // has been added to the session.
     EXPECT_FALSE(title_future.Take());
-
-    histogram_tester.ExpectTotalCount(kIsPrimaryProfileActiveHistogramName,
-                                      /*expected_count=*/2);
-    histogram_tester.ExpectBucketCount(kIsPrimaryProfileActiveHistogramName,
-                                       false, /*expected_count=*/1);
-
-    histogram_tester.ExpectTotalCount(kNumProfilesHistogramName,
-                                      /*expected_count=*/2);
-    histogram_tester.ExpectBucketCount(kNumProfilesHistogramName, 2,
-                                       /*expected_count=*/1);
   }
 }
 
