@@ -32,8 +32,17 @@ class GlicWidget : public views::Widget {
   // Get the most-overlapping display.
   display::Display GetDisplay();
 
+  // Sets the minimum size for the widget. Used for manual resize.
+  void SetMinimumSize(const gfx::Size& size);
+
+  // views:Widget:
+  // Gets the minimum size a user can resize to for the widget.
+  gfx::Size GetMinimumSize() const override;
+
  private:
   explicit GlicWidget(InitParams params);
+
+  gfx::Size minimum_widget_size_;
 };
 
 }  // namespace glic

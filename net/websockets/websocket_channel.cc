@@ -315,7 +315,7 @@ WebSocketChannel::ChannelState WebSocketChannel::SendFrame(
       (op_code == WebSocketFrameHeader::kOpCodeContinuation &&
        sending_text_message_)) {
     StreamingUtf8Validator::State state =
-        outgoing_utf8_validator_.AddBytes(buffer->span().first(buffer_size));
+        outgoing_utf8_validator_.AddBytes(buffer->first(buffer_size));
     if (state == StreamingUtf8Validator::INVALID ||
         (state == StreamingUtf8Validator::VALID_MIDPOINT && fin)) {
       // TODO(ricea): Kill renderer.
@@ -886,8 +886,7 @@ ChannelState WebSocketChannel::SendFrameInternal(
   header.final = fin;
   header.masked = true;
   header.payload_length = buffer_size;
-  frame->payload =
-      buffer->span().first(base::checked_cast<size_t>(buffer_size));
+  frame->payload = buffer->first(base::checked_cast<size_t>(buffer_size));
 
   if (data_being_sent_) {
     // Either the link to the WebSocket server is saturated, or several messages

@@ -19,13 +19,11 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -33,7 +31,6 @@ import java.util.function.Function;
  * Default implementation of the NotificationManagerProxy, which passes through all calls to the
  * normal Android Notification Manager.
  */
-@NullMarked
 public class NotificationManagerProxyImpl implements NotificationManagerProxy {
     private static final String TAG = "NotifManagerProxy";
     private final NotificationManagerCompat mNotificationManager;
@@ -278,8 +275,6 @@ public class NotificationManagerProxyImpl implements NotificationManagerProxy {
         }
         NotificationProxyUtils.recordNotificationEventHistogram(event);
         final @Nullable T finalResult = result;
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () -> callback.onResult(Objects.requireNonNullElse(finalResult, null)));
+        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> callback.onResult(finalResult));
     }
 }

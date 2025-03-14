@@ -440,8 +440,7 @@ class JsonUtil:
       if self.generate_synthetic_measurements:
         synthetic_result_avg = self._generate_synthetic_measurements(
             value_measurements=[
-                (json_constants.VALUE, avg),
-                (json_constants.STD_DEV, std_err),
+                (json_constants.AVERAGE, avg),
             ],
             keys={
                 json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
@@ -454,7 +453,6 @@ class JsonUtil:
         synthetic_result_min = self._generate_synthetic_measurements(
             value_measurements=[
                 (json_constants.MIN, min_val),
-                (json_constants.STD_DEV, std_err),
             ],
             keys={
                 json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
@@ -467,7 +465,6 @@ class JsonUtil:
         synthetic_result_max = self._generate_synthetic_measurements(
             value_measurements=[
                 (json_constants.MAX, max_val),
-                (json_constants.STD_DEV, std_err),
             ],
             keys={
                 json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
@@ -480,7 +477,6 @@ class JsonUtil:
         synthetic_result_sum = self._generate_synthetic_measurements(
             value_measurements=[
                 (json_constants.SUM, sum_val),
-                (json_constants.STD_DEV, std_err),
             ],
             keys={
                 json_constants.IMPROVEMENT_DIRECTION: improvement_direction,
@@ -493,7 +489,6 @@ class JsonUtil:
         synthetic_result_count = self._generate_synthetic_measurements(
             value_measurements=[
                 (json_constants.COUNT, count),
-                (json_constants.STD_DEV, std_err),
             ],
             keys={
                 json_constants.IMPROVEMENT_DIRECTION: "up",

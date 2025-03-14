@@ -153,7 +153,7 @@ TEST_F(AbstractInlineTextBoxTest, GetTextOffsetInFormattingContext) {
   EXPECT_EQ(0u, inline_text_box->TextOffsetInFormattingContext(0));
 }
 
-TEST_F(AbstractInlineTextBoxTest, CharacterWidths) {
+TEST_F(AbstractInlineTextBoxTest, CharacterOffsets) {
   // There should be a line break at the space after "012".
   SetBodyInnerHTML(R"HTML(
     <style>* { font-size: 10px; }</style>
@@ -163,11 +163,11 @@ TEST_F(AbstractInlineTextBoxTest, CharacterWidths) {
   auto& layout_text = *To<LayoutText>(div.firstChild()->GetLayoutObject());
   auto* inline_text_box = layout_text.FirstAbstractInlineTextBox();
 
-  Vector<float> widths;
-  inline_text_box->CharacterWidths(widths);
-  // There should be four elements in the "widths" vector, not three, because
+  Vector<int> offsets;
+  inline_text_box->GetCharacterLayoutPixelOffsets(offsets);
+  // There should be four elements in the "offsets" vector, not three, because
   // the width of the trailing space should be included.
-  EXPECT_EQ(4u, widths.size());
+  EXPECT_EQ(4u, offsets.size());
   EXPECT_TRUE(inline_text_box->NeedsTrailingSpace());
 }
 

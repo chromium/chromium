@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 """Constants for json results file."""
 
+AVERAGE = 'average'
 BENCHMARK = 'benchmark'
 BENCHMARKS = 'benchmarks'
 BOT = 'bot'

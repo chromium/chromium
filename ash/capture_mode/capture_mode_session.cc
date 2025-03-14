@@ -35,10 +35,12 @@
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/url_constants.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -840,14 +842,15 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
 
   // If the current mouse event is on capture label button, and capture label
   // button can handle the event, show the hand mouse cursor.
-  DCHECK(capture_label_view_);
-  const bool is_event_on_capture_button =
-      capture_label_widget_->GetWindowBoundsInScreen().Contains(
-          location_in_screen) &&
-      capture_label_view_->ShouldHandleEvent();
-  if (is_event_on_capture_button) {
-    cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
-    return;
+  if (capture_label_view_) {
+    const bool is_event_on_capture_button =
+        capture_label_widget_->GetWindowBoundsInScreen().Contains(
+            location_in_screen) &&
+        capture_label_view_->ShouldHandleEvent();
+    if (is_event_on_capture_button) {
+      cursor_setter_->UpdateCursor(root_window, ui::mojom::CursorType::kHand);
+      return;
+    }
   }
 
   // TODO: crbug.com/375696216 - Further refine this so the area between buttons
@@ -1567,12 +1570,19 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
   }
   disclaimer_ = DisclaimerView::CreateWidget(
       capture_mode_util::GetPreferredRootWindow(),
+      /*is_reminder=*/false,
       base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(accept_callback)),
       base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
                           weak_ptr_factory_.GetWeakPtr(),
-                          std::move(decline_callback)));
+                          std::move(decline_callback)),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          chrome::kGooglePrivacyPolicyUrl),
+      base::BindRepeating(&CaptureModeSession::OnDisclaimerLinkPressed,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          chrome::kScannerLearnMoreUrl));
   disclaimer_->Show();
   focus_cycler_->OnDisclaimerWidgetOpened(disclaimer_.get());
 }
@@ -1638,12 +1648,16 @@ void CaptureModeSession::ShowActionContainerError(
 void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerRejected);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      prefs::kScannerEnabled, false);
 
   disclaimer_.reset();
 
-  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()) {
+  if (active_behavior_->ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()) {
     capture_mode_util::TriggerAccessibilityAlert(
         active_behavior_->GetCaptureModeOpenAnnouncement());
+    // Create the capture label widget and announce it if needed.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   }
 
   focus_cycler_->OnDisclaimerWidgetClosed();
@@ -1660,9 +1674,11 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
 
   disclaimer_.reset();
 
-  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()) {
+  if (active_behavior_->ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()) {
     capture_mode_util::TriggerAccessibilityAlert(
         active_behavior_->GetCaptureModeOpenAnnouncement());
+    // Create the capture label widget and announce it if needed.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   }
 
   focus_cycler_->OnDisclaimerWidgetClosed();
@@ -1671,12 +1687,23 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
   }
 }
 
+void CaptureModeSession::OnDisclaimerLinkPressed(const char* url) {
+  NewWindowDelegate::GetPrimary()->OpenUrl(
+      GURL(url), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+      NewWindowDelegate::Disposition::kNewForegroundTab);
+
+  // End the session. `this` is destroyed here.
+  controller_->Stop();
+}
+
   void CaptureModeSession::OnSmartActionsButtonPressed() {
-  MaybeShowScannerDisclaimer(
-      /*accept_callback=*/base::BindRepeating(
-          &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
-          weak_ptr_factory_.GetWeakPtr()),
-      /*decline_callback=*/base::DoNothing());
+    MaybeShowScannerDisclaimer(
+        /*accept_callback=*/base::BindRepeating(
+            &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
+            weak_ptr_factory_.GetWeakPtr()),
+        /*decline_callback=*/base::BindRepeating(
+            &CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined,
+            weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
@@ -1694,6 +1721,10 @@ void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
   CHECK(scanner_controller);
   scanner_controller->StartNewSession();
   controller_->PerformCapture(PerformCaptureType::kScanner);
+}
+
+void CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined() {
+  action_container_view_->RemoveSmartActionsButton();
 }
 
 void CaptureModeSession::OnScannerActionButtonPressed(
@@ -3839,7 +3870,7 @@ void CaptureModeSession::InitInternal() {
   // Trigger this before creating `capture_mode_bar_widget_` as we want to read
   // out this message before reading out the first view of
   // `capture_mode_bar_widget_`.
-  if (active_behavior_->ShouldAnnounceCaptureModeOpenOnInit()) {
+  if (!active_behavior_->NeedsDisclaimerOnInit()) {
     capture_mode_util::TriggerAccessibilityAlert(
         active_behavior_->GetCaptureModeOpenAnnouncement());
   }
@@ -3896,7 +3927,11 @@ void CaptureModeSession::InitInternal() {
   }
   // Update the capture label widget after the action buttons, as the action
   // buttons get priority around the edges of the capture region.
-  UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  if (!active_behavior_->NeedsDisclaimerOnInit()) {
+    // Don't create the capture label yet if a disclaimer needs to be shown, to
+    // avoid the label being announced while the disclaimer is still visible.
+    UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  }
   UpdateFeedbackButtonWidget();
 
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),

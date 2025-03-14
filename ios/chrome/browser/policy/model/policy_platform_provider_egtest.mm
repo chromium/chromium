@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #import <memory>
+#import <optional>
+#import <string>
 
-#import "base/json/json_string_value_serializer.h"
+#import "base/json/json_reader.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/enterprise/browser/enterprise_switches.h"
@@ -24,12 +26,10 @@ namespace {
 
 // Returns the value of a given policy, looked up in the current platform policy
 // provider.
-std::unique_ptr<base::Value> GetPlatformPolicy(const std::string& key) {
+std::optional<base::Value> GetPlatformPolicy(const std::string& key) {
   std::string json_representation = base::SysNSStringToUTF8(
       [PolicyAppInterface valueForPlatformPolicy:base::SysUTF8ToNSString(key)]);
-  JSONStringValueDeserializer deserializer(json_representation);
-  return deserializer.Deserialize(/*error_code=*/nullptr,
-                                  /*error_message=*/nullptr);
+  return base::JSONReader::Read(json_representation);
 }
 
 // Returns an AppLaunchConfiguration containing the given policy data.
@@ -88,14 +88,14 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 
 // Tests the values of policies that were explicitly set.
 - (void)testPolicyExplicitlySet {
-  std::unique_ptr<base::Value> searchValue =
+  std::optional<base::Value> searchValue =
       GetPlatformPolicy(policy::key::kDefaultSearchProviderName);
   GREYAssertTrue(searchValue && searchValue->is_string(),
                  @"searchValue was not of type string");
   GREYAssertEqual(searchValue->GetString(), std::string{"Test"},
                   @"searchValue had an unexpected value");
 
-  std::unique_ptr<base::Value> suggestValue =
+  std::optional<base::Value> suggestValue =
       GetPlatformPolicy(policy::key::kSearchSuggestEnabled);
   GREYAssertTrue(suggestValue && suggestValue->is_bool(),
                  @"suggestValue was not of type bool");
@@ -106,7 +106,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 // Test the value of a policy that exists in the schema but was not explicitly
 // set.
 - (void)testPolicyNotSet {
-  std::unique_ptr<base::Value> blocklistValue =
+  std::optional<base::Value> blocklistValue =
       GetPlatformPolicy(policy::key::kURLBlocklist);
   GREYAssertTrue(blocklistValue && blocklistValue->is_none(),
                  @"blocklistValue was unexpectedly present");
@@ -115,7 +115,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 // Test the value of a policy that was set in the configuration but is unknown
 // to the policy system.
 - (void)testPolicyUnknown {
-  std::unique_ptr<base::Value> unknownValue =
+  std::optional<base::Value> unknownValue =
       GetPlatformPolicy("NotARegisteredPolicy");
   GREYAssertTrue(unknownValue && unknownValue->is_string(),
                  @"unknownValue was not of type string");
@@ -143,7 +143,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 // Ensure that policies can still be correctly set, and that the browser is
 // working normally by visiting the about:policy page.
 - (void)testPoliciesWork {
-  std::unique_ptr<base::Value> suggestValue =
+  std::optional<base::Value> suggestValue =
       GetPlatformPolicy(policy::key::kSearchSuggestEnabled);
   GREYAssertTrue(suggestValue && suggestValue->is_bool(),
                  @"suggestValue was not of type bool");
@@ -175,7 +175,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 // Ensure that policies can still be correctly set, and that the browser is
 // working normally by visiting the about:policy page.
 - (void)testPoliciesWork {
-  std::unique_ptr<base::Value> suggestValue =
+  std::optional<base::Value> suggestValue =
       GetPlatformPolicy(policy::key::kSearchSuggestEnabled);
   GREYAssertTrue(suggestValue && suggestValue->is_bool(),
                  @"suggestValue was not of type bool");

@@ -31,6 +31,8 @@ struct RendererColorIdTable {
 constexpr RendererColorIdTable kRendererColorIdMap[] = {
     {RendererColorId::kColorCssSystemBtnFace, kColorCssSystemBtnFace},
     {RendererColorId::kColorCssSystemBtnText, kColorCssSystemBtnText},
+    {RendererColorId::kColorCssSystemField, kColorCssSystemField},
+    {RendererColorId::kColorCssSystemFieldText, kColorCssSystemFieldText},
     {RendererColorId::kColorCssSystemGrayText, kColorCssSystemGrayText},
     {RendererColorId::kColorCssSystemHighlight, kColorCssSystemHighlight},
     {RendererColorId::kColorCssSystemHighlightText,
@@ -402,6 +404,8 @@ void AddEmulatedForcedColorsToMixer(ColorMixer& mixer, bool dark_mode) {
   mixer[kColorCssSystemWindow] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
   mixer[kColorCssSystemWindowText] = {dark_mode ? SK_ColorWHITE
                                                 : SK_ColorBLACK};
+  mixer[kColorCssSystemField] = {kColorCssSystemWindow};
+  mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
 }
 
 std::unique_ptr<ColorProvider> CreateEmulatedForcedColorsColorProvider(
@@ -734,6 +738,8 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
   if (dark_mode) {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0x6B, 0x6B, 0x6B)};
     mixer[kColorCssSystemBtnText] = {SK_ColorWHITE};
+    mixer[kColorCssSystemField] = {SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorCssSystemFieldText] = {SK_ColorWHITE};
     mixer[kColorCssSystemMenuHilight] = {SkColorSetRGB(0x80, 0x00, 0x80)};
     mixer[kColorCssSystemScrollbar] = {SkColorSetRGB(0x12, 0x12, 0x12)};
     mixer[kColorCssSystemWindow] = {SkColorSetRGB(0x12, 0x12, 0x12)};
@@ -742,6 +748,8 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
   } else {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
     mixer[kColorCssSystemBtnText] = {SK_ColorBLACK};
+    mixer[kColorCssSystemField] = {SK_ColorWHITE};
+    mixer[kColorCssSystemFieldText] = {SK_ColorBLACK};
     mixer[kColorCssSystemMenuHilight] = {SK_ColorBLACK};
     mixer[kColorCssSystemScrollbar] = {SK_ColorWHITE};
     mixer[kColorCssSystemWindow] = {SK_ColorWHITE};

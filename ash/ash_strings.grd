@@ -6856,6 +6856,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_EDUCATION_SETTINGS_NUDGE_LABEL" desc="The label of the Screen Capture Education settings nudge (Arm 3) for using the quick settings menu.">
         Use the screen capture tool in quick settings to take screenshots
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_SEARCH_RESULTS_PANEL_TITLE" desc="The title of the panel that shows Google Search results when the user searches a selected region on their screen.">
+        Google Search
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL" desc="The label on a button that can be clicked to copy text from the contents of a screenshot into the user's clipboard.">
         Copy text
       </message>

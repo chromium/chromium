@@ -348,12 +348,8 @@ class SunfishBehavior : public CaptureModeBehavior {
   ~SunfishBehavior() override = default;
 
   // CaptureModeBehavior:
-  void AttachToSession() override {
-    CaptureModeBehavior::AttachToSession();
-    if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
-      scanner_controller->StartNewSession();
-    }
-  }
+  // The Scanner session is started from
+  // `CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup`.
   void DetachFromSession() override {
     CaptureModeBehavior::DetachFromSession();
     if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
@@ -385,15 +381,14 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool ShouldPaintSunfishCaptureRegion() const override { return true; }
   bool CanShowActionButtons() const override { return true; }
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
-  bool ShouldAnnounceCaptureModeOpenOnInit() const override {
-    // Announce the capture mode open alert as long as the Scanner disclaimer
-    // doesn't need to be shown, i.e. return true if Scanner is disabled or the
-    // disclaimer has already been accepted.
-    return !ScannerController::CanShowUiForShell() ||
-           capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+  bool NeedsDisclaimerOnInit() const override {
+    // Return true if Scanner is enabled and the disclaimer has not already been
+    // accepted.
+    return ScannerController::CanShowUiForShell() &&
+           !capture_mode_util::GetActiveUserPrefService()->GetBoolean(
                prefs::kSunfishConsentDisclaimerAccepted);
   }
-  bool ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed() const override {
+  bool ShouldAnnounceCaptureModeUIOnDisclaimerDismissed() const override {
     return true;
   }
   const std::u16string GetCaptureLabelRegionText() const override {
@@ -595,11 +590,11 @@ bool CaptureModeBehavior::ShouldEndSessionOnSearchResultClicked() const {
   return false;
 }
 
-bool CaptureModeBehavior::ShouldAnnounceCaptureModeOpenOnInit() const {
-  return true;
+bool CaptureModeBehavior::NeedsDisclaimerOnInit() const {
+  return false;
 }
 
-bool CaptureModeBehavior::ShouldAnnounceCaptureModeOpenOnDisclaimerDismissed()
+bool CaptureModeBehavior::ShouldAnnounceCaptureModeUIOnDisclaimerDismissed()
     const {
   return false;
 }

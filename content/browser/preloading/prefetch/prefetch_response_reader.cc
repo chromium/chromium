@@ -13,6 +13,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
+#include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "net/http/http_cookie_indices.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -143,7 +144,8 @@ void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
   MaybeReleaseSoonSelfPointer();
 }
 
-PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
+std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+PrefetchResponseReader::CreateRequestHandler() {
   mojo::ScopedDataPipeConsumerHandle body;
 
   // Returns a null handler if some checks fail here.
@@ -188,8 +190,11 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
     streaming_url_loader_->OnStartServing();
   }
 
-  return base::BindOnce(&PrefetchResponseReader::BindAndStart,
-                        base::WrapRefCounted(this), std::move(body));
+  return std::make_pair(
+      base::BindOnce(&PrefetchResponseReader::BindAndStart,
+                     base::WrapRefCounted(this), std::move(body)),
+      service_worker_handle_ ? service_worker_handle_->service_worker_client()
+                             : nullptr);
 }
 
 void PrefetchResponseReader::BindAndStart(
@@ -424,12 +429,14 @@ void PrefetchResponseReader::HandleRedirect(
 void PrefetchResponseReader::OnReceiveResponse(
     std::optional<PrefetchErrorOnResponseReceived> error,
     network::mojom::URLResponseHeadPtr head,
-    mojo::ScopedDataPipeConsumerHandle body) {
+    mojo::ScopedDataPipeConsumerHandle body,
+    std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle) {
   CHECK_EQ(load_state(), LoadState::kStarted);
   CHECK(!head_);
   CHECK(head);
   CHECK(!body_);
   CHECK(!body_tee_);
+  CHECK(!service_worker_handle_);
   CHECK(serving_url_loader_clients_.empty());
 
   if (!error) {
@@ -444,6 +451,8 @@ void PrefetchResponseReader::OnReceiveResponse(
     // and also because `body` is not used.
     body.reset();
   }
+
+  service_worker_handle_ = std::move(service_worker_handle);
 
   // Store away the info we want, then clear the request cookies before we
   // potentially forward them to any client.

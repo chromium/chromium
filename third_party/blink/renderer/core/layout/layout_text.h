@@ -439,7 +439,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
  private:
   ContentCaptureManager* GetOrResetContentCaptureManager();
   void DetachAxHooks();
-  void ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow);
+  void ClearBlockFlowCachedData();
 
   virtual unsigned NonCollapsedCaretMaxOffset() const;
 
@@ -481,7 +481,7 @@ inline void LayoutText::DetachAxHooksIfNeeded() {
     return;
   }
 
-  ClearBlockFlowCachedData(FragmentItemsContainer());
+  ClearBlockFlowCachedData();
 }
 
 template <>

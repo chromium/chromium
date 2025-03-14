@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_BLOCK_FLOW_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_BLOCK_FLOW_ITERATOR_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/geometry/physical_direction.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -20,6 +23,7 @@ class FragmentItem;
 class FragmentItems;
 class LayoutBlockFlow;
 class LayoutObject;
+class LayoutText;
 class PhysicalBoxFragment;
 
 // This class collects and organizes data to facilitate construction of
@@ -52,12 +56,12 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
   struct FragmentProperties {
     // Index of the corresponding line in the vector of lines.
     std::optional<wtf_size_t> line_index;
-    // Index of the previous or next fragment that is on the same line.
-    // Typically, this index directly corresponds to the index within a
-    // physical box fragments vector of fragment items; however, there is an
-    // additional index flattening process in the case where a layout block
-    // flow contains multiple physical box fragments. See FindFirstFragment
-    // for details.
+    // Index of the previous or next fragment that is on the same line that
+    // may be part of another LayoutObject. Typically, this index directly
+    // corresponds to the index within a physical box fragments vector of
+    // fragment items; however, there is an additional index flattening process
+    // in the case where a layout block flow contains multiple physical box
+    // fragments. See FindFirstFragment for details.
     std::optional<wtf_size_t> previous_on_line;
     std::optional<wtf_size_t> next_on_line;
   };
@@ -92,6 +96,20 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
     wtf_size_t item_index = 0;
   };
 
+  using FragmentIndex = wtf_size_t;
+
+  // Identifies uniquely a text fragment within a LayoutObject.
+  using TextFragmentKey = std::pair<const LayoutObject*, FragmentIndex>;
+
+  enum class FailureReason {
+    kAtLineBoundary,  // The text fragment is at the beginning / end of a line
+    kAtBoxFragment,   // The text fragment is the neighbor of a box fragment
+                      // whose fragment items are not part of this BlockFlow.
+  };
+
+  using Neighbor = std::variant<AXBlockFlowData::TextFragmentKey,
+                                AXBlockFlowData::FailureReason>;
+
   explicit AXBlockFlowData(LayoutBlockFlow* container);
   virtual ~AXBlockFlowData();
 
@@ -125,12 +143,14 @@ class AXBlockFlowData : public GarbageCollected<AXBlockFlowData> {
   WTF::String GetText(wtf_size_t index) const;
 
   const FragmentProperties& GetProperties(wtf_size_t index) const;
+  Neighbor ComputeNeighborOnLine(FragmentIndex index, bool forward) const;
 
  private:
   void ProcessLayoutBlock(LayoutBlockFlow* container);
   void ProcessBoxFragment(const PhysicalBoxFragment* box_fragment,
                           wtf_size_t starting_fragment_index);
   bool OnLine(const Line& line, wtf_size_t index) const;
+  LayoutText* GetFirstLetterPseudoLayoutText(FragmentIndex index) const;
 
   Member<LayoutBlockFlow> block_flow_container_;
 
@@ -183,11 +203,25 @@ class MODULES_EXPORT AXBlockFlowIterator {
   // will share the same character offset. The length of the vector is padded
   // to align with the length of the text, to minimize the potential for
   // misalignment when the text contains characters that cannot be rendered.
-  const std::vector<int>& GetCharacterLayoutPixelOffsets();
+  void GetCharacterLayoutPixelOffsets(Vector<int>& offsets);
 
+  AXBlockFlowData::Neighbor NextOnLineAsIndex();
+  AXBlockFlowData::Neighbor PreviousOnLineAsIndex();
   const std::optional<MapKey> NextOnLine();
   const std::optional<MapKey> PreviousOnLine();
   const MapKey GetMapKey() const;
+
+  PhysicalRect LocalBounds() const;
+
+  FragmentIndex CurrentFragmentIndex() const { return current_index_.value(); }
+  void MoveToIndex(FragmentIndex index) { current_index_ = index; }
+
+  TextOffsetRange TextOffset() const;
+  wtf_size_t TextStartOffset() const { return TextOffset().start; }
+  wtf_size_t TextEndOffset() const { return TextOffset().end; }
+  PhysicalDirection GetDirection() const;
+
+  bool IsLineBreak() const;
 
   // This version returns the text associated with the fragment without checking
   // if trailing whitespace is needed for serialization.
@@ -200,7 +234,6 @@ class MODULES_EXPORT AXBlockFlowIterator {
   std::optional<wtf_size_t> start_index_;
   std::optional<wtf_size_t> current_index_;
 
-  std::optional<std::vector<int>> character_widths_;
   std::optional<WTF::String> text_;
 };
 
