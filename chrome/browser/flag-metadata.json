@@ -607,8 +607,8 @@
   },
   {
     "name": "autofill-enable-card-benefits-for-american-express",
-    "owners": [ "viplavkadam@google.com"],
-    "expiry_milestone": 135
+    "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-card-benefits-for-bmo",
