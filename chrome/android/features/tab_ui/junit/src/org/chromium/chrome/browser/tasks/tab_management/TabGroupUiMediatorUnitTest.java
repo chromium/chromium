@@ -915,6 +915,8 @@ public class TabGroupUiMediatorUnitTest {
         verify(mTabModelSupplier).removeObserver(mTabModelSupplierObserverCaptor.capture());
         verify(mTabGroupModelFilter, times(2))
                 .removeTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
+        verify(mThemeColorProvider).removeThemeColorObserver(any());
+        verify(mThemeColorProvider).removeTintObserver(any());
     }
 
     @Test
