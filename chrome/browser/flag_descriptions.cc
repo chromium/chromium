@@ -2767,6 +2767,12 @@ const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =
     "focused, subject to the same conditions and restrictions as on-clobber "
     "suggestions.";
 
+const char kOmniboxUrlSuggestionsOnFocus[] =
+    "Omnibox on-focus URL suggestions on web and SRP";
+const char kOmniboxUrlSuggestionsOnFocusDecription[] =
+    "Enables zero-prefix URL suggestions on web and SRP when the omnibox is "
+    "focused.";
+
 const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions popup in WebUI.";

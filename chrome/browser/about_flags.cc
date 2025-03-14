@@ -1337,6 +1337,24 @@ const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"alternate", kOmniboxSearchAggregatorAlternateParams,
      std::size(kOmniboxSearchAggregatorAlternateParams), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax6[] = {
+    {"OnFocusMaxSuggestions", "6"},
+    {"OnFocusMaxSearchSuggestions", "3"},
+    {"OnFocusMaxUrlSuggestions", "3"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
+    {"OnFocusMaxSuggestions", "4"},
+    {"OnFocusMaxSearchSuggestions", "2"},
+    {"OnFocusMaxUrlSuggestions", "2"},
+};
+const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
+    {
+        {"- Max 6 Suggestions", kOmniboxUrlSuggestionsOnFocusMax6,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax6), nullptr},
+        {"- Max 4 Suggestions", kOmniboxUrlSuggestionsOnFocusMax4,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax4), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -6461,6 +6479,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kFocusTriggersWebAndSRPZeroSuggest)},
+
+    {"omnibox-url-suggestions-on-focus",
+     flag_descriptions::kOmniboxUrlSuggestionsOnFocus,
+     flag_descriptions::kOmniboxUrlSuggestionsOnFocusDecription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::
+             kOmniboxUrlSuggestionsOnFocus,
+         kOmniboxUrlSuggestionsOnFocusVariations,
+         "OmniboxUrlSuggestionsOnFocus")},
 
     {"omnibox-enterprise-search-aggregator",
      flag_descriptions::kOmniboxSearchAggregatorName,

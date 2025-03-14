@@ -6673,6 +6673,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-url-suggestions-on-focus",
+    "owners": ["niharm@google.com", "khalidpeer@chromium.org",  "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "omnibox-zero-suggest-in-memory-caching",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130

@@ -1585,6 +1585,9 @@ extern const char kOmniboxSearchAggregatorDescription[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
 
+extern const char kOmniboxUrlSuggestionsOnFocus[];
+extern const char kOmniboxUrlSuggestionsOnFocusDecription[];
+
 extern const char kOmniboxZeroSuggestPrefetchDebouncingName[];
 extern const char kOmniboxZeroSuggestPrefetchDebouncingDescription[];
 

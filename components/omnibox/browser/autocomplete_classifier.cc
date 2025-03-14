@@ -55,10 +55,10 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       AutocompleteProvider::TYPE_KEYWORD | AutocompleteProvider::TYPE_OPEN_TAB |
       AutocompleteProvider::TYPE_FEATURED_SEARCH |
       // Most visited sites for desktop.
-      (omnibox_feature_configs::UrlSuggestionsOnFocus::Get().enabled
+      (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled
            ? AutocompleteProvider::TYPE_MOST_VISITED_SITES
            : 0) |
-      (omnibox_feature_configs::UrlSuggestionsOnFocus::Get().enabled
+      (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled
            ? AutocompleteProvider::TYPE_RECENTLY_CLOSED_TABS
            : 0) |
 #else

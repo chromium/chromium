@@ -432,9 +432,9 @@ void AutocompleteResult::SortAndCull(
   }
 
   // Used to determine how many search / url suggestions should appear in zps
-  // if kUrlSuggestionsOnFocus is enabled.
+  // if kOmniboxUrlSuggestionsOnFocus is enabled.
   auto url_suggestions_on_focus_config =
-      omnibox_feature_configs::UrlSuggestionsOnFocus::Get();
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get();
   size_t max_search_suggestions = 8u;
   size_t max_url_suggestions = 0u;
   size_t max_suggestions = 8u;

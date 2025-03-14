@@ -11423,6 +11423,7 @@ from previous Chrome versions.
   <int value="-1048614257" label="FilesNewDirectoryTree:enabled"/>
   <int value="-1048530703" label="ContextMenuPopupStyle:disabled"/>
   <int value="-1048011353" label="LongPressBackNewDesign:disabled"/>
+  <int value="-1047684585" label="OmniboxUrlSuggestionsOnFocus:enabled"/>
   <int value="-1046641729" label="TranslateUI:enabled"/>
   <int value="-1046627610" label="password-import:enabled"/>
   <int value="-1046335898"
@@ -12009,6 +12010,7 @@ from previous Chrome versions.
   <int value="-815601488" label="CrostiniTerminaDlcForceOta:disabled"/>
   <int value="-815487797" label="WindowSplitting:enabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
+  <int value="-814908813" label="OmniboxUrlSuggestionsOnFocus:disabled"/>
   <int value="-814305011" label="BatchFetchRequests:disabled"/>
   <int value="-814097014" label="disable-session-crashed-bubble"/>
   <int value="-813753274" label="VrBrowsing:disabled"/>
