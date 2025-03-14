@@ -79,19 +79,16 @@ const char kCdd[] = R"(
         "margins": {
           "option": [ {
             "is_default": true,
-            "type": "BORDERLESS",
             "top_microns": 0,
             "right_microns": 0,
             "bottom_microns": 0,
             "left_microns": 0
           }, {
-             "type": "STANDARD",
              "top_microns": 100,
              "right_microns": 200,
              "bottom_microns": 300,
              "left_microns": 400
           }, {
-             "type": "CUSTOM",
              "top_microns": 1,
              "right_microns": 2,
              "bottom_microns": 3,
@@ -646,7 +643,6 @@ const char kCjt[] = R"(
           "copies": 123
         },
         "margins": {
-           "type": "CUSTOM",
            "top_microns": 7,
            "right_microns": 6,
            "bottom_microns": 3,
@@ -818,9 +814,9 @@ TEST(PrinterDescriptionTest, CddSetAll) {
   orientation.AddOption(OrientationType::LANDSCAPE);
   orientation.AddDefaultOption(OrientationType::AUTO_ORIENTATION, true);
 
-  margins.AddDefaultOption(Margins(MarginsType::NO_MARGINS, 0, 0, 0, 0), true);
-  margins.AddOption(Margins(MarginsType::STANDARD_MARGINS, 100, 200, 300, 400));
-  margins.AddOption(Margins(MarginsType::CUSTOM_MARGINS, 1, 2, 3, 4));
+  margins.AddDefaultOption(Margins(0, 0, 0, 0), true);
+  margins.AddOption(Margins(100, 200, 300, 400));
+  margins.AddOption(Margins(1, 2, 3, 4));
 
   dpi.AddOption(Dpi(150, 250));
   dpi.AddDefaultOption(Dpi(600, 1600), true);
@@ -1345,12 +1341,10 @@ TEST(PrinterDescriptionTest, CddGetAll) {
   EXPECT_TRUE(orientation.Contains(OrientationType::AUTO_ORIENTATION));
   EXPECT_EQ(OrientationType::AUTO_ORIENTATION, orientation.GetDefault());
 
-  EXPECT_TRUE(margins.Contains(Margins(MarginsType::NO_MARGINS, 0, 0, 0, 0)));
-  EXPECT_TRUE(margins.Contains(
-      Margins(MarginsType::STANDARD_MARGINS, 100, 200, 300, 400)));
-  EXPECT_TRUE(
-      margins.Contains(Margins(MarginsType::CUSTOM_MARGINS, 1, 2, 3, 4)));
-  EXPECT_EQ(Margins(MarginsType::NO_MARGINS, 0, 0, 0, 0), margins.GetDefault());
+  EXPECT_TRUE(margins.Contains(Margins(0, 0, 0, 0)));
+  EXPECT_TRUE(margins.Contains(Margins(100, 200, 300, 400)));
+  EXPECT_TRUE(margins.Contains(Margins(1, 2, 3, 4)));
+  EXPECT_EQ(Margins(0, 0, 0, 0), margins.GetDefault());
 
   EXPECT_TRUE(dpi.Contains(Dpi(150, 250)));
   EXPECT_TRUE(dpi.Contains(Dpi(600, 1600)));
@@ -1461,7 +1455,7 @@ TEST(PrinterDescriptionTest, CjtSetAll) {
   duplex.set_value(DuplexType::NO_DUPLEX);
   orientation.set_value(OrientationType::LANDSCAPE);
   copies.set_value(123);
-  margins.set_value(Margins(MarginsType::CUSTOM_MARGINS, 7, 6, 3, 1));
+  margins.set_value(Margins(7, 6, 3, 1));
   dpi.set_value(Dpi(562, 125));
   fit_to_page.set_value(FitToPageType::SHRINK_TO_PAGE);
   PageRange page_ranges;
@@ -1538,7 +1532,7 @@ TEST(PrinterDescriptionTest, CjtGetAll) {
   EXPECT_EQ(duplex.value(), DuplexType::NO_DUPLEX);
   EXPECT_EQ(orientation.value(), OrientationType::LANDSCAPE);
   EXPECT_EQ(copies.value(), 123);
-  EXPECT_EQ(margins.value(), Margins(MarginsType::CUSTOM_MARGINS, 7, 6, 3, 1));
+  EXPECT_EQ(margins.value(), Margins(7, 6, 3, 1));
   EXPECT_EQ(dpi.value(), Dpi(562, 125));
   EXPECT_EQ(fit_to_page.value(), FitToPageType::SHRINK_TO_PAGE);
   PageRange page_ranges;

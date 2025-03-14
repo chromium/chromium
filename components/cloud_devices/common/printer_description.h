@@ -249,24 +249,15 @@ enum class OrientationType {
   AUTO_ORIENTATION,
 };
 
-enum class MarginsType {
-  NO_MARGINS,
-  STANDARD_MARGINS,
-  CUSTOM_MARGINS,
-};
-
+// This deviates from the CDD#Margins now as the type field has been removed.
+// TODO(316999874, 308709702): update the spec to reflect this change.
 struct Margins {
   Margins();
-  Margins(MarginsType type,
-          int32_t top_um,
-          int32_t right_um,
-          int32_t bottom_um,
-          int32_t left_um);
+  Margins(int32_t top_um, int32_t right_um, int32_t bottom_um, int32_t left_um);
 
   bool operator==(const Margins& other) const;
   bool operator!=(const Margins& other) const { return !(*this == other); }
 
-  MarginsType type;
   int32_t top_um;
   int32_t right_um;
   int32_t bottom_um;
