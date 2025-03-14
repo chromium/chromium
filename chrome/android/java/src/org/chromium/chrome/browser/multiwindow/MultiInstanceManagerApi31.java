@@ -1073,6 +1073,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     @Override
     public void moveTabGroupToWindow(
             Activity activity, TabGroupMetadata tabGroupMetadata, int atIndex) {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID);
+
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {

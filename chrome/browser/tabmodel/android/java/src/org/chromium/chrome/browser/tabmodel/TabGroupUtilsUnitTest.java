@@ -25,6 +25,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -34,7 +35,9 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Tests for {@link TabGroupUtils}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -50,6 +53,14 @@ public class TabGroupUtilsUnitTest {
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
     private static final int POSITION3 = 2;
+    private static final Token TAB_GROUP_ID = new Token(2L, 2L);
+    private static final String TAB_GROUP_TITLE = "Regrouped tabs";
+    private static final LinkedHashMap<Integer, String> TAB_IDS_TO_URLS =
+            new LinkedHashMap<>(
+                    Map.ofEntries(
+                            Map.entry(TAB1_ID, "https://www.amazon.com/"),
+                            Map.entry(TAB2_ID, "https://www.youtube.com/"),
+                            Map.entry(TAB3_ID, "https://www.facebook.com/")));
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -121,6 +132,32 @@ public class TabGroupUtilsUnitTest {
         TabGroupUtils.openUrlInGroup(mTabGroupModelFilter, url, TAB1_ID, launchType);
         ArgumentMatcher<LoadUrlParams> matcher = params -> TextUtils.equals(params.getUrl(), url);
         verify(mTabCreator).createNewTab(argThat(matcher), eq(launchType), eq(mTab1));
+    }
+
+    @Test
+    public void testRegroupTabs() {
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3));
+        TabGroupMetadata tabGroupMetadata =
+                new TabGroupMetadata(
+                        /* rootId= */ TAB1_ID,
+                        /* selectedTabId= */ TAB1_ID,
+                        /* sourceWindowId= */ 1,
+                        TAB_GROUP_ID,
+                        TAB_IDS_TO_URLS,
+                        /* tabGroupColor= */ 0,
+                        TAB_GROUP_TITLE,
+                        /* tabGroupCollapsed= */ true,
+                        /* isIncognito= */ false);
+        TabGroupUtils.regroupTabs(mTabGroupModelFilter, tabs, tabGroupMetadata);
+
+        for (Tab tab : tabs) {
+            verify(mTabGroupModelFilter).mergeTabsToGroup(eq(tab.getId()), eq(TAB1_ID), eq(true));
+            verify(tab).setTabGroupId(TAB_GROUP_ID);
+            verify(tab).setRootId(TAB1_ID);
+        }
+        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(0));
+        verify(mTabGroupModelFilter).setTabGroupCollapsed(eq(TAB1_ID), eq(true));
+        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TAB1_ID), eq(TAB_GROUP_TITLE));
     }
 
     private void createTabGroup(List<Tab> tabs, int rootId) {
