@@ -121,7 +121,7 @@ bool kPreferContentsOverQueries() {
       .scoring_prefer_contents_over_queries;
 }
 
-// Always show at least 2 (unscoped) or 6 (scoped) suggestions if available.
+// Always show at least 2 (unscoped) or 8 (scoped) suggestions if available.
 // Only show more if they're scored at least 500; i.e. had at least 1 strong and
 // 1 weak match.
 size_t kScopedMaxLowQualityMatches() {

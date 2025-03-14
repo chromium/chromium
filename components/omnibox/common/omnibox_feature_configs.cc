@@ -159,7 +159,7 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
           .Get();
   scoring_scoped_max_low_quality_matches =
       base::FeatureParam<size_t>(&kSearchAggregatorProvider,
-                                 "scoring_scoped_max_low_quality_matches", 6)
+                                 "scoring_scoped_max_low_quality_matches", 8)
           .Get();
   scoring_unscoped_max_low_quality_matches =
       base::FeatureParam<size_t>(&kSearchAggregatorProvider,
