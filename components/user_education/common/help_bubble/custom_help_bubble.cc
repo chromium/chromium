@@ -8,16 +8,26 @@
 
 namespace user_education {
 
-CustomHelpBubbleUi::CustomHelpBubbleUi() = default;
+CustomHelpBubbleUi::CustomHelpBubbleUi()
+    : user_action_callbacks_(
+          std::make_unique<base::OnceCallbackList<void(UserAction)>>()) {}
 CustomHelpBubbleUi::~CustomHelpBubbleUi() = default;
 
 base::CallbackListSubscription CustomHelpBubbleUi::AddUserActionCallback(
     UserActionCallback callback) {
-  return user_action_callbacks_.Add(std::move(callback));
+  CHECK(user_action_callbacks_) << "Cannot observe after action sent.";
+  return user_action_callbacks_->Add(std::move(callback));
 }
 
 void CustomHelpBubbleUi::NotifyUserAction(UserAction user_action) {
-  user_action_callbacks_.Notify(user_action);
+  if (!user_action_callbacks_) {
+    // An action has already been sent.
+    return;
+  }
+  // Need to move to a local because `this` might be deleted during callbacks.
+  std::unique_ptr<base::OnceCallbackList<void(UserAction)>> temp =
+      std::move(user_action_callbacks_);
+  temp->Notify(user_action);
 }
 
 base::WeakPtr<CustomHelpBubbleUi> CustomHelpBubbleUi::GetCustomUiAsWeakPtr() {

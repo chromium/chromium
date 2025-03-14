@@ -812,7 +812,8 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where,
     ui_controls::MouseButton button,
-    ui_controls::AcceleratorState modifiers) {
+    ui_controls::AcceleratorState modifiers,
+    ExecuteJsMode execute_mode) {
   int js_button;
   switch (button) {
     case ui_controls::LEFT:
@@ -868,7 +869,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::ClickElement(
     )",
       js_button, b2s(shift), b2s(alt), b2s(ctrl), b2s(meta));
 
-  return ExecuteJsAt(web_contents, where, command)
+  return ExecuteJsAt(web_contents, where, command, execute_mode)
       .SetDescription("ClickElement()");
 }
 
