@@ -8953,6 +8953,8 @@ from previous Chrome versions.
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
   <int value="-2014474383" label="GameDashboardUtilities:enabled"/>
+  <int value="-2014144009"
+      label="AutofillEnableAmountExtractionDesktopLogging:enabled"/>
   <int value="-2013948438"
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
@@ -16768,6 +16770,8 @@ from previous Chrome versions.
   <int value="1062273847" label="face-retouch-override"/>
   <int value="1062357243" label="remember-cert-error-decisions"/>
   <int value="1062563622" label="GateNV12GMBVideoFramesOnHWSupport:enabled"/>
+  <int value="1063225359"
+      label="AutofillEnableAmountExtractionDesktopLogging:disabled"/>
   <int value="1063490936" label="ExoSurroundingTextOffset:enabled"/>
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
