@@ -126,7 +126,7 @@ def _write_desc_json(gn_out_dir: str,
 def _gen_extras_bp(import_channel: str) -> None:
   """Generate Android.extras.bp."""
   extras_androidbp_template_path = os.path.join(REPOSITORY_ROOT, 'components',
-                                                'cronet', 'gn2bp',
+                                                'cronet', 'gn2bp', 'templates',
                                                 'Android.extras.bp.template')
   extras_androidbp_template_contents = cronet_utils.read_file(
       extras_androidbp_template_path)
@@ -142,7 +142,7 @@ def _gen_boringssl(import_channel: str) -> int:
   """Generate boringssl Android build files."""
   module_prefix = f'{import_channel}_cronet_'
   boringssl_androidbp_template_path = os.path.join(
-      REPOSITORY_ROOT, 'components', 'cronet', 'gn2bp',
+      REPOSITORY_ROOT, 'components', 'cronet', 'gn2bp', 'templates',
       'boringssl_Android.bp.template')
   boringssl_androidbp_template_contents = cronet_utils.read_file(
       boringssl_androidbp_template_path)
