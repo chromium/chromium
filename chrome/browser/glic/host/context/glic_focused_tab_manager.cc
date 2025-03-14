@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
 
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

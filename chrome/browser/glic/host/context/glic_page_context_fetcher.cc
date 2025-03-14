@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_page_context_fetcher.h"
+#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
@@ -14,7 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_tab_data.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -363,7 +363,8 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
 
     if (annotated_page_content_) {
       auto annotated_page_data = mojom::AnnotatedPageData::New();
-      annotated_page_data->annotated_page_content = mojo_base::ProtoWrapper(annotated_page_content_.value());
+      annotated_page_data->annotated_page_content =
+          mojo_base::ProtoWrapper(annotated_page_content_.value());
       tab_context->annotated_page_data = std::move(annotated_page_data);
     }
 

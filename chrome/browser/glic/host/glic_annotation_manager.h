@@ -7,7 +7,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/glic/glic.mojom-shared.h"
-#include "chrome/browser/glic/glic_tab_data.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom.h"

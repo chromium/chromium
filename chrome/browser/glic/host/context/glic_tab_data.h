@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_TAB_DATA_H_
-#define CHROME_BROWSER_GLIC_GLIC_TAB_DATA_H_
+#ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_TAB_DATA_H_
+#define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_TAB_DATA_H_
 
 #include <optional>
 
@@ -105,4 +105,4 @@ glic::mojom::FocusedTabDataPtr CreateFocusedTabData(
     FocusedTabData focused_tab_data);
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_TAB_DATA_H_
+#endif  // CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_TAB_DATA_H_
