@@ -26,8 +26,6 @@ static_library("crosapi") {
     "chrome_app_kiosk_service_ash.h",
     "clipboard_history_ash.cc",
     "clipboard_history_ash.h",
-    "content_protection_ash.cc",
-    "content_protection_ash.h",
     "crosapi_ash.cc",
     "crosapi_ash.h",
     "crosapi_id.h",
@@ -534,7 +532,6 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
-    "//ui/aura",
     "//ui/base/idle:test_support",
   ]
 }
