@@ -287,7 +287,24 @@ try:
         with open("commit_message.txt", "w+") as f:
             f.write(
                 f"""spanification patch {index} applied.\n\nPatch: {index}""")
-        run("git commit -F commit_message.txt")
+        # Sometimes we generate patches that apply_edits will skip (for example
+        # third_party) thus don't treat failure to commit as an error.
+        if not run("git commit -F commit_message.txt", exit_on_error=False):
+            with open(scratch_dir + "/evaluation.csv", "a") as f:
+                f.write(f"{index}, fail, {error_msg}\n")
+
+            # We fail when there is no diff get the replacements instead.
+            diff = open(scratch_dir + f"/patch_{index}.txt").read()
+
+            appendRow(spreadsheet, [
+                today,
+                index,
+                len(patches),
+                "fail",
+                "Failed to commit diff",
+                diff,
+            ])
+            continue
 
         # Serialize changes
         run(f"git diff HEAD~...HEAD > ~/scratch/patch_{index}.diff")
