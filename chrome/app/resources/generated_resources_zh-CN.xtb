@@ -1198,7 +1198,7 @@
 <translation id="1824870205483790748">将分组固定到书签栏</translation>
 <translation id="1825073796163165618">启用链接</translation>
 <translation id="1825565032302550710">端口必须介于 1024 到 65535 之间</translation>
-<translation id="18260074040409954">您可在任意设备上使用已存密码。系统会将密码保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
+<translation id="18260074040409954">您可在任何设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
 <translation id="1826192255355608658">同步您的 Chrome 浏览器书签、密码、历史记录等信息</translation>
 <translation id="1826516787628120939">正在检查</translation>
 <translation id="1826657447823925402">已停用反向滚动</translation>
@@ -1450,7 +1450,7 @@
 <translation id="2003130567827682533">若想激活“<ph name="NAME" />”的数据流量服务，请先连接到 Wi-Fi 网络</translation>
 <translation id="200321182559008924">让标签页井然有序</translation>
 <translation id="2003596238737586336">当前的时间安排设置为<ph name="SUNRISE" /> - <ph name="SUNSET" />。此设置由您的管理员管理。</translation>
-<translation id="2004413981947727241">在任意设备上都能使用您的密码</translation>
+<translation id="2004413981947727241">在任何设备上都能使用您的密码</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
 <translation id="2005199804247617997">其他个人资料</translation>
 <translation id="2006638907958895361">在<ph name="APP" />中打开链接</translation>
@@ -3517,7 +3517,7 @@
 <translation id="3473241910002674503">在平板电脑模式下，使用相应按钮转到主屏幕、返回以及切换应用。</translation>
 <translation id="3473479545200714844">屏幕放大镜</translation>
 <translation id="3474218480460386727">新字词最多只能包含 99 个字母</translation>
-<translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
+<translation id="3474624961160222204">以<ph name="NAME" />的身份继续</translation>
 <translation id="3477772589943384839">节省适量内存。标签页会在较长的一段时间后变为非活跃状态。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
 <translation id="3479357084663933762">绿色弱</translation>
@@ -4234,7 +4234,7 @@
 <translation id="3948116654032448504">通过<ph name="SEARCH_ENGINE" />搜索图片(&amp;S)</translation>
 <translation id="3948334586359655083">此标签页正在播放音频</translation>
 <translation id="3948507072814225786"><ph name="ORIGIN" /> 可修改以下文件夹内的文件</translation>
-<translation id="3948985214866944547">多数人阻止与此网站分享确切位置信息</translation>
+<translation id="3948985214866944547">多数人阻止与此网站分享精确位置信息</translation>
 <translation id="394984172568887996">从 IE 中导入</translation>
 <translation id="3949999964543783947"><ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK" />可更安全地下载文件</translation>
 <translation id="3950820424414687140">登录</translation>
@@ -4385,7 +4385,7 @@
 <translation id="4047726037116394521">转到主屏幕</translation>
 <translation id="4048295959689903187">选择音频输出</translation>
 <translation id="4048384495227695211">在文件夹中显示 <ph name="FILE_NAME" /></translation>
-<translation id="404894744863342743">用完下载的文件后，请删除它，以免使用此设备的他人看到您的密码。</translation>
+<translation id="404894744863342743">用完下载的文件后，请将其删除，以防使用此设备的他人看到您的密码。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{有 # 个联系人不可用。如需使用“附近分享”功能与这个联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}other{有 # 个联系人不可用。如需使用“附近分享”功能与这些联系人分享内容，请将其 Google 账号所关联的电子邮件地址添加到您的通讯录中。}}</translation>
 <translation id="4050225813016893843">身份验证方法</translation>
 <translation id="4050379682069019014">“<ph name="MAIN_GESTURE" />”可能与“<ph name="CONFLICTING_GESTURE" />”有相似之处。如果可能，请尝试选择其他手势。</translation>
@@ -5632,7 +5632,7 @@
 <translation id="4956593309300508411">停止分享？</translation>
 <translation id="4956847150856741762">1</translation>
 <translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
-<translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任意设备上使用密码</translation>
+<translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
 <translation id="4961318399572185831">投放屏幕</translation>
@@ -10720,7 +10720,7 @@
 <translation id="8634703204743010992">ChromeOS 虚拟键盘</translation>
 <translation id="8635628933471165173">正在重新加载…</translation>
 <translation id="8636284842992792762">正在初始化扩展程序…</translation>
-<translation id="8636323803535540285">如果想更快速地访问 <ph name="BRAND" />，请添加相应的快捷方式</translation>
+<translation id="8636323803535540285">如果想更快访问 <ph name="BRAND" />，请添加该工具的快捷方式</translation>
 <translation id="8636500887554457830">不允许网站显示弹出式窗口或使用重定向</translation>
 <translation id="8636514272606969031">侧边栏已固定</translation>
 <translation id="8637688295594795546">有系统更新，开始下载...</translation>

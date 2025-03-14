@@ -373,7 +373,7 @@
 <translation id="2513103768503127042">您的标签页分组会显示在此处</translation>
 <translation id="251837347827266434">您将退出账号，标签页将被关闭，而且浏览数据将被删除</translation>
 <translation id="2529021024822217800">全部打开</translation>
-<translation id="2536991091671391962">您可在任意设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
+<translation id="2536991091671391962">您可在任何设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="2538103551183528357">目前为隐藏状态的密码</translation>
 <translation id="2539748786028143624">开启增强型保护…</translation>
 <translation id="2540111494300686866">禁止显示对话框</translation>
@@ -562,7 +562,7 @@
 <translation id="3464194322481586217">无法跟踪价格。</translation>
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
-<translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
+<translation id="3474624961160222204">以<ph name="NAME" />的身份继续</translation>
 <translation id="3476450923187944815">访问其他应用的密码。</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
@@ -681,7 +681,7 @@
 <translation id="3995521777587992544">网页加载进度条，已加载 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">您的管理员管理已禁用密码分享功能。</translation>
 <translation id="4002066346123236978">标题</translation>
-<translation id="4004204301268239848">系统会将密码保存在您的 Google 账号中，以便您在任意设备上使用。</translation>
+<translation id="4004204301268239848">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用。</translation>
 <translation id="4011489366247192265">源语言</translation>
 <translation id="4018440314314549819">自动填充已保存的密码</translation>
 <translation id="4021447724486050609">更新浏览器</translation>

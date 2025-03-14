@@ -261,7 +261,7 @@
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="22091350895006575">添加用户名</translation>
 <translation id="221494669172414749">如果在不设置个人资料锁定的情况下打开 Chrome，您已保存的密码和付款方式将会从这部车载设备中移除。使用个人资料锁定功能可确保此类数据安全。</translation>
-<translation id="2227444325776770048">以“<ph name="USER_FULL_NAME" />”的身份继续</translation>
+<translation id="2227444325776770048">以<ph name="USER_FULL_NAME" />的身份继续</translation>
 <translation id="2230777942707397948">空白窗口</translation>
 <translation id="223356358902285214">网络与应用活动记录</translation>
 <translation id="2234827758954819389">隐私保护指南</translation>
@@ -529,7 +529,7 @@
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
 <translation id="3452832259067974318">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
 <translation id="3467081767799433066">启用广告衡量功能后，为了衡量各自的广告效果，网站之间会分享有限类型的数据，例如您在访问某个网站后是否购买了商品。</translation>
-<translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
+<translation id="3474624961160222204">以<ph name="NAME" />的身份继续</translation>
 <translation id="3478363558367712427">您可自行选择要使用的搜索引擎</translation>
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3488199663160411179">名称</translation>
@@ -1544,7 +1544,7 @@
 <translation id="7959485987650214982">此设备上的标签页</translation>
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>
 <translation id="7963646190083259054">供应商：</translation>
-<translation id="7965838025086216108">您可在任意设备上使用已保存的密码。系统会将密码保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具中。</translation>
+<translation id="7965838025086216108">您可在任何设备上使用已保存的密码。系统会将密码保存到 <ph name="ACCOUNT" /> 的 Google 密码管理工具中。</translation>
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
