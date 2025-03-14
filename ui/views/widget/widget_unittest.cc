@@ -124,27 +124,6 @@ std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
   return generator;
 }
 
-class WidgetTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
-  METADATA_HEADER(WidgetTestBubbleDialogDelegateView, BubbleDialogDelegateView)
-
- public:
-  explicit WidgetTestBubbleDialogDelegateView(View* anchor)
-      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
-    SetOwnedByWidget(false);
-  }
-  ~WidgetTestBubbleDialogDelegateView() override = default;
-
-  bool ShouldShowCloseButton() const override {
-    reset_controls_called_ = true;
-    return true;
-  }
-
-  mutable bool reset_controls_called_ = false;
-};
-
-BEGIN_METADATA(WidgetTestBubbleDialogDelegateView)
-END_METADATA
-
 // Convenience to make constructing a GestureEvent simpler.
 ui::GestureEvent CreateTestGestureEvent(ui::EventType type, int x, int y) {
   return ui::GestureEvent(x, y, 0, base::TimeTicks(),
@@ -180,6 +159,27 @@ class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
 };
 
 }  // namespace
+
+class WidgetTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
+  METADATA_HEADER(WidgetTestBubbleDialogDelegateView, BubbleDialogDelegateView)
+
+ public:
+  explicit WidgetTestBubbleDialogDelegateView(View* anchor)
+      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
+    SetOwnedByWidget(false);
+  }
+  ~WidgetTestBubbleDialogDelegateView() override = default;
+
+  bool ShouldShowCloseButton() const override {
+    reset_controls_called_ = true;
+    return true;
+  }
+
+  mutable bool reset_controls_called_ = false;
+};
+
+BEGIN_METADATA(WidgetTestBubbleDialogDelegateView)
+END_METADATA
 
 // A view that keeps track of the events it receives, and consumes all scroll
 // gesture events and ui::EventType::kScroll events.

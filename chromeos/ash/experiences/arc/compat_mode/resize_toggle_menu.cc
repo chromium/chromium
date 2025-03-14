@@ -51,6 +51,8 @@ namespace {
 constexpr int kButtonRadius = 12;
 constexpr int kBorderThicknessDp = 1;
 
+}  // namespace
+
 class RoundedCornerBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
   METADATA_HEADER(RoundedCornerBubbleDialogDelegateView,
@@ -80,8 +82,6 @@ class RoundedCornerBubbleDialogDelegateView
 
 BEGIN_METADATA(RoundedCornerBubbleDialogDelegateView)
 END_METADATA
-
-}  // namespace
 
 ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
                                                  const gfx::VectorIcon& icon,

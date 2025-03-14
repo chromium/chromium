@@ -54,8 +54,8 @@ namespace views {
 using test::TestInkDrop;
 
 namespace {
-
 constexpr gfx::Size kContentSize = gfx::Size(200, 200);
+}
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
@@ -140,6 +140,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
 BEGIN_METADATA(TestBubbleDialogDelegateView)
 END_METADATA
+
+namespace {
 
 class TestAlertBubbleDialogDelegateView : public TestBubbleDialogDelegateView {
   METADATA_HEADER(TestAlertBubbleDialogDelegateView,
@@ -1078,8 +1080,6 @@ TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
 
 // Anchoring Tests -------------------------------------------------------------
 
-namespace {
-
 class AnchorTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
   explicit AnchorTestBubbleDialogDelegateView(View* anchor_view)
@@ -1165,8 +1165,6 @@ class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
  private:
   WidgetAutoclosePtr dummy_widget_;
 };
-
-}  // namespace
 
 TEST_F(BubbleDialogDelegateViewAnchorTest,
        AnchoredToWidgetShouldPaintAsActive) {

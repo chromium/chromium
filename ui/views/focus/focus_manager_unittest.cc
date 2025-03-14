@@ -872,6 +872,8 @@ class AdvanceFocusWidgetDelegate : public WidgetDelegate {
   raw_ptr<Widget> widget_;
 };
 
+}  // namespace
+
 class FocusManagerTestBubbleDialogDelegateView
     : public BubbleDialogDelegateView {
  public:
@@ -917,8 +919,6 @@ class FocusManagerTestBubbleDialogDelegateView
  private:
   bool use_native_widget_aura_ = false;
 };
-
-}  // namespace
 
 // Verifies focus wrapping happens in the same widget.
 TEST_F(FocusManagerTest, AdvanceFocusStaysInWidget) {
