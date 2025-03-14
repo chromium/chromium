@@ -764,6 +764,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool is_in_dtor() const { return is_in_dtor_; }
 
+  void OnServiceWorkerStateDetermined(
+      PrefetchServiceWorkerState service_worker_state);
+  PrefetchServiceWorkerState service_worker_state() const {
+    return service_worker_state_;
+  }
+
  protected:
   friend class PrefetchContainerTestBase;
 
@@ -838,6 +844,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
+
+  PrefetchServiceWorkerState service_worker_state_ =
+      PrefetchServiceWorkerState::kAllowed;
 
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring
