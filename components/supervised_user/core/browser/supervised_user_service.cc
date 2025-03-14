@@ -107,10 +107,6 @@ void SupervisedUserService::SetURLFilterForTesting(
   url_filter_ = std::move(test_filter);
 }
 
-bool SupervisedUserService::HasACustodian() const {
-  return GetCustodian().has_value() || GetSecondCustodian().has_value();
-}
-
 std::optional<Custodian> SupervisedUserService::GetCustodian() const {
   return GetCustodianFromPrefs(user_prefs_.get(),
                                prefs::kSupervisedUserCustodianEmail,
