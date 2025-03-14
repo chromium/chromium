@@ -138,7 +138,6 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder_without_codecs",
-            "enable_android_secondary_abi",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -197,7 +196,6 @@ ci.builder(
         configs = [
             "android_builder_without_codecs",
             "android_desktop",
-            "enable_android_secondary_abi",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -260,7 +258,6 @@ ci.builder(
         configs = [
             "android_builder_without_codecs",
             "android_desktop",
-            "enable_android_secondary_abi",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
