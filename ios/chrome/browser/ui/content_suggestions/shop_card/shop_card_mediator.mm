@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_action_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_item.h"
 
@@ -61,6 +62,10 @@
 
 #pragma mark - Public
 - (void)disableModule {
+}
+
+- (void)openShopCardItem:(ShopCardItem*)item {
+  [self.shopCardActionDelegate openURL:item.shopCardData.productURL];
 }
 
 #pragma mark - ShopCardMediatorDelegate

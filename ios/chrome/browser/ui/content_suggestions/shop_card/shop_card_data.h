@@ -9,6 +9,8 @@
 
 #import <optional>
 
+class GURL;
+
 // Represents a price drop for a shopping URL -
 // the current price and previous price.
 struct PriceDrop {
@@ -37,6 +39,9 @@ enum class ShopCardItemType {
 
 // Describes contents of the ShopCard for accessibility.
 @property(nonatomic, copy) NSString* accessibilityString;
+
+// Merchant url for product.
+@property(nonatomic, assign) const GURL& productURL;
 
 @end
 
