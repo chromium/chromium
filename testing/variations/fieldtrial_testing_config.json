@@ -3134,7 +3134,7 @@
             ],
             "experiments": [
                 {
-                    "name": "IPHWithBackgroundSendResultAndCompression",
+                    "name": "IPHWithBackgroundCompressionAndFastEtc1Encoder",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:rtl_gesture_iph_trigger;comparator:==0;window:365;storage:365",
@@ -3142,7 +3142,6 @@
                         "max-cache-size": "16777216",
                         "percentage-of-ram-to-use": "0.5",
                         "session_rate": "<1",
-                        "transfer-screenshot-in-background-priority": "true",
                         "x_trigger": "",
                         "x_unhandled_gesture_threshold": "2"
                     },
@@ -3151,7 +3150,8 @@
                         "CompressBitmapAtBackgroundPriority",
                         "IPH_RtlGestureNavigation",
                         "MirrorBackForwardGesturesInRTL",
-                        "NativePageTransitionHardwareCapture"
+                        "NativePageTransitionHardwareCapture",
+                        "UseNewEtc1Encoder"
                     ]
                 }
             ]
@@ -15099,21 +15099,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NewContentForCheckerboardedScrolls"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NewEtc1Encoder": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseNewEtc1Encoder"
                     ]
                 }
             ]
