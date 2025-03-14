@@ -261,9 +261,6 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
         data->set_surface_frame_trace_id(trace_id);
       });
 
-  compositor_frame_sink_ptr_->SubmitCompositorFrame(
-      local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
-
   if (base::FeatureList::IsEnabled(
           features::kExportFrameTimingAfterFrameDone)) {
     for (const auto& pair : timing_details_) {
@@ -271,6 +268,9 @@ void AsyncLayerTreeFrameSink::SubmitCompositorFrame(
     }
     timing_details_.clear();
   }
+
+  compositor_frame_sink_ptr_->SubmitCompositorFrame(
+      local_surface_id_, std::move(frame), std::move(hit_test_region_list), 0);
 }
 
 void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
@@ -290,8 +290,6 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         data->set_surface_frame_trace_id(ack.trace_id);
       });
 
-  compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
-
   if (base::FeatureList::IsEnabled(
           features::kExportFrameTimingAfterFrameDone)) {
     for (const auto& pair : timing_details_) {
@@ -299,6 +297,8 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
     }
     timing_details_.clear();
   }
+
+  compositor_frame_sink_ptr_->DidNotProduceFrame(ack);
 }
 
 std::unique_ptr<LayerContext> AsyncLayerTreeFrameSink::CreateLayerContext(
