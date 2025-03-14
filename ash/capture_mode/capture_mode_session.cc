@@ -1638,6 +1638,8 @@ void CaptureModeSession::ShowActionContainerError(
 void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerRejected);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      prefs::kScannerEnabled, false);
 
   disclaimer_.reset();
 
