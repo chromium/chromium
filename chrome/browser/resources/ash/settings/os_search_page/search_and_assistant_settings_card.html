@@ -187,7 +187,9 @@
           numeric-unchecked-values="[[enterprisePolicyToggleUncheckedValues_]]"
           disabled
           no-set-pref
-          label="Enable Scanner"
+          icon="[[scannerIcon_]]"
+          label="[[scannerLabel_]]"
+          sub-label="[[scannerSubLabel_]]"
           deep-link-focus-id$="[[Setting.kScannerOnOff]]">
       </settings-toggle-button>
     </template>
@@ -196,7 +198,9 @@
           id="scannerToggle"
           class="hr"
           pref="{{prefs.ash.scanner.enabled}}"
-          label="Enable Scanner"
+          icon="[[scannerIcon_]]"
+          label="[[scannerLabel_]]"
+          sub-label="[[scannerSubLabel_]]"
           deep-link-focus-id$="[[Setting.kScannerOnOff]]">
       </settings-toggle-button>
     </template>
