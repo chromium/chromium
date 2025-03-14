@@ -260,6 +260,12 @@ void AutoResumptionHandler::RescheduleTaskIfNecessaryForTaskType(
       continue;
     }
 
+    // Transient downloads (mainly inline pdf downloads) don't need a task as
+    // they don't have a notification in UI.
+    if (download->IsTransient()) {
+      continue;
+    }
+
     has_resumable_downloads = true;
     has_actionable_downloads |= ShouldResumeNow(download);
   }
