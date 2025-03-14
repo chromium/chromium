@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/guest_util.h"
+#include "chrome/browser/glic/host/guest_util.h"
 
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"

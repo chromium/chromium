@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/auth_controller.h"
+#include "chrome/browser/glic/host/auth_controller.h"
 
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
-#include "chrome/browser/glic/glic_cookie_synchronizer.h"
+#include "chrome/browser/glic/host/glic_cookie_synchronizer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/common/chrome_switches.h"

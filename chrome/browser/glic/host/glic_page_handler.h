@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_
-#define CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_GLIC_HOST_GLIC_PAGE_HANDLER_H_
+#define CHROME_BROWSER_GLIC_HOST_GLIC_PAGE_HANDLER_H_
 
 #include <vector>
 
@@ -16,7 +16,7 @@
 namespace content {
 class BrowserContext;
 class WebContents;
-}
+}  // namespace content
 namespace gfx {
 class Size;
 }  // namespace gfx
@@ -84,4 +84,4 @@ class GlicPageHandler : public glic::mojom::PageHandler {
 };
 
 }  // namespace glic
-#endif  // CHROME_BROWSER_GLIC_GLIC_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_GLIC_HOST_GLIC_PAGE_HANDLER_H_

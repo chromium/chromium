@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_annotation_manager.h"
+#include "chrome/browser/glic/host/glic_annotation_manager.h"
 
 #include "base/strings/escape.h"
 #include "chrome/browser/glic/glic.mojom.h"

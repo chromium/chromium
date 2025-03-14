@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/webui_contents_container.h"
+#include "chrome/browser/glic/host/webui_contents_container.h"
 
 #include "base/check.h"
 #include "base/metrics/user_metrics.h"

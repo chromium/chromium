@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_page_handler.h"
+#include "chrome/browser/glic/host/glic_page_handler.h"
 
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
@@ -16,20 +16,20 @@
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/glic/auth_controller.h"
 #include "chrome/browser/glic/browser_conditions.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_annotation_manager.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/glic_tab_data.h"
-#include "chrome/browser/glic/glic_web_client_access.h"
 #include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/glic_annotation_manager.h"
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
+#include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
