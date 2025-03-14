@@ -2406,7 +2406,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderAndPrefetchBrowserTest,
       current_frame_host()->GetFrameTreeNodeId());
   ASSERT_TRUE(prefetch_service);
   base::RunLoop run_loop;
-  PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
+  PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       base::BindRepeating(
           [](base::RunLoop* run_loop, const GURL& url,
              base::WeakPtr<PrefetchContainer> prefetch_container) {

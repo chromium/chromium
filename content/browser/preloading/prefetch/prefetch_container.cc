@@ -289,6 +289,14 @@ bool CalculateIsLikelyAheadOfPrerender(
   }
 }
 
+PrefetchContainer::PrefetchResponseCompletedCallbackForTesting&
+GetPrefetchResponseCompletedCallbackForTesting() {
+  static base::NoDestructor<
+      PrefetchContainer::PrefetchResponseCompletedCallbackForTesting>
+      prefetch_response_completed_callback_for_testing;
+  return *prefetch_response_completed_callback_for_testing;
+}
+
 }  // namespace
 
 // Holds the state for the request for a single URL in the context of the
@@ -1315,9 +1323,21 @@ void PrefetchContainer::StartTimeoutTimerIfNeeded(
   }
 }
 
+// static
+void PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
+    PrefetchResponseCompletedCallbackForTesting callback) {
+  GetPrefetchResponseCompletedCallbackForTesting() =  // IN-TEST
+      std::move(callback);
+}
+
 void PrefetchContainer::OnPrefetchComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
   DVLOG(1) << *this << "::OnPrefetchComplete";
+
+  if (GetPrefetchResponseCompletedCallbackForTesting()) {
+    GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
+        GetWeakPtr());
+  }
 
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());

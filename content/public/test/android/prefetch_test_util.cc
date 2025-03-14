@@ -18,7 +18,7 @@ void JNI_PrefetchTestUtil_WaitUntilPrefetchResponseCompleted(
     JNIEnv* env,
     GURL& url,
     const base::android::JavaParamRef<jobject>& callback) {
-  PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
+  PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       base::BindRepeating(
           [](const GURL& url,
              const base::android::ScopedJavaGlobalRef<jobject>& callback,
@@ -28,8 +28,7 @@ void JNI_PrefetchTestUtil_WaitUntilPrefetchResponseCompleted(
               base::android::RunRunnableAndroid(callback);
             }
           },
-          url,
-          base::android::ScopedJavaGlobalRef<jobject>(callback)));
+          url, base::android::ScopedJavaGlobalRef<jobject>(callback)));
 }
 
 }  // namespace content
