@@ -29,6 +29,7 @@ class BookmarkParentFolderChildrenTest : public testing::Test {
     model_->LoadEmptyForTest();
     merged_service_ = std::make_unique<BookmarkMergedSurfaceService>(
         model_.get(), /*managed_service*/ nullptr);
+    merged_service_->LoadForTesting({});
   }
 
   BookmarkModel& bookmark_model() { return *model_.get(); }

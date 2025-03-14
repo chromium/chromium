@@ -315,6 +315,8 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "../browser/bookmarks/bookmark_test_helpers.cc",
+      "../browser/bookmarks/bookmark_test_helpers.h",
       "../browser/ui/passwords/manage_passwords_test.cc",
       "../browser/ui/passwords/manage_passwords_test.h",
     ]
