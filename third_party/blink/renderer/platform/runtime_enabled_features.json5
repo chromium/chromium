@@ -2944,6 +2944,7 @@
         "Win": "test",
         "Mac": "test",
         "Linux": "test",
+        "Android": "test",
         "default": ""
       }
     },
