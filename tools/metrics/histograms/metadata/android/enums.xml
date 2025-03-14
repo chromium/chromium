@@ -638,6 +638,10 @@ chromium-metrics-reviews@google.com.
   <int value="138" label="WebViewCompat.WebResponseCallback.doNotIntercept"/>
   <int value="139" label="WebViewCompat.WebResponseCallback.intercept"/>
   <int value="140" label="Navigation.getPage"/>
+  <int value="141" label="WebSettingsCompat.setPaymentRequestEnabled"/>
+  <int value="142" label="WebSettingsCompat.getPaymentRequestEnabled"/>
+  <int value="143" label="WebSettingsCompat.setHasEnrolledInstrumentEnabled"/>
+  <int value="144" label="WebSettingsCompat.getHasEnrolledInstrumentEnabled"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
