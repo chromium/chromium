@@ -4825,13 +4825,15 @@ TEST_F(ScannerTest, DisclaimerDeclineGoesBackToScreenshotMode) {
       });
 
   ActionButtonView* smart_actions_button = GetSmartActionsButton();
-  ASSERT_TRUE(smart_actions_button);
-
-  // Click the smart actions button.
-  LeftClickOn(smart_actions_button);
   auto* controller = CaptureModeController::Get();
   CaptureModeSessionTestApi session_test_api(
       controller->capture_mode_session());
+  ASSERT_TRUE(smart_actions_button);
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              ElementsAre(smart_actions_button, _));
+
+  // Click the smart actions button.
+  LeftClickOn(smart_actions_button);
   views::Widget* disclaimer = session_test_api.GetDisclaimerWidget();
   ASSERT_TRUE(disclaimer);
 
@@ -4851,18 +4853,8 @@ TEST_F(ScannerTest, DisclaimerDeclineGoesBackToScreenshotMode) {
           prefs::kScannerEnabled));
   EXPECT_FALSE(ScannerController::CanShowUiForShell());
   EXPECT_TRUE(controller->IsActive());
-  // Did not get filled with new actions buttons, stays the same as before.
-  EXPECT_THAT(session_test_api.GetActionButtons(),
-              ElementsAre(smart_actions_button, _));
-
-  // Click the smart actions button again, should show the disclaimer again.
-  // TODO: b/401978836 - The smart actions button should not appear here.
-  LeftClickOn(smart_actions_button);
-  EXPECT_TRUE(session_test_api.GetDisclaimerWidget());
-
-  // Exit the session. The disclaimer will be dismissed.
-  controller->Stop();
-  ASSERT_FALSE(controller->IsActive());
+  // The smart actions button is now removed.
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(1));
 }
 
 // Tests that the consent disclaimer can be properly navigated from the smart

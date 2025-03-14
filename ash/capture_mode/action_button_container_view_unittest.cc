@@ -136,6 +136,29 @@ TEST_F(ActionButtonContainerViewTest, SmartActionsButtonTransition) {
   EXPECT_TRUE(IsActionButtonCollapsed(search_button));
 }
 
+TEST_F(ActionButtonContainerViewTest, RemoveSmartActionsButton) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetBounds(gfx::Rect(50, 50, 300, 200));
+  widget->Show();
+  auto* action_button_container =
+      widget->SetContentsView(std::make_unique<ActionButtonContainerView>());
+  // Set up action buttons.
+  ActionButtonView* copy_text_button =
+      AddCopyTextButton(*action_button_container);
+  ActionButtonView* search_button = AddSearchButton(*action_button_container);
+  ActionButtonView* smart_actions_button =
+      AddSmartActionsButton(*action_button_container);
+  EXPECT_THAT(
+      action_button_container->GetActionButtons(),
+      ElementsAre(smart_actions_button, copy_text_button, search_button));
+
+  action_button_container->RemoveSmartActionsButton();
+
+  EXPECT_THAT(action_button_container->GetActionButtons(),
+              ElementsAre(copy_text_button, search_button));
+}
+
 TEST_F(ActionButtonContainerViewTest, ShowsErrorView) {
   ActionButtonContainerView action_button_container;
   ActionButtonContainerView::ErrorView* error_view =

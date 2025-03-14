@@ -1674,11 +1674,13 @@ void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
 }
 
   void CaptureModeSession::OnSmartActionsButtonPressed() {
-  MaybeShowScannerDisclaimer(
-      /*accept_callback=*/base::BindRepeating(
-          &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
-          weak_ptr_factory_.GetWeakPtr()),
-      /*decline_callback=*/base::DoNothing());
+    MaybeShowScannerDisclaimer(
+        /*accept_callback=*/base::BindRepeating(
+            &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
+            weak_ptr_factory_.GetWeakPtr()),
+        /*decline_callback=*/base::BindRepeating(
+            &CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined,
+            weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
@@ -1696,6 +1698,10 @@ void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
   CHECK(scanner_controller);
   scanner_controller->StartNewSession();
   controller_->PerformCapture(PerformCaptureType::kScanner);
+}
+
+void CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined() {
+  action_container_view_->RemoveSmartActionsButton();
 }
 
 void CaptureModeSession::OnScannerActionButtonPressed(

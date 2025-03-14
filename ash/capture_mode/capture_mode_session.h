@@ -461,6 +461,10 @@ class ASH_EXPORT CaptureModeSession
   // actions.
   void OnSmartActionsButtonDisclaimerCheckSuccess();
 
+  // Called back when the smart actions button is pressed and disclaimer was
+  // declined. This will remove the smart actions button.
+  void OnSmartActionsButtonDisclaimerDeclined();
+
   // Called back when a Scanner action button is pressed.
   void OnScannerActionButtonPressed(
       const ScannerActionViewModel& scanner_action);
