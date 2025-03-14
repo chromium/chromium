@@ -43,7 +43,6 @@ class PrintPreviewWebcontentsAdapterAsh;
 
 namespace crosapi {
 
-class AudioServiceAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChapsServiceAsh;
@@ -95,8 +94,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // crosapi::mojom::Crosapi:
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
-  void BindAudioService(
-      mojo::PendingReceiver<mojom::AudioService> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindCertDatabase(
       mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
@@ -326,7 +323,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<AudioServiceAsh> audio_service_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;

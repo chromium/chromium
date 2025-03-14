@@ -12,8 +12,6 @@ assert(use_ozone)
 
 static_library("crosapi") {
   sources = [
-    "audio_service_ash.cc",
-    "audio_service_ash.h",
     "browser_manager.cc",
     "browser_manager.h",
     "cert_database_ash.cc",
@@ -290,7 +288,6 @@ static_library("crosapi") {
     "//components/webui/flags",
     "//content/public/common",
     "//extensions/browser/api",
-    "//extensions/browser/api/audio",
     "//extensions/browser/api/automation_internal",
     "//extensions/browser/api/networking_private",
     "//extensions/browser/api/power",
@@ -409,7 +406,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "audio_service_ash_unittest.cc",
     "cert_provisioning_ash_unittest.cc",
     "chaps_service_ash_unittest.cc",
     "clipboard_history_ash_unittest.cc",
