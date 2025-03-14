@@ -260,6 +260,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kControlsVisibilityFromNavigations,
     &kCrossDeviceTabPaneAndroid,
     &kDeviceAuthenticatorAndroidx,
+    &kDisableCompositedProgressBar,
     &kDisableListTabSwitcher,
     &kDrawKeyNativeEdgeToEdge,
     &kEdgeToEdgeBottomChin,
@@ -464,6 +465,10 @@ BASE_FEATURE(kAllowNewIncognitoTabIntents,
 BASE_FEATURE(kAvoidSelectedTabFocusOnLayoutDoneShowing,
              "AvoidSelectedTabFocusOnLayoutDoneShowing",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisableCompositedProgressBar,
+             "DisableCompositedProgressBar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableListTabSwitcher,
              "DisableListTabSwitcher",
