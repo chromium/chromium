@@ -98,8 +98,8 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   }
 
   void SetPageContent(base::OnceClosure quit_closure,
-                      std::optional<proto::AnnotatedPageContent> page_content) {
-    page_content_ = std::move(page_content);
+                      std::optional<AIPageContentResult> page_content) {
+    page_content_ = std::move(page_content->proto);
     std::move(quit_closure).Run();
   }
 

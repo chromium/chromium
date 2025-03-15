@@ -23,7 +23,7 @@ class CreateBnplPaymentInstrumentRequestTestApi {
       const CreateBnplPaymentInstrumentRequestTestApi&) = delete;
   ~CreateBnplPaymentInstrumentRequestTestApi() = default;
 
-  std::u16string get_instrument_id() const {
+  std::string get_instrument_id() const {
     return create_bnpl_payment_instrument_request_->instrument_id_;
   }
 

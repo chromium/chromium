@@ -66,8 +66,8 @@
 #include "net/base/features.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_tab_indicator_helper.h"
 #endif
 namespace tabs {
 

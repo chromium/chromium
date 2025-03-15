@@ -63,11 +63,34 @@ export class ResponseExtras {
   }
 }
 
+class MessageLogger {
+  loggingEnabled = false;
+  constructor(protected logPrefix: string) {}
+
+  setLoggingEnabled(v: boolean): void {
+    this.loggingEnabled = v;
+  }
+
+  shouldLogMessage(requestType: string): boolean {
+    return this.loggingEnabled &&
+        requestType !== 'glicWebClientCheckResponsive';
+  }
+
+  maybeLogMessage(requestType: string, message: string, payload: any) {
+    if (!this.shouldLogMessage(requestType)) {
+      return;
+    }
+    console.info(
+        `${this.logPrefix} [${requestType}] ${message}: ${
+            toDebugJson(payload)}`,
+        payload);
+  }
+}
+
 // Sends requests over postMessage. Ideally this type would be parameterized by
 // only one of HostRequestTypes or WebClientRequestTypes, but typescript
 // cannot represent this. Instead, this class can send messages of any type.
-export class PostMessageRequestSender {
-  loggingEnabled = false;
+export class PostMessageRequestSender extends MessageLogger {
   requestId = 1;
   responseHandlers: Map<number, (response: ResponseMessage) => void> =
       new Map();
@@ -75,7 +98,8 @@ export class PostMessageRequestSender {
 
   constructor(
       private messageSender: PostMessageSender, private remoteOrigin: string,
-      private senderId: string, private logPrefix: string) {
+      private senderId: string, logPrefix: string) {
+    super(logPrefix);
     const handler = this.onMessage.bind(this);
     window.addEventListener('message', handler);
     this.onDestroy = () => {
@@ -87,9 +111,6 @@ export class PostMessageRequestSender {
     this.onDestroy();
   }
 
-  setLoggingEnabled(v: boolean) {
-    this.loggingEnabled = v;
-  }
 
   // Handles responses from the host.
   private onMessage(event: MessageEvent) {
@@ -119,30 +140,16 @@ export class PostMessageRequestSender {
     const requestId = this.requestId++;
     this.responseHandlers.set(requestId, (response: ResponseMessage) => {
       if (response.exception !== undefined) {
-        if (this.loggingEnabled) {
-          console.info(
-              `${this.logPrefix} received ${requestType} with exception: ${
-                  toDebugJson(response.exception)}`,
-              response.exception);
-        }
+        this.maybeLogMessage(
+            requestType, 'received with exception', response.exception);
         reject(exceptionFromTransferable(response.exception));
       } else {
-        if (this.loggingEnabled) {
-          console.info(
-              `${this.logPrefix} received ${requestType} with payload: ${
-                  toDebugJson(response.responsePayload)}`,
-              response.responsePayload);
-        }
+        this.maybeLogMessage(requestType, 'received', response.responsePayload);
         resolve(response.responsePayload as RequestResponseType<T>);
       }
     });
 
-    if (this.loggingEnabled) {
-      console.info(
-          `${this.logPrefix} sending ${requestType} with payload: ${
-              toDebugJson(request)}`,
-          request);
-    }
+    this.maybeLogMessage(requestType, 'sending', request);
     const message: RequestMessage = {
       senderId: this.senderId,
       glicRequest: true,
@@ -165,12 +172,7 @@ export class PostMessageRequestSender {
       type: requestType,
       requestPayload: request,
     };
-    if (this.loggingEnabled && requestType !== 'glicWebClientCheckResponsive') {
-      console.info(
-          `${this.logPrefix} sending ${requestType} with payload: ${
-              toDebugJson(request)}`,
-          request);
-    }
+    this.maybeLogMessage(requestType, 'sending', request);
     this.messageSender.postMessage(message, this.remoteOrigin, transfer);
   }
 }
@@ -205,13 +207,13 @@ export interface PostMessageRequestHandler {
 
 // Receives requests over postMessage and forward them to a
 // `PostMessageRequestHandler`.
-export class PostMessageRequestReceiver {
-  loggingEnabled = false;
+export class PostMessageRequestReceiver extends MessageLogger {
   private onDestroy: () => void;
   constructor(
       private embeddedOrigin: string,
       private postMessageSender: PostMessageSender,
-      private handler: PostMessageRequestHandler, private logPrefix: string) {
+      private handler: PostMessageRequestHandler, logPrefix: string) {
+    super(logPrefix);
     const handlerFunction = this.onMessage.bind(this);
     window.addEventListener('message', handlerFunction);
     this.onDestroy = () => {
@@ -221,10 +223,6 @@ export class PostMessageRequestReceiver {
 
   destroy() {
     this.onDestroy();
-  }
-
-  setLoggingEnabled(v: boolean) {
-    this.loggingEnabled = v;
   }
 
   async onMessage(event: MessageEvent) {
@@ -240,12 +238,7 @@ export class PostMessageRequestReceiver {
     let exception: TransferableException|undefined;
     const extras = new ResponseExtras();
     this.handler.onRequestReceived(type);
-    if (this.loggingEnabled && type !== 'glicWebClientCheckResponsive') {
-      console.info(
-          `${this.logPrefix} processing request ${type} with payload: ${
-              toDebugJson(requestPayload)}`,
-          requestPayload);
-    }
+    this.maybeLogMessage(type, 'processing request', requestPayload);
     try {
       response =
           await this.handler.handleRawRequest(type, requestPayload, extras);
@@ -268,12 +261,7 @@ export class PostMessageRequestReceiver {
     if (!requestId) {
       return;
     }
-    if (this.loggingEnabled && type !== 'glicWebClientCheckResponsive') {
-      console.info(
-          `${this.logPrefix} sending response ${type} with payload: ${
-              toDebugJson(response?.payload)}`,
-          response?.payload);
-    }
+    this.maybeLogMessage(type, 'sending response', response?.payload);
     const responseMessage: ResponseMessage = {
       type,
       responseId: requestId,

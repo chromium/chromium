@@ -378,6 +378,12 @@ export declare interface GlicBrowserHost {
    * and end when Chrome closes.
    */
   setSyntheticExperimentState?(trialName: string, groupName: string): void;
+
+  /**
+   * Opens the OS permission settings menu for the given permission type.
+   * Supports `media` for microphone ad `geolocation` for location.
+   */
+  openOsPermissionSettingsMenu?(permission: string): void;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */

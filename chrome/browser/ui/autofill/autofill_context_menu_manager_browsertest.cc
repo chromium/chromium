@@ -93,21 +93,6 @@ MATCHER(ContainsAnyPlusAddressFallbackEntries, "") {
   return false;
 }
 
-// Checks if the context menu model contains the prediction improvement
-// entry with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
-MATCHER(ContainsAutofillAiEntry, "") {
-  for (size_t i = 0; i < arg->GetItemCount(); i++) {
-    if (arg->GetCommandIdAt(i) ==
-            IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS &&
-        arg->GetLabelAt(i) ==
-            l10n_util::GetStringUTF16(
-                IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Checks if the context menu model contains the plus address manual fallback
 // entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`.
 MATCHER(PlusAddressFallbackAdded, "") {

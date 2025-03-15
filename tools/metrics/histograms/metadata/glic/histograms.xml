@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OnSessionTerminated"/>
     <variant name="OnUserInputSubmitted"/>
     <variant name="OpenGlicSettingsPage"/>
+    <variant name="OpenOsPermissionSettingsMenu"/>
     <variant name="RefreshSignInCookies"/>
     <variant name="ResizeWindow"/>
     <variant name="ScrollTo"/>

@@ -229,6 +229,7 @@ union ConfigResult{
 enum UpdateSessionError{
   kInvalid,
   kHTTPError,
+  kPreconditionFailed,
 };
 
 enum RemoveStudentError{

@@ -223,6 +223,13 @@ class BnplManager {
   // instrument.
   void CreateBnplPaymentInstrument();
 
+  // Callback after attempting to create a BNPL payment instrument. `result`
+  // indicates success/failure; `instrument_id` is the new ID if successful. If
+  // successful, stores the ID and fetches the redirect URL.
+  void OnBnplPaymentInstrumentCreated(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      std::string instrument_id);
+
   PaymentsAutofillClient& payments_autofill_client() {
     return *autofill_client_->GetPaymentsAutofillClient();
   }

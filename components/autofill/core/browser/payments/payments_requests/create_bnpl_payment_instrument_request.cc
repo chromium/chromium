@@ -7,7 +7,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
 namespace autofill::payments {
@@ -24,7 +23,7 @@ CreateBnplPaymentInstrumentRequest::CreateBnplPaymentInstrumentRequest(
     CreateBnplPaymentInstrumentRequestDetails request_details,
     bool full_sync_enabled,
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                            std::u16string instrument_id)> callback)
+                            std::string instrument_id)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {}
@@ -79,7 +78,7 @@ void CreateBnplPaymentInstrumentRequest::ParseResponse(
           response.FindDict("buy_now_pay_later_info")) {
     if (const std::string* instrument_id =
             buy_now_pay_later_info->FindString("instrument_id")) {
-      instrument_id_ = base::UTF8ToUTF16(*instrument_id);
+      instrument_id_ = std::move(*instrument_id);
     }
   }
 }

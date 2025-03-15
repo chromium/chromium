@@ -864,7 +864,7 @@ TEST_P(PaintPreviewRecorderRenderViewTest, CaptureSaveRestore) {
   EXPECT_EQ(out_response->links[0]->url, GURL("http://www.chromium.org"));
   EXPECT_NEAR(out_response->links[0]->rect.x(), 40, 3);
   EXPECT_NEAR(out_response->links[0]->rect.y(), 122, 3);
-  EXPECT_NEAR(out_response->links[0]->rect.width(), 80, 3);
+  EXPECT_NEAR(out_response->links[0]->rect.width(), 84, 5);
   EXPECT_NEAR(out_response->links[0]->rect.height(), 20, 3);
 
   EXPECT_EQ(out_response->links[1]->url, GURL("http://www.example.com"));

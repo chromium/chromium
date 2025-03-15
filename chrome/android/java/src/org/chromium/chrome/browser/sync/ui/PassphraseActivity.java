@@ -9,12 +9,12 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -30,7 +30,7 @@ import org.chromium.components.sync.SyncService;
  * This activity is used for requesting a sync passphrase from the user. Typically, this will be the
  * target of an Android notification.
  */
-public class PassphraseActivity extends AppCompatActivity
+public class PassphraseActivity extends ChromeBaseAppCompatActivity
         implements PassphraseDialogFragment.Delegate, FragmentManager.OnBackStackChangedListener {
     public static final String FRAGMENT_PASSPHRASE = "passphrase_fragment";
     public static final String FRAGMENT_SPINNER = "spinner_fragment";

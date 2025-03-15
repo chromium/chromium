@@ -14,10 +14,13 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -26,6 +29,7 @@ import java.util.function.Function;
  * Default implementation of the AsyncNotificationManagerProxy, which passes through all calls to
  * the normal Android Notification Manager.
  */
+@NullMarked
 /* package */ class AsyncNotificationManagerProxyImpl implements BaseNotificationManagerProxy {
     private static final String TAG = "AsyncNotifManager";
     private final NotificationManagerCompat mNotificationManager;
@@ -82,7 +86,8 @@ import java.util.function.Function;
         runAsyncAndReply(
                 "AsyncNotificationManagerProxyImpl.getNotificationChannels",
                 () -> mNotificationManager.getNotificationChannels(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
@@ -90,7 +95,8 @@ import java.util.function.Function;
         runAsyncAndReply(
                 "AsyncNotificationManagerProxyImpl.getNotificationChannelGroups",
                 () -> mNotificationManager.getNotificationChannelGroups(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
@@ -133,11 +139,13 @@ import java.util.function.Function;
     }
 
     @Override
-    public void getNotificationChannel(String channelId, Callback<NotificationChannel> callback) {
+    public void getNotificationChannel(
+            String channelId, Callback<@Nullable NotificationChannel> callback) {
         runAsyncAndReply(
                 "AsyncNotificationManagerProxyImpl.getNotificationChannel",
                 () -> mNotificationManager.getNotificationChannel(channelId),
-                callback);
+                callback,
+                null);
     }
 
     @Override
@@ -159,7 +167,8 @@ import java.util.function.Function;
                     }
                     return result;
                 },
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     /** Helper method to run an runnable inside a scoped event in background. */
@@ -186,8 +195,9 @@ import java.util.function.Function;
      * on the ui thread.
      */
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
-    private <T> void runAsyncAndReply(
-            String eventName, Callable<T> callable, Callback<T> callback) {
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+    private <T extends @Nullable Object> void runAsyncAndReply(
+            String eventName, Callable<T> callable, Callback<T> callback, T defaultValue) {
         new AsyncTask<@Nullable T>() {
             @Override
             protected @Nullable T doInBackground() {
@@ -197,7 +207,7 @@ import java.util.function.Function;
                     return callable.call();
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to call method.", e);
-                    return null;
+                    return defaultValue;
                 }
             }
 

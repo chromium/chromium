@@ -17,7 +17,8 @@
     </div>
   </div>
 
-  <cr-collapse ?opened="${this.opened}" id="collapse">
+  <cr-collapse id="collapse" ?opened="${this.opened}"
+      @opened-changed="${this.onOpenedChanged_}">
     <div id="tab-item-list">
       ${this.tabs.map((tab, index) => html`
         <div class="item-container">

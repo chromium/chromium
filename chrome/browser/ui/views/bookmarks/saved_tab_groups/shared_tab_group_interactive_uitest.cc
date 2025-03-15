@@ -59,8 +59,7 @@ class SharedTabGroupInteractiveUiTest : public InteractiveBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupsSaveV2,
-         tab_groups::kTabGroupSyncServiceDesktopMigration,
+        {tab_groups::kTabGroupSyncServiceDesktopMigration,
          data_sharing::features::kDataSharingFeature},
         {});
     InProcessBrowserTest::SetUp();

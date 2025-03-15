@@ -22,6 +22,7 @@ crbug.com/388081043 external/wpt/editing/other/paste-clipboard-change.tentative.
 # finder:enable-general
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/403641201 external/wpt/css/css-pseudo/active-selection-021.html [ Failure ]
 external/wpt/urlpattern/urlpattern.https.any.worker.html [ Crash Failure ]
 crbug.com/397523920 external/wpt/trusted-types/modify-attributes-in-callback.html [ Crash ]
 crbug.com/396958489 external/wpt/trusted-types/set-attributes-mutations-in-callback.tentative.html [ Crash ]

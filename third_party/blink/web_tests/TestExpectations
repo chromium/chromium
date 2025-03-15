@@ -2621,7 +2621,7 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-[ Linux ] external/wpt/css/css-page/monolithic-overflow-029-print.html [ Failure ]
+crbug.com/403345128 [ Linux ] external/wpt/css/css-page/monolithic-overflow-029-print.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-020.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-021.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-022.html [ Failure ]

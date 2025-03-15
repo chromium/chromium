@@ -99,7 +99,7 @@ suite('SafeBrowsingFragment', function() {
     assertTrue(!!group);
     fragment.shadowRoot!
         .querySelector<HTMLElement>('#safeBrowsingRadioEnhanced')!.click();
-    await eventToPromise('selected-changed', group);
+    await eventToPromise('change', group);
     // The updated description item container should be visible.
     assertTrue(isChildVisible(fragment, '#updatedDescItemContainer'));
   });

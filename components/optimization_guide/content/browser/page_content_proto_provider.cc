@@ -159,18 +159,19 @@ void OnGotAIPageContentForAllFrames(
     ukm::SourceId source_id,
     std::unique_ptr<optimization_guide::AIPageContentMap> page_content_map,
     OnAIPageContentDone done_callback) {
-  optimization_guide::proto::AnnotatedPageContent proto;
+  optimization_guide::AIPageContentResult page_content;
+
   if (!optimization_guide::ConvertAIPageContentToProto(
           main_frame_token, *page_content_map,
-          base::BindRepeating(&GetRenderFrameInfo), &proto)) {
+          base::BindRepeating(&GetRenderFrameInfo), page_content)) {
     std::move(done_callback).Run(std::nullopt);
     return;
   }
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(RecordPageContentExtractionMetrics,
-                     elapsed_timer.Elapsed(), source_id, proto));
-  std::move(done_callback).Run(std::move(proto));
+                     elapsed_timer.Elapsed(), source_id, page_content.proto));
+  std::move(done_callback).Run(std::move(page_content));
 }
 
 void OnGotAIPageContentForFrame(
@@ -188,6 +189,12 @@ void OnGotAIPageContentForFrame(
 }
 
 }  // namespace
+
+AIPageContentResult::AIPageContentResult() = default;
+AIPageContentResult::~AIPageContentResult() = default;
+AIPageContentResult::AIPageContentResult(AIPageContentResult&& other) = default;
+AIPageContentResult& AIPageContentResult::operator=(
+    AIPageContentResult&& other) = default;
 
 blink::mojom::AIPageContentOptionsPtr DefaultAIPageContentOptions() {
   auto request = blink::mojom::AIPageContentOptions::New();

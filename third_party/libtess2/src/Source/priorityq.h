@@ -32,6 +32,8 @@
 #ifndef PRIORITYQ_H
 #define PRIORITYQ_H
 
+#include "../Include/tesselator.h"
+
 /* The basic operations are insertion of a new key (pqInsert),
 * and examination/extraction of a key whose value is minimum
 * (pqMinimum/pqExtractMin).  Deletion is also allowed (pqDelete);

@@ -2099,11 +2099,11 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
                   /*expected_count*/ 1);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 2,
-                  /*expected_text*/ L"Paragraph 1\n",
+                  /*expected_text*/ L"Paragraph 1",
                   /*expected_count*/ 2);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
-                  /*expected_text*/ L"Paragraph 2\nParagraph 3\n",
+                  /*expected_text*/ L"Paragraph 2\nParagraph 3",
                   /*expected_count*/ 1);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
@@ -2123,7 +2123,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
   // Move backward.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ -4,
-                  /*expected_text*/ L"bold text\n",
+                  /*expected_text*/ L"bold text",
                   /*expected_count*/ -4);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ -1,
@@ -8084,6 +8084,88 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   BOOL are_same;
   original->Compare(after_deletion_expected.Get(), &are_same);
   EXPECT_TRUE(are_same);
+}
+
+// This test validates that the move-by-format operation does not include the
+// trailing newline characters. This is important because Narrator's heading
+// navigation, built using this move-by-format operation, expects the range to
+// be fully contained within the anchor. When a trailing newline character is
+// included, it often indicates that the end endpoint is at the start of the
+// next anchor instead of being at the end of the current anchor.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       MoveByFormatDoesNotIncludeTrailingNewlines) {
+  AXNodeData static_text_1;
+  static_text_1.id = 2;
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.SetName("before");
+  static_text_1.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData heading_data;
+  heading_data.id = 3;
+  heading_data.role = ax::mojom::Role::kHeading;
+  heading_data.SetName("Heading");
+  heading_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  AXNodeData static_text_2;
+  static_text_2.id = 4;
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.SetName("Heading");
+  heading_data.child_ids = {static_text_2.id};
+
+  AXNodeData paragraph_data;
+  paragraph_data.id = 5;
+  paragraph_data.role = ax::mojom::Role::kParagraph;
+  paragraph_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData static_text_3;
+  static_text_3.id = 6;
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.SetName("after");
+  paragraph_data.child_ids = {static_text_3.id};
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.child_ids = {static_text_1.id, heading_data.id, paragraph_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data,     static_text_1,  heading_data,
+                  static_text_2, paragraph_data, static_text_3};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 0,
+                  /*expected_text*/
+                  L"before\nHeading\nafter",
+                  /*expected_count*/ 0);
+
+  // Here, we expect the newline character because we're using the
+  // MoveEndpointByUnit function, which moves only one endpoint to unit
+  // boundary. It should expand to the enclosing unit like Move does when moving
+  // both endpoints.
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -2,
+      /*expected_text*/
+      L"before\n",
+      /*expected_count*/ -2);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/
+                  L"Heading",
+                  /*expected_count*/ 1);
 }
 
 }  // namespace ui

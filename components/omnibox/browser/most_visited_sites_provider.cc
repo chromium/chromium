@@ -282,7 +282,7 @@ MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
     const history::MostVisitedURLList& urls) {
   done_ = true;
-  if (omnibox_feature_configs::UrlSuggestionsOnFocus::Get().enabled) {
+  if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled) {
     if (BuildAutocompleteMatches(this, client_, urls, matches_)) {
       NotifyListeners(true);
     }

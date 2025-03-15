@@ -390,6 +390,14 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // Called when the browser is terminating.
   void OnBrowserTerminating();
 
+  // Get the effective update URL for the extension. Normally this URL comes
+  // from the extension manifest, but may be overridden by policies.
+  GURL GetEffectiveUpdateURL(const Extension& extension);
+
+  // Returns true if this extension's update URL is from webstore, including any
+  // policy overrides.
+  bool UpdatesFromWebstore(const Extension& extension);
+
   // The Profile the extension is being installed in.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 

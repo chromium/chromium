@@ -99,6 +99,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      *     touch events other than ACTION_DOWN.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *     coordinates are expected to be screen coordinates.
+     * @param shouldPadForWindowInsets If a wrapper layout should be applied to window inset
+     *     padding.
      */
     public ContextMenuDialog(
             Activity ownerActivity,
@@ -113,8 +115,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
-            Rect rect) {
-        super(ownerActivity, theme);
+            Rect rect,
+            boolean shouldPadForWindowInsets) {
+        super(ownerActivity, theme, shouldPadForWindowInsets);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
         mBottomMarginPx = bottomMarginPx;

@@ -214,6 +214,7 @@ infra/config/generators 2 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
 ios/build/bots/scripts 13 2
+ios/chrome/browser/reader_mode/model/resources 1 1
 ios/chrome/test/earl_grey 1 1
 ios/chrome/test/wpt/tools 1 1
 media/audio/alsa 2 1
@@ -680,11 +681,11 @@ third_party/rust/chromium_crates_io/vendor/clap_builder-4.5.32/src/parser 1 1
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-0.11.1 2 1
 third_party/rust/chromium_crates_io/vendor/codespan-reporting-0.11.1/examples 1 1
 third_party/rust/chromium_crates_io/vendor/crc32fast-1.4.2/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.143 1 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.143/book 1 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.143/book/src 3 1
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.143/.github/workflows 4 3
-third_party/rust/chromium_crates_io/vendor/cxx-1.0.143/src 4 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.146 1 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/book 1 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/book/src 3 1
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/.github/workflows 4 3
+third_party/rust/chromium_crates_io/vendor/cxx-1.0.146/src 4 1
 third_party/rust/chromium_crates_io/vendor/displaydoc-0.2.5 2 1
 third_party/rust/chromium_crates_io/vendor/displaydoc-0.2.5/src 2 1
 third_party/rust/chromium_crates_io/vendor/either-1.15.0/.github/workflows 1 1
@@ -770,6 +771,8 @@ third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0/src/Windows/Wdk/System/SystemServices 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0/src/Windows/Win32/Networking/Clustering 2 1
 third_party/rust/chromium_crates_io/vendor/zerocopy-0.7.35 1 1
+third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23 1 1
+third_party/rust/chromium_crates_io/vendor/zerocopy-0.8.23/src 1 1
 third_party/screen-ai 2 1
 third_party/sentencepiece/src 2 2
 third_party/sentencepiece/src/doc 3 1

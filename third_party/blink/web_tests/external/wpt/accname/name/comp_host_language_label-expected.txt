@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Element should have attribute 'data-expectedlabel'. Element: <img alt=" " data-expectedlabel="" data-testname="img[alt] with single space character as name" class="ex" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
-Harness: the test ran to completion.
-

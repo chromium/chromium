@@ -102,7 +102,6 @@ class DataSharingLiveTest : public signin::test::LiveTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
     constexpr char SYNC_URL[] =

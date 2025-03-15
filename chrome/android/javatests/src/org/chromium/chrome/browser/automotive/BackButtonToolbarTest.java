@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -280,16 +281,19 @@ public class BackButtonToolbarTest {
     }
 
     private ChromeDialog createAndShowFullscreenChromeDialog(
-            Context context, boolean setContentView) throws Exception {
+            Activity activity, boolean setContentView) throws Exception {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     final ChromeDialog dialog =
-                            new ChromeDialog(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+                            new ChromeDialog(
+                                    activity,
+                                    R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                                    /* shouldPadForWindowInsets= */ true);
                     if (setContentView) {
                         dialog.setContentView(TEST_DIALOG_LAYOUT);
                     } else {
                         dialog.addContentView(
-                                LayoutInflater.from(context).inflate(TEST_DIALOG_LAYOUT, null),
+                                LayoutInflater.from(activity).inflate(TEST_DIALOG_LAYOUT, null),
                                 new LayoutParams(MATCH_PARENT, MATCH_PARENT));
                     }
                     dialog.show();

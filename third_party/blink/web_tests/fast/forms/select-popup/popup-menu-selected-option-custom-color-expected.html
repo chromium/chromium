@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
+<style>
+.color {
+  background-color: green;
+  color: red;
+}
+</style>
+
+<select>
+  <option>one</option>
+  <option class=color>two</option>
+</select>
+
+<script>
+  window.onload = openPickerAppearanceOnly(document.querySelector('select'));
+</script>

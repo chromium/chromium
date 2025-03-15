@@ -164,6 +164,7 @@ export declare interface HostRequestTypes {
       groupName: string,
     },
   };
+  glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}};
 }
 
 // Types of requests to the GlicWebClient.
@@ -263,6 +264,7 @@ type HostRequestEnumNamesType = {
     OnResponseRated: 0,
     ScrollTo: 0,
     SetSyntheticExperimentState: 0,
+    OpenOsPermissionSettingsMenu: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)

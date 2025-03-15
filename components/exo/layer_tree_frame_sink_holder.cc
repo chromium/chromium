@@ -410,9 +410,8 @@ void LayerTreeFrameSinkHolder::DiscardCachedFrame(
         });
   }
   cached_frame_.reset();
-  if (frame_timing_history_) {
-    frame_timing_history_->FrameDiscarded();
-  }
+
+  frame_timing_history_->FrameDiscarded();
 }
 
 void LayerTreeFrameSinkHolder::SendDiscardedFrameNotifications(

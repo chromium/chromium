@@ -558,8 +558,6 @@ source_set("extensions") {
       "chrome_extension_system_factory.h",
       "chrome_extension_web_contents_observer.cc",
       "chrome_extension_web_contents_observer.h",
-      "chrome_extensions_browser_client.cc",
-      "chrome_extensions_browser_client.h",
       "chrome_extensions_browser_interface_binders.cc",
       "chrome_extensions_browser_interface_binders.h",
       "chrome_kiosk_delegate.h",
@@ -1599,5 +1597,40 @@ if (enable_extensions) {
       # Pull test-specific stubs for symbols needed by //c/b.
       "//chrome/test:test_support",
     ]
+  }
+
+  # ChromeExtensionsBrowserClient.
+  source_set("chrome_extensions_browser_client") {
+    sources = [
+      "chrome_extensions_browser_client.cc",
+      "chrome_extensions_browser_client.h",
+    ]
+
+    public_deps = [ "//chrome/browser/safe_browsing" ]
+
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/browser/prefetch",
+      "//chrome/browser/ui",
+      "//chrome/browser/web_applications",
+      "//components/embedder_support:user_agent",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//components/proxy_config",
+      "//components/safe_browsing/core/common:features",
+      "//components/update_client",
+      "//extensions/browser/updater",
+      "//extensions/browser/updater:keepalive",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/login/demo_mode",
+        "//chrome/browser/ash/profiles",
+        "//chrome/browser/chromeos/policy/dlp",
+        "//chromeos/components/mgs",
+      ]
+    }
   }
 }  # if (enable_extensions)

@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
@@ -121,20 +121,20 @@ void WakeUpServiceWorker(const Extension& extension, Profile& profile) {
 
 }  // namespace
 
-class OffscreenApiTest : public ExtensionPlatformApiTest {
+class OffscreenApiTest : public ExtensionApiTest {
  public:
   OffscreenApiTest() = default;
   ~OffscreenApiTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionPlatformApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
     // Add the kOffscreenDocumentTesting switch to allow the use of the
     // `TESTING` reason in offscreen document creation.
     command_line->AppendSwitch(switches::kOffscreenDocumentTesting);
   }
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -280,7 +280,7 @@ class OffscreenApiTestWithoutCommandLineFlag : public OffscreenApiTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Explicitly don't call OffscreenApiTest's version to avoid adding the
     // commandline flag.
-    ExtensionPlatformApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
   }
 };
 

@@ -5,7 +5,7 @@
 #include "chrome/browser/glic/interactive_test_util.h"
 
 #include "base/scoped_observation_traits.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/polling_state_observer.h"
 

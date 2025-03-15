@@ -52,7 +52,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -293,11 +292,8 @@ public class WindowAndroid
             mOverlayTransformApiHelper = OverlayTransformApiHelper.create(this);
         }
 
-        // Enable occlusion only for desktop Android. For non-desktop Android, occlusion signals
-        // from Android should be the same as the Activity lifecycle signals that already control
-        // web contents occlusion. Also, on rotate Android seems to send a spurious occlusion
-        // signal. See crbug.com/380209799 for details.
-        mTrackOcclusion = trackOcclusion && BuildConfig.IS_DESKTOP_ANDROID;
+        // Disable occlusion for now, see crbug.com/399724403 for details.
+        mTrackOcclusion = false;
         if (mTrackOcclusion) {
             var decorView = getDecorView();
             assert decorView != null;

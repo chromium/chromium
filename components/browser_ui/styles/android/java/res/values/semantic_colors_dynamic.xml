@@ -43,6 +43,8 @@ found in the LICENSE file.
 
     <macro name="custom_tabs_toast_bg_color">?attr/colorOnSurfaceInverse</macro>
 
+    <macro name="progress_bar_bg_color" tools:ignore="UnusedResources">?attr/colorSurfaceContainerHighest</macro>
+
     <!-- Gated by full dynamic colors param, no fallback needed. -->
     <macro name="circular_progress_icon_color_small_large">?attr/colorPrimary</macro>
     <macro name="circular_progress_outer_circle_progress_color_small">?attr/colorPrimary</macro>

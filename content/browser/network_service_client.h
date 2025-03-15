@@ -132,8 +132,6 @@ class NetworkServiceClient
           methods_with_options,
       const std::optional<std::string>& with_lock,
       OnSharedStorageHeaderReceivedCallback callback) override;
-  void OnAdAuctionEventRecordHeaderReceived(
-      network::AdAuctionEventRecord event_record) override;
   void Clone(
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
