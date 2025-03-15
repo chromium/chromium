@@ -48,7 +48,7 @@ void CheckUpdaterHealthTask::CheckAndRecordUpdaterHealth(
   scoped_refptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance(scope_);
   const std::wstring task_name =
-      task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope_));
+      task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope_, version));
 
   // Count the number of tasks for the product.
   size_t number_of_tasks = 0;
