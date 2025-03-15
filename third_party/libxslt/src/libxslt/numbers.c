@@ -58,9 +58,13 @@ struct _xsltFormat {
     xmlChar		*end;
 };
 
-static char alpha_upper_list[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-static char alpha_lower_list[] = "abcdefghijklmnopqrstuvwxyz";
-static xsltFormatToken default_token;
+static const char alpha_upper_list[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+static const char alpha_lower_list[] = "abcdefghijklmnopqrstuvwxyz";
+static const xsltFormatToken default_token = {
+    BAD_CAST(DEFAULT_SEPARATOR),
+    DEFAULT_TOKEN,
+    1
+};
 
 /*
  * Helper functions copied from libxml2
@@ -242,7 +246,7 @@ xsltNumberFormatAlpha(xsltNumberDataPtr data,
     char temp_string[sizeof(double) * CHAR_BIT * sizeof(xmlChar) + 1];
     char *pointer;
     int i;
-    char *alpha_list;
+    const char *alpha_list;
     double alpha_size = (double)(sizeof(alpha_upper_list) - 1);
 
     /*
@@ -364,11 +368,6 @@ xsltNumberFormatTokenize(const xmlChar *format,
     int val;
     int len;
 
-    default_token.token = DEFAULT_TOKEN;
-    default_token.width = 1;
-    default_token.separator = BAD_CAST(DEFAULT_SEPARATOR);
-
-
     tokens->start = NULL;
     tokens->tokens[0].separator = NULL;
     tokens->end = NULL;
@@ -472,7 +471,7 @@ xsltNumberFormatInsertNumbers(xsltNumberDataPtr data,
 {
     int i = 0;
     double number;
-    xsltFormatTokenPtr token;
+    const xsltFormatToken *token;
 
     /*
      * Handle initial non-alphanumeric token
@@ -680,51 +679,48 @@ xsltNumberFormatGetMultipleLevel(xsltTransformContextPtr context,
 {
     int amount = 0;
     int cnt;
-    xmlNodePtr oldCtxtNode;
     xmlNodePtr ancestor;
     xmlNodePtr preceding;
-    xmlXPathParserContextPtr parser;
 
-    oldCtxtNode = context->xpathCtxt->node;
-    parser = xmlXPathNewParserContext(NULL, context->xpathCtxt);
-    if (parser) {
-	/* ancestor-or-self::*[count] */
-	ancestor = node;
-	while ((ancestor != NULL) && (ancestor->type != XML_DOCUMENT_NODE)) {
-	    if ((fromPat != NULL) &&
-		xsltTestCompMatchList(context, ancestor, fromPat))
-		break; /* for */
+    /* ancestor-or-self::*[count] */
+    ancestor = node;
 
-            /*
-             * The xmlXPathNext* iterators require that the context node is
-             * set to the start node. Calls to xsltTestCompMatch* may also
-             * leave the context node in an undefined state, so make sure
-             * that the context node is reset before each iterator invocation.
-             */
+    while ((ancestor != NULL) && (ancestor->type != XML_DOCUMENT_NODE)) {
+        if ((fromPat != NULL) &&
+            xsltTestCompMatchList(context, ancestor, fromPat))
+            break;
 
-	    if (xsltTestCompMatchCount(context, ancestor, countPat, node)) {
-		/* count(preceding-sibling::*) */
-		cnt = 1;
-                context->xpathCtxt->node = ancestor;
-                preceding = xmlXPathNextPrecedingSibling(parser, ancestor);
-                while (preceding != NULL) {
-	            if (xsltTestCompMatchCount(context, preceding, countPat,
-                                               node))
-			cnt++;
-                    context->xpathCtxt->node = ancestor;
-                    preceding =
-                        xmlXPathNextPrecedingSibling(parser, preceding);
-		}
-		array[amount++] = (double)cnt;
-		if (amount >= max)
-		    break; /* for */
-	    }
-            context->xpathCtxt->node = node;
-            ancestor = xmlXPathNextAncestor(parser, ancestor);
-	}
-	xmlXPathFreeParserContext(parser);
+        if (xsltTestCompMatchCount(context, ancestor, countPat, node)) {
+            /* count(preceding-sibling::*) */
+            cnt = 1;
+            if (ancestor->type != XML_NAMESPACE_DECL)
+                preceding = ancestor->prev;
+            else
+                preceding = NULL;
+            while (preceding != NULL) {
+                if (xsltTestCompMatchCount(context, preceding, countPat,
+                                           node))
+                    cnt++;
+                preceding = preceding->prev;
+            }
+            array[amount++] = (double)cnt;
+            if (amount >= max)
+                break;
+        }
+
+        if ((ancestor != NULL) && (ancestor->type == XML_NAMESPACE_DECL)) {
+            xmlNsPtr ns = (xmlNsPtr) ancestor;
+
+            if ((ns->next != NULL) &&
+                (ns->next->type != XML_NAMESPACE_DECL))
+                ancestor = (xmlNodePtr) ns->next;
+            else
+                ancestor = NULL;
+        } else {
+            ancestor = ancestor->parent;
+        }
     }
-    context->xpathCtxt->node = oldCtxtNode;
+
     return amount;
 }
 
@@ -737,9 +733,12 @@ xsltNumberFormatGetValue(xmlXPathContextPtr context,
     int amount = 0;
     xmlBufferPtr pattern;
     xmlXPathObjectPtr obj;
+    xmlNodePtr oldNode;
 
     pattern = xmlBufferCreate();
     if (pattern != NULL) {
+        oldNode = context->node;
+
 	xmlBufferCCat(pattern, "number(");
 	xmlBufferCat(pattern, value);
 	xmlBufferCCat(pattern, ")");
@@ -752,6 +751,8 @@ xsltNumberFormatGetValue(xmlXPathContextPtr context,
 	    xmlXPathFreeObject(obj);
 	}
 	xmlBufferFree(pattern);
+
+        context->node = oldNode;
     }
     return amount;
 }
