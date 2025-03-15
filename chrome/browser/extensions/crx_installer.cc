@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/blocklist_check.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
@@ -79,6 +78,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_management.h"
 #endif
 
 using content::BrowserThread;
@@ -434,9 +437,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
       // For apps with a gallery update URL, require that they be installed
       // from the gallery.
       // TODO(erikkay) Apply this rule for paid extensions and themes as well.
-      ExtensionManagement* extension_management =
-          ExtensionManagementFactory::GetForBrowserContext(profile_);
-      if (extension_management->UpdatesFromWebstore(*extension)) {
+      if (UpdatesFromWebstore(*extension)) {
         return CrxInstallError(
             CrxInstallErrorType::OTHER,
             CrxInstallErrorDetail::NOT_INSTALLED_FROM_GALLERY,
@@ -875,10 +876,7 @@ void CrxInstaller::InitializeCreationFlagsForUpdate(const Extension* extension,
   // which are newer. We need to check whether the update URL is from webstore
   // or not from |ExtensionManagement| because the extension update URL might be
   // overriden by policy.
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-  if (extension->from_webstore() ||
-      extension_management->UpdatesFromWebstore(*extension)) {
+  if (extension->from_webstore() || UpdatesFromWebstore(*extension)) {
     creation_flags_ |= Extension::FROM_WEBSTORE;
   }
 
@@ -900,10 +898,7 @@ void CrxInstaller::UpdateCreationFlagsAndCompleteInstall(
   if (withholding_behavior == WithholdingBehavior::kWithholdPermissions)
     set_withhold_permissions();
 
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile());
-  const GURL update_url =
-      extension_management->GetEffectiveUpdateURL(*(extension()));
+  const GURL update_url = GetEffectiveUpdateURL(*(extension()));
   const bool updates_from_webstore_or_empty_update_url =
       update_url.is_empty() || extension_urls::IsWebstoreUpdateUrl(update_url);
   if (!shared_file_task_runner_->PostTask(
@@ -1251,6 +1246,30 @@ void CrxInstaller::set_expectations_verified_callback(
 
 void CrxInstaller::OnBrowserTerminating() {
   browser_terminating_ = true;
+}
+
+GURL CrxInstaller::GetEffectiveUpdateURL(const Extension& extension) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/394876083): Use ExtensionManagement when it
+  // is ported to desktop Android.
+  return ManifestURL::GetUpdateURL(&extension);
+#else
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return extension_management->GetEffectiveUpdateURL(extension);
+#endif
+}
+
+bool CrxInstaller::UpdatesFromWebstore(const Extension& extension) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/394876083): Use ExtensionManagement when it
+  // is ported to desktop Android.
+  return true;
+#else
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return extension_management->UpdatesFromWebstore(extension);
+#endif
 }
 
 }  // namespace extensions
