@@ -133,7 +133,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     private ViewGroup mToolbarButtonsContainer;
     // Non-null after inflation occurs.
-    protected @NonNull ImageView mHomeButton;
+    private @NonNull ImageView mHomeButton;
     private TextView mUrlBar;
     protected View mUrlActionContainer;
     private OptionalButtonCoordinator mOptionalButtonCoordinator;
@@ -2118,6 +2118,7 @@ public class ToolbarPhone extends ToolbarLayout
         // Set the correct branded color scheme tinting for the {@link TabSwitcherDrawable} whenever
         // the incognito state changes.
         setTabSwitcherDrawableColorScheme();
+        updateRippleBackground();
     }
 
     @Override
@@ -2167,6 +2168,24 @@ public class ToolbarPhone extends ToolbarLayout
         super.onTabOrModelChanged();
         updateNtpAnimationState();
         updateVisualsForLocationBarState();
+    }
+
+    /** Called when the tab model changes. */
+    private void updateRippleBackground() {
+        var toolbarIconRippleId =
+                isIncognitoBranded()
+                        ? R.drawable.toolbar_button_ripple_incognito
+                        : R.drawable.toolbar_button_ripple;
+        var omniboxIconRippleId =
+                isIncognitoBranded()
+                        ? R.drawable.omnibox_button_ripple_incognito
+                        : R.drawable.omnibox_button_ripple;
+        mHomeButton.setBackgroundResource(toolbarIconRippleId);
+        getTabSwitcherButtonCoordinator()
+                .getContainerView()
+                .setBackgroundResource(toolbarIconRippleId);
+        getMenuButtonCoordinator().updateButtonBackground(toolbarIconRippleId);
+        mLocationBar.updateButtonBackground(omniboxIconRippleId);
     }
 
     private static boolean isVisualStateValidForBrandColorTransition(@VisualState int state) {
@@ -2613,7 +2632,7 @@ public class ToolbarPhone extends ToolbarLayout
             initializeOptionalButton();
         }
 
-        mOptionalButtonCoordinator.updateButton(buttonData);
+        mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
     }
 
     @Override

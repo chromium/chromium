@@ -1179,7 +1179,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
 
         private void updateOptionalButton(ButtonData buttonData) {
             if (mOptionalButtonCoordinator == null) initializeOptionalButton();
-            mOptionalButtonCoordinator.updateButton(buttonData);
+            mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
         }
 
         private void updateOptionalButtonTint() {

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,6 +19,7 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -132,7 +134,7 @@ public class OptionalButtonCoordinator {
      * (according to the BooleanSupplier set with setIsAnimationAllowedPredicate) then this update
      * will be animated. Otherwise it'll instantly switch to the new icon.
      */
-    public void updateButton(ButtonData buttonData) {
+    public void updateButton(ButtonData buttonData, boolean isIncognito) {
         if (buttonData != null
                 && buttonData.getButtonSpec() != null
                 && buttonData.getButtonSpec().getIphCommandBuilder() != null) {
@@ -171,6 +173,22 @@ public class OptionalButtonCoordinator {
         // Reset background alpha, in case the IPH onDismiss callback doesn't fire.
         mMediator.setBackgroundAlpha(255);
         mMediator.updateButton(buttonData);
+
+        if (buttonData == null || buttonData.getButtonSpec() == null) return;
+        // Set hover highlight for profile, voice search, share and new tab button on tablets. Set
+        // box hover highlight for the rest of button variants.
+        if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
+            mView.setBackgroundResource(
+                    isIncognito
+                            ? R.drawable.toolbar_button_ripple_incognito
+                            : R.drawable.toolbar_button_ripple);
+        } else {
+            TypedValue themeRes = new TypedValue();
+            mView.getContext()
+                    .getTheme()
+                    .resolveAttribute(R.attr.selectableItemBackground, themeRes, true);
+            mView.setBackgroundResource(themeRes.resourceId);
+        }
     }
 
     /**
@@ -202,7 +220,7 @@ public class OptionalButtonCoordinator {
     /**
      * Updates the color filter of the background to match the current address bar background color.
      * This color is only used when showing a contextual action button (when {@link
-     * #updateButton(ButtonData)} is called with a {@link
+     * #updateButton(ButtonData, boolean)} is called with a {@link
      * org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec} where {@code isDynamicAction()} is
      * true).
      */
