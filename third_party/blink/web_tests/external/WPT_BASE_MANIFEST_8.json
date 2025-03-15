@@ -319398,6 +319398,22 @@
       "b7918c93323eff9db66ad26a73b78798d35e5f7b",
       []
      ],
+     "script-src-trusted_types_eval_with_report_only_require_trusted_types_eval.html.headers": [
+      "ae1e09e31ea4ba841d96458be2803871448e09ec",
+      []
+     ],
+     "script-src-trusted_types_eval_with_require_trusted_types_eval-expected.txt": [
+      "1713cbdca699f8ae65df16b6e83f06692daddaf0",
+      []
+     ],
+     "script-src-trusted_types_eval_with_require_trusted_types_eval.html.headers": [
+      "3e51fcd47410a11cbb6e16cd5ea426c40e9e1dab",
+      []
+     ],
+     "script-src-trusted_types_eval_without_require_trusted_types_eval.html.headers": [
+      "5658b5ab2de0b836c0ebde7395247cfb11bdb2b1",
+      []
+     ],
      "scriptnonce-specified-source.sub.html.sub.headers": [
       "d23494ca83705ba3cc7c244443eef42856fbca96",
       []
@@ -479658,6 +479674,27 @@
      ],
      "script-src-strict_dynamic_worker.https.html": [
       "213eb6276d854d394b51089bb1585a19c77be93c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-src-trusted_types_eval_with_report_only_require_trusted_types_eval.html": [
+      "192dadee77025bf5fcea11317997a6cc061c1eed",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-src-trusted_types_eval_with_require_trusted_types_eval.html": [
+      "06fae6d623baa223828417fad725304862ba11f3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-src-trusted_types_eval_without_require_trusted_types_eval.html": [
+      "f8481194f9e363a6532f258b6eb2d283199b55ec",
       [
        null,
        {}
