@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_window_resize_animation.h"
+#include "chrome/browser/glic/widget/glic_window_resize_animation.h"
 
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/glic/glic_view.h"
-#include "chrome/browser/glic/glic_window_animator.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_window_animator.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/background.h"
 #include "ui/views/widget/widget.h"

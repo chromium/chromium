@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 
 #include <algorithm>
 
@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/browser_conditions.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
 #include "chrome/browser/glic/glic.mojom.h"
@@ -19,11 +18,12 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_view.h"
-#include "chrome/browser/glic/glic_widget.h"
-#include "chrome/browser/glic/glic_window_animator.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/scoped_glic_button_indicator.h"
+#include "chrome/browser/glic/widget/browser_conditions.h"
+#include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
+#include "chrome/browser/glic/widget/glic_window_animator.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"

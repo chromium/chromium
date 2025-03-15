@@ -6,8 +6,8 @@
 
 #include "base/check.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/browser/glic/glic_view.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/common/webui_url_constants.h"

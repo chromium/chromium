@@ -15,9 +15,9 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_view.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/widget/glic_view.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -33,7 +33,6 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "glic_profile_manager.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/virtual_display_util.h"
@@ -81,14 +80,12 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
 };
 
 // TODO(394945970): Check top right corner position.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       ShowAndCloseAttachedWidget) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
-      // Verify glic is open in attached mode.
-      CheckControllerHasWidget(true),
-      CheckControllerWidgetMode(GlicWindowMode::kAttached),
-      CloseGlicWindow(), CheckControllerHasWidget(false));
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseAttachedWidget) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
+                  // Verify glic is open in attached mode.
+                  CheckControllerHasWidget(true),
+                  CheckControllerWidgetMode(GlicWindowMode::kAttached),
+                  CloseGlicWindow(), CheckControllerHasWidget(false));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, ShowAndCloseDetachedWidget) {

@@ -9,7 +9,7 @@
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_vector_icon_manager.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"

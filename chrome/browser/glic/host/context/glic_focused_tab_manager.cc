@@ -7,8 +7,8 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

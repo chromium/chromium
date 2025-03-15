@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
-#define CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_
+#define CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_
 
 #include <optional>
 #include <vector>
@@ -449,4 +449,4 @@ class GlicWindowController : public views::WidgetObserver,
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_WINDOW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_

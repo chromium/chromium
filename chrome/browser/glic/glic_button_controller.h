@@ -10,7 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/glic.mojom.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
