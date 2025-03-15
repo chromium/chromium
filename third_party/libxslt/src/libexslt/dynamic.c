@@ -64,7 +64,16 @@ exsltDynEvaluateFunction(xmlXPathParserContextPtr ctxt, int nargs) {
 		valuePush(ctxt,xmlXPathNewNodeSet(NULL));
 		return;
 	}
+#if LIBXML_VERSION >= 20911
+        /*
+         * Recursive evaluation can grow the call stack quickly.
+         */
+        ctxt->context->depth += 5;
+#endif
 	ret = xmlXPathEval(str,ctxt->context);
+#if LIBXML_VERSION >= 20911
+        ctxt->context->depth -= 5;
+#endif
 	if (ret)
 		valuePush(ctxt,ret);
 	else {
