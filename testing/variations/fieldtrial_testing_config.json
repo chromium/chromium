@@ -15711,6 +15711,26 @@
             ]
         }
     ],
+    "OmniboxOnDeviceBrainModel": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxOnDeviceTailModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnDeviceHeadModelSelectionFix": [
         {
             "platforms": [
@@ -15729,34 +15749,6 @@
                     },
                     "enable_features": [
                         "OmniboxOnDeviceHeadProviderNonIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxOnDeviceTailSuggest": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxOnDeviceTailModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_Auto_Unload",
-                    "params": {
-                        "UnloadExecutorOnIdle ": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxOnDeviceTailModel"
                     ]
                 }
             ]
