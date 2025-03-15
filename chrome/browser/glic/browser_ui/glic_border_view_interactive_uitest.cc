@@ -6,7 +6,7 @@
 
 #include "base/numerics/ranges.h"
 #include "cc/test/pixel_test_utils.h"
-#include "chrome/browser/glic/glic_border_view.h"
+#include "chrome/browser/glic/browser_ui/glic_border_view.h"
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"

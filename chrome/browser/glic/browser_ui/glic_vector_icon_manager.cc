@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 
 #include "base/logging.h"
 #include "base/no_destructor.h"

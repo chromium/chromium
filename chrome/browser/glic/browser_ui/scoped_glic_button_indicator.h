@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_SCOPED_GLIC_BUTTON_INDICATOR_H_
-#define CHROME_BROWSER_GLIC_SCOPED_GLIC_BUTTON_INDICATOR_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_SCOPED_GLIC_BUTTON_INDICATOR_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_SCOPED_GLIC_BUTTON_INDICATOR_H_
 
 #include "base/memory/weak_ptr.h"
 
@@ -25,4 +25,4 @@ class ScopedGlicButtonIndicator {
   raw_ptr<GlicButton> glic_button_;
 };
 }  // namespace glic
-#endif  // CHROME_BROWSER_GLIC_SCOPED_GLIC_BUTTON_INDICATOR_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_SCOPED_GLIC_BUTTON_INDICATOR_H_

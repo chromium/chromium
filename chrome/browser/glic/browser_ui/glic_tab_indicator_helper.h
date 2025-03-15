@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_TAB_INDICATOR_HELPER_H_
-#define CHROME_BROWSER_GLIC_GLIC_TAB_INDICATOR_HELPER_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_TAB_INDICATOR_HELPER_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_TAB_INDICATOR_HELPER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
@@ -59,4 +59,4 @@ class GlicTabIndicatorHelper {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_TAB_INDICATOR_HELPER_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_TAB_INDICATOR_HELPER_H_

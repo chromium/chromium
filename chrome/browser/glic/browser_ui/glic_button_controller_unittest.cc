@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/glic_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/glic/glic_button_controller_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_test_util.h"
-#include "chrome/browser/glic/glic_vector_icon_manager.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"

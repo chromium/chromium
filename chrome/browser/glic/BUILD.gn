@@ -10,19 +10,20 @@ assert(enable_glic)
 
 source_set("glic") {
   sources = [
+    "browser_ui/glic_border_view.h",
+    "browser_ui/glic_button_controller.h",
+    "browser_ui/glic_button_controller_delegate.h",
+    "browser_ui/glic_iph_controller.h",
+    "browser_ui/glic_tab_indicator_helper.h",
+    "browser_ui/glic_vector_icon_manager.h",
+    "browser_ui/scoped_glic_button_indicator.h",
     "fre/glic_fre_ui.h",
-    "glic_border_view.h",
-    "glic_button_controller.h",
-    "glic_button_controller_delegate.h",
     "glic_enabling.h",
-    "glic_iph_controller.h",
     "glic_keyed_service.h",
     "glic_keyed_service_factory.h",
     "glic_pref_names.h",
     "glic_profile_manager.h",
     "glic_settings_util.h",
-    "glic_tab_indicator_helper.h",
-    "glic_vector_icon_manager.h",
     "host/auth_controller.h",
     "host/context/glic_focused_tab_manager.h",
     "host/context/glic_page_context_fetcher.h",
@@ -34,7 +35,6 @@ source_set("glic") {
     "host/glic_ui.h",
     "host/glic_web_client_access.h",
     "host/guest_util.h",
-    "scoped_glic_button_indicator.h",
     "widget/glic_view.h",
     "widget/glic_window_controller.h",
   ]
@@ -74,6 +74,12 @@ source_set("enum") {
 
 source_set("impl") {
   sources = [
+    "browser_ui/glic_border_view.cc",
+    "browser_ui/glic_button_controller.cc",
+    "browser_ui/glic_iph_controller.cc",
+    "browser_ui/glic_tab_indicator_helper.cc",
+    "browser_ui/glic_vector_icon_manager.cc",
+    "browser_ui/scoped_glic_button_indicator.cc",
     "fre/fre_util.cc",
     "fre/fre_util.h",
     "fre/glic_fre_controller.cc",
@@ -83,10 +89,7 @@ source_set("impl") {
     "fre/glic_fre_page_handler.cc",
     "fre/glic_fre_page_handler.h",
     "fre/glic_fre_ui.cc",
-    "glic_border_view.cc",
-    "glic_button_controller.cc",
     "glic_enabling.cc",
-    "glic_iph_controller.cc",
     "glic_keyed_service.cc",
     "glic_keyed_service_factory.cc",
     "glic_metrics.cc",
@@ -94,8 +97,6 @@ source_set("impl") {
     "glic_pref_names.cc",
     "glic_profile_manager.cc",
     "glic_settings_util.cc",
-    "glic_tab_indicator_helper.cc",
-    "glic_vector_icon_manager.cc",
     "host/auth_controller.cc",
     "host/context/glic_focused_tab_manager.cc",
     "host/context/glic_page_context_fetcher.cc",
@@ -110,7 +111,6 @@ source_set("impl") {
     "host/guest_util.cc",
     "host/webui_contents_container.cc",
     "host/webui_contents_container.h",
-    "scoped_glic_button_indicator.cc",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
     "widget/glic_view.cc",
@@ -201,8 +201,8 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "browser_ui/glic_button_controller_unittest.cc",
     "fre/glic_fre_controller_unittest.cc",
-    "glic_button_controller_unittest.cc",
     "glic_enabling_unittest.cc",
     "glic_metrics_unittest.cc",
     "host/context/glic_screenshot_capturer_unittest.cc",
@@ -259,11 +259,11 @@ source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
+    "browser_ui/glic_border_view_interactive_uitest.cc",
+    "browser_ui/glic_tab_indicator_helper_interactive_uitest.cc",
     "fre/glic_fre_controller_interactive_uitest.cc",
-    "glic_border_view_interactive_uitest.cc",
     "glic_permission_enforcement_interactive_uitest.cc",
     "glic_settings_util_interactive_uitest.cc",
-    "glic_tab_indicator_helper_interactive_uitest.cc",
     "host/glic_annotation_manager_interactive_uitest.cc",
     "host/glic_api_uitest.cc",
     "host/glic_ui_interactive_uitest.cc",

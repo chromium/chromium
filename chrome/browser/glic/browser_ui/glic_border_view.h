@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_
-#define CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_
+#ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BORDER_VIEW_H_
+#define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BORDER_VIEW_H_
 
 #include "base/scoped_observation.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
@@ -140,4 +140,4 @@ END_VIEW_BUILDER
 
 DEFINE_VIEW_BUILDER(, glic::GlicBorderView)
 
-#endif  // CHROME_BROWSER_GLIC_GLIC_BORDER_VIEW_H_
+#endif  // CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BORDER_VIEW_H_
