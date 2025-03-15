@@ -25,6 +25,7 @@ void AddAppToAllowlistForTesting(std::string_view app_id);
 void ResetAllowlistForTesting();
 
 BASE_DECLARE_FEATURE(kAllowUserInstalledChromeApps);
+BASE_DECLARE_FEATURE(kAllowUserInstalledChromeAppsInKioskSessions);
 
 }  // namespace apps::chrome_app_deprecation
 

@@ -12,7 +12,9 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -20,6 +22,10 @@ namespace apps::chrome_app_deprecation {
 
 BASE_FEATURE(kAllowUserInstalledChromeApps,
              "AllowUserInstalledChromeApps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAllowUserInstalledChromeAppsInKioskSessions,
+             "AllowUserInstalledChromeAppsInKioskSessions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -168,6 +174,13 @@ DeprecationStatus HandleDeprecation(std::string_view app_id, Profile* profile) {
     } else {
       return DeprecationStatus::kLaunchBlocked;
     }
+  } else if (chromeos::IsKioskSession()) {
+    return (base::FeatureList::IsEnabled(
+                kAllowUserInstalledChromeAppsInKioskSessions) ||
+            profile->GetPrefs()->GetBoolean(
+                prefs::kKioskChromeAppsForceAllowed))
+               ? DeprecationStatus::kLaunchAllowed
+               : DeprecationStatus::kLaunchBlocked;
   }
 
   return DeprecationStatus::kLaunchAllowed;
