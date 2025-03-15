@@ -314792,20 +314792,12 @@
       "be955258530b6634f6233f8c5b6670f6c83f54e5",
       []
      ],
-     "comp_host_language_label-expected.txt": [
-      "f55c34ba4e610ac6123f63cc33836618fa809d86",
-      []
-     ],
-     "comp_name_from_content-expected.txt": [
-      "4507250df2f0131e2bc7e9e94fa300c7eff5a05d",
-      []
-     ],
      "comp_name_from_heading.tentative-expected.txt": [
-      "a7a07401f9cb04ca8b4ca893e30b10d04f2fbafe",
+      "3de6a59a21ac8913b05e46d37e65cec154ddb1a6",
       []
      ],
      "comp_tooltip.tentative-expected.txt": [
-      "ba5be840bd2d9a12b4567875262a8dae00846cdb",
+      "4b014e16dbb8bae5e46405d80a6d9cfb4fe53e38",
       []
      ]
     }
@@ -382937,51 +382929,55 @@
       []
      ],
      "server-response.https.window_19-22-expected.txt": [
-      "d2e5d60ed79152e7850b844d76fcc0717b55b561",
+      "f047365726d5ab22616c99199f4c3aaf63c6aca4",
       []
      ],
      "server-response.https.window_23-26-expected.txt": [
-      "4f80086d9de4cad4c43c94dd6bd70a4c29261247",
+      "97cd2c92c6d74e3e76b2b3243e1d05e9f5ee510f",
       []
      ],
      "server-response.https.window_27-30-expected.txt": [
-      "39ffe352e891a2e9461c7c1b601c73e580473238",
+      "e542b5ec0a2a256c185d46557da4bdfb6ad49d92",
       []
      ],
      "server-response.https.window_31-34-expected.txt": [
-      "e6d22fb947f1ef9053e68f84903869be9878649a",
+      "3bfc4d4439712d657568753eb9b4066255102600",
       []
      ],
      "server-response.https.window_35-38-expected.txt": [
-      "14e009d7b137b694b0cf952bcfc02516dcd560ad",
+      "64c35852eb6e59ac8e36a58f1d4fd04581f043ef",
       []
      ],
      "server-response.https.window_39-42-expected.txt": [
-      "66fec79435b71049cac71067857486fc9766d52f",
+      "64c859ffdf2341d6b1d12c40962d7e7c81efd31d",
       []
      ],
      "server-response.https.window_43-46-expected.txt": [
-      "bb4e2ae09d6ae00cb933e49fd5388ee48a27228c",
+      "426df50f91165634df78493f198f67d8e19228f3",
       []
      ],
      "server-response.https.window_47-50-expected.txt": [
-      "fe892c918bb2ac212bc3fd5c81a1465ce39f3636",
+      "00b9b83dbc33e5a19adef94f5b70dcee9dfc2223",
       []
      ],
      "server-response.https.window_51-54-expected.txt": [
-      "f582b26d0c3de4a15043420659fff35ad85cab5e",
+      "3a0e0913824f6e4b74df702022cab4ca873058bd",
       []
      ],
      "server-response.https.window_55-58-expected.txt": [
-      "2f0a4622ef4f9f77126b777f0a771ef5ac366487",
+      "2b746873e40ac85fd2e1a520cdf54c8dd251bc7a",
       []
      ],
      "server-response.https.window_59-62-expected.txt": [
-      "48d2125d5c6217a753d5fee80aea861ca55cd188",
+      "8f2a411b6284148a0d1e8d214041fc58de3a7f44",
       []
      ],
      "server-response.https.window_63-66-expected.txt": [
-      "e50d5c72eba5bb522de9d75a8f69a977327a2cd1",
+      "102f032f7e2b392443f9986b950f209333fc4a4f",
+      []
+     ],
+     "server-response.https.window_67-70-expected.txt": [
+      "0fc7078a221907e91095a7dcac3dfe47d2ce6e4d",
       []
      ],
      "server-response.https.window_7-10-expected.txt": [
@@ -403473,10 +403469,6 @@
      "212cae7fa52e95b820d11e7ca8e2eed7d36bf112",
      []
     ],
-    "names-expected.txt": [
-     "c68126cb39f2190499b082fafc140454cb647172",
-     []
-    ],
     "roles-contextual-expected.txt": [
      "352325b24d232a655d543200e018e032981d6f2f",
      []
@@ -419520,6 +419512,18 @@
        []
       ]
      },
+     "redirect-to-prefetch-url.https_origin=cross-site-initial-expected.txt": [
+      "934667b71b5fe475df711ec71be69e00a2fc35d6",
+      []
+     ],
+     "redirect-to-prefetch-url.https_origin=cross-site-redirect-expected.txt": [
+      "934667b71b5fe475df711ec71be69e00a2fc35d6",
+      []
+     ],
+     "redirect-to-prefetch-url.https_origin=same-origin-expected.txt": [
+      "934667b71b5fe475df711ec71be69e00a2fc35d6",
+      []
+     ],
      "resources": {
       "authenticate.py": [
        "8820781709d30f11cb842f54d8e25d1ed24a4a8e",
@@ -419567,6 +419571,10 @@
       ],
       "random_redirect.py": [
        "595096e0cace1237badd1137bbcee414c01e9c15",
+       []
+      ],
+      "redirect-helper.sub.js": [
+       "a17eaabe2430090ce0554fec480480a261ae41aa",
        []
       ],
       "ruleset.py": [
@@ -422161,7 +422169,7 @@
     ],
     "role": {
      "role-img.tentative-expected.txt": [
-      "a6c8548741b126d18f02a03708c738a3f529f0f3",
+      "abc8242962a6e2fc8bd3e120e9876cf824334485",
       []
      ]
     }
@@ -423677,7 +423685,7 @@
       []
      ],
      "aria-utils.js": [
-      "5ed73b06e455265801f272bed4247671e909ef3c",
+      "ec53464c18fda38a1e26281a226d7ed8bd653d48",
       []
      ],
      "manual.css": [
@@ -459915,16 +459923,7 @@
       ]
      ],
      "comp_name_from_content.html": [
-      "32a9a7b3c43b0f25fc09045c1a630a71c784b265",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "comp_name_from_content.tentative.html": [
-      "3239a1dcf3106ff49c4ebb569140dd6445dbbda3",
+      "6626eecb0ddd8f6e5709350a93cfd384994efff4",
       [
        null,
        {
@@ -583300,7 +583299,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "5374adb164a7e8a18612be95d7dc4daf924b7156",
+      "d4eaf0d25123298a696f0116cb54c6fe144038d4",
       [
        "fledge/tentative/server-response.https.window.html?1-6",
        {
@@ -583400,6 +583399,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583504,6 +583507,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583608,6 +583615,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583712,6 +583723,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583816,6 +583831,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583920,6 +583939,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584024,6 +584047,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584128,6 +584155,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584232,6 +584263,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584336,6 +584371,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584440,6 +584479,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584544,6 +584587,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584648,6 +584695,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584752,6 +584803,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584856,6 +584911,118 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?67-70",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-6"
+         ],
+         [
+          "variant",
+          "?7-10"
+         ],
+         [
+          "variant",
+          "?11-14"
+         ],
+         [
+          "variant",
+          "?15-18"
+         ],
+         [
+          "variant",
+          "?19-22"
+         ],
+         [
+          "variant",
+          "?23-26"
+         ],
+         [
+          "variant",
+          "?27-30"
+         ],
+         [
+          "variant",
+          "?31-34"
+         ],
+         [
+          "variant",
+          "?35-38"
+         ],
+         [
+          "variant",
+          "?39-42"
+         ],
+         [
+          "variant",
+          "?43-46"
+         ],
+         [
+          "variant",
+          "?47-50"
+         ],
+         [
+          "variant",
+          "?51-54"
+         ],
+         [
+          "variant",
+          "?55-58"
+         ],
+         [
+          "variant",
+          "?59-62"
+         ],
+         [
+          "variant",
+          "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584960,6 +585127,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -640169,7 +640340,7 @@
          ]
         ],
         "select-events.tentative.html": [
-         "28abf1534c1ccb7e4ad93e26987e78652c428459",
+         "2a9280e1ae886c3091eaf07a09547b31e4a8707a",
          [
           null,
           {
@@ -703395,10 +703566,64 @@
        }
       ]
      ],
-     "redirect-url.sub.https.html": [
-      "02bb35349ff9f72e74d0244473447b9ea89ce9a4",
+     "redirect-middle-of-prefetch.https.html": [
+      "2afa5c82a76a1022a63499bae4f6426ce126c8c8",
       [
-       null,
+       "speculation-rules/prefetch/redirect-middle-of-prefetch.https.html?origin=cross-site-initial",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-middle-of-prefetch.https.html?origin=cross-site-redirect",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-middle-of-prefetch.https.html?origin=same-origin",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "redirect-to-prefetch-url.https.html": [
+      "f634ede8838d1eb8b98f1c80a5c342c2db34ed52",
+      [
+       "speculation-rules/prefetch/redirect-to-prefetch-url.https.html?origin=cross-site-initial",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-to-prefetch-url.https.html?origin=cross-site-redirect",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-to-prefetch-url.https.html?origin=same-origin",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "redirect-url.https.html": [
+      "41fab0791ac5eb44f3e459d83c94c781e396356c",
+      [
+       "speculation-rules/prefetch/redirect-url.https.html?origin=cross-site-initial",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-url.https.html?origin=cross-site-redirect",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-url.https.html?origin=same-origin",
        {
         "timeout": "long"
        }
