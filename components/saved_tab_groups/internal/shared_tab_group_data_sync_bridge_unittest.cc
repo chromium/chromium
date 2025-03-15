@@ -2242,14 +2242,39 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, UntrackEntitiesForCollaboration) {
       "http://google.com/2", u"tab 2", group2.saved_guid(), /*position=*/0);
   model()->AddedLocally(group2);
 
+  StoreSharedSyncMetadataBasedOnModel();
+  std::string group_key = group.saved_guid().AsLowercaseString();
+  std::string tab_key = tab1.saved_tab_guid().AsLowercaseString();
+  base::RunLoop run_loop;
+  store().ReadAllMetadata(base::BindLambdaForTesting(
+      [&run_loop, &group_key, &tab_key](
+          const std::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+        syncer::EntityMetadataMap metadata_map =
+            metadata_batch->TakeAllMetadata();
+        ASSERT_TRUE(metadata_map.find(group_key) != metadata_map.end());
+        ASSERT_TRUE(metadata_map.find(tab_key) != metadata_map.end());
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
   // Only group 1 and its tab will be untracked.
-  EXPECT_CALL(mock_processor(), UntrackEntityForStorageKey(
-                                    group.saved_guid().AsLowercaseString()))
-      .Times(1);
-  EXPECT_CALL(mock_processor(), UntrackEntityForStorageKey(
-                                    tab1.saved_tab_guid().AsLowercaseString()))
-      .Times(1);
+  EXPECT_CALL(mock_processor(), UntrackEntityForStorageKey(group_key)).Times(1);
+  EXPECT_CALL(mock_processor(), UntrackEntityForStorageKey(tab_key)).Times(1);
   bridge()->UntrackEntitiesForCollaboration(collaboration);
+
+  base::RunLoop run_loop2;
+  store().ReadAllMetadata(base::BindLambdaForTesting(
+      [&run_loop2, &group_key, &tab_key](
+          const std::optional<syncer::ModelError>& error,
+          std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+        syncer::EntityMetadataMap metadata_map =
+            metadata_batch->TakeAllMetadata();
+        EXPECT_TRUE(metadata_map.find(group_key) == metadata_map.end());
+        EXPECT_TRUE(metadata_map.find(tab_key) == metadata_map.end());
+        run_loop2.Quit();
+      }));
+  run_loop2.Run();
 }
 
 // The number of tabs to test the correct ordering of remote updates.

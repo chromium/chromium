@@ -1041,6 +1041,10 @@ void SharedTabGroupDataSyncBridge::ProcessTabGroupLocalIdChanged(
 
 void SharedTabGroupDataSyncBridge::UntrackEntitiesForCollaboration(
     const syncer::CollaborationId& collaboration_id) {
+  base::ScopedClosureRunner write_batch_scoped_destroy_closure =
+      CreateWriteBatchWithDestroyClosure(/*store_write_batch_on_destroy=*/true);
+  CHECK(ongoing_write_batch_);
+
   for (const SavedTabGroup* group : model_wrapper_->GetTabGroups()) {
     if (!group->collaboration_id().has_value()) {
       continue;
@@ -1051,9 +1055,13 @@ void SharedTabGroupDataSyncBridge::UntrackEntitiesForCollaboration(
     }
 
     for (const SavedTabGroupTab& tab : group->saved_tabs()) {
-      change_processor()->UntrackEntityForStorageKey(StorageKeyForTab(tab));
+      std::string storage_key = StorageKeyForTab(tab);
+      ongoing_write_batch_->GetMetadataChangeList()->ClearMetadata(storage_key);
+      change_processor()->UntrackEntityForStorageKey(storage_key);
     }
-    change_processor()->UntrackEntityForStorageKey(StorageKeyForGroup(*group));
+    std::string storage_key = StorageKeyForGroup(*group);
+    ongoing_write_batch_->GetMetadataChangeList()->ClearMetadata(storage_key);
+    change_processor()->UntrackEntityForStorageKey(storage_key);
   }
 }
 
