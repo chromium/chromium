@@ -6490,8 +6490,22 @@
        {}
       ]
      ],
+     "delete-selection-with-null-range.html": [
+      "4d814eab807facfa13a11084b2d5f1ecda712c18",
+      [
+       null,
+       {}
+      ]
+     ],
      "delete-to-join-inline-blocks.html": [
       "a299c519cb5d4999118c349d79518cffbb891177",
+      [
+       null,
+       {}
+      ]
+     ],
+     "design-mode-textarea.html": [
+      "d9f01e41653bc07d3e939a968485f0c9c60417d9",
       [
        null,
        {}
@@ -6532,6 +6546,13 @@
        {}
       ]
      ],
+     "empty-editable.html": [
+      "eda75a13cd5b4be66f42f43154ed6ed2ff177297",
+      [
+       null,
+       {}
+      ]
+     ],
      "enableInlineTableEditing-after-updating-selection-range-cross-shadow-dom-boundary.html": [
       "b248e03ea05fb85b89ab50e782d37ffec9075ea9",
       [
@@ -6562,6 +6583,13 @@
      ],
      "execCommand-without-selection-ranges.html": [
       "04913664e6d94d277f0bee88d419b1c47c32ce4b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-letter-crossing-engine-boundary.html": [
+      "ccea4365a69aa98c6c61657c20980ff1a6746300",
       [
        null,
        {}
@@ -7199,38 +7227,6 @@
      ],
      "white-space-nowrap-to-pre-line.html": [
       "bedd0e7bc6499f9fd4dbd1269d5361391a8a441f",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "other": {
-     "delete-selection-with-null-range-crash.html": [
-      "4d814eab807facfa13a11084b2d5f1ecda712c18",
-      [
-       null,
-       {}
-      ]
-     ],
-     "design-mode-textarea-crash.html": [
-      "d9f01e41653bc07d3e939a968485f0c9c60417d9",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "run": {
-     "empty-editable-crash.html": [
-      "eda75a13cd5b4be66f42f43154ed6ed2ff177297",
-      [
-       null,
-       {}
-      ]
-     ],
-     "first-letter-crossing-engine-boundary-crash.html": [
-      "be6325fce4894f22f7fa43a488810464f3ebdaee",
       [
        null,
        {}
@@ -276359,7 +276355,7 @@
       ]
      ],
      "offset-rotate-001.html": [
-      "e5b13fe8a9ab5a4db3acf1c6428c951d1a146da6",
+      "56173cf4e4f1918097ca4b2d2a532e421a4e04bf",
       [
        null,
        [
@@ -276372,7 +276368,7 @@
       ]
      ],
      "offset-rotate-002.html": [
-      "1edf38d546dff30e855c6d38342107ae10875903",
+      "29888029b7bd041f6b3c2f790542c6cb9ed65f9b",
       [
        null,
        [
@@ -276385,7 +276381,7 @@
       ]
      ],
      "offset-rotate-003.html": [
-      "522ff35b051ba969b6d10b7c951e0868158aaff8",
+      "7a8ddbe8142d6cc4b168af1b1d77be4d78a0ec37",
       [
        null,
        [
@@ -276414,7 +276410,7 @@
       ]
      ],
      "offset-rotate-004.html": [
-      "33783d423b50585c3da0cd37f13df4763774bd38",
+      "c55887d4f61a4e4e3c5d3e31d3d0a554da2a3b60",
       [
        null,
        [
@@ -276427,7 +276423,7 @@
       ]
      ],
      "offset-rotate-005.html": [
-      "9b1c40ed112c9f95bacfa70810d18de97fd3bcd7",
+      "42070b5bef47ac1f135fa501c7c256a70c2a732a",
       [
        null,
        [
@@ -373205,7 +373201,7 @@
       []
      ],
      "offset-rotate-ref.html": [
-      "ec22768e96a1cd1efab206781b985cec8f006686",
+      "4b2d36529af2af91bd9316985bb365053b949a1c",
       []
      ],
      "parsing": {
@@ -406513,7 +406509,7 @@
     ]
    },
    "lint.ignore": [
-    "1d552f3468a236414c6c34bca22cb88ef11f09e8",
+    "65e22dccbc1d9cce01a6c570fe739e68d112df3e",
     []
    ],
    "loading": {
@@ -535372,6 +535368,13 @@
      ]
     ],
     "xslt": {
+     "document-function.window.js": [
+      "a01f3b37c945d0fcded4a0853d32e97d60bb9696",
+      [
+       "dom/xslt/document-function.window.html",
+       {}
+      ]
+     ],
      "functions.tentative.window.js": [
       "81240022dc68a8296474fcea696cdde3b66057fd",
       [
@@ -634025,7 +634028,7 @@
          ]
         ],
         "load-removes-queued-error-event.html": [
-         "54d5c28dad55eae515516ecc6f29d1997f19d329",
+         "f7cfabf64b620f4b5c91ee2f94bcbae367d25f90",
          [
           null,
           {}
@@ -691275,6 +691278,13 @@
       {}
      ]
     ],
+    "sanitizer-removeUnsafe.tentative.html": [
+     "7ad8253ad5fdec29b79c590e50e9c0d211d17031",
+     [
+      null,
+      {}
+     ]
+    ],
     "sanitizer-unknown.tentative.html": [
      "37bb8c832274c25e6d0eca8df859b2a915943e14",
      [
@@ -693251,7 +693261,7 @@
      ]
     ],
     "onchange-event-subframe.html": [
-     "6eb986b43804ddd91ccd07476dc373684c4727a6",
+     "2d9529d1dcccad558ada1dbcb6c37a20cc1f9e93",
      [
       null,
       {
