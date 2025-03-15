@@ -393,6 +393,51 @@ public class EdgeToEdgeLayoutUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "w400dp-h600dp")
+    @SuppressLint("NewApi") // layoutInDisplayCutoutMode required sdk 28+
+    public void testDisplayCutoutModeDefault_FullscreenPortrait() {
+        initializePortraitLayout();
+
+        mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+        // Status Bar and Navigation Bar insets are zeros when in fullscreen.
+        WindowInsetsCompat topCutoutInsets =
+                newWindowInsetsBuilderWithCutout(new Rect(0, CUTOUT_SIZE, 0, 0))
+                        .setInsets(STATUS_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .build();
+        mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(mEdgeToEdgeLayout, topCutoutInsets);
+        assertPaddings(/* left= */ 0, /* top= */ CUTOUT_SIZE, /* right= */ 0, /* bottom= */ 0);
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h400dp")
+    @SuppressLint("NewApi") // layoutInDisplayCutoutMode required sdk 28+
+    public void testDisplayCutoutModeDefault_FullscreenLandscape() {
+        initializeLandscapeLayout();
+
+        mActivity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT;
+        // Status Bar and Navigation Bar insets are zeros when in fullscreen.
+        WindowInsetsCompat leftCutoutInsets =
+                newWindowInsetsBuilderWithCutout(new Rect(CUTOUT_SIZE, 0, 0, 0))
+                        .setInsets(STATUS_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .build();
+        mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(mEdgeToEdgeLayout, leftCutoutInsets);
+        assertPaddings(/* left= */ CUTOUT_SIZE, /* top= */ 0, /* right= */ 0, /* bottom= */ 0);
+
+        // Status Bar and Navigation Bar insets are zeros when in fullscreen.
+        WindowInsetsCompat rightCutoutInsets =
+                newWindowInsetsBuilderWithCutout(new Rect(0, 0, CUTOUT_SIZE, 0))
+                        .setInsets(STATUS_BARS, Insets.of(0, 0, 0, 0))
+                        .setInsets(NAVIGATION_BARS, Insets.of(0, 0, 0, 0))
+                        .build();
+        mEdgeToEdgeLayoutCoordinator.onApplyWindowInsets(mEdgeToEdgeLayout, rightCutoutInsets);
+        assertPaddings(/* left= */ 0, /* top= */ 0, /* right= */ CUTOUT_SIZE, /* bottom= */ 0);
+    }
+
+    @Test
     @Config(qualifiers = "w600dp-h400dp")
     @SuppressLint("NewApi") // layoutInDisplayCutoutMode required sdk 28+
     public void testDisplayCutoutModeDefault_InsetNotOverlap() {

@@ -41,6 +41,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
     private final Rect mStatusBarRect = new Rect();
     private final Rect mNavBarRect = new Rect();
     private final Rect mNavBarDividerRect = new Rect();
+    private final Rect mCutoutRectTop = new Rect();
     private final Rect mCutoutRectLeft = new Rect();
     private final Rect mCutoutRectRight = new Rect();
 
@@ -55,6 +56,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
 
     private Insets mStatusBarInsets = Insets.NONE;
     private Insets mNavigationBarInsets = Insets.NONE;
+    private Insets mCutoutInsetsTop = Insets.NONE;
     private Insets mCutoutInsetsLeft = Insets.NONE;
     private Insets mCutoutInsetsRight = Insets.NONE;
 
@@ -79,6 +81,7 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
         // Draw colors over its padding.
         colorRectOnDraw(canvas, mStatusBarRect, mStatusBarPaint);
         colorRectOnDraw(canvas, mNavBarRect, mNavBarPaint);
+        colorRectOnDraw(canvas, mCutoutRectTop, mDisplayCutoutPaint);
         colorRectOnDraw(canvas, mCutoutRectLeft, mDisplayCutoutPaint);
         colorRectOnDraw(canvas, mCutoutRectRight, mDisplayCutoutPaint);
         if (!mNavBarDividerRect.isEmpty() && mNavBarDividerPaint.getAlpha() > 0) {
@@ -109,7 +112,8 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
             mStatusBarRect.left += mNavigationBarInsets.left;
             mStatusBarRect.right -= mNavigationBarInsets.right;
         }
-
+        // TODO(crbug.com/400517589): Cleanup display cutout Rects.
+        mCutoutRectTop.set(WindowInsetsUtils.toRectInWindow(mViewRect, mCutoutInsetsTop));
         // When display cutout rect is coming from different direction as the status bar and
         // navigation bar, intersect those system bars.
         mCutoutRectLeft.set(WindowInsetsUtils.toRectInWindow(mViewRect, mCutoutInsetsLeft));
@@ -146,6 +150,11 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
 
     void setNavigationBarInsets(Insets insets) {
         mNavigationBarInsets = insets;
+    }
+
+    void setDisplayCutoutTop(Insets insets) {
+        assert insets.top > 0 || Insets.NONE.equals(insets);
+        mCutoutInsetsTop = insets;
     }
 
     void setDisplayCutoutInsetLeft(Insets insets) {
@@ -206,6 +215,10 @@ public class EdgeToEdgeBaseLayout extends FrameLayout {
 
     Rect getNavigationBarDividerRectForTesting() {
         return mNavBarDividerRect;
+    }
+
+    Rect getCutoutRectTopForTesting() {
+        return mCutoutRectTop;
     }
 
     Rect getCutoutRectLeftForTesting() {

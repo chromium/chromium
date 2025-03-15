@@ -126,6 +126,10 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
         int paddingInsetTypes = Type.systemBars() + Type.ime();
         if (shouldPadDisplayCutout(windowInsets, mActivity)) {
             paddingInsetTypes += Type.displayCutout();
+            // Color display cutout padding to keep behaviour for Android 15-.
+            mView.setDisplayCutoutTop(cutout.top > 0 ? cutout : Insets.NONE);
+        } else {
+            mView.setDisplayCutoutTop(Insets.NONE);
         }
 
         Insets overallInsets = windowInsets.getInsets(paddingInsetTypes);
