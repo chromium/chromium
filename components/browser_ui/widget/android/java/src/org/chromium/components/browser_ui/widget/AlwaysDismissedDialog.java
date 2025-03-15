@@ -19,8 +19,9 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class AlwaysDismissedDialog extends ChromeDialog
         implements ApplicationStatus.ActivityStateListener {
-    public AlwaysDismissedDialog(Activity ownerActivity, int theme) {
-        super(ownerActivity, theme);
+    public AlwaysDismissedDialog(
+            Activity ownerActivity, int theme, boolean shouldPadForWindowInsets) {
+        super(ownerActivity, theme, shouldPadForWindowInsets);
         ApplicationStatus.registerStateListenerForActivity(this, ownerActivity);
 
         setOwnerActivity(ownerActivity);
