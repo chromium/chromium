@@ -2121,10 +2121,6 @@ extern const char kTabGroupsDeferRemoteNavigationsId[];
 extern const char kTabGroupsDeferRemoteNavigationsName[];
 extern const char kTabGroupsDeferRemoteNavigationsDescription[];
 
-extern const char kTabGroupsSaveV2Id[];
-extern const char kTabGroupsSaveV2Name[];
-extern const char kTabGroupsSaveV2Description[];
-
 extern const char kTabGroupSyncServiceDesktopMigrationId[];
 extern const char kTabGroupSyncServiceDesktopMigrationName[];
 extern const char kTabGroupSyncServiceDesktopMigrationDescription[];

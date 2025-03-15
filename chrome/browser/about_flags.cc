@@ -6763,11 +6763,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsDeferRemoteNavigationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupsDeferRemoteNavigations)},
 
-    {flag_descriptions::kTabGroupsSaveV2Id,
-     flag_descriptions::kTabGroupsSaveV2Name,
-     flag_descriptions::kTabGroupsSaveV2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(tab_groups::kTabGroupsSaveV2)},
-
     {flag_descriptions::kTabGroupSyncServiceDesktopMigrationId,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationName,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationDescription,

@@ -123,7 +123,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::LabelButton> BuildShareGroupButton();
   std::unique_ptr<views::LabelButton> BuildRecentActivityButton();
 
-  void OnSaveTogglePressed();
   void NewTabInGroupPressed();
   void UngroupPressed();
   void ShareOrManagePressed();
@@ -149,10 +148,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   void DeleteGroupFromTabstrip();
 
   void OnBubbleClose();
-
-  // Returns the view responsible for being able to save a tab group. It
-  // most notably contains a toggle button to save and unsave the group.
-  views::View* CreateSavedTabGroupToggle(views::LabelButton* layout_helper);
 
   // Creates the set of tab group colors to display and returns the color that
   // is initially selected.

@@ -118,7 +118,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (browser->GetProfile()->IsRegularProfile() &&
-        tab_groups::IsTabGroupsSaveV2Enabled() &&
         browser->GetTabStripModel()->SupportsTabGroups() &&
         tab_groups::SavedTabGroupUtils::GetServiceForProfile(
             browser->GetProfile())) {

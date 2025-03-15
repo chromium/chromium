@@ -131,7 +131,6 @@ class CollaborationMessagingObserverBrowserTest
   CollaborationMessagingObserverBrowserTest() {
     features_.InitWithFeatures(
         {
-            tab_groups::kTabGroupsSaveV2,
             tab_groups::kTabGroupSyncServiceDesktopMigration,
             data_sharing::features::kDataSharingFeature,
             toast_features::kToastFramework,

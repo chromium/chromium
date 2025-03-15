@@ -3676,12 +3676,6 @@ const char kTabGroupsDeferRemoteNavigationsDescription[] =
     "Prevents remote navigations from being performed when a tab is "
     "backgrounded in a group";
 
-const char kTabGroupsSaveV2Id[] = "tab-groups-save-v2";
-const char kTabGroupsSaveV2Name[] = "Tab Groups Save and Sync V2";
-const char kTabGroupsSaveV2Description[] =
-    "Enables saving and recalling of tab groups but enhanced. Highly "
-    "experimental.";
-
 const char kTabGroupSyncServiceDesktopMigrationId[] =
     "tab-group-sync-service-desktop-migration";
 const char kTabGroupSyncServiceDesktopMigrationName[] =
