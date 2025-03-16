@@ -308,6 +308,12 @@ blink::SRIMessageSignatureComponentParameterPtr ConvertToBlink(
       ConvertToBlink(in->type), ConvertToBlink(in->value));
 }
 
+blink::SRIMessageSignatureIssuePtr ConvertToBlink(
+    const SRIMessageSignatureIssuePtr& in) {
+  return blink::SRIMessageSignatureIssue::New(
+      ConvertToBlink(in->error), ConvertToBlink(in->signature_base));
+}
+
 blink::SRIMessageSignatureComponentPtr ConvertToBlink(
     const SRIMessageSignatureComponentPtr& in) {
   CHECK(in);
@@ -328,7 +334,7 @@ blink::SRIMessageSignaturesPtr ConvertToBlink(
     const SRIMessageSignaturesPtr& in) {
   CHECK(in);
   return blink::SRIMessageSignatures::New(ConvertToBlink(in->signatures),
-                                          ConvertToBlink(in->errors));
+                                          ConvertToBlink(in->issues));
 }
 
 blink::ParsedHeadersPtr ConvertToBlink(const ParsedHeadersPtr& in) {
