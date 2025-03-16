@@ -447,6 +447,7 @@
 <translation id="2829172210806130158">તમારી સ્ક્રીન પર શોધવાની સુવિધા</translation>
 <translation id="2834399722155632105">3. પાસવર્ડના વિકલ્પો પર ટૅપ કરો</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">સમય</translation>
 <translation id="284581348330507117">વિશિષ્ટ પાસવર્ડ બનાવો</translation>
 <translation id="2856883624744451946">ગ્રૂપનું નામ આપો</translation>
 <translation id="2858204748079866344">તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે, Chrome આ ફીલ્ડમાં તમારો પાસવર્ડ સ્વતઃ નહીં ભરે.</translation>
@@ -649,7 +650,6 @@
 <translation id="3858860766373142691">નામ</translation>
 <translation id="3868495844258915202">સંપૂર્ણ URL બતાવો</translation>
 <translation id="3875783148670536197">મને બતાવો કે કેવી રીતે</translation>
-<translation id="3876833929577368454">દર વખતે મને કહો </translation>
 <translation id="3885587018298784481">કોઈ ફૅમિલી ગ્રૂપમાં જોડાઓ</translation>
 <translation id="3888863481921783344">તમારી ઇવેન્ટ માટે તમને સંભવિત આમંત્રિતો બતાવવા માટે, આનો ઉપયોગ કરવામાં આવશે.</translation>
 <translation id="3891414008432200754">કિંમત</translation>
@@ -904,6 +904,7 @@
 <translation id="4896467949657706481">ટૅબ બંધ કરવામાં આવી, તમને સાઇન આઉટ કરવામાં આવ્યા</translation>
 <translation id="4913626501929406101">તમે તમારા ફૅમિલી ગ્રૂપમાં કોઈ વ્યક્તિ સાથે તમારા પાસવર્ડની કૉપિ સુરક્ષિત રીતે શેર કરી શકો છો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
+<translation id="4932733599132424254">તારીખ</translation>
 <translation id="4936354130727646074">ક્યારેય ખસેડશો નહીં</translation>
 <translation id="4937410517508563815">એકાઉન્ટમાં પાસવર્ડ સાચવો</translation>
 <translation id="4938338714234463591">આ તમને વેબસાઇટ પર અમુક ચોક્કસ સુવિધાઓ સાથે તમારા વૉઇસનો ઉપયોગ કરવા દેશે.</translation>
@@ -1470,7 +1471,6 @@
 <translation id="7336264872878993241"><ph name="PERCENT" /> ટકા ડાઉનલોડ થઈ</translation>
 <translation id="7346909386216857016">બરાબર, સમજાઇ ગયું</translation>
 <translation id="7352651011704765696">કંઈક ખોટું થયું હતું</translation>
-<translation id="7359341089141286329">ભાળ મેળવેલા તમામ પૅકેજને ઑટોમૅટિક રીતે ટ્રૅક કરો</translation>
 <translation id="7363349185727752629">તમારી પ્રાઇવસીની પસંદગીઓની માર્ગદર્શિકા</translation>
 <translation id="736564850024123010">કસ્ટમાઇઝ કરેલા કોઈ અનુભવ માટે, તમારા ઍડ્રેસ બારની જગ્યા સ્વિચ કરો.</translation>
 <translation id="7366909168761621528">બ્રાઉઝિંગ ડેટા</translation>
@@ -1718,6 +1718,7 @@
 <translation id="8299417921174340354">પાસવર્ડનો ઉપયોગ કરવા માટે, તમારે પહેલા તમારા ડિવાઇસ પર પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="8307481894409578819">આ ફાઇલ અપલોડ કરી શકતા નથી</translation>
 <translation id="8319076807703933069">નવી શોધ</translation>
+<translation id="8320212361750431956">તાજેતરની ઍક્ટિવિટી</translation>
 <translation id="833647236762414178">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે, તમારા પાસવર્ડ અને પાસકી બનાવો, તેને સાચવો અને મેનેજ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="8349305172487531364">બુકમાર્ક બાર</translation>
@@ -1747,7 +1748,6 @@
 <translation id="8438566539970814960">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8439758443371991593">'વાંચન સૂચિમાં ઉમેરો' છુપાવો</translation>
 <translation id="8449869326050867919">પાસવર્ડ શેર કરવામાં આવ્યો</translation>
-<translation id="8453847087068411809">પૅકેજની ક્યારેય ઑટોમૅટિક રીતે ભાળ મેળવશો નહીં</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="8474378002946546633">સૂચનાઓને અનુમતિ આપો</translation>
 <translation id="8477178913400731244">ડેટા ડિલીટ કરો</translation>

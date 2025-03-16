@@ -519,7 +519,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling llvm-libc
   # and whatever else without interference from each other.
-  'llvm_libc_revision':    'b1b40281b395b40701da5c49643efe8584924362',
+  'llvm_libc_revision':    '14489e08b2c25aa5715e082fd2dc57bb1fb805aa',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -1474,7 +1474,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/variations/cipd',
-        'version': 'Byn2rl6Vq43Yj3aJWdFrTjfahFwqY7wyR5xVLUo5qO8C',
+        'version': 'sHnnvHTGi6CSNZua7vaGg5C3uHq3vVrsCvF72C-DFkIC',
       },
     ],
     'dep_type': 'cipd',
@@ -1485,7 +1485,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'ad29d38787fedc8f9baa1eaecbbfbd410b80fe15',
+    '1fa56ee4d61f97c7d8e5f17f330a2f9ffee4beae',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -1715,7 +1715,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/error_prone',
-               'version': 'PUFyo5eTRLBVraTti00zSIPJ9JJazDE9OU5e-mc6sicC',
+               'version': 'TKp0LDZjoG40SrElfQevGD9zDvVypBnRPWTzv8bnTw4C',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1737,7 +1737,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/lint',
-               'version': 'tsOuC8RTor7xvEQGKjf4UUWbOZ6CXLUAWTapMfyjtSIC',
+               'version': 'vhjMonh9XYLLHAk7HJJI88WCaEq0Wye3mcXRgZto0hgC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1748,7 +1748,7 @@ deps = {
       'packages': [
           {
                'package': 'chromium/third_party/android_build_tools/manifest_merger',
-               'version': 'XsYjBCg98jVV1y2tdwYTvXS_V_53hDdGBdsLsI_Cd-AC',
+               'version': 'pUhXoFF33hA0Ld7PAOJp2fl0HLa6foRELt7yy1i_L9oC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -2225,7 +2225,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 's_pe-QNfppD21S9Vnx4ve8UYrskIe7CJWahilwd5plMC',
+              'version': 'hPM6bvO1aTw1SlHCPB2xe6jN1UycknZiD5lTR4mgJ3IC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3023,7 +3023,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/help_app/app',
-        'version': 'AfjnIf3EByDhLggPNshXxKxjTJr4RU6hLxmjFSNGMh0C',
+        'version': 'a1C22t3Ps5B49xmDvA0zAjsL_PEEfp_x9jknto5Bu3cC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
@@ -4682,7 +4682,7 @@ deps = {
 
   'src/ios_internal':  {
       'url': Var('chrome_git') + '/chrome/ios_internal.git' + '@' +
-        '590003e4c01b756ee32126cbed3006b6b29b1e3a',
+        '8366692893c9bdefb4cdad548daf7f49ec9e7431',
       'condition': 'checkout_ios and checkout_src_internal',
   },
 

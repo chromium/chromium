@@ -32,6 +32,7 @@
 <translation id="1478370723027452770">Hankige abi seoses brauseriga Chrome for Testing</translation>
 <translation id="1497802159252041924">Installimisviga: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromiumi vahekaardi jagamine</translation>
+<translation id="1547469039832541117">Lõpetab esiletõstetud ülesande.</translation>
 <translation id="1553461853655228091">Chromium vajab luba teie kaamerale juurdepääsemiseks, et luua teid ümbritsevast 3D-kaart</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Seda laiendust enam ei toetata. Chromium soovitab selle eemaldada.}other{Neid laiendusi ei toetata enam. Chromium soovitab need eemaldada.}}</translation>
 <translation id="1574377791422810894">Chromiumi ohutustööriistad</translation>

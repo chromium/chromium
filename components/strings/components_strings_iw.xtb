@@ -2857,6 +2857,7 @@ Del</translation>
 <translation id="604124094241169006">אוטומטי</translation>
 <translation id="6041777658117377052">טמפרטורה בתא</translation>
 <translation id="6042308850641462728">עוד</translation>
+<translation id="6043357981274314628">סיימת!</translation>
 <translation id="6044573915096792553">גודל 12</translation>
 <translation id="6045164183059402045">תבנית הצבה</translation>
 <translation id="6047927260846328439">ייתכן שבתוכן הזה יש מידע מטעה שנועד לגרום לך להתקין תוכנות או לחשוף מידע אישי. <ph name="BEGIN_LINK" />אני רוצה להציג בכל זאת<ph name="END_LINK" /></translation>
@@ -2880,7 +2881,6 @@ Del</translation>
 <translation id="6062937464449575061">ביטול המעקב אחר המחירים</translation>
 <translation id="6063415549109819824">מימון לבית</translation>
 <translation id="6070432475334343308">קובץ אחד או יותר לא הועלה אל <ph name="FOLDER_NAME" /> ב-<ph name="CLOUD_PROVIDER" /></translation>
-<translation id="6080696365213338172">ניגשת לתוכן באמצעות אישור שהוענק על ידי מנהל מערכת. מנהל המערכת שלך עשוי ליירט נתונים שיסופקו ל-<ph name="DOMAIN" />.</translation>
 <translation id="6085149458302186532">Labels (Colored)</translation>
 <translation id="6087312102907839798">חיפושים קשורים</translation>
 <translation id="6089505343295765444">‏כרטיסיות שמחקת מההיסטוריה ב-Chrome עדיין יופיעו בטבלאות ההשוואה.</translation>
@@ -4254,7 +4254,6 @@ Del</translation>
 <translation id="8473626140772740486">‏300x450 מ"מ</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474910779563686872">הצגת פרטי המפתח</translation>
-<translation id="8476959635632921417">כדי לשמור את הכתובת הזו ולהשתמש בה בכל המכשירים, עליך לאמת את הזהות שלך</translation>
 <translation id="8479754468255770962">סיכת הידוק בפינה השמאלית התחתונה</translation>
 <translation id="8483229036294884935">‏הכתובת הזו תימחק מחשבון Google שלך, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">חלה על</translation>

@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Når dette er på, kan nettsteder be om å få bruke NFC-enheter. Når dette er av, kan ikke nettsteder bruke NFC-enheter.</translation>
 <translation id="1660204651932907780">Tillat nettsteder å spille av lyd (anbefales)</translation>
 <translation id="1677097821151855053">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Nettsteder kan be om å få bruke NFC-enheter</translation>
 <translation id="1686785653877010442">Nettsteder sender vanligvis varsler for å informere deg om siste nytt eller chatmeldinger.</translation>
 <translation id="169515064810179024">Blokkér nettsteder fra å få tilgang til bevegelsessensorer</translation>
 <translation id="1703666494654169921">Ikke la nettsteder bruke virtuell virkelighet-enheter eller -data</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Dette sletter <ph name="DATASIZE" /> med data og informasjonskapsler som er lagret av nettsteder eller apper på startskjermen.</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2215727959747642672">Filredigering</translation>
+<translation id="2218389616572918761">Nettsteder kan be om å få bruke mikrofonen</translation>
 <translation id="2228071138934252756">For å gi <ph name="APP_NAME" /> tilgang til kameraet må du også slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Informasjonskapsler fra tredjeparter er blokkert</translation>
 <translation id="2238944249568001759">Foreslåtte søk basert på den siste fanen din</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Start Chrome med multifunksjonsfeltet i fokus, noe som reduserer systemoppstartstiden på enklere enheter.</translation>
 <translation id="2750481671343847896">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester.</translation>
 <translation id="2787357173144933081">Start multifunksjonsfeltet</translation>
+<translation id="2789132527330338807">Nettsteder kan be om å få lage 3D-kart av omgivelsene dine eller spore kameraposisjonen</translation>
 <translation id="2790501146643349491">Når dette er på, kan nylig lukkede nettsteder fullføre sending og mottak av data. Når dette er av, kan ikke nylig lukkede nettsteder fullføre sending eller mottak av data.</translation>
 <translation id="2795716239552913152">Nettsteder bruker vanligvis posisjonen din for å kunne tilby relevante funksjoner eller opplysninger, som lokalnyheter eller butikker i nærheten</translation>
+<translation id="2802908157808345702">Ikke la nettsteder sende forgrunnsvinduer eller bruke viderekoblinger</translation>
 <translation id="2814830417943086299">Chrome viser nå de nylige fanene dine på applisten og i søkeresultater på enheten. Du kan slå dette av når som helst i Chrome-innstillingene.</translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Be om mobilvisning</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Når du er i inkognitomodus, kan ikke nettsteder bruke informasjonskapsler for å se nettleseraktiviteten din på andre nettsteder – heller ikke relaterte nettsteder. Nettleseraktiviteten din brukes ikke til ting som personlig tilpasning av annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
 <translation id="461356340001513807">Lar deg logge på nettsteder med kontoer du har hos identitetstjenester</translation>
 <translation id="4619615317237390068">Faner fra andre enheter</translation>
+<translation id="4635969503923889910">Ikke la nettsteder bruke NFC-enheter</translation>
 <translation id="4644713492825682049">Slett og tilbakestill</translation>
 <translation id="4645575059429386691">Administreres av foreldrene dine</translation>
 <translation id="4670064810192446073">Virtuell virkelighet</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Skjul alle forespørsler</translation>
 <translation id="5884085660368669834">Nettstedinnstilling</translation>
 <translation id="5887687176710214216">Sist besøkt i går</translation>
+<translation id="5908617755156109052">Ikke la nettsteder lage 3D-kart av omgivelsene dine eller spore kameraposisjonen</translation>
 <translation id="5916664084637901428">På</translation>
 <translation id="5922853908706496913">Deler skjermen din</translation>
 <translation id="5922967540311291836">Blokker informasjonskapsler fra tredjeparter:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Slett teksten</translation>
 <translation id="8681886425883659911">Annonser blokkeres på nettsteder som er kjent for å vise forstyrrende eller villedende annonser</translation>
 <translation id="868929229000858085">Søk i kontaktene dine</translation>
+<translation id="8707904142362025782">Nettstedet kan be om å få bruke kameraet</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8715862698998036666">Dra fra toppen og sveip fra venstre eller høyre kant for å avslutte fullskjerm.</translation>
 <translation id="8719283222052720129">Slå på tillatelsen for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>

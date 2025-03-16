@@ -2849,6 +2849,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="604124094241169006">Automatikus</translation>
 <translation id="6041777658117377052">Kamra hőmérséklete</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
+<translation id="6043357981274314628">Kész</translation>
 <translation id="6044573915096792553">Méret: 12</translation>
 <translation id="6045164183059402045">Ráhelyezési sablon</translation>
 <translation id="6047927260846328439">Lehet, hogy ez a tartalom megpróbálja rávenni Önt szoftver telepítésére vagy személyes adatok kiadására. <ph name="BEGIN_LINK" />Megjelenítés mindenképpen<ph name="END_LINK" />.</translation>
@@ -2872,7 +2873,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6062937464449575061">Árkövetés kikapcsolása</translation>
 <translation id="6063415549109819824">Lakásfinanszírozás</translation>
 <translation id="6070432475334343308">Valamelyik (vagy több) fájl nem lett feltöltve a(z) <ph name="FOLDER_NAME" /> mappába itt: <ph name="CLOUD_PROVIDER" /></translation>
-<translation id="6080696365213338172">A tartalmat egy rendszergazda által biztosított tanúsítványon keresztül érte el. A(z) <ph name="DOMAIN" /> számára megadott adatok a rendszergazda számára is elérhetők.</translation>
 <translation id="6085149458302186532">Címkék (színes)</translation>
 <translation id="6087312102907839798">Kapcsolódó keresések</translation>
 <translation id="6089505343295765444">A Chrome-előzményekből törölt lapok továbbra is meg fognak jelenni az összehasonlító táblázatokban</translation>
@@ -4247,7 +4247,6 @@ További részletek:
 <translation id="8473626140772740486">300 × 450 mm</translation>
 <translation id="8473863474539038330">Címek és egyebek</translation>
 <translation id="8474910779563686872">Fejlesztői részletek megjelenítése</translation>
-<translation id="8476959635632921417">Ha az összes eszközén menteni és használni szeretné ezt a címet, igazolja személyazonosságát.</translation>
 <translation id="8479754468255770962">Kapocs balra lent</translation>
 <translation id="8483229036294884935">Ez a cím törlődik az Ön Google-fiókjából (<ph name="ACCOUNT" />)</translation>
 <translation id="8488350697529856933">A következőre érvényes</translation>

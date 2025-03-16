@@ -447,6 +447,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2829172210806130158">Vyhľadávať na obrazovke</translation>
 <translation id="2834399722155632105">3. Klepnite na Možnosti hesiel</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Čas</translation>
 <translation id="284581348330507117">Vytvárajte si jedinečné heslá</translation>
 <translation id="2856883624744451946">Pomenujte skupinu</translation>
 <translation id="2858204748079866344">Chrome automaticky nedoplní heslo do tohto poľa, čím ochráni vaše súkromie.</translation>
@@ -649,7 +650,6 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3868495844258915202">Zobraziť úplnú webovú adresu</translation>
 <translation id="3875783148670536197">Ukázať postup</translation>
-<translation id="3876833929577368454">Vždy sa opýtať</translation>
 <translation id="3885587018298784481">Pripojte sa k rodinnej skupine</translation>
 <translation id="3888863481921783344">Táto možnosť sa použije, aby sa vám mohli zobraziť hostia pozvaní na vašu udalosť.</translation>
 <translation id="3891414008432200754">Cena</translation>
@@ -904,6 +904,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4896467949657706481">Karty boli zatvorené a systém vás odhlásil</translation>
 <translation id="4913626501929406101">Kópiu svojho hesla môžete bezpečne zdieľať s členom svojej rodinnej skupiny. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Prijať</translation>
+<translation id="4932733599132424254">Dátum</translation>
 <translation id="4936354130727646074">Nikdy nepresúvať</translation>
 <translation id="4937410517508563815">Uloženie hesiel v účte</translation>
 <translation id="4938338714234463591">Umožní vám to používať hlas v prípade určitých funkcií na weboch.</translation>
@@ -1470,7 +1471,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7336264872878993241">Stiahnuté: <ph name="PERCENT" /> percent</translation>
 <translation id="7346909386216857016">Dobre</translation>
 <translation id="7352651011704765696">Niečo sa pokazilo</translation>
-<translation id="7359341089141286329">Automaticky sledovať všetky zistené zásielky</translation>
 <translation id="7363349185727752629">Sprievodca vašimi voľbami ochrany súkromia</translation>
 <translation id="736564850024123010">Zmenou umiestnenia panela s adresou získate prispôsobenejšie prostredie.</translation>
 <translation id="7366909168761621528">Údaje prehliadania</translation>
@@ -1718,6 +1718,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8299417921174340354">Ak chcete používať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="8307481894409578819">Tento súbor sa nepodarilo nahrať</translation>
 <translation id="8319076807703933069">Nové vyhľadávanie</translation>
+<translation id="8320212361750431956">Nedávna aktivita</translation>
 <translation id="833647236762414178">Vytvárajte, ukladajte a spravujte svoje heslá a prístupové kľúče, aby ste sa mohli ľahko prihlasovať na weboch a v aplikáciách. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Zálohujte svoj obsah a používajte ho v ľubovoľnom zariadení.</translation>
 <translation id="8349305172487531364">Panel so záložkami</translation>
@@ -1747,7 +1748,6 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8438566539970814960">Zlepšovať vyhľadávanie a prehliadanie</translation>
 <translation id="8439758443371991593">Skryť položku Pridať do čitateľského zoznamu</translation>
 <translation id="8449869326050867919">Heslo bolo zdieľané</translation>
-<translation id="8453847087068411809">Nikdy nezisťovať zásielky automaticky</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="8474378002946546633">Povoliť upozornenia</translation>
 <translation id="8477178913400731244">Odstrániť dáta</translation>

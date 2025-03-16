@@ -447,6 +447,7 @@ Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit
 <translation id="2829172210806130158">Kërko në ekranin tënd</translation>
 <translation id="2834399722155632105">3. Trokit tek "Opsionet e fjalëkalimeve"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Koha</translation>
 <translation id="284581348330507117">Krijo fjalëkalime unike</translation>
 <translation id="2856883624744451946">Emërto grupin</translation>
 <translation id="2858204748079866344">Për të mbrojtur privatësinë tënde, Chrome nuk do ta plotësojë automatikisht fjalëkalimin tënd në këtë fushë.</translation>
@@ -649,7 +650,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3858860766373142691">Emri</translation>
 <translation id="3868495844258915202">Shfaq URL-në e plotë</translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>
-<translation id="3876833929577368454">Më pyet çdo herë</translation>
 <translation id="3885587018298784481">Bashkohu në një grup familjeje</translation>
 <translation id="3888863481921783344">Kjo do të përdoret për të të shfaqur të ftuarit e mundshëm në ngjarjen tënde.</translation>
 <translation id="3891414008432200754">Çmimi</translation>
@@ -904,6 +904,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4896467949657706481">Skedat janë mbyllur dhe ti ke dalë nga llogaria</translation>
 <translation id="4913626501929406101">Mund të ndash në mënyrë të sigurt një kopje të fjalëkalimit tënd me dikë në grupin tënd të familjes. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Prano</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Mos zhvendos asnjëherë</translation>
 <translation id="4937410517508563815">Ruaj fjalëkalimet në llogari</translation>
 <translation id="4938338714234463591">Kjo do të të lejojë të përdorësh zërin tënd me veçori të caktuara në uebsajte.</translation>
@@ -1470,7 +1471,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7336264872878993241"><ph name="PERCENT" /> përqind të shkarkuara</translation>
 <translation id="7346909386216857016">Në rregull, kuptova</translation>
 <translation id="7352651011704765696">Diçka shkoi keq</translation>
-<translation id="7359341089141286329">Gjurmo automatikisht të gjitha pakot e zbuluara</translation>
 <translation id="7363349185727752629">Udhëzues për zgjedhjet e tua të privatësisë</translation>
 <translation id="736564850024123010">Ndërroje pozicionin e shiritit të adresave për një përvojë të personalizuar.</translation>
 <translation id="7366909168761621528">Të dhënat e shfletimit</translation>
@@ -1718,6 +1718,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8299417921174340354">Për të përdorur fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="8307481894409578819">Ky skedar nuk mund të ngarkohej</translation>
 <translation id="8319076807703933069">Kërkim i ri</translation>
+<translation id="8320212361750431956">Aktiviteti i fundit</translation>
 <translation id="833647236762414178">Krijo, ruaj dhe menaxho fjalëkalimet dhe çelësat e kalimit për t'u identifikuar me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
 <translation id="8349305172487531364">Shiriti i faqeshënuesve</translation>
@@ -1747,7 +1748,6 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8438566539970814960">Përmirëson kërkimet dhe shfletimin</translation>
 <translation id="8439758443371991593">Fshih "Shto te 'Lista e leximit'"</translation>
 <translation id="8449869326050867919">Fjalëkalimi u nda</translation>
-<translation id="8453847087068411809">Mos zbulo asnjëherë automatikisht pakot</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8474378002946546633">Lejo njoftimet</translation>
 <translation id="8477178913400731244">Fshi të dhënat</translation>

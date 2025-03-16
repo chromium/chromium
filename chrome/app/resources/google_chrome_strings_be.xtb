@@ -39,6 +39,7 @@
 <translation id="1497802159252041924">Памылка ўсталявання: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Наладзьце новы профіль Chrome</translation>
 <translation id="1547295885616600893">Chrome OS працуе дзякуючы дадатковаму <ph name="BEGIN_LINK_CROS_OSS" />праграмнаму забеспячэнню з адкрытым зыходным кодам<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="1547469039832541117">Завяршае вылучаную задачу.</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
 <translation id="1587223624401073077">Google Chrome выкарыстоўвае камеру.</translation>
 <translation id="1587325591171447154">Файл <ph name="FILE_NAME" /> небяспечны, таму Chrome заблакіраваў яго.</translation>
@@ -175,6 +176,7 @@
 <translation id="3140883423282498090">Змены ўступяць у сілу пасля перазапуску Google Chrome.</translation>
 <translation id="3149510190863420837">Праграмы Chrome</translation>
 <translation id="3161522574479303604">Усе мовы</translation>
+<translation id="319199214552513804">Каб атрымаць доступ да гэтага пашырэння і іншых функцый на ўсіх камп’ютарах, увайдзіце ў Chrome</translation>
 <translation id="3196187562065225381">Браўзер Chrome заблакіраваў спампоўку, бо гэты файл небяспечны</translation>
 <translation id="3222857603094643834">Пошук па любым фрагменце на гэтай старонцы з дапамогай Google Аб’ектыва</translation>
 <translation id="3226612997184048185">Калі вы захаваеце закладкі таксама ў сваім Уліковым запісе Google, вы зможаце сачыць за цэнамі на тавары ў Chrome і атрымліваць апавяшчэнні аб іх зніжэнні</translation>

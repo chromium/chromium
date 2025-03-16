@@ -1160,6 +1160,34 @@ TEST_F(MediaDevicesTest, SetPreferredSinkTimeout) {
             static_cast<uint16_t>(DOMExceptionCode::kTimeoutError));
 }
 
+// Regression test for crbug.com/403348706. This ensures that device change
+// events, queued before the LocalFrame's ExecutionContext was destroyed,
+// resolve without crashing the renderer.
+TEST_F(MediaDevicesTest,
+       DeviceChangeEventsDoNotCrashWhenExecutionContextDestroyed) {
+  if (!RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
+    return;
+  }
+
+  // Simulate resolution of a `MaybeFireDeviceChangeEvent()` task.
+  MediaDevices* media_devices = GetMediaDevices(*GetDocument().domWindow());
+  media_devices->MaybeFireDeviceChangeEvent(true);
+
+  // Navigate the local frame's document, this will replace and destroy the
+  // frame's document and dom window, and consequently the observed
+  // ExecutionContext.
+  Document& initial_document = GetDocument();
+  LocalDOMWindow* initial_dom_window = GetDocument().domWindow();
+  NavigateTo(KURL("https://example.com"));
+  EXPECT_NE(GetDocument(), initial_document);
+  EXPECT_NE(GetDocument().domWindow(), initial_dom_window);
+
+  // Simulate the resolution of a `MaybeFireDeviceChangeEvent()` task, queued
+  // before the observed context was destroyed. This should resolve without
+  // crashing.
+  media_devices->MaybeFireDeviceChangeEvent(true);
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // This test logically belongs to the ProduceSubCaptureTargetTest suite,
 // but does not require parameterization.
