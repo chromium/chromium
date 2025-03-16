@@ -34,6 +34,7 @@
 <translation id="1478370723027452770">Добијте помош со „Chrome за тестирање“</translation>
 <translation id="1497802159252041924">Грешка при инсталирање: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Споделете картичка на Chromium</translation>
+<translation id="1547469039832541117">Ја завршува нагласената задача.</translation>
 <translation id="1553461853655228091">На Chromium му треба дозвола за да пристапи до камерата и да создаде 3D-карта од вашето опкружување</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Екстензијава веќе не е поддржана. Chromium препорачува да ја отстраните.}one{Екстензииве веќе не се поддржани. Chromium препорачува да ги отстраните.}other{Екстензииве веќе не се поддржани. Chromium препорачува да ги отстраните.}}</translation>
 <translation id="1574377791422810894">Алатки за безбедност на Chromium</translation>
