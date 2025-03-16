@@ -2257,7 +2257,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2530166226437958497">Datrys Problemau</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Aeth rhywbeth o'i le ac ni fu modd gosod <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Am ragor o help, ewch i: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Cael rhagor o wybodaeth</translation>
 <translation id="2532144599248877204">Yn ymestyn oes batri drwy gadw'ch batri tua 80%. Bydd y batri yn gwefru'n llawn cyn i chi ddatgysylltu oddi wrth bŵer fel arfer.</translation>
 <translation id="2532146950330687938">Wrthi'n paratoi'r ddyfais...</translation>
 <translation id="2532198298278778531">Rheoli DNS diogel yn y Gosodiadau ChromeOS Flex</translation>
@@ -6918,6 +6917,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5865508026715185451">Bydd <ph name="APP_NAME" /> yn seibio cyn bo hir</translation>
 <translation id="586567932979200359">Rydych yn rhedeg <ph name="PRODUCT_NAME" /> o'i ddelwedd disg. Mae ei osod ar eich cyfrifiadur yn caniatáu i chi ei redeg heb y ddelwedd disg, ac yn sicrhau y bydd yn aros yn gyfoes.</translation>
 <translation id="5865733239029070421">Yn anfon ystadegau defnydd ac adroddiadau toriadau at Google yn awtomatig</translation>
+<translation id="5866363217037791319">Gorffen y dasg</translation>
 <translation id="5868434909835797817">Mae'r meicroffon wedi'i ddiffodd ar eich dyfais</translation>
 <translation id="5868479397518301468">Mewngofnodiad wedi darfod</translation>
 <translation id="5868822853313956582">Dilyn lliwiau dyfais</translation>
@@ -11110,6 +11110,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="883924185304953854">Chwilio yn ôl llun</translation>
 <translation id="8841786407272321022">Cyfrinair wedi'i gadw ar y ddyfais hon yn unig. I gadw cyfrineiriau newydd yn eich Cyfrif Google, diweddarwch wasanaethau Google Play.</translation>
 <translation id="8841843049738266382">Darllen a newid y defnyddwyr sydd ar y rhestr ganiatáu</translation>
+<translation id="8841884135319684422">Gorffen y Dasg</translation>
 <translation id="8842594465773264717">Dileu'r ôl bys hwn</translation>
 <translation id="8845001906332463065">Cael help</translation>
 <translation id="8846132060409673887">Darllen gwneuthurwr a model y cyfrifiadur hwn</translation>

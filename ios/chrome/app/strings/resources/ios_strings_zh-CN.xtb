@@ -448,6 +448,7 @@
 <translation id="2829172210806130158">在屏幕中搜索</translation>
 <translation id="2834399722155632105">3. 点按“密码选项”</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
+<translation id="2841013758207633010">时间</translation>
 <translation id="284581348330507117">创建互不重复的密码</translation>
 <translation id="2856883624744451946">命名分组</translation>
 <translation id="2858204748079866344">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
@@ -650,7 +651,6 @@
 <translation id="3858860766373142691">名称</translation>
 <translation id="3868495844258915202">显示完整网址</translation>
 <translation id="3875783148670536197">操作步骤</translation>
-<translation id="3876833929577368454">每次都向我询问</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
 <translation id="3888863481921783344">这是为了向您显示有望邀请哪些人来参加您的活动。</translation>
 <translation id="3891414008432200754">价格</translation>
@@ -905,6 +905,7 @@
 <translation id="4896467949657706481">标签页已关闭；您已退出账号</translation>
 <translation id="4913626501929406101">您可以安全地与家人群组成员分享您的密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">接受</translation>
+<translation id="4932733599132424254">日期</translation>
 <translation id="4936354130727646074">一律不移动</translation>
 <translation id="4937410517508563815">将密码保存到账号</translation>
 <translation id="4938338714234463591">这样，您就可以通过语音在网站上使用某些功能。</translation>
@@ -1471,7 +1472,6 @@
 <translation id="7336264872878993241">已下载<ph name="PERCENT" />%</translation>
 <translation id="7346909386216857016">知道了</translation>
 <translation id="7352651011704765696">出了点问题</translation>
-<translation id="7359341089141286329">自动跟踪检测到的所有包裹</translation>
 <translation id="7363349185727752629">隐私控制选项指南</translation>
 <translation id="736564850024123010">更换地址栏的位置，获享个性化体验。</translation>
 <translation id="7366909168761621528">浏览数据</translation>
@@ -1719,6 +1719,7 @@
 <translation id="8299417921174340354">您必须先在设备上设置密码，才能使用密码。</translation>
 <translation id="8307481894409578819">无法上传此文件</translation>
 <translation id="8319076807703933069">新搜索</translation>
+<translation id="8320212361750431956">近期活动</translation>
 <translation id="833647236762414178">您可以创建、保存和管理密码和通行密钥，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">备份您的资料，在任何设备上使用</translation>
 <translation id="8349305172487531364">书签栏</translation>
@@ -1748,7 +1749,6 @@
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>
 <translation id="8449869326050867919">已分享密码</translation>
-<translation id="8453847087068411809">一律不自动检测包裹</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8474378002946546633">允许通知</translation>
 <translation id="8477178913400731244">删除数据</translation>

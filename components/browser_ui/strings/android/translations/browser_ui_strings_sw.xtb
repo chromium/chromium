@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya NFC. Kikizimwa, tovuti haziwezi kutumia vifaa vya NFC.</translation>
 <translation id="1660204651932907780">Ruhusu tovuti kucheza sauti (inapendekezwa)</translation>
 <translation id="1677097821151855053">Vidakuzi na data nyingine ya tovuti hutumika kukukumbuka, kwa mfano kukuingiza katika akaunti au kuweka mapendeleo kwenye matangazo. Ili udhibiti vidakuzi vya tovuti zote, angalia <ph name="BEGIN_LINK" />Mipangilio<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Tovuti zinaweza kuomba ruhusa ya kutumia vifaa vya NFC</translation>
 <translation id="1686785653877010442">Kwa kawaida tovuti hutuma arifa kukufahamisha kuhusu habari zinazojiri au ujumbe wa gumzo.</translation>
 <translation id="169515064810179024">Zuia tovuti zisifikie vitambuzi vya mwendo</translation>
 <translation id="1703666494654169921">Usiruhusu tovuti zitumie data au vifaa vya uhalisia pepe</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Hatua hii itafuta data ya ukubwa wa <ph name="DATASIZE" /> na vidakuzi vilivyohifadhiwa na tovuti au programu kwenye Skrini yako ya kwanza.</translation>
 <translation id="2194856509914051091">Mambo ya kuzingatia</translation>
 <translation id="2215727959747642672">Kubadilisha faili</translation>
+<translation id="2218389616572918761">Tovuti zinaweza kuomba ruhusa ya maikrofoni yako</translation>
 <translation id="2228071138934252756">Ili uruhusu <ph name="APP_NAME" /> ifikie kamera yako, washa pia kamera katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Vidakuzi vya washirika wengine vimezuiwa</translation>
 <translation id="2238944249568001759">Utafutaji unaopendekezwa kulingana na kichupo chako ulichofungua mara ya mwisho</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Fungua Chrome huku Sanduku kuu likiwa limeangaziwa, hivyo kupunguza muda wa kuwasha vifaa vya uwezo wa chini.</translation>
 <translation id="2750481671343847896">Tovuti inaweza kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
 <translation id="2787357173144933081">Anzisha Sanduku kuu</translation>
+<translation id="2789132527330338807">Tovuti zinaweza kuomba kutayarisha ramani ya 3D ya mazingira yako au kufuatilia mkao wa kamera</translation>
 <translation id="2790501146643349491">Kikiwashwa, tovuti zilizofungwa hivi karibuni zinaweza kumaliza kutuma na kupokea data. Kikizimwa, tovuti zilizofungwa hivi karibuni haziwezi kumaliza kutuma au kupokea data.</translation>
 <translation id="2795716239552913152">Tovuti hutumia maelezo ya mahali ulipo kwa ajili ya vipengele au taarifa zinazohusiana, kama vile habari za mahali ulipo au maduka yaliyo karibu nawe</translation>
+<translation id="2802908157808345702">Usiruhusu tovuti zitume madirisha ibukizi wala kuelekeza kwingine</translation>
 <translation id="2814830417943086299">Chrome sasa inaonyesha vichupo vyako vya hivi majuzi katika orodha ya programu na matokeo ya utafutaji kwenye kifaa chako. Unaweza kuzima hali hii wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="2822354292072154809">Una uhakika ungependa kubadilisha ruhusa zote za tovuti ya <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Omba mwonekano wa kifaa cha mkononi</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Ukiwa katika hali fiche, tovuti haziwezi kutumia vidakuzi vyako ili kuangalia shughuli zako za kuvinjari kwenye tovuti, hata katika tovuti zinazohusiana. Shughuli zako za kuvinjari hazitumiki kwa mambo kama vile kuweka mapendeleo ya matangazo. Huenda vipengele visifanye kazi kwenye baadhi ya tovuti.</translation>
 <translation id="461356340001513807">Inakuwezesha kuingia katika tovuti ukitumia akaunti uliyonayo kwenye huduma za utambulisho</translation>
 <translation id="4619615317237390068">Vichupo kutoka kwenye vifaa vingine</translation>
+<translation id="4635969503923889910">Usiruhusu tovuti zitumie vifaa vya NFC</translation>
 <translation id="4644713492825682049">Futa na uweke upya</translation>
 <translation id="4645575059429386691">Inadhibitiwa na wazazi wako</translation>
 <translation id="4670064810192446073">Uhalisia pepe</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Kunja maombi yote</translation>
 <translation id="5884085660368669834">Mapendeleo ya tovuti</translation>
 <translation id="5887687176710214216">Ilitembelewa mara ya mwisho jana</translation>
+<translation id="5908617755156109052">Usiruhusu tovuti zitayarishe ramani ya 3D ya mazingira yako au kufuatilia mkao wa kamera</translation>
 <translation id="5916664084637901428">Imewashwa</translation>
 <translation id="5922853908706496913">Inashiriki skrini yako</translation>
 <translation id="5922967540311291836">Kuzuia vidakuzi vya washirika wengine:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Futa uingizaji wa maandishi</translation>
 <translation id="8681886425883659911">Matangazo yamezuiwa kwenye tovuti ambazo huonyesha matangazo yanayopotosha au yanayokatiza matumizi</translation>
 <translation id="868929229000858085">Tafuta kwenye anwani zako</translation>
+<translation id="8707904142362025782">Tovuti zinaweza kuomba ruhusa ya kamera yako</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="8715862698998036666">Buruta kutoka juu kisha utelezeshe kutoka ukingo wa kushoto au kulia ili ufunge hali ya skrini nzima.</translation>
 <translation id="8719283222052720129">Washa ruhusa ya <ph name="APP_NAME" /> katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>

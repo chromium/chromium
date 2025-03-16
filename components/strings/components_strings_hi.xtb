@@ -2852,6 +2852,7 @@
 <translation id="604124094241169006">ऑटोमेटिक</translation>
 <translation id="6041777658117377052">चेंबर का तापमान</translation>
 <translation id="6042308850641462728">और ज़्यादा</translation>
+<translation id="6043357981274314628">हो गया!</translation>
 <translation id="6044573915096792553">आकार 12</translation>
 <translation id="6045164183059402045">इम्पोज़िशन टेम्प्लेट</translation>
 <translation id="6047927260846328439">यह सामग्री आपसे धोखे से सॉफ़्टवेयर इंस्‍टॉल करवाने या व्यक्तिगत जानकारी मुहैया करवाने की कोशिश कर सकती है. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
@@ -2875,7 +2876,6 @@
 <translation id="6062937464449575061">कीमत ट्रैक न करें</translation>
 <translation id="6063415549109819824">होम फ़ाइनेंसिंग</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" /> पर मौजूद <ph name="FOLDER_NAME" /> में एक या उससे ज़्यादा फ़ाइलें अपलोड नहीं हो पाईं</translation>
-<translation id="6080696365213338172">आपने व्यवस्थापक द्वारा दिए गए प्रमाणपत्र के उपयोग से सामग्री ऐक्सेस की है.   <ph name="DOMAIN" /> को दिया गया डेटा आपके व्यवस्थापक द्वारा बीच में रोका जा सकता है.</translation>
 <translation id="6085149458302186532">लेबल (कलर्ड)</translation>
 <translation id="6087312102907839798">मिलती-जुलती खोजें</translation>
 <translation id="6089505343295765444">Chrome इतिहास से मिटाए गए टैब, अब भी तुलना करने वाली टेबल में दिखेंगे</translation>
@@ -4249,7 +4249,6 @@
 <translation id="8473626140772740486">300 x 450 मि॰मी॰</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
-<translation id="8476959635632921417">अपने सभी डिवाइसों पर इस ईमेल पते को सेव और इस्तेमाल करने के लिए, अपनी पहचान की पुष्टि करें</translation>
 <translation id="8479754468255770962">नीचे बाईं ओर स्टेपल</translation>
 <translation id="8483229036294884935">आपके Google खाते, <ph name="ACCOUNT" /> से यह पता मिटा दिया जाएगा</translation>
 <translation id="8488350697529856933">इस पर लागू होती है</translation>

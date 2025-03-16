@@ -2242,7 +2242,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2530166226437958497">Dépannage</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Un problème est survenu, et <ph name="DEVICE_OS" /> n'a pas pu être installé.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pour obtenir de l'aide supplémentaire, consultez la page g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">En savoir plus</translation>
 <translation id="2532144599248877204">Prolonge l'autonomie de la pile en maintenant le niveau de recharge autour de 80 %. La pile se rechargera complètement avant que vous ne la débranchiez de la prise comme d'habitude.</translation>
 <translation id="2532146950330687938">Préparation de l'appareil en cours…</translation>
 <translation id="2532198298278778531">Gérer le DNS sécurisé dans les paramètres de Chrome OS Flex</translation>

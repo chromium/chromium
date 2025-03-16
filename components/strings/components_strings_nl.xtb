@@ -2846,6 +2846,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="604124094241169006">Automatisch</translation>
 <translation id="6041777658117377052">Temperatuur van ruimte</translation>
 <translation id="6042308850641462728">Meer</translation>
+<translation id="6043357981274314628">Klaar</translation>
 <translation id="6044573915096792553">Grootte 12</translation>
 <translation id="6045164183059402045">Plaatsingstemplate</translation>
 <translation id="6047927260846328439">Deze content probeert je mogelijk te misleiden om software te installeren of persoonlijke informatie openbaar te maken. <ph name="BEGIN_LINK" />Toch bekijken<ph name="END_LINK" /></translation>
@@ -2869,7 +2870,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6062937464449575061">Prijs niet meer volgen</translation>
 <translation id="6063415549109819824">Woningfinanciering</translation>
 <translation id="6070432475334343308">Een of meer bestanden zijn niet geüpload naar <ph name="FOLDER_NAME" /> in <ph name="CLOUD_PROVIDER" /></translation>
-<translation id="6080696365213338172">Je hebt toegang tot content gekregen met behulp van een certificaat van je beheerder. Gegevens die je verstrekt aan <ph name="DOMAIN" />, kunnen door je beheerder worden onderschept.</translation>
 <translation id="6085149458302186532">Labels (gekleurd)</translation>
 <translation id="6087312102907839798">Gerelateerde zoekopdrachten</translation>
 <translation id="6089505343295765444">Tabbladen die je uit je Chrome-geschiedenis verwijdert, worden nog steeds getoond in je vergelijkingstabellen</translation>
@@ -4242,7 +4242,6 @@ Aanvullende informatie:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="8474910779563686872">Ontwikkelaarsgegevens bekijken</translation>
-<translation id="8476959635632921417">Laat verifiëren dat jij het bent om dit adres op al je apparaten op te slaan en te gebruiken</translation>
 <translation id="8479754468255770962">Nietje linksonder</translation>
 <translation id="8483229036294884935">Dit adres wordt verwijderd uit je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">Van toepassing op</translation>

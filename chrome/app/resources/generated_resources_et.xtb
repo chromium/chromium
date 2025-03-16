@@ -2245,7 +2245,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2530166226437958497">Veaotsing</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Midagi läks valesti ja operatsioonisüsteemi <ph name="DEVICE_OS" /> ei saanud installida.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Lisaabi saamiseks külastage saiti g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Lisateave</translation>
 <translation id="2532144599248877204">Pikendab aku tööiga, hoides aku laetuse 80% juures. Aku laetakse täielikult täis enne seda, kui tavapäraselt laadija vooluvõrgust eemaldate.</translation>
 <translation id="2532146950330687938">Seadme ettevalmistamine …</translation>
 <translation id="2532198298278778531">Hallake turvalist DNS-i Chrome OS Flexi seadetes</translation>
@@ -6906,6 +6905,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> peatatakse varsti</translation>
 <translation id="586567932979200359">Käitate <ph name="PRODUCT_NAME" />'i selle kettakujutiselt. Arvutisse installides saate seda käitada ilma kettakujutiseta ja see tagab ajakohasuse.</translation>
 <translation id="5865733239029070421">Google'ile saadetakse automaatselt kasutusstatistikat ja krahhiaruandeid</translation>
+<translation id="5866363217037791319">Lõpeta ülesanne</translation>
 <translation id="5868434909835797817">Mikrofon on teie seadmes välja lülitatud</translation>
 <translation id="5868479397518301468">Sisselogimise ajalõpp</translation>
 <translation id="5868822853313956582">Järgi seadme värve</translation>
@@ -11087,6 +11087,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="883924185304953854">Otsing pildi järgi</translation>
 <translation id="8841786407272321022">Parool on salvestatud ainult sellesse seadmesse. Uute paroolide salvestamiseks oma Google'i kontole värskendage Google Play teenuseid.</translation>
 <translation id="8841843049738266382">Lubamisloendisse lisatud kasutajate lugemine ja muutmine</translation>
+<translation id="8841884135319684422">Lõpeta ülesanne</translation>
 <translation id="8842594465773264717">Kustuta see sõrmejälg</translation>
 <translation id="8845001906332463065">Otsige abi</translation>
 <translation id="8846132060409673887">Arvuti tootja ja mudeli andmete lugemine</translation>

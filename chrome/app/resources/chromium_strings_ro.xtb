@@ -32,6 +32,7 @@
 <translation id="1478370723027452770">Primește ajutor pentru Chrome for Testing</translation>
 <translation id="1497802159252041924">Eroare la instalare: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Distribuie o filă Chromium</translation>
+<translation id="1547469039832541117">Încheie activitatea evidențiată.</translation>
 <translation id="1553461853655228091">Chromium are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Extensia nu mai este acceptată. Chromium recomandă să o elimini.}few{Aceste extensii nu mai sunt acceptate. Chromium recomandă să le elimini.}other{Aceste extensii nu mai sunt acceptate. Chromium recomandă să le elimini.}}</translation>
 <translation id="1574377791422810894">Instrumentele de siguranță din Chromium</translation>

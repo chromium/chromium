@@ -2847,6 +2847,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="604124094241169006">Avtomatik</translation>
 <translation id="6041777658117377052">Kamera harorati</translation>
 <translation id="6042308850641462728">Yana</translation>
+<translation id="6043357981274314628">Tayyor!</translation>
 <translation id="6044573915096792553">Hajmi: 12</translation>
 <translation id="6045164183059402045">Boshlangʻich chiziqlar andozasi</translation>
 <translation id="6047927260846328439">Bu kontent zararli dastur o‘rnatishga yoki shaxsiy ma’lumotlaringizni o‘g‘irlashga urinishi mumkin. <ph name="BEGIN_LINK" />Baribir ko‘rsatilsin<ph name="END_LINK" /></translation>
@@ -2870,7 +2871,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6062937464449575061">Narxni kuzatmaslik</translation>
 <translation id="6063415549109819824">Uylarni moliyalashtirish</translation>
 <translation id="6070432475334343308">Bir yoki bir nechta fayl <ph name="CLOUD_PROVIDER" /> omboridagi <ph name="FOLDER_NAME" /> jildiga yuklanmadi</translation>
-<translation id="6080696365213338172">Siz administrator bergan sertifikat bilan kontentga kirdingiz. <ph name="DOMAIN" /> domeniga uzatiladigan ma’lumotlarni administratoringiz tutishi mumkin.</translation>
 <translation id="6085149458302186532">Yorliqlar (rangli)</translation>
 <translation id="6087312102907839798">Aloqador qidiruvlar</translation>
 <translation id="6089505343295765444">Chrome tarixidan oʻchirilgan varaqlar taqqoslash jadvallarida chiqishda davom etadi</translation>
@@ -4242,7 +4242,6 @@ Batafsil axborot:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Mazillar va boshqa ma’lumotlar</translation>
 <translation id="8474910779563686872">Dasturchilar uchun tafsilotlarni chiqarish</translation>
-<translation id="8476959635632921417">Barcha qurilmalarda bu manzilni saqlash va undan foydalanish uchun shaxsingizni tasdiqlang</translation>
 <translation id="8479754468255770962">Quyi chapdan steplerlash</translation>
 <translation id="8483229036294884935">Bu manzil Google hisobingizdan (<ph name="ACCOUNT" />) oʻchirildi</translation>
 <translation id="8488350697529856933">Tatbiq etish obyekti</translation>

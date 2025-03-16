@@ -34,7 +34,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1478370723027452770">Potražite pomoć za Chrome for Testing</translation>
 <translation id="1497802159252041924">Greška prilikom instaliranja: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Dijelite Chromium karticu</translation>
-<translation id="1547469039832541117">Završava istaknut zadatak.</translation>
+<translation id="1547469039832541117">Završava istaknuti zadatak.</translation>
 <translation id="1553461853655228091">Chromiumu je potrebno odobrenje da pristupi kameri radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Ta ekstenzija više nije podržana. Chromium preporučuje da je uklonite.}one{Te ekstenzije više nisu podržane. Chromium preporučuje da ih uklonite.}few{Te ekstenzije više nisu podržane. Chromium preporučuje da ih uklonite.}other{Te ekstenzije više nisu podržane. Chromium preporučuje da ih uklonite.}}</translation>
 <translation id="1574377791422810894">Chromiumovi sigurnosni alati</translation>
@@ -227,6 +227,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4148957013307229264">Instaliranje…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chromium</translation>
 <translation id="421369550622382712">Otkrijte odlične aplikacije, igre, ekstenzije i teme za Chromium.</translation>
+<translation id="4217080900579554343">Da biste imali ovo proširenje i druge mogućnosti na svim svojim računalima, prijavite se u Chromium</translation>
 <translation id="4217972271355023382">Radi veće sigurnosti online uz roditeljeve odabire prebaci se na Chromium profil na kojem ti je već izvršena prijava putem <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Otkazuje se…</translation>
 <translation id="4224210481850767180">Instalacija je otkazana.</translation>

@@ -32,6 +32,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1478370723027452770">Отримати довідку щодо Chrome for Testing</translation>
 <translation id="1497802159252041924">Помилка встановлення: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Поділитися вкладкою Chromium</translation>
+<translation id="1547469039832541117">Завершує виділене завдання.</translation>
 <translation id="1553461853655228091">Chromium потрібен дозвіл на використання камери, щоб створити 3D-карту вашого оточення</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Це розширення більше не підтримується. Chromium радить вилучити його.}one{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}few{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}many{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}other{Ці розширення більше не підтримуються. Chromium радить вилучити їх.}}</translation>
 <translation id="1574377791422810894">Інструменти безпеки Chromium</translation>

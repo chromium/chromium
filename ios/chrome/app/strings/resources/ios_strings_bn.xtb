@@ -447,6 +447,7 @@
 <translation id="2829172210806130158">আপনার স্ক্রিনে সার্চ করুন</translation>
 <translation id="2834399722155632105">৩. পাসওয়ার্ড বিকল্পে ট্যাপ করুন</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">সময়</translation>
 <translation id="284581348330507117">অনন্য পাসওয়ার্ড তৈরি করুন</translation>
 <translation id="2856883624744451946">গ্রুপের নাম দিন</translation>
 <translation id="2858204748079866344">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রে আপনার পাসওয়ার্ডটি নিজে থেকে পূরণ করবে না।</translation>
@@ -649,7 +650,6 @@
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3868495844258915202">সম্পূর্ণ URL দেখুন</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
-<translation id="3876833929577368454">আমাকে প্রত্যেকবার জিজ্ঞাসা করুন</translation>
 <translation id="3885587018298784481">ফ্যামিলি গ্রুপে যোগ দিন</translation>
 <translation id="3888863481921783344">এটি আপনার ইভেন্টে সম্ভাব্য আমন্ত্রিতদের দেখানোর জন্য ব্যবহার করা হবে।</translation>
 <translation id="3891414008432200754">দাম</translation>
@@ -904,6 +904,7 @@
 <translation id="4896467949657706481">ট্যাব বন্ধ করা হয়েছে; আপনি সাইন-আউট হয়ে গেছেন</translation>
 <translation id="4913626501929406101">নিজের ফ্যামিলি গ্রুপে কারও সাথে সুরক্ষিতভাবে আপনি পাসওয়ার্ডের কপি শেয়ার করতে পারবেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">স্বীকার</translation>
+<translation id="4932733599132424254">তারিখ</translation>
 <translation id="4936354130727646074">কখনও সরাবেন না</translation>
 <translation id="4937410517508563815">অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন</translation>
 <translation id="4938338714234463591">এটি আপনাকে ওয়েবসাইটে নির্দিষ্ট ফিচারের সাথে নিজের আওয়াজ ব্যবহার করার অনুমতি দেয়।</translation>
@@ -1471,7 +1472,6 @@
 <translation id="7336264872878993241"><ph name="PERCENT" /> শতাংশ ডাউনলোড হয়েছে</translation>
 <translation id="7346909386216857016">ঠিক আছে, বুঝেছি</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
-<translation id="7359341089141286329">শনাক্ত করা সব প্যাকেজ অটোমেটিক ট্র্যাক করুন</translation>
 <translation id="7363349185727752629">আপনার গোপনীয়তা পছন্দ গাইড</translation>
 <translation id="736564850024123010">কাস্টমাইজ করা অভিজ্ঞতার জন্য আপনার অ্যাড্রেস বারের অবস্থান পরিবর্তন করুন।</translation>
 <translation id="7366909168761621528">ব্রাউজিং ডেটা</translation>
@@ -1719,6 +1719,7 @@
 <translation id="8299417921174340354">পাসওয়ার্ড ব্যবহার করার জন্য, আপনাকে ডিভাইসে প্রথমে একটি পাসকোড সেট করতে হবে।</translation>
 <translation id="8307481894409578819">এই ফাইলটি আপলোড করা যায়নি</translation>
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
+<translation id="8320212361750431956">সাম্প্রতিক অ্যাক্টিভিটি</translation>
 <translation id="833647236762414178">সাইট এবং অ্যাপে সহজে সাইন-ইন করতে আপনার পাসওয়ার্ড ও পাসকী তৈরি, সেভ ও ম্যানেজ করুন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
@@ -1748,7 +1749,6 @@
 <translation id="8438566539970814960">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8439758443371991593">'পড়ার তালিকায় যোগ করুন' বিকল্পটি লুকান</translation>
 <translation id="8449869326050867919">পাসওয়ার্ড শেয়ার করা হয়েছে</translation>
-<translation id="8453847087068411809">প্যাকেজ অটোমেটিক শনাক্ত করার দরকার নেই</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="8474378002946546633">সূচনাকে মঞ্জুরী দিন</translation>
 <translation id="8477178913400731244">ডেটা মুছুন</translation>
