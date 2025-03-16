@@ -545,7 +545,7 @@
 <translation id="1365650529628379165">Поднять брови</translation>
 <translation id="1367817137674340530">Сгенерировано изображений: <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">Linux не поддерживается на вашем устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="1370249617397887619">Добавить пароли в аккаунт Google, чтобы они были доступны на других устройствах</translation>
+<translation id="1370249617397887619">Добавьте пароли в аккаунт Google, чтобы они были доступны на других устройствах.</translation>
 <translation id="1370384480654163477">Просмотр и редактирование файлов, к которым вы разрешили доступ при предыдущем посещении этого сайта:</translation>
 <translation id="1372259917802609049">Не получилось удалить ограничение.</translation>
 <translation id="1372841398847029212">Синхронизировать с моим аккаунтом</translation>
@@ -2704,7 +2704,7 @@
 <translation id="2855243985454069333">История будет удалена со всех синхронизируемых устройств</translation>
 <translation id="2855812646048059450">Войти с аккаунтом <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Создайте контейнер</translation>
-<translation id="2859741939921354763">Импортировать пароли в <ph name="BRAND" /></translation>
+<translation id="2859741939921354763">Импортируйте пароли в <ph name="BRAND" />.</translation>
 <translation id="2860710618359053450">Сместить губы вправо</translation>
 <translation id="2861301611394761800">Обновление системы завершено. Перезапустите компьютер.</translation>
 <translation id="2861402191395139055">Подписки Passpoint</translation>
@@ -7326,7 +7326,7 @@
 <translation id="6185151644843671709">Ключ доступа сохранен, PIN-код создан</translation>
 <translation id="6186177419203903310">Уведомления обо всех новых периферийных USB-устройствах будут включены. Продолжить?</translation>
 <translation id="6190953336330058278">Управление телефоном: приложения</translation>
-<translation id="6192333916571137726">Скачивание файла</translation>
+<translation id="6192333916571137726">Скачать файл</translation>
 <translation id="6192413564913825901">Переместить во "Все закладки"</translation>
 <translation id="6194333736420234626">Способы оплаты</translation>
 <translation id="6195005504600220730">Доступ к информации о вашем браузере, ОС и устройстве</translation>
