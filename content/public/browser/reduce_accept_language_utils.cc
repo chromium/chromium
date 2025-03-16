@@ -55,21 +55,9 @@ ReduceAcceptLanguageUtils::ReduceAcceptLanguageUtils(
 ReduceAcceptLanguageUtils::~ReduceAcceptLanguageUtils() = default;
 
 // static
-ReduceAcceptLanguageUtils ReduceAcceptLanguageUtils::CreateForTesting(
-    ReduceAcceptLanguageControllerDelegate& delegate) {
-  return ReduceAcceptLanguageUtils(delegate);
-}
-
-// static
 std::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     BrowserContext* browser_context) {
   DCHECK(browser_context);
-  // Check whether enterprise policy disable this feature.
-  if (!GetContentClient()->browser()->ShouldReduceAcceptLanguage(
-          browser_context)) {
-    return std::nullopt;
-  }
-
   if (!ReduceAcceptLanguageFeatureEnabled()) {
     return std::nullopt;
   }
@@ -79,7 +67,7 @@ std::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     return std::nullopt;
   }
   return std::make_optional<ReduceAcceptLanguageUtils>(
-      ReduceAcceptLanguageUtils(*reduce_accept_lang_delegate));
+      *reduce_accept_lang_delegate);
 }
 
 // static

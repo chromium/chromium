@@ -1058,9 +1058,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsBlobUrlPartitioningEnabled(
       content::BrowserContext* browser_context) override;
 
-  bool ShouldReduceAcceptLanguage(
-      content::BrowserContext* browser_context) override;
-
   void SetIsMinimalMode(bool minimal) override;
 
   bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;

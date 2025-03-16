@@ -41,12 +41,16 @@ void LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart status) {
 }  // namespace
 
 ReduceAcceptLanguageThrottle::ReduceAcceptLanguageThrottle(
-    ReduceAcceptLanguageUtils reduce_accept_language_utils,
+    ReduceAcceptLanguageControllerDelegate& accept_language_delegate,
     OriginTrialsControllerDelegate* origin_trials_delegate,
     FrameTreeNodeId frame_tree_node_id)
-    : reduce_accept_language_utils_(std::move(reduce_accept_language_utils)),
+    : accept_language_delegate_(accept_language_delegate),
       origin_trials_delegate_(origin_trials_delegate),
       frame_tree_node_id_(frame_tree_node_id) {
+  DCHECK(
+      base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
+      base::FeatureList::IsEnabled(
+          network::features::kReduceAcceptLanguageHTTP));
   LogAcceptLanguageStatus(AcceptLanguageNegotiationRestart::kNavigationStarted);
 }
 
@@ -125,6 +129,7 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
     return;
   }
 
+  ReduceAcceptLanguageUtils reduce_language_utils(*accept_language_delegate_);
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
   // Skip if origin opted-in ReduceAcceptLanguage deprecation origin trial.
@@ -138,7 +143,7 @@ void ReduceAcceptLanguageThrottle::MaybeRestartWithLanguageNegotiation(
     return;
 
   bool need_restart =
-      reduce_accept_language_utils_.ReadAndPersistAcceptLanguageForNavigation(
+      reduce_language_utils.ReadAndPersistAcceptLanguageForNavigation(
           last_request_origin, initial_request_headers_,
           response_head.parsed_headers);
 
