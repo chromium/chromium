@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_true: expected true got false
+[FAIL] Script injected via direct `eval` is allowed with `trusted-types-eval` and `require-trusted-types-for 'script'`.
+  assert_unreached: `eval` should be allowed with `trusted-types-eval` and `require-trusted-types-for 'script'`. Reached unreachable code
+[FAIL] Script injected via indirect `eval` is allowed with `trusted-types-eval` and `require-trusted-types-for 'script'`.
+  assert_unreached: indirect `eval` should be allowed with `trusted-types-eval` and `require-trusted-types-for 'script'`. Reached unreachable code
+[FAIL] Script injected via `new Function` is allowed with `trusted-types-eval` and `require-trusted-types-for 'script'`.
+  assert_unreached: `new Function` should be allowed with `trusted-types-eval` and `require-trusted-types-for 'script'`. Reached unreachable code
+[FAIL] Script injected via `setTimeout` is allowed with `trusted-types-eval` and `require-trusted-types-for 'script'`.
+  assert_unreached: No CSP violation report has fired. Reached unreachable code
+Harness: the test ran to completion.
+
