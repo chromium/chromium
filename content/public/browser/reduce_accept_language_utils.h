@@ -24,14 +24,20 @@ class FrameTreeNode;
 // https://github.com/Tanych/accept-language.
 class CONTENT_EXPORT ReduceAcceptLanguageUtils {
  public:
-  explicit ReduceAcceptLanguageUtils(
-      ReduceAcceptLanguageControllerDelegate& delegate);
   ~ReduceAcceptLanguageUtils();
 
   // No copy constructor and no copy assignment operator.
   ReduceAcceptLanguageUtils(const ReduceAcceptLanguageUtils&) = delete;
   ReduceAcceptLanguageUtils& operator=(const ReduceAcceptLanguageUtils&) =
       delete;
+  // Movable.
+  ReduceAcceptLanguageUtils(ReduceAcceptLanguageUtils&& other) = default;
+  ReduceAcceptLanguageUtils& operator=(ReduceAcceptLanguageUtils&& other) =
+      default;
+
+  // Allow test class to create mock delegate to test.
+  static ReduceAcceptLanguageUtils CreateForTesting(
+      ReduceAcceptLanguageControllerDelegate& delegate);
 
   // Create and return a ReduceAcceptLanguageUtils instance based on provided
   // `browser_context`.
@@ -119,6 +125,11 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
                                    FrameTreeNode* frame_tree_node);
 
  private:
+  // Make constructor as private, call Create method and return objects of the
+  // class.
+  explicit ReduceAcceptLanguageUtils(
+      ReduceAcceptLanguageControllerDelegate& delegate);
+
   // Captures the state used in applying persist accept language.
   struct PersistLanguageResult {
     PersistLanguageResult();

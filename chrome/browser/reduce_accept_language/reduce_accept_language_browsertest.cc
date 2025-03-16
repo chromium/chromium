@@ -16,6 +16,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,6 +29,7 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/common/content_features.h"
@@ -116,7 +118,7 @@ static constexpr const char kDeprecationTrialName[] =
 
 }  // namespace
 
-class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
+class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
  public:
   ReduceAcceptLanguageBrowserTest() = default;
 
@@ -569,6 +571,130 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
                                                std::nullopt);
   EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+}
+
+// Browser tests that using Enterprise policy to control ReduceAcceptLanguage
+// feature.
+class ReduceAcceptLanguageEnterprisePolicyBrowserTest
+    : public ReduceAcceptLanguageBrowserTest,
+      public ::testing::WithParamInterface<policy::PolicyTest::BooleanPolicy> {
+ public:
+  static std::string DescribeParams(
+      const ::testing::TestParamInfo<ParamType>& info) {
+    switch (info.param) {
+      case policy::PolicyTest::BooleanPolicy::kNotConfigured:
+        return "NotConfigured";
+      case policy::PolicyTest::BooleanPolicy::kTrue:
+        return "True";
+      case policy::PolicyTest::BooleanPolicy::kFalse:
+        return "False";
+    }
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
+
+    if (GetParam() == policy::PolicyTest::BooleanPolicy::kNotConfigured) {
+      return;
+    }
+
+    policy::PolicyMap policies;
+    SetPolicy(
+        &policies, policy::key::kReduceAcceptLanguageEnabled,
+        base::Value(GetParam() == policy::PolicyTest::BooleanPolicy::kTrue));
+    UpdateProviderPolicy(policies);
+  }
+
+  void EnabledFeatures() override {
+    scoped_feature_list_.InitWithFeatures(
+        {network::features::kReduceAcceptLanguage}, {});
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+    ::testing::Values(policy::PolicyTest::BooleanPolicy::kNotConfigured,
+                      policy::PolicyTest::BooleanPolicy::kFalse,
+                      policy::PolicyTest::BooleanPolicy::kTrue),
+    &ReduceAcceptLanguageEnterprisePolicyBrowserTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+                       PolicyIsFollowed) {
+  SetTestOptions({.content_language_in_parent = "en",
+                  .avail_language_in_parent = "en, en-US",
+                  .vary_in_parent = "accept-language"},
+                 {SameOriginRequestUrl()});
+  SetPrefsAcceptLanguage({"zh", "en-US"});
+
+  // Both true and the default (no parameter) should be enabled.
+  const bool expect_feature_disabled =
+      GetParam() == policy::PolicyTest::BooleanPolicy::kFalse;
+  if (expect_feature_disabled) {
+    // Expect no Accept-Language header added because browser_tests can only
+    // check headers in navigation layer, browser_tests can't see headers added
+    // by network stack.
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 std::nullopt);
+    VerifyNavigatorLanguages({"zh", "en-US"});
+  } else {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
+                                                 "en-US,en;q=0.9");
+    VerifyNavigatorLanguages({"zh"});
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+                       PolicyIsFollowedIframe) {
+  SetTestOptions({.content_language_in_parent = "es",
+                  .avail_language_in_parent = "es, en-US",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "es",
+                  .avail_language_in_child = "es, en-US",
+                  .vary_in_child = "accept-language"},
+                 {SameOriginIframeUrl(), SimpleRequestUrl()});
+
+  SetPrefsAcceptLanguage({"zh", "en-US"});
+
+  // Both true and the default (no parameter) should be enabled.
+  const bool expect_feature_disabled =
+      GetParam() == policy::PolicyTest::BooleanPolicy::kFalse;
+  if (expect_feature_disabled) {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                                 std::nullopt);
+    VerifyNavigatorLanguages({"zh", "en-US"});
+  } else {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
+                                                 "en-US,en;q=0.9");
+    VerifyNavigatorLanguages({"zh"});
+  }
+  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+}
+
+IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
+                       PolicyIsFollowedImgSubresource) {
+  SetTestOptions({.content_language_in_parent = "es",
+                  .avail_language_in_parent = "es, en-US",
+                  .vary_in_parent = "accept-language",
+                  .content_language_in_child = "es",
+                  .avail_language_in_child = "es, en-US",
+                  .vary_in_child = "accept-language"},
+                 {SameOriginImgUrl(), SimpleImgUrl()});
+
+  SetPrefsAcceptLanguage({"zh", "en-US"});
+
+  // Both true and the default (no parameter) should be enabled.
+  const bool expect_feature_disabled =
+      GetParam() == policy::PolicyTest::BooleanPolicy::kFalse;
+  if (expect_feature_disabled) {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SimpleImgUrl(), std::nullopt);
+    VerifyNavigatorLanguages({"zh", "en-US"});
+  } else {
+    NavigateAndVerifyAcceptLanguageOfLastRequest(SimpleImgUrl(),
+                                                 "en-US,en;q=0.9");
+    VerifyNavigatorLanguages({"zh"});
+  }
+  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
 }
 
 // Tests same origin requests with the ReduceAcceptLanguage feature enabled.

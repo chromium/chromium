@@ -2380,6 +2380,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebAudioOutputBufferingEnabled,
     prefs::kWebAudioOutputBufferingEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kReduceAcceptLanguageEnabled,
+    prefs::kReduceAcceptLanguageEnabled,
+    base::Value::Type::BOOLEAN },
 };
 // clang-format on
 

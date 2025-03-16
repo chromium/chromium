@@ -70,18 +70,13 @@ CreateContentBrowserURLLoaderThrottles(
   // Creating a throttle only for outermost main frames to persist the reduced
   // accept language for an origin and to restart requests if needed, due to
   // language negotiation.
-  if (base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) ||
-      base::FeatureList::IsEnabled(
-          network::features::kReduceAcceptLanguageHTTP)) {
-    ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
-        browser_context->GetReduceAcceptLanguageControllerDelegate();
-    OriginTrialsControllerDelegate* origin_trials_delegate =
-        browser_context->GetOriginTrialsControllerDelegate();
-    if (request.is_outermost_main_frame && reduce_accept_lang_delegate) {
-      throttles.push_back(std::make_unique<ReduceAcceptLanguageThrottle>(
-          *reduce_accept_lang_delegate, origin_trials_delegate,
-          frame_tree_node_id));
-    }
+  if (auto reduce_accept_lang_utils =
+          ReduceAcceptLanguageUtils::Create(browser_context);
+      reduce_accept_lang_utils && request.is_outermost_main_frame) {
+    throttles.push_back(std::make_unique<ReduceAcceptLanguageThrottle>(
+        std::move(reduce_accept_lang_utils.value()),
+        browser_context->GetOriginTrialsControllerDelegate(),
+        frame_tree_node_id));
   }
 
   // frame_tree_node_id may be invalid if we are loading the first frame
