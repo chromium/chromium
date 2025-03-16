@@ -843,7 +843,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4619615317237390068">Onglets d'autres appareils</translation>
 <translation id="4624080227980645783">Nouvelle fenêtre de navigation privée</translation>
-<translation id="4627107755957573804">Autorisez les sites et les applis à mettre à niveau les comptes existants pour qu'ils utilisent des clés d'accès</translation>
+<translation id="4627107755957573804">Autorisez les sites et les applis à mettre à niveau les comptes existants pour qu'ils utilisent des clés d'accès.</translation>
 <translation id="4630212057753624203">Exemple d'info-bulle</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> mots de passe réutilisés</translation>
 <translation id="4631890462758052414">Nouvel onglet de navigation privée</translation>
@@ -1689,7 +1689,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8084285576995584326">Gérer les données de votre compte Google</translation>
 <translation id="809543534949702122">Rechercher dans l'historique</translation>
 <translation id="8095985449280932182">{COUNT,plural, =1{Les onglets inutilisés pendant {COUNT} jour sont déplacés ici}one{Les onglets inutilisés pendant {COUNT} jour sont déplacés ici}other{Les onglets inutilisés pendant {COUNT} jours sont déplacés ici}}</translation>
-<translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement à des sites et à des applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="8101409298456377967">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement aux sites et applis. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8102130909719902723">N</translation>
 <translation id="8114753159095730575">Vous pouvez télécharger des fichiers. Différentes options sont disponibles au bas de l'écran.</translation>
 <translation id="8123502380991596210">Masquer "Nouveautés"</translation>
@@ -1748,7 +1748,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8349305172487531364">Barre de favoris</translation>
 <translation id="8364563001733875155">Pour modifier votre code, configurez d'abord un code secret sur votre appareil.</translation>
 <translation id="8366466717204352506">Aucune vérification jusqu'à présent</translation>
-<translation id="8368001212524806591">Effectuer le suivi du prix</translation>
+<translation id="8368001212524806591">Suivre les prix</translation>
 <translation id="8368198938968349418">Activer la saisie automatique</translation>
 <translation id="8370406443343902172">Accéder aux paramètres</translation>
 <translation id="8372471489238799313">{count,plural, =1{Supprimer l'adresse}one{Supprimer l'adresse}other{Supprimer les adresses}}</translation>

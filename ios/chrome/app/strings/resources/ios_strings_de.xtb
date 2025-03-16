@@ -682,11 +682,11 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3940195383040445971">Preise auf Tabs beobachten</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
 <translation id="3948600256434252210">Wische zum Surfen im Inkognitomodus nach rechts.</translation>
-<translation id="3950479158728806902">Für ein schnellere Anmeldung Passkey automatisch erstellen lassen</translation>
+<translation id="3950479158728806902">Für eine schnellere Anmeldung Passkey automatisch erstellen lassen</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="3955740319737378355">Fertig</translation>
 <translation id="3955822496205734389">Du nutzt schwache Passwörter.</translation>
-<translation id="3958312024468322930">Ziehe es zum Dock am unteren Rand des Startbildschirms</translation>
+<translation id="3958312024468322930">Ziehe es ins Dock am unteren Rand des Startbildschirms</translation>
 <translation id="3960218941754097036">Mit Google Lens beliebige Elemente auf dem Bildschirm suchen</translation>
 <translation id="3962326069546168954">Speichern</translation>
 <translation id="3967327056943561740">Lesezeichen</translation>
@@ -843,7 +843,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4619615317237390068">Tabs von anderen Geräten</translation>
 <translation id="4624080227980645783">Neues Inkognitofenster</translation>
-<translation id="4627107755957573804">Websites und Apps können vorhandene Konten automatisch auf die Verwendung von Passkeys umstellen</translation>
+<translation id="4627107755957573804">Websites und Apps können vorhandene Konten automatisch auf die Verwendung von Passkeys umstellen.</translation>
 <translation id="4630212057753624203">Beispiel-Bubble</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> wiederverwendete Passwörter</translation>
 <translation id="4631890462758052414">Neuer Inkognitotab</translation>
