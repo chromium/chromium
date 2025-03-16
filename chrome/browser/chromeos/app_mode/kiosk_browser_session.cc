@@ -231,6 +231,7 @@ void KioskBrowserSession::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kKioskBrowserPermissionsAllowedForOrigins,
                              PrefRegistrySimple::NO_REGISTRATION_FLAGS);
   registry->RegisterBooleanPref(prefs::kKioskWebAppOfflineEnabled, true);
+  registry->RegisterBooleanPref(prefs::kKioskChromeAppsForceAllowed, false);
 }
 
 void KioskBrowserSession::InitForChromeAppKiosk(const std::string& app_id) {

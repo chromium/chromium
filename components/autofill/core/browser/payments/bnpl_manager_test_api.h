@@ -66,6 +66,10 @@ class BnplManagerTestApi {
 
   void OnTosDialogAccepted() { bnpl_manager_->OnTosDialogAccepted(); }
 
+  void CreateBnplPaymentInstrument() {
+    bnpl_manager_->CreateBnplPaymentInstrument();
+  }
+
  private:
   const raw_ref<BnplManager> bnpl_manager_;
 };

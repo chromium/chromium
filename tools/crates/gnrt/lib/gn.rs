@@ -365,15 +365,7 @@ pub fn build_rule_from_dep(
                     (Some(normalized_crate_name.to_string()), Some(crate_epoch))
                 }
             };
-            let crate_type = {
-                // The stdlib is a "dylib" crate but we only want rlibs.
-                let t = lib_target.lib_type.to_string();
-                if t == "dylib" {
-                    "rlib".to_string()
-                } else {
-                    t
-                }
-            };
+            let crate_type = lib_target.lib_type.to_string();
 
             let mut lib_detail = detail_template.clone();
             lib_detail.crate_name = crate_name;

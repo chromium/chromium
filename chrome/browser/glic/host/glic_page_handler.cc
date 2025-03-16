@@ -7,6 +7,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -16,7 +17,6 @@
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/glic/browser_conditions.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
@@ -24,18 +24,21 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
+#include "chrome/browser/glic/widget/browser_conditions.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/media/audio_ducker.h"
+#include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -448,6 +451,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     g_browser_process->GetFeatures()
         ->glic_synthetic_trial_manager()
         ->SetSyntheticExperimentState(trial_name, group_name);
+  }
+
+  void OpenOsPermissionSettingsMenu(ContentSettingsType type) override {
+    if (type == ContentSettingsType::MEDIASTREAM_MIC ||
+        type == ContentSettingsType::GEOLOCATION) {
+      system_permission_settings::OpenSystemSettings(
+          page_handler_->webui_contents(), type);
+    } else {
+      NOTIMPLEMENTED();
+    }
   }
 
   // GlicWindowController::StateObserver implementation.

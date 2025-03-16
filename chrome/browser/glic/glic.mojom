@@ -4,6 +4,7 @@
 
 module glic.mojom;
 
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
@@ -409,6 +410,8 @@ interface WebClientHandler {
   SetSyntheticExperimentState(string trial_name,
                               string group_name);
 
+  // Attempts to open the OS permission settings page.  No return value.
+  OpenOsPermissionSettingsMenu(content_settings.mojom.ContentSettingsType type);
 };
 
 // Data sent from the browser to the web client with panel opening information.

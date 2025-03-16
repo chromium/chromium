@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.PromoDialog;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -62,7 +63,7 @@ public class SogouPromoDialog extends PromoDialog {
             Activity activity,
             @NonNull Callback<Boolean> onSelectEngine,
             @Nullable Callback<Boolean> onDismissed) {
-        super(activity);
+        super(activity, EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mSpan =
                 new ChromeClickableSpan(
                         activity,

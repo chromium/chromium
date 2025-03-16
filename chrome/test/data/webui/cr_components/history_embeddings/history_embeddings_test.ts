@@ -5,6 +5,7 @@
 import 'chrome://history/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 
+import {HistoryResultType} from '//resources/cr_components/history/constants.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
@@ -300,6 +301,19 @@ import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test
       assertEquals(false, resultClickEvent.detail.ctrlKey);
       assertEquals(false, resultClickEvent.detail.metaKey);
       assertEquals(true, resultClickEvent.detail.shiftKey);
+    });
+
+    test('FiresRecordHistoryLinkClick', async () => {
+      const resultsElements = getResultElements();
+      const recordClickEventPromise =
+          eventToPromise('record-history-link-click', element);
+      // Prevent clicking from actually open in new tabs for native anchor tags.
+      resultsElements[1]!.addEventListener('click', e => e.preventDefault());
+      resultsElements[1]!.click();
+      const recordClickEvent = await recordClickEventPromise;
+      assertEquals(
+          HistoryResultType.EMBEDDINGS, recordClickEvent.detail.resultType);
+      assertEquals(1, recordClickEvent.detail.index);
     });
 
     test('FiresContextMenu', async () => {

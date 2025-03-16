@@ -104,9 +104,10 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 "source_type": "jira",
                 "entity_type": "issue",
                 "title": "John's Document",
-                "link": "https://www.example.com"
+                "link": "https://www.example.co.uk"
               }
             },
+            "destinationUri": "https://www.example.com/",
             "dataStore": "project2"
           }
         ]

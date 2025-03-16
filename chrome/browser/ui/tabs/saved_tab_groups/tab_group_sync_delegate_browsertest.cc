@@ -56,9 +56,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
  public:
   TabGroupSyncDelegateBrowserTest() {
     features_.InitWithFeatures(
-        {tab_groups::kTabGroupsSaveV2,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+        {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
   }
 
   void OnWillBeDestroyed() override {

@@ -48,7 +48,10 @@ URLMergeKey ComputeURLMergeKey(
 // Generates an input context from a given `URLVisitAggregate` object given a
 // schema definition.
 scoped_refptr<segmentation_platform::InputContext> AsInputContext(
-    const std::array<FieldSchema, kNumInputs>& fields_schema,
+    const std::array<FieldSchema, kTabResumptionNumInputs>& fields_schema,
+    const URLVisitAggregate& url_visit_aggregate);
+scoped_refptr<segmentation_platform::InputContext> AsInputContext(
+    const std::array<FieldSchema, kSuggestionsNumInputs>& fields_schema,
     const URLVisitAggregate& url_visit_aggregate);
 
 // Returns tab data if it exists for a `URLVisitAggregate`.

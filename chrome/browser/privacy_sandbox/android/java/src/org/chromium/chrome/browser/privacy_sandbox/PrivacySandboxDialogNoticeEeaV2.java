@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LifecycleState;
@@ -68,19 +69,22 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
     private View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeEeaV2(
-            Context context,
+            Activity activity,
             PrivacySandboxBridge privacySandboxBridge,
             @SurfaceType int surfaceType,
             Profile profile,
             ActivityWindowAndroid activityWindowAndroid) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
 
         mPrivacySandboxBridge = privacySandboxBridge;
         mSurfaceType = surfaceType;
         mProfile = profile;
         mActivityWindowAndroid = activityWindowAndroid;
         mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_eea_v2, null);
+                LayoutInflater.from(activity).inflate(R.layout.privacy_sandbox_notice_eea_v2, null);
         setContentView(mContentView);
         mOnClickListener = getOnClickListener();
 
@@ -110,7 +114,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
         mSiteSuggestedAdsExpandArrowView =
                 mContentView.findViewById(R.id.site_suggested_ads_expand_arrow);
         mSiteSuggestedAdsExpandArrowView.setImageDrawable(
-                PrivacySandboxDialogUtils.createExpandDrawable(context));
+                PrivacySandboxDialogUtils.createExpandDrawable(activity));
         mSiteSuggestedAdsExpandArrowView.setChecked(isSiteSuggestedAdsDropdownExpanded());
 
         // Controls for the Ad Measurement expanding section.
@@ -121,7 +125,7 @@ public class PrivacySandboxDialogNoticeEeaV2 extends ChromeDialog
                 mContentView.findViewById(R.id.ad_measurement_dropdown_container);
         mAdMeasurementExpandArrowView = mContentView.findViewById(R.id.ad_measurement_expand_arrow);
         mAdMeasurementExpandArrowView.setImageDrawable(
-                PrivacySandboxDialogUtils.createExpandDrawable(context));
+                PrivacySandboxDialogUtils.createExpandDrawable(activity));
         mAdMeasurementExpandArrowView.setChecked(isMeasurementDropdownExpanded());
 
         mNoticeViewContainer = mContentView.findViewById(R.id.privacy_sandbox_notice_eea_view);

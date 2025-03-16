@@ -635,56 +635,6 @@ TEST_F(BrowserCommandHandlerTest, StartPasswordManagerTutorialCommand) {
   command_handler_->OnTutorialStarted(kPasswordManagerTutorialId, &service);
 }
 
-TEST_F(BrowserCommandHandlerTest, StartSavedTabGroupTutorialCommand) {
-  // Skip test if Tab Groups Save V2 feature flag is enabled
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    EXPECT_FALSE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
-    GTEST_SKIP();
-  }
-
-  // Command cannot be executed if the tutorial service doesn't exist.
-  command_handler_->SetTutorialServiceExists(false);
-  EXPECT_FALSE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
-
-  // Create mock service so the command can be executed.
-  auto bubble_factory_registry =
-      std::make_unique<user_education::HelpBubbleFactoryRegistry>();
-  user_education::TutorialRegistry registry;
-  MockTutorialService service(&registry, bubble_factory_registry.get());
-
-  // Allow command to be executed.
-  command_handler_->SetTutorialServiceExists(true);
-
-  // If the browser does not support saved tab groups, dont run the command.
-  command_handler_->SetBrowserSupportsSavedTabGroups(false);
-  EXPECT_FALSE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
-
-  // If the browser supports the new password manager and has a tutorial
-  // service it should allow running commands.
-  command_handler_->SetBrowserSupportsSavedTabGroups(true);
-  EXPECT_TRUE(CanExecuteCommand(Command::kStartSavedTabGroupTutorial));
-
-  ClickInfoPtr info = ClickInfo::New();
-  EXPECT_CALL(*command_handler_, StartTutorial)
-      .WillOnce([&](StartTutorialInPage::Params params) {
-        EXPECT_EQ(params.tutorial_id, kSavedTabGroupTutorialId);
-      });
-  EXPECT_TRUE(
-      ExecuteCommand(Command::kStartSavedTabGroupTutorial, std::move(info)));
-
-  EXPECT_CALL(service, IsRunningTutorial).WillOnce(testing::Return(true));
-  EXPECT_CALL(service, LogStartedFromWhatsNewPage)
-      .WillOnce(
-          [&](user_education::TutorialIdentifier tutorial_id, bool is_running) {
-            EXPECT_EQ(tutorial_id, kSavedTabGroupTutorialId);
-            EXPECT_TRUE(is_running);
-            return;
-          });
-
-  // Manually call tutorial started callback.
-  command_handler_->OnTutorialStarted(kSavedTabGroupTutorialId, &service);
-}
-
 TEST_F(BrowserCommandHandlerTest, OpenAISettingsCommand) {
   // By default, opening the password manager is allowed.
   EXPECT_TRUE(CanExecuteCommand(Command::kOpenAISettings));

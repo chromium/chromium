@@ -430,7 +430,7 @@ public class ToolbarTablet extends ToolbarLayout
                     .setThemeColor(
                             ChromeColors.getDefaultThemeColor(getContext(), incognitoBranded),
                             incognitoBranded);
-
+            updateRippleBackground();
             mIsIncognitoBranded = incognitoBranded;
         }
         setIncognitoIndicatorVisibility();
@@ -483,6 +483,31 @@ public class ToolbarTablet extends ToolbarLayout
                     ntpDelegate.setSearchBoxAlpha(alpha);
                     ntpDelegate.setSearchProviderLogoAlpha(alpha);
                 });
+    }
+
+    /** Called when the tab model changes. */
+    private void updateRippleBackground() {
+        var toolbarIconRippleId =
+                isIncognitoBranded()
+                        ? R.drawable.toolbar_button_ripple_incognito
+                        : R.drawable.toolbar_button_ripple;
+        var omniboxIconRippleId =
+                isIncognitoBranded()
+                        ? R.drawable.omnibox_button_ripple_incognito
+                        : R.drawable.omnibox_button_ripple;
+
+        mHomeButton.setBackgroundResource(toolbarIconRippleId);
+        mBackButton.setBackgroundResource(toolbarIconRippleId);
+        mForwardButton.setBackgroundResource(toolbarIconRippleId);
+        mReloadButton.setBackgroundResource(toolbarIconRippleId);
+        getTabSwitcherButtonCoordinator()
+                .getContainerView()
+                .setBackgroundResource(toolbarIconRippleId);
+        getMenuButtonCoordinator().updateButtonBackground(toolbarIconRippleId);
+
+        mBookmarkButton.setBackgroundResource(omniboxIconRippleId);
+        mSaveOfflineButton.setBackgroundResource(omniboxIconRippleId);
+        mLocationBar.updateButtonBackground(omniboxIconRippleId);
     }
 
     @Override
@@ -640,7 +665,10 @@ public class ToolbarTablet extends ToolbarLayout
         // Set hover highlight for profile, voice search, share and new tab button on tablets. Set
         // box hover highlight for the rest of button variants.
         if (buttonData.getButtonSpec().getShouldShowHoverHighlight()) {
-            mOptionalButton.setBackgroundResource(R.drawable.toolbar_button_ripple);
+            mOptionalButton.setBackgroundResource(
+                    isIncognitoBranded()
+                            ? R.drawable.toolbar_button_ripple_incognito
+                            : R.drawable.toolbar_button_ripple);
         } else {
             TypedValue themeRes = new TypedValue();
             getContext()

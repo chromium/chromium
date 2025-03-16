@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_BUTTON_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/glic/glic_button_controller_delegate.h"
+#include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "chrome/common/buildflags.h"

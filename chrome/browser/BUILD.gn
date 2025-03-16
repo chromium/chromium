@@ -7527,6 +7527,7 @@ static_library("browser") {
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/controlled_frame",
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions:chrome_extensions_browser_client",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//ui/base/mojom:ui_base_types",
     ]
@@ -7543,6 +7544,7 @@ static_library("browser") {
       "//chrome/browser/apps/platform_apps/api",
 
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions:chrome_extensions_browser_client",
 
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications/extensions",

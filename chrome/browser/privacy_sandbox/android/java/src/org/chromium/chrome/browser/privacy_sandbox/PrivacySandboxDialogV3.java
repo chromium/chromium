@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
@@ -21,6 +22,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LifecycleState;
@@ -95,19 +97,22 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
     // TODO(crbug.com/392943234): Update the constructor to accept a layoutRes required for the
     // dialog.
     public PrivacySandboxDialogV3(
-            Context context,
+            Activity activity,
             Profile profile,
             ActivityWindowAndroid activityWindowAndroid,
             @SurfaceType int surfaceType,
             @PrivacySandboxDialogType int dialogType) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mDialogType = dialogType;
         mSurfaceType = surfaceType;
 
-        fetchDialogContent(context);
+        fetchDialogContent(activity);
         mOnClickListener = getOnClickListener();
         registerDialogButtons();
-        registerDropdownElements(context);
+        registerDropdownElements(activity);
         registerPrivacyPolicy(profile, activityWindowAndroid);
 
         mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);

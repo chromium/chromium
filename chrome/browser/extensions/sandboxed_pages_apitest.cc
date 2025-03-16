@@ -7,7 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,13 +24,13 @@ namespace extensions {
 enum class ManifestVersion { TWO, THREE };
 
 class SandboxedPagesTest
-    : public ExtensionPlatformApiTest,
+    : public ExtensionApiTest,
       public ::testing::WithParamInterface<ManifestVersion> {
  public:
   SandboxedPagesTest() = default;
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
@@ -79,7 +79,7 @@ class SandboxedPagesTest
 // in the extension's manifest. This class is parameterized on
 // kIsolateSandboxedIframes so that it tests both in-process and
 // process-isolated sandboxed frames.
-class SandboxAPIMetricsTest : public ExtensionPlatformApiTest,
+class SandboxAPIMetricsTest : public ExtensionApiTest,
                               public ::testing::WithParamInterface<bool> {
  public:
   SandboxAPIMetricsTest() {
@@ -93,7 +93,7 @@ class SandboxAPIMetricsTest : public ExtensionPlatformApiTest,
   }
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 

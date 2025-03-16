@@ -1975,11 +1975,11 @@ void LensOverlayController::MaybeGetAnnotatedPageContent(
 void LensOverlayController::OnAnnotatedPageContentReceived(
     std::vector<lens::PageContent> page_contents,
     PageContentRetrievedCallback callback,
-    std::optional<optimization_guide::proto::AnnotatedPageContent> apc) {
-  // Add the apc to the page_contents if it exists.
-  if (apc.has_value()) {
+    std::optional<optimization_guide::AIPageContentResult> result) {
+  // Add the apc proto the page_contents if it exists.
+  if (result) {
     std::string serialized_apc;
-    apc->SerializeToString(&serialized_apc);
+    result->proto.SerializeToString(&serialized_apc);
     page_contents.emplace_back(
         std::vector<uint8_t>(serialized_apc.begin(), serialized_apc.end()),
         lens::MimeType::kAnnotatedPageContent);

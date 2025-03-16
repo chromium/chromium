@@ -3227,6 +3227,11 @@ inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
 // up the device.
 inline constexpr char kDeviceWeeklyScheduledSuspend[] =
     "device_weekly_scheduled_suspend";
+
+// A boolean pref which determines whether Chrome Apps are allowed in Kiosk
+// sessions.
+inline constexpr char kKioskChromeAppsForceAllowed[] =
+    "kiosk_chrome_apps_force_allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \

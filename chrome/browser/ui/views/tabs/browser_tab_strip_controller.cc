@@ -435,7 +435,7 @@ void BrowserTabStripController::OnCloseTab(
   std::vector<tab_groups::TabGroupId> groups_to_delete =
       model_->GetGroupsDestroyedFromRemovingIndices({model_index});
 
-  if (!tab_groups::IsTabGroupsSaveV2Enabled() || groups_to_delete.empty()) {
+  if (groups_to_delete.empty()) {
     std::move(callback).Run(source);
     return;
   }

@@ -372,6 +372,8 @@ extern const char kAutofillEnableAmountExtractionAllowlistDesktopName[];
 extern const char kAutofillEnableAmountExtractionAllowlistDesktopDescription[];
 extern const char kAutofillEnableAmountExtractionDesktopName[];
 extern const char kAutofillEnableAmountExtractionDesktopDescription[];
+extern const char kAutofillEnableAmountExtractionDesktopLoggingName[];
+extern const char kAutofillEnableAmountExtractionDesktopLoggingDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -1585,6 +1587,9 @@ extern const char kOmniboxSearchAggregatorDescription[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
 
+extern const char kOmniboxUrlSuggestionsOnFocus[];
+extern const char kOmniboxUrlSuggestionsOnFocusDecription[];
+
 extern const char kOmniboxZeroSuggestPrefetchDebouncingName[];
 extern const char kOmniboxZeroSuggestPrefetchDebouncingDescription[];
 
@@ -2115,10 +2120,6 @@ extern const char kDataSharingDebugLogsDescription[];
 extern const char kTabGroupsDeferRemoteNavigationsId[];
 extern const char kTabGroupsDeferRemoteNavigationsName[];
 extern const char kTabGroupsDeferRemoteNavigationsDescription[];
-
-extern const char kTabGroupsSaveV2Id[];
-extern const char kTabGroupsSaveV2Name[];
-extern const char kTabGroupsSaveV2Description[];
 
 extern const char kTabGroupSyncServiceDesktopMigrationId[];
 extern const char kTabGroupSyncServiceDesktopMigrationName[];

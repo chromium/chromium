@@ -75,7 +75,7 @@ class Stub final : public mojom::EnterpriseCompanion {
     server_.StartServer();
   }
 
-  // Overrides for mjom::EnterpriseCompanion.
+  // Overrides for mojom::EnterpriseCompanion.
   void Shutdown(ShutdownCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     service_->Shutdown(

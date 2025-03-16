@@ -39,6 +39,13 @@ AuthController::~AuthController() = default;
 
 void AuthController::CheckAuthBeforeLoad(
     base::OnceCallback<void(bool)> callback) {
+  // If automation is enabled skip auth check.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(::switches::kGlicAutomation)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return;
+  }
   cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(base::BindOnce(
       &AuthController::CookieSyncDone, GetWeakPtr(), std::move(callback)));
 }

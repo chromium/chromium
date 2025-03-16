@@ -68,7 +68,6 @@ class CollaborationMessagingPageActionIconViewInteractiveTest
   CollaborationMessagingPageActionIconViewInteractiveTest() {
     features_.InitWithFeatures(
         {
-            tab_groups::kTabGroupsSaveV2,
             tab_groups::kTabGroupSyncServiceDesktopMigration,
             data_sharing::features::kDataSharingFeature,
         },

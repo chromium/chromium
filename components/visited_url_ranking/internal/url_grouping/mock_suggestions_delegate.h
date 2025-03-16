@@ -18,7 +18,7 @@ class MockGroupSuggestionsDelegate : public GroupSuggestionsDelegate {
 
   MOCK_METHOD(void,
               ShowSuggestion,
-              (const GroupSuggestion& group_suggestions,
+              (const GroupSuggestions& group_suggestions,
                SuggestionResponseCallback response_callback),
               (override));
 

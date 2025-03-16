@@ -307,16 +307,29 @@ fn apply_patches(
     }
 
     for (path, contents) in patches_contents {
+        let args = vec![
+            "apply".to_string(),
+            // We need to rebase from the old versioned directory to the new one.
+            format!("-p{}", crate_dir.ancestors().count()),
+            format!("--directory={}", crate_dir.display()),
+        ];
         let mut c = std::process::Command::new("git");
-        c.arg("apply");
-
-        // We need to rebase from the old versioned directory to the new one.
-        c.arg(format!("-p{}", crate_dir.ancestors().count()));
-        c.arg(format!("--directory={}", crate_dir.display()));
+        c.args(args.clone());
 
         println!("Applying patch {}", path.to_string_lossy());
         if let Err(e) = run_command(c, "patch", Some(&contents)) {
-            log::error!("Applying patches failed! Removing the {} directory.", crate_dir.display());
+            log::error!(
+                "Applying patches failed - retrying with verbose output to help diagnose..."
+            );
+            let mut c = std::process::Command::new("git");
+            c.args(args);
+            c.arg("-v");
+            let _ignoring_error = run_command(c, "patch", Some(&contents));
+
+            log::error!(
+                "Applying patches failed - cleaning up: Removing the {} directory.",
+                crate_dir.display(),
+            );
             if let Err(rm_err) = std::fs::remove_dir_all(&crate_dir) {
                 Err(rm_err).context(e)?
             } else {

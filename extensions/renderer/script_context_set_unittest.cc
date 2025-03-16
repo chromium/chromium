@@ -27,7 +27,6 @@ TEST(ScriptContextSetTest, Lifecycle) {
   base::test::TaskEnvironment task_environment;
   gin::IsolateHolder isolate_holder(task_environment.GetMainThreadTaskRunner(),
                                     gin::IsolateHolder::IsolateType::kTest);
-  v8::Isolate::Scope isolate_scope(isolate_holder.isolate());
   ScopedWebFrame web_frame;
   // Used by ScriptContextSet::Register().
   TestExtensionsRendererClient extensions_renderer_client;
@@ -35,6 +34,7 @@ TEST(ScriptContextSetTest, Lifecycle) {
   // Do this after construction of the webview, since it may construct the
   // Isolate.
   v8::Isolate* isolate = web_frame.frame()->GetAgentGroupScheduler()->Isolate();
+  v8::Isolate::Scope isolate_scope(isolate);
 
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> v8_context = v8::Context::New(isolate);

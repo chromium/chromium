@@ -79,10 +79,8 @@ BnplIssuerView::BnplIssuerView(
         views::Button::PressedCallback(base::BindRepeating(
             &BnplIssuerView::IssuerSelected, base::Unretained(this), issuer)),
         std::move(image_view), std::u16string(issuer.GetDisplayName()),
-        // TODO(crbug.com/356443046): Move to resources and translate string.
-        u"Pay monthly or in 4 intrest-free installments (subject to "
-        u"eligibility)",
-        nullptr, true, std::u16string(),
+        controller_->GetSelectionOptionText(issuer.issuer_id()), nullptr, true,
+        std::u16string(),
         layout_provider->GetDistanceMetric(
             views::DISTANCE_RELATED_LABEL_HORIZONTAL),
         true);
