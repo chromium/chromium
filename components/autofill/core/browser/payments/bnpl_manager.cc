@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
@@ -446,9 +447,24 @@ void BnplManager::CreateBnplPaymentInstrument() {
       .GetPaymentsNetworkInterface()
       ->CreateBnplPaymentInstrument(
           std::move(request_details),
-          // TODO(crbug.com/378518488): Integrate with the future
-          // GetBnplPaymentInstrumentForFetchingUrlRequest.
-          base::DoNothing());
+          base::BindOnce(&BnplManager::OnBnplPaymentInstrumentCreated,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void BnplManager::OnBnplPaymentInstrumentCreated(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    std::string instrument_id) {
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    ongoing_flow_state_->instrument_id = std::move(instrument_id);
+    FetchRedirectUrl();
+  } else {
+    payments_autofill_client().ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+
+    Reset();
+  }
 }
 
 }  // namespace autofill::payments

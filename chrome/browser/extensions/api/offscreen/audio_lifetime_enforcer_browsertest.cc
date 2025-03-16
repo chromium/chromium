@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/version_info/channel.h"
@@ -75,7 +75,7 @@ class AudioWaiter : public content::WebContentsObserver {
 
 }  // namespace
 
-class AudioLifetimeEnforcerBrowserTest : public ExtensionPlatformApiTest {
+class AudioLifetimeEnforcerBrowserTest : public ExtensionApiTest {
  public:
   AudioLifetimeEnforcerBrowserTest() = default;
   ~AudioLifetimeEnforcerBrowserTest() override = default;

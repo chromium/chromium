@@ -530,7 +530,7 @@ TEST_F(MostVisitedSitesProviderTest,
 #if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
 TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedSitesDesktopMatches) {
   omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::UrlSuggestionsOnFocus>
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
 

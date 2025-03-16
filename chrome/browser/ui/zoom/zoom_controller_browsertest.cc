@@ -336,7 +336,6 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-// TODO(crbug.com/40201807): Add support for Lacros.
 #if !BUILDFLAG(IS_CHROMEOS)
 // Regression test: crbug.com/438979.
 IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,

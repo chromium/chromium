@@ -159,8 +159,9 @@ URLMergeKey ComputeURLMergeKey(
   return url.spec();
 }
 
-scoped_refptr<InputContext> AsInputContext(
-    const std::array<FieldSchema, kNumInputs>& fields_schema,
+template <size_t N>
+scoped_refptr<InputContext> AsInputContextInternal(
+    const std::array<FieldSchema, N>& fields_schema,
     const URLVisitAggregate& url_visit_aggregate) {
   base::flat_map<std::string, ProcessedValue> signal_value_map;
   signal_value_map.emplace(
@@ -326,6 +327,17 @@ const URLVisitAggregate::TabData* GetTabDataIfExists(
   }
 
   return nullptr;
+}
+
+scoped_refptr<segmentation_platform::InputContext> AsInputContext(
+    const std::array<FieldSchema, kTabResumptionNumInputs>& fields_schema,
+    const URLVisitAggregate& url_visit_aggregate) {
+  return AsInputContextInternal(fields_schema, url_visit_aggregate);
+}
+scoped_refptr<segmentation_platform::InputContext> AsInputContext(
+    const std::array<FieldSchema, kSuggestionsNumInputs>& fields_schema,
+    const URLVisitAggregate& url_visit_aggregate) {
+  return AsInputContextInternal(fields_schema, url_visit_aggregate);
 }
 
 const URLVisitAggregate::Tab* GetTabIfExists(

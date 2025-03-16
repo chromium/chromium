@@ -1590,9 +1590,8 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
                base::ok(result1), nullptr),
            ModelQuality());
 #if BUILDFLAG(IS_CHROMEOS)
-  // The feedback dialog on CrOS & LaCrOS happens at the system level.
-  // This can cause the unittest to crash. LaCrOS has a separate feedback
-  // browser test which gives us some coverage.
+  // The feedback dialog on CrOS happens at the system level. This can cause the
+  // unittest to crash.
   handler->SkipShowFeedbackPageForTesting(true);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   handler->SetUserFeedback(

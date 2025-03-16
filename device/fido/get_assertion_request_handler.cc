@@ -260,7 +260,8 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     specialized_request.user_verification =
         AtLeastUVPreferred(specialized_request.user_verification);
   }
-  if (preselected_credential) {
+  if (preselected_credential &&
+      preselected_credential->source == authenticator.GetType()) {
     specialized_request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey, preselected_credential->cred_id,
         {preselected_credential->source == device::AuthenticatorType::kPhone

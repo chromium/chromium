@@ -1438,9 +1438,7 @@ class TabStripSaveBrowsertest : public TabStripBrowsertest {
  public:
   TabStripSaveBrowsertest() {
     scoped_feature_list_.InitWithFeatures(
-        {tab_groups::kTabGroupsSaveV2,
-         data_sharing::features::kDataSharingFeature},
-        {});
+        {data_sharing::features::kDataSharingFeature}, {});
   }
 
  private:

@@ -4,5 +4,16 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_data.h"
 
-@implementation ShopCardData
+#import "url/gurl.h"
+
+@implementation ShopCardData {
+  GURL _productURL;
+}
+
+#pragma mark - properties
+
+- (const GURL&)productURL {
+  return _productURL;
+}
+
 @end

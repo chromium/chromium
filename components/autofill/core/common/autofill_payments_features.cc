@@ -39,6 +39,13 @@ BASE_FEATURE(kAutofillEnableAmountExtractionDesktop,
              "AutofillEnableAmountExtractionDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables logging of the result of checkout amount extraction on desktop.
+// This flag will allow amount extraction to run on any website when a CC
+// form is clicked. This flag should never be enabled.
+BASE_FEATURE(kAutofillEnableAmountExtractionDesktopLogging,
+             "AutofillEnableAmountExtractionDesktopLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, buy now pay later (BNPL) in Autofill will be offered.
 BASE_FEATURE(kAutofillEnableBuyNowPayLater,
              "AutofillEnableBuyNowPayLater",

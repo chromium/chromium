@@ -262,7 +262,8 @@ public class TabbedNavigationBarColorControllerTest {
     })
     @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE)
     @EnableAnimations
-    @DisabledTest(message = "crbug.com/398173466")
+    @Restriction({DeviceFormFactor.PHONE, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     public void testNavBarColorAnimationsEdgeToEdgeBottomChin() throws InterruptedException {
         Assume.assumeTrue(
                 "E2E not applicable.",

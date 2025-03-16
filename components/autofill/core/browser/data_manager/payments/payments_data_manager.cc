@@ -57,6 +57,7 @@
 
 namespace autofill {
 
+using autofill_metrics::LogBnplIssuersSyncedCountAtStartup;
 using autofill_metrics::LogBnplPrefToggled;
 using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
@@ -1932,6 +1933,7 @@ void PaymentsDataManager::LogStoredPaymentsDataMetrics() const {
   autofill_metrics::LogStoredOfferMetrics(autofill_offer_data_);
   autofill_metrics::LogStoredVirtualCardUsageCount(
       autofill_virtual_card_usage_data_.size());
+  LogBnplIssuersSyncedCountAtStartup(GetBnplIssuers().size());
 }
 
 void PaymentsDataManager::LogServerCardLinkClicked() const {

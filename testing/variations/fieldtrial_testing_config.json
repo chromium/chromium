@@ -5594,23 +5594,6 @@
             ]
         }
     ],
-    "ClientSideDetectionBrandAndIntentForScamDetection": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionBrandAndIntentForScamDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection": [
         {
             "platforms": [
@@ -5697,9 +5680,16 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithWarning",
                     "enable_features": [
+                        "ClientSideDetectionBrandAndIntentForScamDetection",
                         "ClientSideDetectionShowScamVerdictWarning"
+                    ]
+                },
+                {
+                    "name": "EnabledMetricsCollection",
+                    "enable_features": [
+                        "ClientSideDetectionBrandAndIntentForScamDetection"
                     ]
                 }
             ]
@@ -15721,6 +15711,26 @@
             ]
         }
     ],
+    "OmniboxOnDeviceBrainModel": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxOnDeviceTailModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxOnDeviceHeadModelSelectionFix": [
         {
             "platforms": [
@@ -15739,34 +15749,6 @@
                     },
                     "enable_features": [
                         "OmniboxOnDeviceHeadProviderNonIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxOnDeviceTailSuggest": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxOnDeviceTailModel"
-                    ]
-                },
-                {
-                    "name": "Enabled_Auto_Unload",
-                    "params": {
-                        "UnloadExecutorOnIdle ": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxOnDeviceTailModel"
                     ]
                 }
             ]
@@ -18722,25 +18704,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "FledgeBidderUseBalancingThreadSelector"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ProtectedAudienceClickiness": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AdAuctionEventRegistration"
                     ]
                 }
             ]
@@ -24034,21 +23997,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableFastTouchpadClick"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TraceBinderIpc": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TraceBinderIpc"
                     ]
                 }
             ]

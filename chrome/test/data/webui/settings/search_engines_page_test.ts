@@ -333,7 +333,7 @@ suite('SearchEnginePageTests', function() {
 
     // Check behavior when switching space triggering off.
     radioButtons.item(1).click();
-    await eventToPromise('selected-changed', radioGroup);
+    await eventToPromise('change', radioGroup);
     assertEquals('false', radioGroup.selected);
     let result =
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
@@ -342,7 +342,7 @@ suite('SearchEnginePageTests', function() {
 
     // Check behavior when switching space triggering on.
     radioButtons.item(0).click();
-    await eventToPromise('selected-changed', radioGroup);
+    await eventToPromise('change', radioGroup);
     assertEquals('true', radioGroup.selected);
     result = await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
     assertEquals(

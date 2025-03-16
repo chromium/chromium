@@ -220,29 +220,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateWithEmbeddedServerTest,
   VerifyMute(incognito_browser, /*isMuted=*/false);
 }
 
-class BrowserTabStripModelDelegateVariantTest
-    : public BrowserTabStripModelDelegateTest,
-      public testing::WithParamInterface<bool> {
- public:
-  BrowserTabStripModelDelegateVariantTest() {
-    std::vector<base::test::FeatureRef> saved_tab_group_features = {
-        tab_groups::kTabGroupsSaveV2,
-    };
-    if (IsSavedTabGroupsV2()) {
-      feature_list_.InitWithFeatures(saved_tab_group_features, {});
-    } else {
-      feature_list_.InitWithFeatures({}, saved_tab_group_features);
-    }
-  }
-
-  bool IsSavedTabGroupsV2() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that bulk actions will close tab groups without destruction.
-IN_PROC_BROWSER_TEST_P(BrowserTabStripModelDelegateVariantTest,
+IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
                        BulkCloseToRightWithTabGroups) {
   std::unique_ptr<TabStripModelDelegate> delegate =
       std::make_unique<BrowserTabStripModelDelegate>(browser());
@@ -273,13 +252,11 @@ IN_PROC_BROWSER_TEST_P(BrowserTabStripModelDelegateVariantTest,
       browser()->profile());
   EXPECT_NE(sync_service, nullptr);
 
-  if (IsSavedTabGroupsV2()) {
-    auto groups = sync_service->GetAllGroups();
-    EXPECT_EQ(groups.size(), 2u);
-    for (auto group : groups) {
-      // Group is open
-      EXPECT_TRUE(group.local_group_id().has_value());
-    }
+  auto groups = sync_service->GetAllGroups();
+  EXPECT_EQ(groups.size(), 2u);
+  for (auto group : groups) {
+    // Group is open
+    EXPECT_TRUE(group.local_group_id().has_value());
   }
 
   // Execute command on first tab to close all tabs to the right.
@@ -293,17 +270,15 @@ IN_PROC_BROWSER_TEST_P(BrowserTabStripModelDelegateVariantTest,
   EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
             0u);
 
-  if (IsSavedTabGroupsV2()) {
-    auto groups = sync_service->GetAllGroups();
-    EXPECT_EQ(groups.size(), 2u);
-    for (auto group : groups) {
-      // Group is not open
-      EXPECT_FALSE(group.local_group_id().has_value());
-    }
+  groups = sync_service->GetAllGroups();
+  EXPECT_EQ(groups.size(), 2u);
+  for (auto group : groups) {
+    // Group is not open
+    EXPECT_FALSE(group.local_group_id().has_value());
   }
 }
 
-IN_PROC_BROWSER_TEST_P(BrowserTabStripModelDelegateVariantTest,
+IN_PROC_BROWSER_TEST_F(BrowserTabStripModelDelegateTest,
                        BulkCloseOtherWithTabGroups) {
   std::unique_ptr<TabStripModelDelegate> delegate =
       std::make_unique<BrowserTabStripModelDelegate>(browser());
@@ -334,13 +309,11 @@ IN_PROC_BROWSER_TEST_P(BrowserTabStripModelDelegateVariantTest,
       browser()->profile());
   EXPECT_NE(sync_service, nullptr);
 
-  if (IsSavedTabGroupsV2()) {
-    auto groups = sync_service->GetAllGroups();
-    EXPECT_EQ(groups.size(), 2u);
-    for (auto group : groups) {
-      // Group is open
-      EXPECT_TRUE(group.local_group_id().has_value());
-    }
+  auto groups = sync_service->GetAllGroups();
+  EXPECT_EQ(groups.size(), 2u);
+  for (auto group : groups) {
+    // Group is open
+    EXPECT_TRUE(group.local_group_id().has_value());
   }
 
   // Execute command on first tab to close all tabs to the right.
@@ -354,18 +327,12 @@ IN_PROC_BROWSER_TEST_P(BrowserTabStripModelDelegateVariantTest,
   EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
             1u);
 
-  if (IsSavedTabGroupsV2()) {
-    auto groups = sync_service->GetAllGroups();
-    EXPECT_EQ(groups.size(), 2u);
-    // Other group is not open
-    EXPECT_FALSE(groups.at(0).local_group_id().has_value());
-    // Current group is open
-    EXPECT_TRUE(groups.at(1).local_group_id().has_value());
-  }
+  groups = sync_service->GetAllGroups();
+  EXPECT_EQ(groups.size(), 2u);
+  // Other group is not open
+  EXPECT_FALSE(groups.at(0).local_group_id().has_value());
+  // Current group is open
+  EXPECT_TRUE(groups.at(1).local_group_id().has_value());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BrowserTabStripModelDelegateVariantTest,
-                         testing::Bool());
 
 }  // namespace chrome

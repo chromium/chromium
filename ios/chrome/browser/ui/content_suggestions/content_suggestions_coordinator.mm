@@ -150,6 +150,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_tap_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_action_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/shop_card/shop_card_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
@@ -158,8 +159,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_passwords_coordinator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
@@ -204,7 +207,8 @@ using segmentation_platform::TipIdentifier;
     PriceTrackingPromoActionDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
-    SetUpListTapDelegate>
+    SetUpListTapDelegate,
+    ShopCardActionDelegate>
 
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
@@ -421,6 +425,7 @@ using segmentation_platform::TipIdentifier;
     _shopCardMediator = [[ShopCardMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
                                     profile)];
+    _shopCardMediator.shopCardActionDelegate = self;
     [moduleMediators addObject:_shopCardMediator];
   }
 
@@ -1435,6 +1440,24 @@ using segmentation_platform::TipIdentifier;
 - (void)setUpListContentNotificationPromoDidFinish {
   [_contentNotificationCoordinator stop];
   _contentNotificationCoordinator = nil;
+}
+
+#pragma mark - ShopCardActionDelegate
+
+- (void)openURL:(GURL)url {
+  NSInteger new_web_state_index =
+      self.browser->GetWebStateList()->GetIndexOfInactiveWebStateWithURL(url);
+  UrlLoadingBrowserAgent* urlLoadingBrowserAgent =
+      UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  if (new_web_state_index == WebStateList::kInvalidIndex) {
+    urlLoadingBrowserAgent->Load(UrlLoadParams::InNewTab(url));
+  } else {
+    web::NavigationManager::WebLoadParams webLoadParams =
+        web::NavigationManager::WebLoadParams(url);
+    UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
+    params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+    urlLoadingBrowserAgent->Load(params);
+  }
 }
 
 #pragma mark - Helpers

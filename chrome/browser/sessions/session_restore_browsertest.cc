@@ -3015,10 +3015,6 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWithTabRemovedFromGroup) {
           browser()->profile());
   ASSERT_NE(saved_tab_group_keyed_service, nullptr);
 
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    saved_tab_group_keyed_service->SaveGroup(tab_group_id);
-  }
-
   ASSERT_TRUE(saved_tab_group_keyed_service);
 
   auto* saved_tab_group =
@@ -4506,13 +4502,10 @@ class SavedTabGroupSessionRestoreTest
   SavedTabGroupSessionRestoreTest() {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveV2,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
     } else {
       feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveV2},
-          {tab_groups::kTabGroupSyncServiceDesktopMigration});
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
     }
   }
   SavedTabGroupSessionRestoreTest(const SavedTabGroupSessionRestoreTest&) =

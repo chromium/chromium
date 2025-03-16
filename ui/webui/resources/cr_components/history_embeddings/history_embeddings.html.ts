@@ -154,6 +154,7 @@ ${this.enableAnswers_ ? html`
                 description="${item.urlForDisplay}"
                 @click="${this.onResultClick_}" @auxclick="${this.onResultClick_}"
                 @contextmenu="${this.onResultContextMenu_}"
+                data-index="${index}"
                 as-anchor as-anchor-target="_blank" always-show-suffix>
               <span class="time" slot="suffix">${this.getDateTime_(item)}</span>
               <cr-icon-button slot="suffix" iron-icon="cr:more-vert"

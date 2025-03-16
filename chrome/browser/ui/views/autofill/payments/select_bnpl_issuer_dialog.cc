@@ -9,6 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_view.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -117,6 +120,7 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kText));
+  SetTitle(controller_->GetTitle());
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::BoxLayout::Orientation::kVertical);
 
@@ -125,8 +129,16 @@ SelectBnplIssuerDialog::SelectBnplIssuerDialog(
 
   bnpl_issuer_view_ = container_view_->AddChildView(
       std::make_unique<BnplIssuerView>(controller_, this));
-  bnpl_footnote_view_ =
-      SetFootnoteView(views::Builder<BnplDialogFootnote>().Build());
+
+  TextWithLink link_text = controller_.get()->GetLinkText();
+  TextLinkInfo link_info;
+  link_info.offset = link_text.offset;
+  link_info.callback =
+      base::BindRepeating(&SelectBnplIssuerDialog::OnSettingsLinkClicked,
+                          weak_ptr_factory_.GetWeakPtr());
+
+  bnpl_footnote_view_ = SetFootnoteView(std::make_unique<BnplDialogFootnote>(
+      link_text.text, std::move(link_info)));
 }
 
 SelectBnplIssuerDialog::~SelectBnplIssuerDialog() = default;
@@ -160,6 +172,17 @@ void SelectBnplIssuerDialog::AddedToWidget() {
           // TODO(crbug.com/356443046): Move to resources and translate string.
           u"Choose a pay over time provider",
           TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
+}
+
+void SelectBnplIssuerDialog::OnSettingsLinkClicked() {
+  if (!web_contents_) {
+    return;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
+  if (!browser) {
+    return;
+  }
+  chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
 }
 
 BEGIN_METADATA(SelectBnplIssuerDialog)

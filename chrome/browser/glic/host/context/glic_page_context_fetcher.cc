@@ -304,8 +304,8 @@ void GlicPageContextFetcher::ReceivedInnerText(
 }
 
 void GlicPageContextFetcher::ReceivedAnnotatedPageContent(
-    std::optional<optimization_guide::proto::AnnotatedPageContent> content) {
-  annotated_page_content_ = std::move(content);
+    std::optional<optimization_guide::AIPageContentResult> content) {
+  annotated_page_content_result_ = std::move(content);
   annotated_page_content_done_ = true;
   base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
                           base::TimeTicks::Now() - start_time_);
@@ -361,10 +361,10 @@ void GlicPageContextFetcher::RunCallbackIfComplete() {
       tab_context->pdf_document_data = std::move(pdf_document_data);
     }
 
-    if (annotated_page_content_) {
+    if (annotated_page_content_result_) {
       auto annotated_page_data = mojom::AnnotatedPageData::New();
       annotated_page_data->annotated_page_content =
-          mojo_base::ProtoWrapper(annotated_page_content_.value());
+          mojo_base::ProtoWrapper(annotated_page_content_result_->proto);
       tab_context->annotated_page_data = std::move(annotated_page_data);
     }
 

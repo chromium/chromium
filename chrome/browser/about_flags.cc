@@ -1337,6 +1337,24 @@ const FeatureEntry::FeatureVariation kOmniboxSearchAggregatorVariations[] = {
     {"alternate", kOmniboxSearchAggregatorAlternateParams,
      std::size(kOmniboxSearchAggregatorAlternateParams), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax6[] = {
+    {"OnFocusMaxSuggestions", "6"},
+    {"OnFocusMaxSearchSuggestions", "3"},
+    {"OnFocusMaxUrlSuggestions", "3"},
+};
+const FeatureEntry::FeatureParam kOmniboxUrlSuggestionsOnFocusMax4[] = {
+    {"OnFocusMaxSuggestions", "4"},
+    {"OnFocusMaxSearchSuggestions", "2"},
+    {"OnFocusMaxUrlSuggestions", "2"},
+};
+const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
+    {
+        {"- Max 6 Suggestions", kOmniboxUrlSuggestionsOnFocusMax6,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax6), nullptr},
+        {"- Max 4 Suggestions", kOmniboxUrlSuggestionsOnFocusMax4,
+         std::size(kOmniboxUrlSuggestionsOnFocusMax4), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -6462,6 +6480,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kFocusTriggersWebAndSRPZeroSuggest)},
 
+    {"omnibox-url-suggestions-on-focus",
+     flag_descriptions::kOmniboxUrlSuggestionsOnFocus,
+     flag_descriptions::kOmniboxUrlSuggestionsOnFocusDecription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::
+             kOmniboxUrlSuggestionsOnFocus,
+         kOmniboxUrlSuggestionsOnFocusVariations,
+         "OmniboxUrlSuggestionsOnFocus")},
+
     {"omnibox-enterprise-search-aggregator",
      flag_descriptions::kOmniboxSearchAggregatorName,
      flag_descriptions::kOmniboxSearchAggregatorDescription, kOsDesktop,
@@ -6735,11 +6762,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupsDeferRemoteNavigationsName,
      flag_descriptions::kTabGroupsDeferRemoteNavigationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupsDeferRemoteNavigations)},
-
-    {flag_descriptions::kTabGroupsSaveV2Id,
-     flag_descriptions::kTabGroupsSaveV2Name,
-     flag_descriptions::kTabGroupsSaveV2Description, kOsDesktop,
-     FEATURE_VALUE_TYPE(tab_groups::kTabGroupsSaveV2)},
 
     {flag_descriptions::kTabGroupSyncServiceDesktopMigrationId,
      flag_descriptions::kTabGroupSyncServiceDesktopMigrationName,
@@ -11781,6 +11803,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebSerialAPIDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kWebSerialAPI)},
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"autofill-enable-amount-extraction-desktop-logging",
+     flag_descriptions::kAutofillEnableAmountExtractionDesktopLoggingName,
+     flag_descriptions::
+         kAutofillEnableAmountExtractionDesktopLoggingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableAmountExtractionDesktopLogging)},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

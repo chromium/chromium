@@ -114,6 +114,11 @@ std::string IphTypeDebugString(IphType iph_type) {
   }
 }
 
+bool IsEnterpriseSearchTemplateURLEnabled(const TemplateURL& turl,
+                                          bool is_incognito) {
+  return !(is_incognito && turl.CreatedByEnterpriseSearchAggregatorPolicy());
+}
+
 }  // namespace
 
 // Scored higher than history URL provider suggestions since inputs like '@b'
@@ -219,7 +224,10 @@ void FeaturedSearchProvider::AddFeaturedKeywordMatches(
           continue;
         }
         AddStarterPackMatch(*turl, input);
+        // Don't add enterprise search aggregator engines in incognito mode.
       } else if (turl->featured_by_policy() &&
+                 IsEnterpriseSearchTemplateURLEnabled(
+                     *turl, client_->IsOffTheRecord()) &&
                  enterprise_count < kMaxEnterpriseSuggestions) {
         AddFeaturedEnterpriseSearchMatch(*turl, input);
         enterprise_count++;
@@ -374,6 +382,10 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSearchMatch(
       metrics::OmniboxEventProto::NTP_REALBOX) {
     return;
   }
+  if (!IsEnterpriseSearchTemplateURLEnabled(template_url,
+                                            client_->IsOffTheRecord())) {
+    return;
+  }
 
   AutocompleteMatch match(this, kFeaturedEnterpriseSearchRelevance, false,
                           AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
@@ -424,12 +436,20 @@ bool FeaturedSearchProvider::ShouldShowEnterpriseFeaturedSearchIPHMatch(
   // Conditions to show the IPH for featured Enterprise search:
   // - The feature is enabled.
   // - This is a Zero prefix state.
-  // - There is at least one featured search engine set by policy.
+  // - There is at least one featured search engine set by policy, excluding
+  //   featured search engines created by enterprise search aggregator policy
+  //   when in incognito mode.
   // - The user has not deleted the IPH suggestion and we have not shown it more
-  //   the the accepted limit during this session.
+  //   than the accepted limit during this session.
   // - The user has not successfully used at least one featured engine.
-  TemplateURLService::TemplateURLVector featured_engines =
-      template_url_service_->GetFeaturedEnterpriseSearchEngines();
+  TemplateURLService::TemplateURLVector featured_engines;
+  for (TemplateURL* turl :
+       template_url_service_->GetFeaturedEnterpriseSearchEngines()) {
+    if (IsEnterpriseSearchTemplateURLEnabled(*turl,
+                                             client_->IsOffTheRecord())) {
+      featured_engines.push_back(turl);
+    }
+  }
   return input.IsZeroSuggest() && !featured_engines.empty() &&
          ShouldShowIPH(IphType::kFeaturedEnterpriseSearch) &&
          std::ranges::all_of(featured_engines, [](auto turl) {
@@ -460,11 +480,13 @@ bool FeaturedSearchProvider::ShouldShowIPH(IphType iph_type) const {
 
 void FeaturedSearchProvider::AddFeaturedEnterpriseSearchIPHMatch() {
   std::vector<std::string> sites;
-  std::ranges::transform(
-      template_url_service_->GetFeaturedEnterpriseSearchEngines(),
-      std::back_inserter(sites), [](auto turl) {
-        return url_formatter::StripWWW(GURL(turl->url()).host());
-      });
+  for (const TemplateURL* turl :
+       template_url_service_->GetFeaturedEnterpriseSearchEngines()) {
+    if (IsEnterpriseSearchTemplateURLEnabled(*turl,
+                                             client_->IsOffTheRecord())) {
+      sites.push_back(url_formatter::StripWWW(GURL(turl->url()).host()));
+    }
+  }
   std::ranges::sort(sites);
   AddIPHMatch(IphType::kFeaturedEnterpriseSearch,
               l10n_util::GetStringFUTF16(

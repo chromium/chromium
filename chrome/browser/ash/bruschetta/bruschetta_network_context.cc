@@ -268,9 +268,6 @@ void BruschettaNetworkContext::OnSharedStorageHeaderReceived(
   std::move(callback).Run();
 }
 
-void BruschettaNetworkContext::OnAdAuctionEventRecordHeaderReceived(
-    network::AdAuctionEventRecord event_record) {}
-
 void BruschettaNetworkContext::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {

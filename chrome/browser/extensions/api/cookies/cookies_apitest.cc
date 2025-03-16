@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/storage_partition.h"
@@ -49,17 +49,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ReadFromDocument) {
 }
 #endif
 
-class CookiesApiTest : public ExtensionPlatformApiTest,
+class CookiesApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<
                            std::tuple<ContextType, SameSiteCookieSemantics>> {
  public:
-  CookiesApiTest() : ExtensionPlatformApiTest(std::get<0>(GetParam())) {}
+  CookiesApiTest() : ExtensionApiTest(std::get<0>(GetParam())) {}
   ~CookiesApiTest() override = default;
   CookiesApiTest(const CookiesApiTest&) = delete;
   CookiesApiTest& operator=(const CookiesApiTest&) = delete;
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     // If SameSite access semantics is "legacy", add content settings to allow
     // legacy access for all sites.

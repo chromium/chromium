@@ -50,6 +50,24 @@ TEST_F(BnplMetricsTest, LogBnplPrefToggled) {
   histogram_tester.ExpectBucketCount("Autofill.SettingsPage.BnplToggled", false,
                                      1);
 }
+
+TEST_F(BnplMetricsTest, LogBnplIssuersSyncedCountAtStartup) {
+  base::HistogramTester histogram_tester;
+
+  int count = 5;
+  LogBnplIssuersSyncedCountAtStartup(count);
+  histogram_tester.ExpectBucketCount("Autofill.Bnpl.IssuersSyncedCount.Startup",
+                                     count, 1);
+
+  count = 25;
+  LogBnplIssuersSyncedCountAtStartup(count);
+  histogram_tester.ExpectBucketCount("Autofill.Bnpl.IssuersSyncedCount.Startup",
+                                     count, 1);
+
+  histogram_tester.ExpectTotalCount("Autofill.Bnpl.IssuersSyncedCount.Startup",
+                                    2);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

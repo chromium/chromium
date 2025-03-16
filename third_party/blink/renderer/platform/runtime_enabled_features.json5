@@ -2944,6 +2944,7 @@
         "Win": "test",
         "Mac": "test",
         "Linux": "test",
+        "Android": "test",
         "default": ""
       }
     },
@@ -3920,6 +3921,13 @@
         "Android": "",
         "default": "test",
       },
+    },
+    {
+      // This removes !important from some rules in the UA stylesheet about
+      // select option colors. https://issues.chromium.org/issues/40788356
+      // This is shipping in M136 and can be removed in M138
+      name: "SelectColorsRemoveImportant",
+      status: "stable",
     },
     {
       // The selectedcontentelement attribute is for connecting select elements

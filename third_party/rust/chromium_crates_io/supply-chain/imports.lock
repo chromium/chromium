@@ -9,12 +9,6 @@ user-login = "Amanieu"
 user-name = "Amanieu d'Antras"
 
 [[publisher.libc]]
-version = "0.2.170"
-when = "2025-02-23"
-user-id = 55123
-user-login = "rust-lang-owner"
-
-[[publisher.libc]]
 version = "0.2.171"
 when = "2025-03-11"
 user-id = 55123

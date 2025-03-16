@@ -90,8 +90,8 @@ public abstract class PromoDialog extends AlwaysDismissedDialog
     private final FrameLayout mScrimView;
     private PromoDialogLayout mDialogLayout;
 
-    protected PromoDialog(Activity activity) {
-        super(activity, R.style.PromoDialog);
+    protected PromoDialog(Activity activity, boolean shouldPadForWindowInsets) {
+        super(activity, R.style.PromoDialog, shouldPadForWindowInsets);
 
         mScrimView = new FrameLayout(activity);
         mScrimView.setBackgroundColor(activity.getColor(R.color.modal_dialog_scrim_color));

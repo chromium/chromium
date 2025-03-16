@@ -107,16 +107,16 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.143"]
+[policy."cxx:1.0.146"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.143"]
+[policy."cxxbridge-cmd:1.0.146"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.143"]
+[policy."cxxbridge-flags:1.0.146"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.143"]
+[policy."cxxbridge-macro:1.0.146"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."diplomat-runtime:0.10.0"]
@@ -332,7 +332,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."potential_utf:0.1.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ppv-lite86:0.2.20"]
+[policy."ppv-lite86:0.2.21"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."proc-macro2:1.0.94"]
@@ -536,8 +536,14 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerocopy-derive:0.7.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."zerocopy-derive:0.8.23"]
+criteria = []
+
 [policy."zerocopy:0.7.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."zerocopy:0.8.23"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."zerofrom-derive:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -568,7 +574,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.cxx]]
-version = "1.0.143"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -592,10 +598,11 @@ Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
 Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.143"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -619,6 +626,7 @@ Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
 Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
 """
 
 [[exemptions.icu_experimental]]
@@ -772,19 +780,6 @@ Part of Google-co-maintained ICU4X project.
 https://crbug.com/393810918
 """
 
-[[exemptions.utf16_iter]]
-version = "1.0.5"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, but needs comments.
-
-Is not needed by the actual packages enabled in the ICU4X import.
-
-Sister crate of Google-co-maintained ICU4X project, maintained by Mozillian ICU4X team members.
-
-https://crbug.com/366411886
-"""
-
 [[exemptions.utf8_iter]]
 version = "1.0.4"
 criteria = ["safe-to-deploy", "ub-risk-2"]
@@ -800,6 +795,15 @@ https://crbug.com/366411886
 
 [[exemptions.zerocopy]]
 version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerocopy]]
+version = "0.8.23"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Authored in Google and audit should come from there as well.

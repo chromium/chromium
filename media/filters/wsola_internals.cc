@@ -17,6 +17,7 @@
 #include <numbers>
 
 #include "base/check_op.h"
+#include "base/cpu.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 
@@ -85,6 +86,56 @@ void MultiChannelDotProduct_SSE(const AudioBus* a,
   frame_offset_b += last_index;
 
   // C version is required to handle remainder of frames (% 4 != 0)
+  for (int k = 0; k < a->channels(); ++k) {
+    const float* ch_a = a->channel(k) + frame_offset_a;
+    const float* ch_b = b->channel(k) + frame_offset_b;
+    for (int n = 0; n < rem; ++n) {
+      dot_product[k] += *ch_a++ * *ch_b++;
+    }
+  }
+}
+
+__attribute__((target("avx2,fma"))) void MultiChannelDotProduct_AVX2(
+    const AudioBus* a,
+    int frame_offset_a,
+    const AudioBus* b,
+    int frame_offset_b,
+    int num_frames,
+    float* dot_product) {
+  // SIMD optimized variants can provide a massive speedup to this operation.
+  const int rem = num_frames % 8;
+  const int last_index = num_frames - rem;
+  const int channels = a->channels();
+  for (int ch = 0; ch < channels; ++ch) {
+    const float* a_src = a->channel(ch) + frame_offset_a;
+    const float* b_src = b->channel(ch) + frame_offset_b;
+
+    // First sum all components using FMA.
+    __m256 m_sum = _mm256_setzero_ps();
+    for (int s = 0; s < last_index; s += 8) {
+      __m256 a_avx = _mm256_loadu_ps(a_src + s);
+      __m256 b_avx = _mm256_loadu_ps(b_src + s);
+      m_sum = _mm256_fmadd_ps(a_avx, b_avx, m_sum);
+    }
+
+    // Horizontal add thrice to reduce 8 floats to 4, then 2, then 1.
+    // Note: the following could be reduced to a single _mm256_reduce_add_ps(),
+    // on CPUs with AVX512 support.
+    m_sum = _mm256_hadd_ps(m_sum, m_sum);
+    m_sum = _mm256_hadd_ps(m_sum, m_sum);
+    m_sum = _mm256_hadd_ps(m_sum, m_sum);
+
+    dot_product[ch] = _mm256_cvtss_f32(m_sum);
+  }
+
+  if (!rem) {
+    return;
+  }
+
+  frame_offset_a += last_index;
+  frame_offset_b += last_index;
+
+  // C version is required to handle remainder of frames (% 8 != 0)
   for (int k = 0; k < a->channels(); ++k) {
     const float* ch_a = a->channel(k) + frame_offset_a;
     const float* ch_b = b->channel(k) + frame_offset_b;
@@ -172,6 +223,10 @@ void MultiChannelDotProduct(const AudioBus* a,
 
   static const auto dot_product_func = [] {
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_NACL)
+    base::CPU cpu;
+    if (cpu.has_avx2() && cpu.has_fma3()) {
+      return MultiChannelDotProduct_AVX2;
+    }
     return MultiChannelDotProduct_SSE;
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
     return MultiChannelDotProduct_NEON;

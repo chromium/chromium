@@ -57,25 +57,19 @@ TEST_F(GroupSuggestionsManagerTest, TriggerSuggestions) {
   GroupSuggestionsService::Scope scope1{.tab_session_id =
                                             SessionID::NewUnique()};
 
-  EXPECT_TRUE(
-      suggestions_manager_->GetCurrentComputationForTesting().is_null());
+  EXPECT_FALSE(suggestions_manager_->GetCurrentComputationForTesting());
 
   EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _));
   suggestions_manager_->MaybeTriggerSuggestions(scope);
-  auto id1 = suggestions_manager_->GetCurrentComputationForTesting();
-  EXPECT_FALSE(id1.is_null());
+  EXPECT_TRUE(suggestions_manager_->GetCurrentComputationForTesting());
 
   EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _));
   suggestions_manager_->MaybeTriggerSuggestions(scope);
-  auto id2 = suggestions_manager_->GetCurrentComputationForTesting();
-  EXPECT_FALSE(id2.is_null());
-  EXPECT_NE(id1, id2);
+  EXPECT_TRUE(suggestions_manager_->GetCurrentComputationForTesting());
 
   EXPECT_CALL(*mock_ranking_service_, FetchURLVisitAggregates(_, _));
   suggestions_manager_->MaybeTriggerSuggestions(scope1);
-  auto id3 = suggestions_manager_->GetCurrentComputationForTesting();
-  EXPECT_FALSE(id3.is_null());
-  EXPECT_NE(id2, id3);
+  EXPECT_TRUE(suggestions_manager_->GetCurrentComputationForTesting());
 }
 
 }  // namespace visited_url_ranking

@@ -6490,8 +6490,22 @@
        {}
       ]
      ],
+     "delete-selection-with-null-range.html": [
+      "4d814eab807facfa13a11084b2d5f1ecda712c18",
+      [
+       null,
+       {}
+      ]
+     ],
      "delete-to-join-inline-blocks.html": [
       "a299c519cb5d4999118c349d79518cffbb891177",
+      [
+       null,
+       {}
+      ]
+     ],
+     "design-mode-textarea.html": [
+      "d9f01e41653bc07d3e939a968485f0c9c60417d9",
       [
        null,
        {}
@@ -6532,6 +6546,13 @@
        {}
       ]
      ],
+     "empty-editable.html": [
+      "eda75a13cd5b4be66f42f43154ed6ed2ff177297",
+      [
+       null,
+       {}
+      ]
+     ],
      "enableInlineTableEditing-after-updating-selection-range-cross-shadow-dom-boundary.html": [
       "b248e03ea05fb85b89ab50e782d37ffec9075ea9",
       [
@@ -6562,6 +6583,13 @@
      ],
      "execCommand-without-selection-ranges.html": [
       "04913664e6d94d277f0bee88d419b1c47c32ce4b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-letter-crossing-engine-boundary.html": [
+      "ccea4365a69aa98c6c61657c20980ff1a6746300",
       [
        null,
        {}
@@ -7199,38 +7227,6 @@
      ],
      "white-space-nowrap-to-pre-line.html": [
       "bedd0e7bc6499f9fd4dbd1269d5361391a8a441f",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "other": {
-     "delete-selection-with-null-range-crash.html": [
-      "4d814eab807facfa13a11084b2d5f1ecda712c18",
-      [
-       null,
-       {}
-      ]
-     ],
-     "design-mode-textarea-crash.html": [
-      "d9f01e41653bc07d3e939a968485f0c9c60417d9",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
-    "run": {
-     "empty-editable-crash.html": [
-      "eda75a13cd5b4be66f42f43154ed6ed2ff177297",
-      [
-       null,
-       {}
-      ]
-     ],
-     "first-letter-crossing-engine-boundary-crash.html": [
-      "be6325fce4894f22f7fa43a488810464f3ebdaee",
       [
        null,
        {}
@@ -276359,7 +276355,7 @@
       ]
      ],
      "offset-rotate-001.html": [
-      "e5b13fe8a9ab5a4db3acf1c6428c951d1a146da6",
+      "56173cf4e4f1918097ca4b2d2a532e421a4e04bf",
       [
        null,
        [
@@ -276372,7 +276368,7 @@
       ]
      ],
      "offset-rotate-002.html": [
-      "1edf38d546dff30e855c6d38342107ae10875903",
+      "29888029b7bd041f6b3c2f790542c6cb9ed65f9b",
       [
        null,
        [
@@ -276385,7 +276381,7 @@
       ]
      ],
      "offset-rotate-003.html": [
-      "522ff35b051ba969b6d10b7c951e0868158aaff8",
+      "7a8ddbe8142d6cc4b168af1b1d77be4d78a0ec37",
       [
        null,
        [
@@ -276414,7 +276410,7 @@
       ]
      ],
      "offset-rotate-004.html": [
-      "33783d423b50585c3da0cd37f13df4763774bd38",
+      "c55887d4f61a4e4e3c5d3e31d3d0a554da2a3b60",
       [
        null,
        [
@@ -276427,7 +276423,7 @@
       ]
      ],
      "offset-rotate-005.html": [
-      "9b1c40ed112c9f95bacfa70810d18de97fd3bcd7",
+      "42070b5bef47ac1f135fa501c7c256a70c2a732a",
       [
        null,
        [
@@ -314792,20 +314788,12 @@
       "be955258530b6634f6233f8c5b6670f6c83f54e5",
       []
      ],
-     "comp_host_language_label-expected.txt": [
-      "f55c34ba4e610ac6123f63cc33836618fa809d86",
-      []
-     ],
-     "comp_name_from_content-expected.txt": [
-      "4507250df2f0131e2bc7e9e94fa300c7eff5a05d",
-      []
-     ],
      "comp_name_from_heading.tentative-expected.txt": [
-      "a7a07401f9cb04ca8b4ca893e30b10d04f2fbafe",
+      "3de6a59a21ac8913b05e46d37e65cec154ddb1a6",
       []
      ],
      "comp_tooltip.tentative-expected.txt": [
-      "ba5be840bd2d9a12b4567875262a8dae00846cdb",
+      "4b014e16dbb8bae5e46405d80a6d9cfb4fe53e38",
       []
      ]
     }
@@ -319408,6 +319396,22 @@
      ],
      "script-src-strict_dynamic_parser_inserted_correct_nonce.html.headers": [
       "b7918c93323eff9db66ad26a73b78798d35e5f7b",
+      []
+     ],
+     "script-src-trusted_types_eval_with_report_only_require_trusted_types_eval.html.headers": [
+      "ae1e09e31ea4ba841d96458be2803871448e09ec",
+      []
+     ],
+     "script-src-trusted_types_eval_with_require_trusted_types_eval-expected.txt": [
+      "1713cbdca699f8ae65df16b6e83f06692daddaf0",
+      []
+     ],
+     "script-src-trusted_types_eval_with_require_trusted_types_eval.html.headers": [
+      "3e51fcd47410a11cbb6e16cd5ea426c40e9e1dab",
+      []
+     ],
+     "script-src-trusted_types_eval_without_require_trusted_types_eval.html.headers": [
+      "5658b5ab2de0b836c0ebde7395247cfb11bdb2b1",
       []
      ],
      "scriptnonce-specified-source.sub.html.sub.headers": [
@@ -373213,7 +373217,7 @@
       []
      ],
      "offset-rotate-ref.html": [
-      "ec22768e96a1cd1efab206781b985cec8f006686",
+      "4b2d36529af2af91bd9316985bb365053b949a1c",
       []
      ],
      "parsing": {
@@ -382937,51 +382941,55 @@
       []
      ],
      "server-response.https.window_19-22-expected.txt": [
-      "d2e5d60ed79152e7850b844d76fcc0717b55b561",
+      "f047365726d5ab22616c99199f4c3aaf63c6aca4",
       []
      ],
      "server-response.https.window_23-26-expected.txt": [
-      "4f80086d9de4cad4c43c94dd6bd70a4c29261247",
+      "97cd2c92c6d74e3e76b2b3243e1d05e9f5ee510f",
       []
      ],
      "server-response.https.window_27-30-expected.txt": [
-      "39ffe352e891a2e9461c7c1b601c73e580473238",
+      "e542b5ec0a2a256c185d46557da4bdfb6ad49d92",
       []
      ],
      "server-response.https.window_31-34-expected.txt": [
-      "e6d22fb947f1ef9053e68f84903869be9878649a",
+      "3bfc4d4439712d657568753eb9b4066255102600",
       []
      ],
      "server-response.https.window_35-38-expected.txt": [
-      "14e009d7b137b694b0cf952bcfc02516dcd560ad",
+      "64c35852eb6e59ac8e36a58f1d4fd04581f043ef",
       []
      ],
      "server-response.https.window_39-42-expected.txt": [
-      "66fec79435b71049cac71067857486fc9766d52f",
+      "64c859ffdf2341d6b1d12c40962d7e7c81efd31d",
       []
      ],
      "server-response.https.window_43-46-expected.txt": [
-      "bb4e2ae09d6ae00cb933e49fd5388ee48a27228c",
+      "426df50f91165634df78493f198f67d8e19228f3",
       []
      ],
      "server-response.https.window_47-50-expected.txt": [
-      "fe892c918bb2ac212bc3fd5c81a1465ce39f3636",
+      "00b9b83dbc33e5a19adef94f5b70dcee9dfc2223",
       []
      ],
      "server-response.https.window_51-54-expected.txt": [
-      "f582b26d0c3de4a15043420659fff35ad85cab5e",
+      "3a0e0913824f6e4b74df702022cab4ca873058bd",
       []
      ],
      "server-response.https.window_55-58-expected.txt": [
-      "2f0a4622ef4f9f77126b777f0a771ef5ac366487",
+      "2b746873e40ac85fd2e1a520cdf54c8dd251bc7a",
       []
      ],
      "server-response.https.window_59-62-expected.txt": [
-      "48d2125d5c6217a753d5fee80aea861ca55cd188",
+      "8f2a411b6284148a0d1e8d214041fc58de3a7f44",
       []
      ],
      "server-response.https.window_63-66-expected.txt": [
-      "e50d5c72eba5bb522de9d75a8f69a977327a2cd1",
+      "102f032f7e2b392443f9986b950f209333fc4a4f",
+      []
+     ],
+     "server-response.https.window_67-70-expected.txt": [
+      "0fc7078a221907e91095a7dcac3dfe47d2ce6e4d",
       []
      ],
      "server-response.https.window_7-10-expected.txt": [
@@ -403473,10 +403481,6 @@
      "212cae7fa52e95b820d11e7ca8e2eed7d36bf112",
      []
     ],
-    "names-expected.txt": [
-     "c68126cb39f2190499b082fafc140454cb647172",
-     []
-    ],
     "roles-contextual-expected.txt": [
      "352325b24d232a655d543200e018e032981d6f2f",
      []
@@ -406521,7 +406525,7 @@
     ]
    },
    "lint.ignore": [
-    "1d552f3468a236414c6c34bca22cb88ef11f09e8",
+    "65e22dccbc1d9cce01a6c570fe739e68d112df3e",
     []
    ],
    "loading": {
@@ -419520,6 +419524,18 @@
        []
       ]
      },
+     "redirect-to-prefetch-url.https_origin=cross-site-initial-expected.txt": [
+      "934667b71b5fe475df711ec71be69e00a2fc35d6",
+      []
+     ],
+     "redirect-to-prefetch-url.https_origin=cross-site-redirect-expected.txt": [
+      "934667b71b5fe475df711ec71be69e00a2fc35d6",
+      []
+     ],
+     "redirect-to-prefetch-url.https_origin=same-origin-expected.txt": [
+      "934667b71b5fe475df711ec71be69e00a2fc35d6",
+      []
+     ],
      "resources": {
       "authenticate.py": [
        "8820781709d30f11cb842f54d8e25d1ed24a4a8e",
@@ -419567,6 +419583,10 @@
       ],
       "random_redirect.py": [
        "595096e0cace1237badd1137bbcee414c01e9c15",
+       []
+      ],
+      "redirect-helper.sub.js": [
+       "a17eaabe2430090ce0554fec480480a261ae41aa",
        []
       ],
       "ruleset.py": [
@@ -422161,7 +422181,7 @@
     ],
     "role": {
      "role-img.tentative-expected.txt": [
-      "a6c8548741b126d18f02a03708c738a3f529f0f3",
+      "abc8242962a6e2fc8bd3e120e9876cf824334485",
       []
      ]
     }
@@ -423395,7 +423415,7 @@
       []
      ],
      "toascii.json": [
-      "02291962ebce4f0bdc7d5e6bf3d01e6c144e5acc",
+      "588ef150f9ce6a6f50630f08ccb46a6306cb3a71",
       []
      ],
      "urltestdata-javascript-only.json": [
@@ -423677,7 +423697,7 @@
       []
      ],
      "aria-utils.js": [
-      "5ed73b06e455265801f272bed4247671e909ef3c",
+      "ec53464c18fda38a1e26281a226d7ed8bd653d48",
       []
      ],
      "manual.css": [
@@ -459915,16 +459935,7 @@
       ]
      ],
      "comp_name_from_content.html": [
-      "32a9a7b3c43b0f25fc09045c1a630a71c784b265",
-      [
-       null,
-       {
-        "testdriver": true
-       }
-      ]
-     ],
-     "comp_name_from_content.tentative.html": [
-      "3239a1dcf3106ff49c4ebb569140dd6445dbbda3",
+      "6626eecb0ddd8f6e5709350a93cfd384994efff4",
       [
        null,
        {
@@ -479668,6 +479679,27 @@
        {}
       ]
      ],
+     "script-src-trusted_types_eval_with_report_only_require_trusted_types_eval.html": [
+      "192dadee77025bf5fcea11317997a6cc061c1eed",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-src-trusted_types_eval_with_require_trusted_types_eval.html": [
+      "06fae6d623baa223828417fad725304862ba11f3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-src-trusted_types_eval_without_require_trusted_types_eval.html": [
+      "f8481194f9e363a6532f258b6eb2d283199b55ec",
+      [
+       null,
+       {}
+      ]
+     ],
      "script-src-wildcards-disallowed.html": [
       "7bf3d89b6726dbec7ed98e8176be3f11da9e1b86",
       [
@@ -486806,6 +486838,13 @@
      ],
      "position-try-order-basic.html": [
       "f54ce44f72333a3b09f2445d81ac0d69d0b6f740",
+      [
+       null,
+       {}
+      ]
+     ],
+     "position-try-order-inset-modified-containing-block.html": [
+      "9a859c96bb4c311e61f1ef3d1b6af109b803ad89",
       [
        null,
        {}
@@ -535373,6 +535412,13 @@
      ]
     ],
     "xslt": {
+     "document-function.window.js": [
+      "a01f3b37c945d0fcded4a0853d32e97d60bb9696",
+      [
+       "dom/xslt/document-function.window.html",
+       {}
+      ]
+     ],
      "functions.tentative.window.js": [
       "81240022dc68a8296474fcea696cdde3b66057fd",
       [
@@ -583300,7 +583346,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "5374adb164a7e8a18612be95d7dc4daf924b7156",
+      "d4eaf0d25123298a696f0116cb54c6fe144038d4",
       [
        "fledge/tentative/server-response.https.window.html?1-6",
        {
@@ -583400,6 +583446,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583504,6 +583554,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583608,6 +583662,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583712,6 +583770,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583816,6 +583878,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -583920,6 +583986,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584024,6 +584094,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584128,6 +584202,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584232,6 +584310,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584336,6 +584418,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584440,6 +584526,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584544,6 +584634,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584648,6 +584742,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584752,6 +584850,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584856,6 +584958,118 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/server-response.https.window.html?67-70",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/ba-fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "third_party/cbor-js/cbor.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-6"
+         ],
+         [
+          "variant",
+          "?7-10"
+         ],
+         [
+          "variant",
+          "?11-14"
+         ],
+         [
+          "variant",
+          "?15-18"
+         ],
+         [
+          "variant",
+          "?19-22"
+         ],
+         [
+          "variant",
+          "?23-26"
+         ],
+         [
+          "variant",
+          "?27-30"
+         ],
+         [
+          "variant",
+          "?31-34"
+         ],
+         [
+          "variant",
+          "?35-38"
+         ],
+         [
+          "variant",
+          "?39-42"
+         ],
+         [
+          "variant",
+          "?43-46"
+         ],
+         [
+          "variant",
+          "?47-50"
+         ],
+         [
+          "variant",
+          "?51-54"
+         ],
+         [
+          "variant",
+          "?55-58"
+         ],
+         [
+          "variant",
+          "?59-62"
+         ],
+         [
+          "variant",
+          "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -584960,6 +585174,10 @@
          [
           "variant",
           "?63-66"
+         ],
+         [
+          "variant",
+          "?67-70"
          ]
         ],
         "timeout": "long"
@@ -633854,7 +634072,7 @@
          ]
         ],
         "load-removes-queued-error-event.html": [
-         "54d5c28dad55eae515516ecc6f29d1997f19d329",
+         "f7cfabf64b620f4b5c91ee2f94bcbae367d25f90",
          [
           null,
           {}
@@ -640169,7 +640387,7 @@
          ]
         ],
         "select-events.tentative.html": [
-         "28abf1534c1ccb7e4ad93e26987e78652c428459",
+         "2a9280e1ae886c3091eaf07a09547b31e4a8707a",
          [
           null,
           {
@@ -691104,6 +691322,13 @@
       {}
      ]
     ],
+    "sanitizer-removeUnsafe.tentative.html": [
+     "7ad8253ad5fdec29b79c590e50e9c0d211d17031",
+     [
+      null,
+      {}
+     ]
+    ],
     "sanitizer-unknown.tentative.html": [
      "37bb8c832274c25e6d0eca8df859b2a915943e14",
      [
@@ -693080,7 +693305,7 @@
      ]
     ],
     "onchange-event-subframe.html": [
-     "6eb986b43804ddd91ccd07476dc373684c4727a6",
+     "2d9529d1dcccad558ada1dbcb6c37a20cc1f9e93",
      [
       null,
       {
@@ -703395,10 +703620,64 @@
        }
       ]
      ],
-     "redirect-url.sub.https.html": [
-      "02bb35349ff9f72e74d0244473447b9ea89ce9a4",
+     "redirect-middle-of-prefetch.https.html": [
+      "2afa5c82a76a1022a63499bae4f6426ce126c8c8",
       [
-       null,
+       "speculation-rules/prefetch/redirect-middle-of-prefetch.https.html?origin=cross-site-initial",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-middle-of-prefetch.https.html?origin=cross-site-redirect",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-middle-of-prefetch.https.html?origin=same-origin",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "redirect-to-prefetch-url.https.html": [
+      "f634ede8838d1eb8b98f1c80a5c342c2db34ed52",
+      [
+       "speculation-rules/prefetch/redirect-to-prefetch-url.https.html?origin=cross-site-initial",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-to-prefetch-url.https.html?origin=cross-site-redirect",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-to-prefetch-url.https.html?origin=same-origin",
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "redirect-url.https.html": [
+      "41fab0791ac5eb44f3e459d83c94c781e396356c",
+      [
+       "speculation-rules/prefetch/redirect-url.https.html?origin=cross-site-initial",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-url.https.html?origin=cross-site-redirect",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prefetch/redirect-url.https.html?origin=same-origin",
        {
         "timeout": "long"
        }
@@ -726949,7 +727228,7 @@
      ]
     ],
     "url-setters-a-area.window.js": [
-     "6a5e762cd42fe89de25bef44dcad8c537b5b9874",
+     "0012595cc469ee2290a3537733c619dfaa97204b",
      [
       "url/url-setters-a-area.window.html?exclude=(file|javascript|mailto)",
       {
@@ -727071,7 +727350,7 @@
      ]
     ],
     "url-setters.any.js": [
-     "fe88175ac63446927030867fcdacaae768c522c7",
+     "66b3d9b4f9d0477644db2847fa8c5769192fc990",
      [
       "url/url-setters.any.html?exclude=(file|javascript|mailto)",
       {
@@ -727290,7 +727569,7 @@
      ]
     ],
     "url-statics-canparse.any.js": [
-     "74f3da31f0d17527147b4de716cec6d6574f5a66",
+     "9b352029d8569bf5f2bbc66ff8a1ad9d273b7c94",
      [
       "url/url-statics-canparse.any.html",
       {}

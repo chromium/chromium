@@ -865,10 +865,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
             Help improve autofill
           </message>
-          <!-- TODO(359570730): remove non translateable flag  -->
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
-            Autocomplete
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select password
           </message>
