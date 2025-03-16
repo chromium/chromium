@@ -2850,6 +2850,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="604124094241169006">Automātiski</translation>
 <translation id="6041777658117377052">Kameras temperatūra</translation>
 <translation id="6042308850641462728">Vairāk</translation>
+<translation id="6043357981274314628">Gatavs!</translation>
 <translation id="6044573915096792553">12. izmērs</translation>
 <translation id="6045164183059402045">Izvietojuma veidne</translation>
 <translation id="6047927260846328439">Ar šo saturu jūs var maldināt un panākt, ka instalējat programmatūru vai atklājat personas informāciju. <ph name="BEGIN_LINK" />Tāpat rādīt<ph name="END_LINK" />.</translation>
@@ -2873,7 +2874,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6062937464449575061">Atcelt cenas izsekošanu</translation>
 <translation id="6063415549109819824">Mājokļa finansējums</translation>
 <translation id="6070432475334343308">Viens vai vairāki faili netika augšupielādēti pakalpojuma “<ph name="CLOUD_PROVIDER" />” mapē “<ph name="FOLDER_NAME" />”.</translation>
-<translation id="6080696365213338172">Jūs esat piekļuvis saturam, izmantojot administratora izsniegtu sertifikātu. Datus, kurus sniedzat domēnā <ph name="DOMAIN" />, var pārtvert jūsu administrators.</translation>
 <translation id="6085149458302186532">Etiķešu papīrs (krāsains)</translation>
 <translation id="6087312102907839798">Saistītie meklēšanas vaicājumi</translation>
 <translation id="6089505343295765444">No Chrome vēstures dzēstās cilnes joprojām būs redzamas salīdzinājuma tabulās.</translation>
@@ -4247,7 +4247,6 @@ Papildu informācija:
 <translation id="8473626140772740486">300 x 450 mm</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="8474910779563686872">Skatīt informāciju par izstrādātāju</translation>
-<translation id="8476959635632921417">Lai saglabātu un izmantotu šo adresi visās savās ierīcēs, apstipriniet savu identitāti.</translation>
 <translation id="8479754468255770962">Skavojums apakšējā kreisajā malā</translation>
 <translation id="8483229036294884935">Šī adrese tiks dzēsta no jūsu Google konta (<ph name="ACCOUNT" />).</translation>
 <translation id="8488350697529856933">Attiecas uz</translation>

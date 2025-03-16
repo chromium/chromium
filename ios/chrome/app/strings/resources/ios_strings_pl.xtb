@@ -447,6 +447,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2829172210806130158">Wyszukiwanie zawartości ekranu</translation>
 <translation id="2834399722155632105">3. Kliknij Opcje haseł</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Godzina</translation>
 <translation id="284581348330507117">Utwórz niepowtarzalne hasła</translation>
 <translation id="2856883624744451946">Nazwij grupę</translation>
 <translation id="2858204748079866344">Aby chronić Twoją prywatność, Chrome nie będzie autouzupełniać hasła w tym polu.</translation>
@@ -649,7 +650,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3868495844258915202">Pokaż pełny URL</translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
-<translation id="3876833929577368454">Pytaj mnie za każdym razem</translation>
 <translation id="3885587018298784481">Dołącz do grupy rodzinnej</translation>
 <translation id="3888863481921783344">Będziemy z tego korzystać, aby sugerować Ci osoby, które możesz zaprosić na swoje wydarzenie.</translation>
 <translation id="3891414008432200754">Cena</translation>
@@ -904,6 +904,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4896467949657706481">Karty zostały zamknięte i nastąpiło wylogowanie</translation>
 <translation id="4913626501929406101">Możesz bezpiecznie udostępnić kopię hasła innej osobie w grupie rodzinnej. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Akceptuj</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Nigdy nie przenoś</translation>
 <translation id="4937410517508563815">Zapisuj hasła na koncie</translation>
 <translation id="4938338714234463591">Pozwoli Ci to obsługiwać głosowo niektóre funkcje witryn.</translation>
@@ -1470,7 +1471,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7336264872878993241">Pobrano <ph name="PERCENT" /> procent</translation>
 <translation id="7346909386216857016">Rozumiem</translation>
 <translation id="7352651011704765696">Coś poszło nie tak</translation>
-<translation id="7359341089141286329">Automatycznie śledź wszystkie wykryte przesyłki</translation>
 <translation id="7363349185727752629">Przewodnik po ustawieniach prywatności</translation>
 <translation id="736564850024123010">Zmień położenie paska adresu, aby dostosować przeglądanie do swoich potrzeb.</translation>
 <translation id="7366909168761621528">Dane przeglądania</translation>
@@ -1718,6 +1718,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8299417921174340354">Aby użyć haseł, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="8307481894409578819">Nie udało się przesłać tego pliku</translation>
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>
+<translation id="8320212361750431956">Ostatnia aktywność</translation>
 <translation id="833647236762414178">Twórz i zapisuj hasła oraz klucze dostępu i zarządzaj nimi, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
@@ -1747,7 +1748,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8438566539970814960">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8439758443371991593">Ukryj opcję Dodaj do listy Do przeczytania</translation>
 <translation id="8449869326050867919">Hasło udostępnione</translation>
-<translation id="8453847087068411809">Nigdy nie wykrywaj automatycznie przesyłek</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474378002946546633">Zezwalaj na powiadomienia.</translation>
 <translation id="8477178913400731244">Usuń dane</translation>

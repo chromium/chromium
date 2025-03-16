@@ -37,6 +37,7 @@
 <translation id="1497802159252041924">Eroare la instalare: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalizează noul profil Chrome</translation>
 <translation id="1547295885616600893">ChromeOS este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar.</translation>
+<translation id="1547469039832541117">Încheie activitatea evidențiată.</translation>
 <translation id="1553358976309200471">Actualizează Chrome</translation>
 <translation id="1587223624401073077">Google Chrome utilizează camera foto.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> este periculos, așadar Chrome l-a blocat.</translation>

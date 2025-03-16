@@ -34,6 +34,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1478370723027452770">Humingi ng tulong para sa Chrome na Pang-test</translation>
 <translation id="1497802159252041924">Error sa pag-install: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Magbahagi ng tab ng Chromium</translation>
+<translation id="1547469039832541117">Tatapusin ang naka-highlight na gawain.</translation>
 <translation id="1553461853655228091">Kailangan ng Chromium ng access sa iyong camera para gumawa ng 3D na mapa ng kapaligiran mo</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chromium na alisin mo ito.}one{Hindi na sinusuportahan ang mga extension na ito. Inirerekomenda ng Chromium na alisin mo ang mga ito.}other{Hindi na sinusuportahan ang mga extension na ito. Inirerekomenda ng Chromium na alisin mo ang mga ito.}}</translation>
 <translation id="1574377791422810894">Mga tool sa kaligtasan ng Chromium</translation>

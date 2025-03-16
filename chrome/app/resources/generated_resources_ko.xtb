@@ -2256,7 +2256,6 @@
 <translation id="2530166226437958497">문제 해결</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" /> 운영체제를 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />도움이 필요하면 다음 페이지를 참고하세요. g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">자세히 알아보기</translation>
 <translation id="2532144599248877204">배터리 잔량을 80% 수준으로 유지하여 배터리 수명을 늘립니다. 평소에 전원을 분리하는 시점까지 배터리가 완전히 충전됩니다.</translation>
 <translation id="2532146950330687938">기기 준비 중…</translation>
 <translation id="2532198298278778531">ChromeOS Flex 설정에서 보안 DNS 관리</translation>

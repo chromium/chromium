@@ -37,6 +37,7 @@
 <translation id="1497802159252041924">Erro de instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalize seu novo perfil do Chrome</translation>
 <translation id="1547295885616600893">A criação do ChromeOS só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="1547469039832541117">Encerra a tarefa destacada.</translation>
 <translation id="1553358976309200471">Atualizar o Google Chrome</translation>
 <translation id="1587223624401073077">O Google Chrome está usando sua câmera.</translation>
 <translation id="1587325591171447154">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chrome.</translation>
@@ -171,6 +172,7 @@
 <translation id="3140883423282498090">Suas alterações terão efeito na próxima vez que você reiniciar o Google Chrome.</translation>
 <translation id="3149510190863420837">apps do Chrome</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
+<translation id="319199214552513804">Para acessar essa extensão e muito mais em todos os seus computadores, faça login no Chrome</translation>
 <translation id="3196187562065225381">O Chrome bloqueou o download porque o arquivo é perigoso</translation>
 <translation id="3222857603094643834">Use o Google Lens para pesquisar o que quiser nesta página</translation>
 <translation id="3226612997184048185">Se você também salvar seus favoritos na Conta do Google, poderá monitorar os preços dos produtos no Chrome e receber notificações quando houver reduções</translation>

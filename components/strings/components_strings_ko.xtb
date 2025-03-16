@@ -2852,6 +2852,7 @@
 <translation id="604124094241169006">자동</translation>
 <translation id="6041777658117377052">챔버 온도</translation>
 <translation id="6042308850641462728">자세히</translation>
+<translation id="6043357981274314628">완료</translation>
 <translation id="6044573915096792553">크기 12</translation>
 <translation id="6045164183059402045">적용 템플릿</translation>
 <translation id="6047927260846328439">이 콘텐츠는 사용자를 속여 소프트웨어를 설치하거나 개인정보를 유출할 수도 있습니다. <ph name="BEGIN_LINK" />표시하기<ph name="END_LINK" /></translation>
@@ -2875,7 +2876,6 @@
 <translation id="6062937464449575061">가격 추적 취소</translation>
 <translation id="6063415549109819824">주택담보대출</translation>
 <translation id="6070432475334343308"><ph name="CLOUD_PROVIDER" />의 <ph name="FOLDER_NAME" />에 하나 이상의 파일이 업로드되지 않았습니다.</translation>
-<translation id="6080696365213338172">관리자 제공 인증서를 사용하여 콘텐츠에 액세스했습니다. 사용자가 <ph name="DOMAIN" />에 제공한 데이터가 관리자에 의해 차단될 수 있습니다.</translation>
 <translation id="6085149458302186532">라벨(색상 있음)</translation>
 <translation id="6087312102907839798">관련 검색어</translation>
 <translation id="6089505343295765444">Chrome 방문 기록에서 삭제한 탭은 비교 테이블에 계속 표시됩니다</translation>
@@ -4248,7 +4248,6 @@
 <translation id="8473626140772740486">300x450mm</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474910779563686872">개발자 세부정보 표시</translation>
-<translation id="8476959635632921417">모든 기기에서 이 주소를 저장하고 사용하려면 본인 인증을 진행하세요</translation>
 <translation id="8479754468255770962">왼쪽 하단 스테이플</translation>
 <translation id="8483229036294884935">이 주소가 Google 계정(<ph name="ACCOUNT" />)에서 삭제됩니다.</translation>
 <translation id="8488350697529856933">적용 대상</translation>

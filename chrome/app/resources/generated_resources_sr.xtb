@@ -2239,7 +2239,6 @@
 <translation id="2530166226437958497">Решавање проблема</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Дошло је до грешке и инсталирање система <ph name="DEVICE_OS" /> није успело.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Додатну помоћ потражите на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Погледајте додатне информације</translation>
 <translation id="2532144599248877204">Продужава трајање батерије јер одржава ниво напуњености батерије око 80%. Батерија ће се напунити до краја пре него што га уобичајено искључите из напајања.</translation>
 <translation id="2532146950330687938">Уређај се припрема...</translation>
 <translation id="2532198298278778531">Управљајте безбедним DNS-ом у Chrome OS Flex подешавањима</translation>

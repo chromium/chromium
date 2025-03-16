@@ -447,6 +447,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2829172210806130158">Søk på skjermen</translation>
 <translation id="2834399722155632105">3. Trykk på Passordvalg</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Klokkeslett</translation>
 <translation id="284581348330507117">Lag unike passord</translation>
 <translation id="2856883624744451946">Gi gruppen et navn</translation>
 <translation id="2858204748079866344">For å beskytte personvernet ditt legger ikke Chrome passordet ditt automatisk inn i dette feltet.</translation>
@@ -503,6 +504,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="310900540163454140">Vil du slette passordet for <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Merk…</translation>
 <translation id="3119874402040566234">Du blir logget av, og nettlesingsdata blir slettet</translation>
+<translation id="3124568093781685165">Del passordene dine med familien din</translation>
 <translation id="3130863904455712965">Logg med mer</translation>
 <translation id="313283613037595347">Åpne ny inkognitofane.</translation>
 <translation id="3138611310073113613">Forkast valget</translation>
@@ -649,7 +651,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3868495844258915202">Vis hele nettadressen</translation>
 <translation id="3875783148670536197">Vis meg hvordan</translation>
-<translation id="3876833929577368454">Spør meg hver gang</translation>
 <translation id="3885587018298784481">Bli med i en familiegruppe</translation>
 <translation id="3888863481921783344">Dette brukes til å vise deg mulige personer du kan invitere til aktiviteten din.</translation>
 <translation id="3891414008432200754">Pris</translation>
@@ -904,6 +905,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4896467949657706481">Faner ble lukket, og du ble logget av</translation>
 <translation id="4913626501929406101">Du kan dele en kopi av passordet ditt med andre i familiegruppen din på en sikker måte. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Godta</translation>
+<translation id="4932733599132424254">Dato</translation>
 <translation id="4936354130727646074">Flytt aldri</translation>
 <translation id="4937410517508563815">Lagre passord i kontoen</translation>
 <translation id="4938338714234463591">Dette gjør det mulig å bruke stemmen med bestemte funksjoner på nettsteder.</translation>
@@ -1002,6 +1004,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5352128922772839949">Lagre fil</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
 <translation id="537853552771686272">Administrer emnene og nettstedene du er interessert i</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} er lukket}other{{count} er lukket}}</translation>
 <translation id="5394975111793637642">Skjul «Produktanmeldelser for deg»-kortet</translation>
 <translation id="5395707839134961196">Skjul søkemotordetaljer</translation>
 <translation id="5414763847370083940">Du får varsler hvis prisen settes ned på noe nettsted.</translation>
@@ -1131,6 +1134,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5897749768294722429">For å komme raskt tilbake til nettsteder du har besøkt, synkroniser fanene og loggen.</translation>
 <translation id="5898848375214731122">Vekt</translation>
 <translation id="5899314093904173337">For å dele med personer i nærheten, la dem skanne denne QR-koden med kameraet sitt eller en QR-skanningsapp</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} ny fane}other{{count} nye faner}}</translation>
 <translation id="5911030830365207728">Google Oversetter</translation>
 <translation id="5917913282764181683">Slett nedlastingene dine automatisk</translation>
 <translation id="5922999516621365983">Dra fanen hit for å feste den.</translation>
@@ -1470,7 +1474,6 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7336264872878993241"><ph name="PERCENT" /> prosent fullført</translation>
 <translation id="7346909386216857016">Greit</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
-<translation id="7359341089141286329">Spor alle registrerte pakker automatisk</translation>
 <translation id="7363349185727752629">En veiledning i personvernvalgene dine</translation>
 <translation id="736564850024123010">Endre adressefeltets plassering for å få en tilpasset opplevelse.</translation>
 <translation id="7366909168761621528">Nettleserdata</translation>
@@ -1674,6 +1677,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8131740175452115882">Bekreft</translation>
 <translation id="8132598642024322408">Nå <ph name="PRICE" /> – før <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Bruk et unikt passord for hvert nettsted og hver app. Hvis noen oppdager et passord som brukes flere steder, kan det brukes til å få tilgang til de andre kontoene dine. Klikk for å åpne nettstedet og endre dem nå.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} lukket fane}other{{count} lukkede faner}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 annen}other{# andre}}</translation>
 <translation id="8150167929304790980">Fullstendig navn</translation>
 <translation id="8152331954420209374">Gå til Lens</translation>
@@ -1718,6 +1722,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8299417921174340354">For å bruke passord må du først angi en adgangskode på enheten din.</translation>
 <translation id="8307481894409578819">Kunne ikke laste opp denne filen</translation>
 <translation id="8319076807703933069">Nytt søk</translation>
+<translation id="8320212361750431956">Nylig aktivitet</translation>
 <translation id="833647236762414178">Opprett, lagre og administrer passordene og passnøklene dine for å logge på nettsteder og apper enkelt. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
@@ -1747,7 +1752,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8438566539970814960">Gjør søking og surfing bedre</translation>
 <translation id="8439758443371991593">Skjul Legg til på leselisten</translation>
 <translation id="8449869326050867919">Passordet er delt</translation>
-<translation id="8453847087068411809">Registrer aldri pakker automatisk</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8474378002946546633">Tillat varsler</translation>
 <translation id="8477178913400731244">Slett data</translation>

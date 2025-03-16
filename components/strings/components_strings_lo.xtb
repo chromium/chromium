@@ -2852,6 +2852,7 @@
 <translation id="604124094241169006">ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="6041777658117377052">ອຸນຫະພູມຕູ້</translation>
 <translation id="6042308850641462728">ເພີ່ມເຕີມ</translation>
+<translation id="6043357981274314628">ແລ້ວໆ</translation>
 <translation id="6044573915096792553">ຂະໜາດ 12</translation>
 <translation id="6045164183059402045">ແມ່ແບບການຈັດຮຽງໜ້າກ່ອນພິມ</translation>
 <translation id="6047927260846328439">ເນື້ອຫານີ້ອາດຈະພະຍາຍາມຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວ. <ph name="BEGIN_LINK" />ຢືນຢັນໃຫ້ສະແດງ<ph name="END_LINK" /></translation>
@@ -2875,7 +2876,6 @@
 <translation id="6062937464449575061">ເຊົາຕິດຕາມລາຄາ</translation>
 <translation id="6063415549109819824">ສິນເຊື່ອເຮືອນ</translation>
 <translation id="6070432475334343308">ບໍ່ໄດ້ອັບໂຫຼດໄຟລ໌ຢ່າງໜ້ອຍ 1 ລາຍການໄປໃສ່ <ph name="FOLDER_NAME" /> ໃນ <ph name="CLOUD_PROVIDER" /></translation>
-<translation id="6080696365213338172">ທ່ານໄດ້ເຂົ້າ​ຫາເນື້ອໃນທີ່ໃຊ້ໃບຢັ້ງຢືນຜູ້ຄວບຄຸມຈັດໃຫ້ແລ້ວ. ຂໍ້ມູນທີ່ທ່ານໃຫ້ກັບ <ph name="DOMAIN" /> ແມ່ນຜູ້ຄວບຄຸມຂອງທ່ານສາມາດດັກເອົາໄດ້.</translation>
 <translation id="6085149458302186532">ປ້າຍ (ມີສີ)</translation>
 <translation id="6087312102907839798">ການຊອກຫາທີ່ກ່ຽວຂ້ອງ</translation>
 <translation id="6089505343295765444">ແຖບທີ່ທ່ານລຶບອອກຈາກປະຫວັດ Chrome ຂອງທ່ານຈະຍັງຄົງສະແດງໃນຕາຕະລາງປຽບທຽບຂອງທ່ານ</translation>
@@ -4248,7 +4248,6 @@
 <translation id="8473626140772740486">300 x 450 ມມ</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
 <translation id="8474910779563686872">ສະແດງລາຍລະອຽດຂອງນັກພັດທະນາ</translation>
-<translation id="8476959635632921417">ເພື່ອບັນທຶກ ແລະ ໃຊ້ທີ່ຢູ່ນີ້ໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="8479754468255770962">ໜີບກະຫຼັບເຟີຢູ່ລຸ່ມສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="8483229036294884935">ທີ່ຢູ່ນີ້ຈະຖືກລຶບອອກຈາກບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT" /></translation>
 <translation id="8488350697529856933">ນໍາໃຊ້ກັບ</translation>

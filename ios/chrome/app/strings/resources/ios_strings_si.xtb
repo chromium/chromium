@@ -447,6 +447,7 @@
 <translation id="2829172210806130158">ඔබේ තිරය සොයන්න</translation>
 <translation id="2834399722155632105">3. මුරපද විකල්ප තට්ටු කරන්න</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">වේලාව</translation>
 <translation id="284581348330507117">අනන්‍ය මුරපද තනන්න</translation>
 <translation id="2856883624744451946">සමූහය නම් කරන්න</translation>
 <translation id="2858204748079866344">ඔබේ පෞද්ගලිකත්වය ආරක්‍ෂා කිරීමට, Chrome මෙම ක්‍ෂේත්‍රය තුළ ඔබේ මුරපදය ස්වයං පිරවුම නොකරයි.</translation>
@@ -649,7 +650,6 @@
 <translation id="3858860766373142691">නම</translation>
 <translation id="3868495844258915202">සම්පූර්ණ URL එක පෙන්වන්න</translation>
 <translation id="3875783148670536197">කෙසේද කියා මට පෙන්වන්න</translation>
-<translation id="3876833929577368454">සැම විටම මගෙන් අසන්න</translation>
 <translation id="3885587018298784481">පවුලේ කණ්ඩායමකට එක් වන්න</translation>
 <translation id="3888863481921783344">ඔබේ සිදුවීමට හැකි ආරාධිතයන් පෙන්වීමට මෙය භාවිතා කරනු ඇත.</translation>
 <translation id="3891414008432200754">මිල</translation>
@@ -904,6 +904,7 @@
 <translation id="4896467949657706481">පටිති වසා ඇත; ඔබ වරනය වී ඇත</translation>
 <translation id="4913626501929406101">ඔබට ඔබේ මුරපදයෙහි පිටපතක් ඔබේ පවුලේ සමූහයේ සිටින කෙනෙකු සමග සුරක්ෂිතව බෙදා ගත හැක. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">පිළිගන්න</translation>
+<translation id="4932733599132424254">දිනය</translation>
 <translation id="4936354130727646074">කිසි විටෙකත් ගෙන නොයන්න</translation>
 <translation id="4937410517508563815">ගිණුමේ මුරපද සුරකින්න</translation>
 <translation id="4938338714234463591">මෙය ඔබට වෙබ් අඩවිවල ඇතැම් විශේෂාංග සමග ඔබේ හඬ භාවිතා කිරීමට ඉඩ දෙනු ඇත.</translation>
@@ -1470,7 +1471,6 @@
 <translation id="7336264872878993241"><ph name="PERCENT" /> ක් බාගන්නා ලදි</translation>
 <translation id="7346909386216857016">හරි, තේරුම් ගත්තා!</translation>
 <translation id="7352651011704765696">යමක් වැරදිනි</translation>
-<translation id="7359341089141286329">හඳුනාගත් සියලු පැකේජ ස්වයංව ලුහුබඳින්න</translation>
 <translation id="7363349185727752629">ඔබගේ පෞද්ගලිකත්ව තේරීම්වල මාර්ගෝපදේශයක්</translation>
 <translation id="736564850024123010">අභිරුචි කළ අත්දැකීමක් සඳහා ඔබේ ලිපින තීරුවේ පිහිටීම මාරු කරන්න.</translation>
 <translation id="7366909168761621528">බ්‍රවුස් කිරීමේ දත්ත</translation>
@@ -1718,6 +1718,7 @@
 <translation id="8299417921174340354">මුරපද භාවිත කිරීමට, ඔබ පළමුව ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="8307481894409578819">මෙම ගොනුව උඩුගත කළ නොහැකි විය</translation>
 <translation id="8319076807703933069">අලුත් සෙවීම</translation>
+<translation id="8320212361750431956">මෑත ක්‍රියාකාරකම</translation>
 <translation id="833647236762414178">අඩවි සහ යෙදුම් වලට පහසුවෙන් පුරනය වීමට ඔබේ මුරපද සහ මුරයතුරු තනන්න, සුරකින්න, සහ කළමනාකරණය කරන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">ඔබේ දේවල් උපස්ථ කර එය ඕනෑම උපාංගයක භාවිතා කරන්න.</translation>
 <translation id="8349305172487531364">පිටු සලකුණු බාර් එක</translation>
@@ -1747,7 +1748,6 @@
 <translation id="8438566539970814960">සෙවීම් සහ ගවේෂණය වඩා හොඳ කරන්න</translation>
 <translation id="8439758443371991593">කියවීම් ලැයිස්තුවට එක් කිරීම සඟවන්න</translation>
 <translation id="8449869326050867919">මුරපදය බෙදා ගන්නා ලදි</translation>
-<translation id="8453847087068411809">කිසි විටෙකත් පැකේජ ස්වයංව හඳුනා නොගන්න</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474378002946546633">දැනුම්දීම්වලට ඉඩ දෙන්න</translation>
 <translation id="8477178913400731244">දත්ත මකන්න</translation>
