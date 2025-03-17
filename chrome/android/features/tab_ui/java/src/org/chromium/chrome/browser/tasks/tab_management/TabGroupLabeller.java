@@ -61,8 +61,7 @@ public class TabGroupLabeller extends TabObjectLabeller {
             // be refactored to accept either rootId or even better tabGroupId as the identifier for
             // tab groups. See https://crbug.com/387509285.
             TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
-            int rootId = filter.getRootIdFromTabGroupId(tabGroupId);
-            return filter.getGroupLastShownTabId(rootId);
+            return filter.getGroupLastShownTabId(tabGroupId);
         }
     }
 }

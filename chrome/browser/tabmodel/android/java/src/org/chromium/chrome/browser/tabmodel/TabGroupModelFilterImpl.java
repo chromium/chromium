@@ -1411,9 +1411,11 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     @Override
     public int getGroupLastShownTabId(@Nullable Token tabGroupId) {
         if (tabGroupId == null) return Tab.INVALID_TAB_ID;
+        @Nullable Integer rootId = mGroupIdToRootIdMap.get(tabGroupId);
+        if (rootId == null || rootId == Tab.INVALID_TAB_ID) return Tab.INVALID_TAB_ID;
 
-        int rootId = getRootIdFromTabGroupId(tabGroupId);
-        return getGroupLastShownTabId(rootId);
+        TabGroup group = mRootIdToGroupMap.get(rootId);
+        return group == null ? Tab.INVALID_TAB_ID : group.getLastShownTabId();
     }
 
     @Override

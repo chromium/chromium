@@ -1045,14 +1045,18 @@ public class TabGroupModelFilterImplUnitTest {
         assertThat(mTab3.getRootId(), equalTo(TAB2_ID));
 
         // By default, the last shown tab is the first tab in group by order in tab model.
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB5_ROOT_ID), equalTo(TAB5_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB6_ROOT_ID), equalTo(TAB5_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB5_TAB_GROUP_ID), equalTo(TAB5_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB6_TAB_GROUP_ID), equalTo(TAB5_ID));
 
         // Specifically select a different tab in (Tab5, Tab6) group to change the last shown id in
         // that group so that it is different from the default setting.
         mTabGroupModelFilter.selectTab(mTab6);
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB5_ROOT_ID), equalTo(TAB6_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB6_ROOT_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB5_TAB_GROUP_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB6_TAB_GROUP_ID), equalTo(TAB6_ID));
 
         mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB2_ID, /* trailing= */ true);
 
@@ -1069,8 +1073,10 @@ public class TabGroupModelFilterImplUnitTest {
 
         // After ungroup, last shown ids in groups that are unrelated to this ungroup should remain
         // unchanged.
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB5_ROOT_ID), equalTo(TAB6_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB6_ROOT_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB5_TAB_GROUP_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB6_TAB_GROUP_ID), equalTo(TAB6_ID));
     }
 
     @Test
@@ -1576,19 +1582,27 @@ public class TabGroupModelFilterImplUnitTest {
         int startIndex = POSITION1;
 
         // By default, the last shown tab is the first tab in group by order in tab model.
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB2_ROOT_ID), equalTo(TAB2_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB3_ROOT_ID), equalTo(TAB2_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB5_ROOT_ID), equalTo(TAB5_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB6_ROOT_ID), equalTo(TAB5_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB2_TAB_GROUP_ID), equalTo(TAB2_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB3_TAB_GROUP_ID), equalTo(TAB2_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB5_TAB_GROUP_ID), equalTo(TAB5_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB6_TAB_GROUP_ID), equalTo(TAB5_ID));
 
         // Specifically select different tabs in (Tab2, Tab3) group and (Tab5, Tab6) group to change
         // the last shown ids in respective groups so that it is different from the default setting.
         mTabGroupModelFilter.selectTab(mTab3);
         mTabGroupModelFilter.selectTab(mTab6);
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB2_ROOT_ID), equalTo(TAB3_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB3_ROOT_ID), equalTo(TAB3_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB5_ROOT_ID), equalTo(TAB6_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB6_ROOT_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB2_TAB_GROUP_ID), equalTo(TAB3_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB3_TAB_GROUP_ID), equalTo(TAB3_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB5_TAB_GROUP_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB6_TAB_GROUP_ID), equalTo(TAB6_ID));
 
         Token tabGroupId = new Token(91234L, 84567L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
@@ -1607,10 +1621,14 @@ public class TabGroupModelFilterImplUnitTest {
 
         // After merge, last shown ids in groups that are unrelated to this merge should remain
         // unchanged.
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB2_ROOT_ID), equalTo(TAB3_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB3_ROOT_ID), equalTo(TAB3_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB5_ROOT_ID), equalTo(TAB6_ID));
-        assertThat(mTabGroupModelFilter.getGroupLastShownTabId(TAB6_ROOT_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB2_TAB_GROUP_ID), equalTo(TAB3_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB3_TAB_GROUP_ID), equalTo(TAB3_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB5_TAB_GROUP_ID), equalTo(TAB6_ID));
+        assertThat(
+                mTabGroupModelFilter.getGroupLastShownTabId(TAB6_TAB_GROUP_ID), equalTo(TAB6_ID));
 
         assertThat(mTab1.getTabGroupId(), equalTo(tabGroupId));
         assertThat(mTab4.getTabGroupId(), equalTo(tabGroupId));
