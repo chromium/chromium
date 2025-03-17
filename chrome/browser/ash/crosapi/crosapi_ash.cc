@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/drive_integration_service_ash.h"
 #include "chrome/browser/ash/crosapi/echo_private_ash.h"
-#include "chrome/browser/ash/crosapi/embedded_accessibility_helper_client_ash.h"
 #include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
@@ -71,7 +70,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
-#include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -139,8 +137,6 @@ CrosapiAsh::CrosapiAsh()
       drive_integration_service_ash_(
           std::make_unique<DriveIntegrationServiceAsh>()),
       echo_private_ash_(std::make_unique<EchoPrivateAsh>()),
-      embedded_accessibility_helper_client_ash_(
-          std::make_unique<EmbeddedAccessibilityHelperClientAsh>()),
       file_system_access_cloud_identifier_provider_ash_(
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
@@ -276,14 +272,6 @@ void CrosapiAsh::BindDriveIntegrationService(
 void CrosapiAsh::BindEchoPrivate(
     mojo::PendingReceiver<mojom::EchoPrivate> receiver) {
   echo_private_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindEmbeddedAccessibilityHelperClientFactory(
-    mojo::PendingReceiver<mojom::EmbeddedAccessibilityHelperClientFactory>
-        receiver) {
-  embedded_accessibility_helper_client_ash_
-      ->BindEmbeddedAccessibilityHelperClientFactoryReceiver(
-          std::move(receiver));
 }
 
 void CrosapiAsh::BindFileChangeServiceBridge(

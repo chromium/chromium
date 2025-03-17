@@ -56,7 +56,6 @@ import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "services/device/public/mojom/hid.mojom";
 import "services/media_session/public/mojom/audio_focus.mojom";
 import "services/media_session/public/mojom/media_controller.mojom";
-import "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom";
 
 // Crosapi defines the APIs that live in ash-chrome and are accessed from
 // client applications (such as lacros-chrome). When adding a major new API
@@ -184,13 +183,7 @@ interface Crosapi {
       pending_receiver<EchoPrivate> receiver);
 
   // BindEditorPanelManager@120 was removed.
-
-  // Binds the accessibility helper client factory interface which allows Lacros
-  // to send information to Ash needed for accessibility features.
-  [MinVersion=115]
-  BindEmbeddedAccessibilityHelperClientFactory@118(
-      pending_receiver<EmbeddedAccessibilityHelperClientFactory> receiver);
-
+  // BindEmbeddedAccessibilityHelperClientFactory@118 was removed.
   // BindEmojiPicker@89 was removed.
   // BindExtensionInfoPrivate@75 was removed.
   // REMOVED_105@105 was removed.
