@@ -1958,7 +1958,7 @@ const char kFedCmButtonModeDescription[] =
     "Enables RPs specify whether they want to trigger the FedCM widget flow or "
     "the button flow.";
 
-const char kFedCmCooldownOnIgnoreName[] = "kFedCmCooldownOnIgnore";
+const char kFedCmCooldownOnIgnoreName[] = "FedCmCooldownOnIgnore";
 const char kFedCmCooldownOnIgnoreDescription[] =
     "Enables cooldown of the FedCM API in passive mode whenever the dialog is "
     "ignored by the user.";
