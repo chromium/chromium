@@ -593,6 +593,22 @@ void ChromeAutocompleteProviderClient::OpenLensOverlay() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+void ChromeAutocompleteProviderClient::IssueContextualSearchRequest(
+      const GURL& destination_url,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (Browser* browser = BrowserList::GetInstance()->GetLastActive()) {
+    CHECK(browser->GetActiveTabInterface());
+    browser->GetActiveTabInterface()
+        ->GetTabFeatures()
+        ->lens_overlay_controller()
+        ->IssueContextualSearchRequest(
+            destination_url, match_type, is_zero_prefix_suggestion);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void ChromeAutocompleteProviderClient::PromptPageTranslation() {
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
