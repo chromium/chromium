@@ -120,12 +120,13 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 "source_type": "jira",
                 "entity_type": "issue",
                 "title": "John's doodle",
-                "link": "https://www.example.com",
+                "link": "https://www.example.co.uk",
                 "owner": "John Doe",
                 "mime_type": "application/vnd.google-apps.document",
                 "updated_time": 1192487100
               }
             },
+            "destinationUri": "https://www.example.com",
             "iconUri": "https://example.com/icon.png",
             "dataStore": "project2"
           }
@@ -195,18 +196,29 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
             "document": {
               "name": "Document 2",
               "derivedStructData": {
-                "link": "https://www.missingTitle.com"
+                "link": "https://www.missingTitle.co.uk"
               }
-            }
+            },
+            "destinationUri": "https://www.missingTitle.com"
           },
           {
             "document": {
               "name": "Document 2",
               "derivedStructData": {
                 "title": "John's doodle'",
-                "link": "https://www.example.com"
+                "link": "https://www.missinguributlinkavailable.co.uk"
               }
             }
+          },
+          {
+            "document": {
+              "name": "Document 3",
+              "derivedStructData": {
+                "title": "John's doodle'",
+                "link": "https://www.example.co.uk"
+              }
+            },
+            "destinationUri": "https://www.example.com"
           }
         ]
         })");
@@ -252,10 +264,10 @@ std::string CreateContentResult(const std::string& title,
           "document": {
             "derivedStructData": {
               "title": "%s",
-              "owner_email": "%s",
-              "link": "%s"
+              "owner_email": "%s"
             }
-          }
+          },
+          "destinationUri": "%s"
         }
         )",
       title, owner_email, url);
@@ -612,6 +624,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
+                           u"https://www.missinguributlinkavailable.co.uk/",
                            u"https://www.example.com/",
                            u"https://www.google.com/?q=John%27s+Document+1"));
 }

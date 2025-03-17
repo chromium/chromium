@@ -719,8 +719,16 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const TemplateURLRef& url_ref,
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::CONTENT) {
-    return ptr_to_string(
-        result.FindStringByDottedPath("document.derivedStructData.link"));
+    std::string destination_uri =
+        ptr_to_string(result.FindString("destinationUri"));
+    // TODO(crbug.com/403545926): Remove support for
+    //   "document.derivedStructData.link" once the change to populate
+    //   "destinationUri" is available in prod.
+    if (destination_uri.empty()) {
+      destination_uri = ptr_to_string(
+          result.FindStringByDottedPath("document.derivedStructData.link"));
+    }
+    return destination_uri;
   }
 
   std::string query = ptr_to_string(result.FindString("suggestion"));
