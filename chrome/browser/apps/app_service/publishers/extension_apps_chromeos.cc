@@ -857,6 +857,10 @@ void ExtensionAppsChromeOs::OnSystemFeaturesPrefChanged() {
   UpdateAppDisabledState(disabled_system_features_pref,
                          static_cast<int>(policy::SystemFeature::kWebStore),
                          extensions::kWebStoreAppId, is_disabled_mode_changed);
+  UpdateAppDisabledState(disabled_system_features_pref,
+                         static_cast<int>(policy::SystemFeature::kTextEditor),
+                         extension_misc::kTextEditorAppId,
+                         is_disabled_mode_changed);
 }
 
 bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
