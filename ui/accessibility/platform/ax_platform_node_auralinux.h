@@ -28,6 +28,17 @@ struct AtkAttributeSetDeleter {
   }
 };
 
+// Internal replication of the Atk.Live enum
+// https://docs.gtk.org/atk/enum.Live.html
+// TODO(https://crbug.com/404172321): We replicated this due to build issues
+// likely due to the newness of this enum in the Atk library. Remove this in
+// favor of the Atk library enum when Atk headers are updated internally.
+enum AriaNotificationAtkLive {
+  kNone,
+  kPolite,
+  kAssertive,
+};
+
 using AtkAttributes = std::unique_ptr<AtkAttributeSet, AtkAttributeSetDeleter>;
 
 // Some ATK interfaces require returning a (const gchar*), use
@@ -193,6 +204,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   void OnSortDirectionChanged();
   void OnInvalidStatusChanged();
   void OnAriaCurrentChanged();
+  void OnAriaNotificationPosted(
+      const std::string& announcement,
+      ax::mojom::AriaNotificationPriority priority_property);
   void OnDocumentTitleChanged();
   void OnSubtreeCreated();
   void OnSubtreeWillBeDeleted();
