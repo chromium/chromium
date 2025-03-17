@@ -105,10 +105,12 @@ AppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_IOS_TVOS)
 BOOL AppleKeychainV2::LAContextCanEvaluatePolicy(LAPolicy policy,
                                                  NSError** error) {
   LAContext* context = [[LAContext alloc] init];
   return [context canEvaluatePolicy:policy error:error];
 }
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
 }  // namespace crypto
