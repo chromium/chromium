@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/trusted_vault/standalone_trusted_vault_storage_impl.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage.h"
+
+#include <memory>
 
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -85,8 +88,8 @@ trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
 // must not be null and must have |version| set to 0.
 void UpgradeToVersion1(
     trusted_vault_pb::LocalTrustedVault* local_trusted_vault) {
-  DCHECK(local_trusted_vault);
-  DCHECK_EQ(local_trusted_vault->data_version(), 0);
+  CHECK(local_trusted_vault);
+  CHECK_EQ(local_trusted_vault->data_version(), 0);
 
   std::string constant_key_as_proto_string;
   AssignBytesToProtoString(GetConstantTrustedVaultKey(),
@@ -111,8 +114,8 @@ void UpgradeToVersion1(
 // false.
 void UpgradeToVersion2(
     trusted_vault_pb::LocalTrustedVault* local_trusted_vault) {
-  DCHECK(local_trusted_vault);
-  DCHECK_EQ(local_trusted_vault->data_version(), 1);
+  CHECK(local_trusted_vault);
+  CHECK_EQ(local_trusted_vault->data_version(), 1);
 
   for (trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault :
        *local_trusted_vault->mutable_user()) {
@@ -158,50 +161,82 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
                             success);
 }
 
+// Default file access logic StandaloneTrustedVaultStorage.
+// Responsible for mapping per user / per security domain storage to files,
+// and required data migrations.
+class DefaultFileAccess : public StandaloneTrustedVaultStorage::FileAccess {
+ public:
+  DefaultFileAccess(const base::FilePath& base_dir,
+                    SecurityDomainId security_domain_id)
+      : file_path_(GetBackendFilePath(base_dir, security_domain_id)),
+        security_domain_id_(security_domain_id) {}
+  DefaultFileAccess(const DefaultFileAccess& other) = delete;
+  DefaultFileAccess& operator=(const DefaultFileAccess& other) = delete;
+  ~DefaultFileAccess() override = default;
+
+  trusted_vault_pb::LocalTrustedVault ReadFromDisk() override {
+    auto data = ReadDataFromDiskImpl(file_path_, security_domain_id_);
+
+    if (data.user_size() == 0) {
+      // No data, set the current version and omit writing the file.
+      data.set_data_version(kCurrentLocalTrustedVaultVersion);
+    }
+
+    if (data.data_version() == 0) {
+      UpgradeToVersion1(&data);
+      WriteToDisk(data);
+    }
+
+    if (data.data_version() == 1) {
+      UpgradeToVersion2(&data);
+      WriteToDisk(data);
+    }
+
+    if (data.data_version() == 2) {
+      UpgradeToVersion3(&data);
+      WriteToDisk(data);
+    }
+
+    CHECK_EQ(data.data_version(), kCurrentLocalTrustedVaultVersion);
+
+    return data;
+  }
+
+  void WriteToDisk(const trusted_vault_pb::LocalTrustedVault& data) override {
+    WriteDataToDiskImpl(data, file_path_, security_domain_id_);
+  }
+
+ private:
+  const base::FilePath file_path_;
+  const SecurityDomainId security_domain_id_;
+};
+
 }  // namespace
 
-StandaloneTrustedVaultStorageImpl::StandaloneTrustedVaultStorageImpl(
+std::unique_ptr<StandaloneTrustedVaultStorage>
+StandaloneTrustedVaultStorage::CreateForTesting(
+    std::unique_ptr<FileAccess> file_access) {
+  return base::WrapUnique(
+      new StandaloneTrustedVaultStorage(std::move(file_access)));
+}
+
+StandaloneTrustedVaultStorage::StandaloneTrustedVaultStorage(
     const base::FilePath& base_dir,
     SecurityDomainId security_domain_id)
-    : file_path_(GetBackendFilePath(base_dir, security_domain_id)),
-      security_domain_id_(security_domain_id) {}
+    : file_access_(
+          std::make_unique<DefaultFileAccess>(base_dir, security_domain_id)) {}
 
-StandaloneTrustedVaultStorageImpl::~StandaloneTrustedVaultStorageImpl() =
-    default;
-
-void StandaloneTrustedVaultStorageImpl::ReadDataFromDisk() {
-  data_ = ReadDataFromDiskImpl(file_path_, security_domain_id_);
-
-  if (data_.user_size() == 0) {
-    // No data, set the current version and omit writing the file.
-    data_.set_data_version(kCurrentLocalTrustedVaultVersion);
-  }
-
-  if (data_.data_version() == 0) {
-    UpgradeToVersion1(&data_);
-    WriteDataToDisk();
-  }
-
-  if (data_.data_version() == 1) {
-    UpgradeToVersion2(&data_);
-    WriteDataToDisk();
-  }
-
-  if (data_.data_version() == 2) {
-    UpgradeToVersion3(&data_);
-    WriteDataToDisk();
-  }
-
-  DCHECK_EQ(data_.data_version(), kCurrentLocalTrustedVaultVersion);
+StandaloneTrustedVaultStorage::StandaloneTrustedVaultStorage(
+    std::unique_ptr<FileAccess> file_access)
+    : file_access_(std::move(file_access)) {
+  CHECK(file_access_);
 }
 
-void StandaloneTrustedVaultStorageImpl::WriteDataToDisk() {
-  WriteDataToDiskImpl(data_, file_path_, security_domain_id_);
-}
+StandaloneTrustedVaultStorage::~StandaloneTrustedVaultStorage() = default;
 
 trusted_vault_pb::LocalTrustedVaultPerUser*
-StandaloneTrustedVaultStorageImpl::AddUserVault(const GaiaId& gaia_id) {
-  DCHECK(FindUserVault(gaia_id) == nullptr);
+StandaloneTrustedVaultStorage::AddUserVault(const GaiaId& gaia_id) {
+  CHECK(FindUserVault(gaia_id) == nullptr);
 
   auto* user_vault = data_.add_user();
   user_vault->set_gaia_id(gaia_id.ToString());
@@ -209,7 +244,7 @@ StandaloneTrustedVaultStorageImpl::AddUserVault(const GaiaId& gaia_id) {
 }
 
 trusted_vault_pb::LocalTrustedVaultPerUser*
-StandaloneTrustedVaultStorageImpl::FindUserVault(const GaiaId& gaia_id) {
+StandaloneTrustedVaultStorage::FindUserVault(const GaiaId& gaia_id) {
   for (int i = 0; i < data_.user_size(); ++i) {
     if (GaiaId(data_.user(i).gaia_id()) == gaia_id) {
       return data_.mutable_user(i);
@@ -218,11 +253,19 @@ StandaloneTrustedVaultStorageImpl::FindUserVault(const GaiaId& gaia_id) {
   return nullptr;
 }
 
-void StandaloneTrustedVaultStorageImpl::RemoveUserVaults(
+void StandaloneTrustedVaultStorage::RemoveUserVaults(
     base::FunctionRef<bool(const trusted_vault_pb::LocalTrustedVaultPerUser&)>
         predicate) {
   auto removed = std::ranges::remove_if(*data_.mutable_user(), predicate);
   data_.mutable_user()->erase(removed.begin(), removed.end());
+}
+
+void StandaloneTrustedVaultStorage::ReadDataFromDisk() {
+  data_ = file_access_->ReadFromDisk();
+}
+
+void StandaloneTrustedVaultStorage::WriteDataToDisk() {
+  file_access_->WriteToDisk(data_);
 }
 
 }  // namespace trusted_vault

@@ -11,11 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -25,15 +21,13 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "components/os_crypt/sync/os_crypt.h"
-#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
-#include "components/trusted_vault/standalone_trusted_vault_storage_impl.h"
+#include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/test/mock_trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
@@ -97,46 +91,10 @@ MATCHER_P(PublicKeyWhenExportedEq, expected, "") {
   return actual_public_key.ExportToBytes() == expected;
 }
 
-base::FilePath CreateUniqueTempDir(base::ScopedTempDir* temp_dir) {
-  EXPECT_TRUE(temp_dir->CreateUniqueTempDir());
-  return temp_dir->GetPath();
-}
-
 CoreAccountInfo MakeAccountInfoWithGaiaId(const std::string& gaia_id) {
   CoreAccountInfo account_info;
   account_info.gaia = GaiaId(gaia_id);
   return account_info;
-}
-
-bool WriteLocalTrustedVaultFile(
-    const trusted_vault_pb::LocalTrustedVault& proto,
-    const base::FilePath& path) {
-  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
-  file_proto.set_serialized_local_trusted_vault(proto.SerializeAsString());
-  file_proto.set_md5_digest_hex_string(
-      base::MD5String(file_proto.serialized_local_trusted_vault()));
-  return base::WriteFile(path, file_proto.SerializeAsString());
-}
-
-trusted_vault_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
-    const base::FilePath& path) {
-  std::string file_content;
-  trusted_vault_pb::LocalTrustedVault data_proto;
-  if (!base::ReadFileToString(path, &file_content)) {
-    return data_proto;
-  }
-  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
-  if (!file_proto.ParseFromString(file_content)) {
-    return data_proto;
-  }
-
-  if (base::MD5String(file_proto.serialized_local_trusted_vault()) !=
-      file_proto.md5_digest_hex_string()) {
-    return data_proto;
-  }
-
-  data_proto.ParseFromString(file_proto.serialized_local_trusted_vault());
-  return data_proto;
 }
 
 class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
@@ -147,47 +105,84 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
   MOCK_METHOD(void, NotifyStateChanged, (), (override));
 };
 
+class FakeFileAccess : public StandaloneTrustedVaultStorage::FileAccess {
+ public:
+  FakeFileAccess() = default;
+  FakeFileAccess(const FakeFileAccess& other) = delete;
+  FakeFileAccess& operator=(const FakeFileAccess& other) = delete;
+  ~FakeFileAccess() override = default;
+
+  trusted_vault_pb::LocalTrustedVault ReadFromDisk() override {
+    return stored_data_;
+  }
+  void WriteToDisk(const trusted_vault_pb::LocalTrustedVault& data) override {
+    stored_data_ = data;
+  }
+
+  void SetStoredLocalTrustedVault(
+      const trusted_vault_pb::LocalTrustedVault& local_trusted_vault) {
+    stored_data_ = local_trusted_vault;
+  }
+  trusted_vault_pb::LocalTrustedVault GetStoredLocalTrustedVault() const {
+    return stored_data_;
+  }
+
+ private:
+  trusted_vault_pb::LocalTrustedVault stored_data_;
+};
+
 class StandaloneTrustedVaultBackendTest : public testing::Test {
  public:
-  StandaloneTrustedVaultBackendTest()
-      : base_path_(CreateUniqueTempDir(&temp_dir_)) {
+  StandaloneTrustedVaultBackendTest() {
     clock_.SetNow(base::Time::Now());
     ResetBackend();
   }
 
   ~StandaloneTrustedVaultBackendTest() override = default;
 
-  void SetUp() override { OSCryptMocker::SetUp(); }
-
-  void TearDown() override { OSCryptMocker::TearDown(); }
-
   void ResetBackend() {
-    auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
-
     auto connection =
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
-    connection_ = connection.get();
-
-    backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-        security_domain_id(),
-        std::make_unique<StandaloneTrustedVaultStorageImpl>(
-            base_path_, security_domain_id()),
-        std::move(delegate), std::move(connection));
-    backend_->SetClockForTesting(&clock_);
-    backend_->ReadDataFromDisk();
 
     // To avoid DCHECK failures in tests that exercise SetPrimaryAccount(),
     // return non-null for RegisterAuthenticationFactor(). This registration
     // operation will never complete, though.
-    ON_CALL(*connection_, RegisterAuthenticationFactor)
+    ON_CALL(*connection, RegisterAuthenticationFactor)
         .WillByDefault(testing::InvokeWithoutArgs([&]() {
           return std::make_unique<TrustedVaultConnection::Request>();
         }));
-    ON_CALL(*connection_, RegisterLocalDeviceWithoutKeys)
+    ON_CALL(*connection, RegisterLocalDeviceWithoutKeys)
         .WillByDefault(testing::InvokeWithoutArgs([&]() {
           return std::make_unique<TrustedVaultConnection::Request>();
         }));
+
+    ResetBackend(std::move(connection));
   }
+
+  void ResetBackend(
+      std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>>
+          connection) {
+    auto file_access = std::make_unique<FakeFileAccess>();
+    if (file_access_) {
+      // We only want to reset the backend, not the underlying faked file.
+      file_access->SetStoredLocalTrustedVault(
+          file_access_->GetStoredLocalTrustedVault());
+    }
+    file_access_ = file_access.get();
+
+    auto delegate = std::make_unique<testing::NiceMock<MockDelegate>>();
+
+    connection_ = connection.get();
+
+    backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
+        security_domain_id(),
+        StandaloneTrustedVaultStorage::CreateForTesting(std::move(file_access)),
+        std::move(delegate), std::move(connection));
+    backend_->SetClockForTesting(&clock_);
+    backend_->ReadDataFromDisk();
+  }
+
+  FakeFileAccess* file_access() { return file_access_; }
 
   MockTrustedVaultConnection* connection() { return connection_; }
 
@@ -201,15 +196,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
   std::string security_domain_name_for_uma() const {
     return GetSecurityDomainNameForUma(security_domain_id());
-  }
-
-  const base::FilePath& base_path() { return base_path_; }
-
-  const base::FilePath file_path() {
-    // |security_domain_id| is |kChromeSync|, thus the file name is
-    // "trusted_vault.pb".
-    return base_path_.Append(
-        base::FilePath(FILE_PATH_LITERAL("trusted_vault.pb")));
   }
 
   void SetPrimaryAccountWithUnknownAuthError(
@@ -272,10 +258,9 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   }
 
  private:
-  base::ScopedTempDir temp_dir_;
-  const base::FilePath base_path_;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
+  raw_ptr<FakeFileAccess> file_access_ = nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection_ = nullptr;
 };
 
@@ -292,7 +277,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Read the file from disk.
   trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
+      file_access()->GetStoredLocalTrustedVault();
   ASSERT_THAT(proto.user_size(), Eq(1));
   EXPECT_THAT(proto.user(0).degraded_recoverability_state(),
               DegradedRecoverabilityStateEq(degraded_recoverability_state));
@@ -395,60 +380,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchEmptyKeys) {
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordNotFoundWhenReadingFile) {
-  base::HistogramTester histogram_tester;
-  backend()->ReadDataFromDisk();
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
-      /*sample=*/TrustedVaultFileReadStatusForUMA::kNotFound,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldRecordMD5DigestMismatchWhenReadingFile) {
-  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
-  file_proto.set_md5_digest_hex_string("corrupted_md5_digest");
-  ASSERT_TRUE(base::WriteFile(file_path(), file_proto.SerializeAsString()));
-
-  base::HistogramTester histogram_tester;
-  backend()->ReadDataFromDisk();
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
-      /*sample=*/TrustedVaultFileReadStatusForUMA::kMD5DigestMismatch,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldRecordFileProtoDeserializationFailedWhenReadingFile) {
-  ASSERT_TRUE(base::WriteFile(file_path(), "corrupted_proto"));
-
-  base::HistogramTester histogram_tester;
-  backend()->ReadDataFromDisk();
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
-      /*sample=*/
-      TrustedVaultFileReadStatusForUMA::kFileProtoDeserializationFailed,
-      /*expected_bucket_count=*/1);
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldRecordDataProtoDeserializationFailedWhenReadingFile) {
-  const std::string kCorruptedSerializedDataProto = "corrupted_proto";
-  trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
-  file_proto.set_serialized_local_trusted_vault(kCorruptedSerializedDataProto);
-  file_proto.set_md5_digest_hex_string(
-      base::MD5String(kCorruptedSerializedDataProto));
-  ASSERT_TRUE(base::WriteFile(file_path(), file_proto.SerializeAsString()));
-
-  base::HistogramTester histogram_tester;
-  backend()->ReadDataFromDisk();
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
-      /*sample=*/
-      TrustedVaultFileReadStatusForUMA::kDataProtoDeserializationFailed,
-      /*expected_bucket_count=*/1);
-}
-
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
   const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
@@ -468,13 +399,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   user_data2->add_vault_key()->set_key_material(kKey2.data(), kKey2.size());
   user_data2->add_vault_key()->set_key_material(kKey3.data(), kKey3.size());
 
-  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
-  base::HistogramTester histogram_tester;
+  file_access()->SetStoredLocalTrustedVault(initial_data);
   backend()->ReadDataFromDisk();
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.FileReadStatus." + security_domain_name_for_uma(),
-      /*sample=*/TrustedVaultFileReadStatusForUMA::kSuccess,
-      /*expected_bucket_count=*/1);
 
   // Keys should be fetched immediately for both accounts.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
@@ -497,7 +423,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
       GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
   user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
 
-  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
+  file_access()->SetStoredLocalTrustedVault(initial_data);
   backend()->ReadDataFromDisk();
 
   // Keys should be fetched immediately, constant key must be filtered out.
@@ -515,152 +441,20 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   const std::vector<uint8_t> kKey3 = {2, 3, 4};
   const std::vector<uint8_t> kKey4 = {3, 4};
 
-  base::HistogramTester histogram_tester;
   backend()->StoreKeys(kGaiaId1, {kKey1}, /*last_key_version=*/7);
   backend()->StoreKeys(kGaiaId2, {kKey2}, /*last_key_version=*/8);
   // Keys for |kGaiaId2| overridden, so |kKey2| should be lost.
   backend()->StoreKeys(kGaiaId2, {kKey3, kKey4}, /*last_key_version=*/9);
-  histogram_tester.ExpectUniqueSample(
-      "TrustedVault.FileWriteSuccess." + security_domain_name_for_uma(),
-      /*sample=*/true,
-      /*expected_bucket_count=*/3);
 
-  // Read the file from disk.
+  // Read the content from storage.
   trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
+      file_access()->GetStoredLocalTrustedVault();
   ASSERT_THAT(proto.user_size(), Eq(2));
   EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey1)));
   EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(7));
   EXPECT_THAT(proto.user(1).vault_key(),
               ElementsAre(KeyMaterialEq(kKey3), KeyMaterialEq(kKey4)));
   EXPECT_THAT(proto.user(1).last_vault_key_version(), Eq(9));
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldUpgradeToVersion1AndFixMissingConstantKey) {
-  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
-  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
-
-  const std::vector<uint8_t> kKey1 = {0, 1, 2, 3, 4};
-  const std::vector<uint8_t> kKey2 = {1, 2, 3, 4};
-
-  trusted_vault_pb::LocalTrustedVault initial_data;
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia.ToString());
-  user_data2->set_gaia_id(account_info_2.gaia.ToString());
-  // Mimic |user_data1| to be affected by crbug.com/1267391 and |user_data2| to
-  // be not affected.
-  AssignBytesToProtoString(kKey1,
-                           user_data1->add_vault_key()->mutable_key_material());
-  AssignBytesToProtoString(GetConstantTrustedVaultKey(),
-                           user_data2->add_vault_key()->mutable_key_material());
-  AssignBytesToProtoString(kKey2,
-                           user_data2->add_vault_key()->mutable_key_material());
-
-  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
-  // Backend should fix corrupted data and write new state.
-  backend()->ReadDataFromDisk();
-
-  // Read the file from disk.
-  trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
-  ASSERT_THAT(proto.user_size(), Eq(2));
-  // Constant key should be added for the first user.
-  EXPECT_THAT(proto.user(0).vault_key(),
-              ElementsAre(KeyMaterialEq(GetConstantTrustedVaultKey()),
-                          KeyMaterialEq(kKey1)));
-  // Sanity check that state for the second user isn't changed.
-  EXPECT_THAT(proto.user(1).vault_key(),
-              ElementsAre(KeyMaterialEq(GetConstantTrustedVaultKey()),
-                          KeyMaterialEq(kKey2)));
-  EXPECT_THAT(proto.data_version(), Ge(1));
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest,
-       ShouldUpgradeAllUsersDataToVersion2AndResetKeysAreStale) {
-  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
-  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
-
-  trusted_vault_pb::LocalTrustedVault initial_data;
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia.ToString());
-  user_data1->set_keys_marked_as_stale_by_consumer(true);
-  user_data2->set_gaia_id(account_info_2.gaia.ToString());
-  user_data2->set_keys_marked_as_stale_by_consumer(true);
-  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
-
-  // Backend should reset |keys_marked_as_stale_by_consumer| for both accounts
-  // and write new state.
-  backend()->ReadDataFromDisk();
-
-  trusted_vault_pb::LocalTrustedVault new_data =
-      ReadLocalTrustedVaultFile(file_path());
-  ASSERT_THAT(new_data.user_size(), Eq(2));
-  EXPECT_FALSE(new_data.user(0).keys_marked_as_stale_by_consumer());
-  EXPECT_FALSE(new_data.user(1).keys_marked_as_stale_by_consumer());
-  EXPECT_THAT(new_data.data_version(), Ge(2));
-}
-
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldUpgradeToVersion3) {
-  const auto key_pair = SecureBoxKeyPair::GenerateRandom();
-
-  trusted_vault_pb::LocalTrustedVault initial_data;
-
-  // First user has `device_registered_version` set to 0.
-  const CoreAccountInfo account_info_1 = MakeAccountInfoWithGaiaId("user1");
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data1 =
-      initial_data.add_user();
-  user_data1->set_gaia_id(account_info_1.gaia.ToString());
-  user_data1->mutable_local_device_registration_info()->set_device_registered(
-      true);
-  user_data1->mutable_local_device_registration_info()
-      ->set_device_registered_version(0);
-  AssignBytesToProtoString(key_pair->private_key().ExportToBytes(),
-                           user_data1->mutable_local_device_registration_info()
-                               ->mutable_private_key_material());
-
-  // First user has `device_registered_version` set to 1.
-  const CoreAccountInfo account_info_2 = MakeAccountInfoWithGaiaId("user2");
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data2 =
-      initial_data.add_user();
-  user_data2->set_gaia_id(account_info_2.gaia.ToString());
-  user_data2->mutable_local_device_registration_info()->set_device_registered(
-      true);
-  user_data2->mutable_local_device_registration_info()
-      ->set_device_registered_version(1);
-  user_data2->set_keys_marked_as_stale_by_consumer(true);
-  AssignBytesToProtoString(key_pair->private_key().ExportToBytes(),
-                           user_data2->mutable_local_device_registration_info()
-                               ->mutable_private_key_material());
-
-  ASSERT_TRUE(WriteLocalTrustedVaultFile(initial_data, file_path()));
-
-  // Backend should reset `device_registered` for the first user (since
-  // `device_registered_version` is 0), but keep it for the second user (since
-  // `device_registered_version` is 1).
-  backend()->ReadDataFromDisk();
-
-  trusted_vault_pb::LocalTrustedVault new_data =
-      ReadLocalTrustedVaultFile(file_path());
-  ASSERT_THAT(new_data.user_size(), Eq(2));
-  EXPECT_FALSE(
-      new_data.user(0).local_device_registration_info().device_registered());
-  EXPECT_TRUE(
-      new_data.user(1).local_device_registration_info().device_registered());
-  EXPECT_THAT(new_data.data_version(), Eq(3));
-}
-
-// This test ensures that migration logic in ReadDataFromDisk() doesn't create
-// new file if there wasn't any.
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldNotWriteEmptyData) {
-  backend()->ReadDataFromDisk();
-  EXPECT_FALSE(base::PathExists(file_path()));
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
@@ -675,22 +469,16 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
   backend()->StoreKeys(account_info_2.gaia, {kKey2, kKey3},
                        /*last_key_version=*/1);
 
-  // Instantiate a second backend to read the file.
-  auto other_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      security_domain_id(),
-      std::make_unique<StandaloneTrustedVaultStorageImpl>(base_path(),
-                                                          security_domain_id()),
-      std::make_unique<testing::NiceMock<MockDelegate>>(),
-      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>());
-  other_backend->ReadDataFromDisk();
+  // Reset the backend, which makes it re-read the data stored above.
+  ResetBackend();
 
   // Keys should be fetched immediately for both accounts.
   base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
       fetch_keys_callback;
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey1)));
-  other_backend->FetchKeys(account_info_1, fetch_keys_callback.Get());
+  backend()->FetchKeys(account_info_1, fetch_keys_callback.Get());
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey2, kKey3)));
-  other_backend->FetchKeys(account_info_2, fetch_keys_callback.Get());
+  backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
@@ -723,10 +511,9 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldDeleteNonPrimaryAccountKeys) {
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
   backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
 
-  // Read the file from disk and verify that keys were removed from disk
-  // storage.
+  // Read the file from storage and verify that keys were removed.
   trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
+      file_access()->GetStoredLocalTrustedVault();
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -750,10 +537,9 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 
-  // Read the file from disk and verify that keys were removed from disk
-  // storage.
+  // Read the file from storage and verify that keys were removed.
   trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
+      file_access()->GetStoredLocalTrustedVault();
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -771,29 +557,21 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 
-  // Mimic browser restart and reset primary account.
-  auto new_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      security_domain_id(),
-      std::make_unique<StandaloneTrustedVaultStorageImpl>(base_path(),
-                                                          security_domain_id()),
-      /*delegate=*/std::make_unique<testing::NiceMock<MockDelegate>>(),
-      /*connection=*/nullptr);
-  new_backend->ReadDataFromDisk();
-  new_backend->SetPrimaryAccount(
-      /*primary_account=*/std::nullopt,
-      StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown);
+  // Mimic browser restart and reset primary account. Don't use the default
+  // connection, otherwise FetchKeys() below would perform a device
+  // registration.
+  ResetBackend(/*connection=*/nullptr);
   SetPrimaryAccountWithUnknownAuthError(/*primary_account=*/std::nullopt);
 
   EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/IsEmpty()));
-  new_backend->SetPrimaryAccount(
+  backend()->SetPrimaryAccount(
       account_info,
       StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown);
-  new_backend->FetchKeys(account_info, fetch_keys_callback.Get());
+  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 
-  // Read the file from disk and verify that keys were removed from disk
-  // storage.
+  // Read the file from storage and verify that keys were removed.
   trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
+      file_access()->GetStoredLocalTrustedVault();
   EXPECT_THAT(proto.user_size(), Eq(0));
 }
 
@@ -899,7 +677,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Verify persisted file state.
   trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
+      file_access()->GetStoredLocalTrustedVault();
   ASSERT_THAT(proto.user_size(), Eq(1));
   // Ensure that the failure is remembered, so there are no retries. This is a
   // regression test for crbug.com/1358015.
