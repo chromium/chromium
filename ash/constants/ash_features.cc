@@ -2000,7 +2000,7 @@ BASE_FEATURE(kOobeAddUserDuringEnrollment,
              "OobeAddUserDuringEnrollment",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
+// If enabled, CHOOBE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, CrOS events for OOBE and onboarding flow will be recorded.
