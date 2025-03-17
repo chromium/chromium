@@ -28,7 +28,6 @@ constexpr char kKoreanEngineId[] = "ko-t-i0-und";
 constexpr char kPinyinEngineId[] = "zh-t-i0-pinyin";
 constexpr char kZhuyinEngineId[] = "zh-hant-t-i0-und";
 constexpr char kJapaneseEngineId[] = "nacl_mozc_jp";
-constexpr char kJapaneseUsEngineId[] = "nacl_mozc_us";
 
 constexpr char kVietnameseVniEngineId[] = "vkd_vi_vni";
 constexpr char kVietnameseTelexEngineId[] = "vkd_vi_telex";
@@ -292,10 +291,9 @@ TEST(CreateSettingsFromPrefsTest, CreateZhuyinSettings) {
   EXPECT_EQ(zhuyin_settings.page_size, 8u);
 }
 
-class JapaneseTesting : public testing::TestWithParam<std::string> {};
-
-TEST_P(JapaneseTesting, CreateJapaneseSettingsFromPrefsTest) {
+TEST(CreateSettingsFromPrefsTest, CreateJapaneseSettings) {
   using ::ash::ime::mojom::JapaneseSettings;
+
   base::Value::Dict jp_prefs;
   jp_prefs.Set("AutomaticallySendStatisticsToGoogle", false);
   jp_prefs.Set("AutomaticallySwitchToHalfwidth", false);
@@ -312,14 +310,12 @@ TEST_P(JapaneseTesting, CreateJapaneseSettingsFromPrefsTest) {
   jp_prefs.Set("numberOfSuggestions", 5);
 
   base::Value::Dict full_prefs;
-  // Note: Japanese prefs are always stored for nacl_mozc_jp, but then getting
-  // from jp/us should get the same prefs.
   full_prefs.Set(kJapaneseEngineId, std::move(jp_prefs));
   TestingPrefServiceSimple prefs;
   RegisterTestingPrefs(prefs, full_prefs);
 
   const mojom::InputMethodSettingsPtr settings =
-      CreateSettingsFromPrefs(prefs, GetParam());
+      CreateSettingsFromPrefs(prefs, kJapaneseEngineId);
 
   ASSERT_TRUE(settings->is_japanese_settings());
   mojom::JapaneseSettingsPtr expected = mojom::JapaneseSettings::New();
@@ -341,11 +337,6 @@ TEST_P(JapaneseTesting, CreateJapaneseSettingsFromPrefsTest) {
   expected->number_of_suggestions = 5;
   EXPECT_EQ(settings->get_japanese_settings(), expected);
 }
-
-INSTANTIATE_TEST_SUITE_P(CreateJapaneseSettingsFromPrefsTestSuite,
-                         JapaneseTesting,
-                         testing::Values(kJapaneseEngineId,
-                                         kJapaneseUsEngineId));
 
 TEST(CreateSettingsFromPrefsTest, AutocorrectIsSupportedForLatin) {
   ASSERT_TRUE(IsAutocorrectSupported("xkb:ca:multix:fra"));
