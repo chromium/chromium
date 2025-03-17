@@ -479,26 +479,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount"
+<histogram name="PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount2"
     units="count" expires_after="2026-02-05">
   <owner>zhouzj@google.com</owner>
   <owner>kurtosis-team@google.com</owner>
   <summary>
-    Records the number of times a eTLD+1 URL for an ad appears in history when a
-    page load is initiated from an user activation of an ad. The metric is
-    recorded during an ad page load.
+    Records the number of times a eTLD+1 URL for an ad appears in the last
+    thirty days of history when a page load is initiated from an user activation
+    of an ad. The metric is recorded during an ad page load.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.Ads.AdClick.HistoryQueryCount" units="count"
+<histogram name="PageLoad.Clients.Ads.AdClick.HistoryQueryCount2" units="count"
     expires_after="2026-02-05">
   <owner>zhouzj@google.com</owner>
   <owner>kurtosis-team@google.com</owner>
   <summary>
-    Records the number of times a URL for an ad appears in history when a page
-    load is initiated from an user activation of an ad. When querying browser
-    history, the ad's URL is matched without regard to the URL filename, query
-    values, or fragment. The metric is recorded during an ad page load.
+    Records the number of times a URL for an ad appears in the last thirty days
+    of history when a page load is initiated from an user activation of an ad.
+    When querying browser history, the ad's URL is matched without regard to the
+    URL filename, query values, or fragment. The metric is recorded during an ad
+    page load.
   </summary>
 </histogram>
 
