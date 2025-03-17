@@ -9,7 +9,7 @@ def main(request, response):
     session_id_header = request.headers.get("Sec-Session-Id")
     if session_id_header == None:
         return (400, response.headers, "")
-    session_id = session_id_header.decode('utf-8')
+    session_id = int(session_id_header.decode('utf-8'))
 
     if test_session_manager.get_should_refresh_end_session():
         response_body = {
@@ -25,7 +25,7 @@ def main(request, response):
     if test_session_manager.get_refresh_sends_challenge():
         challenge = "refresh_challenge_value"
         if request.headers.get("Sec-Session-Response") == None:
-            return (401, [('Sec-Session-Challenge', '"' + challenge + '";id="' + session_id + '"')], "")
+            return (401, [('Sec-Session-Challenge', '"' + challenge + '";id="' + str(session_id) + '"')], "")
 
         jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Sec-Session-Response").decode('utf-8'), session_key)
 

@@ -45,10 +45,8 @@ class SessionManager:
         self.refresh_url = "/device-bound-session-credentials/refresh_session.py"
         self.include_site = True
 
-    def next_session_id_value(self):
-        return len(self.session_to_key_map)
     def next_session_id(self):
-        return str(self.next_session_id_value())
+        return len(self.session_to_key_map)
 
     def create_new_session(self):
         session_id = self.next_session_id()
@@ -92,12 +90,12 @@ class SessionManager:
 
         next_sessions_cookie_details = configuration.get("cookieDetailsForNextRegisteredSessions")
         if next_sessions_cookie_details is not None:
-            next_session_id_value = self.next_session_id_value()
+            next_session_id = self.next_session_id()
             for session in next_sessions_cookie_details:
-                self.session_to_cookie_details_map[str(next_session_id_value)] = []
+                self.session_to_cookie_details_map[next_session_id] = []
                 for detail in session:
-                    self.session_to_cookie_details_map[str(next_session_id_value)].append(CookieDetail(detail.get("nameAndValue"), detail.get("attributes")))
-                next_session_id_value += 1
+                    self.session_to_cookie_details_map[next_session_id].append(CookieDetail(detail.get("nameAndValue"), detail.get("attributes")))
+                next_session_id += 1
 
         next_session_early_challenge = configuration.get("earlyChallengeForNextRegisteredSession")
         if next_session_early_challenge is not None:
@@ -174,7 +172,7 @@ class SessionManager:
             scope_origin = self.scope_origin
 
         response_body = {
-            "session_identifier": session_id,
+            "session_identifier": str(session_id),
             "refresh_url": self.refresh_url,
             "scope": {
                 "origin": scope_origin,
