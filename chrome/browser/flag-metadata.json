@@ -6455,6 +6455,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "offline-items-in-notifications",
+    "owners": ["nwokedi@chromium.org"],
+    "expiry_milestone": 138
+  },
+  {
     "name": "offline-pages-live-page-sharing",
     "owners": [ "sclittle@chromium.org", "srsudar@chromium.org", "offline-dev@chromium.org" ],
     "expiry_milestone": 86

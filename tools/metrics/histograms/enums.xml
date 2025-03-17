@@ -11405,6 +11405,7 @@ from previous Chrome versions.
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
   <int value="-1059478136" label="PreinstalledWebAppDuplicationFixer:enabled"/>
   <int value="-1057056167" label="VirtualKeyboardMultipaste:enabled"/>
+  <int value="-1056947847" label="OfflineItemsInNotifications:disabled"/>
   <int value="-1056860259"
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
@@ -11685,6 +11686,7 @@ from previous Chrome versions.
   <int value="-954972757"
       label="QuickAnswersAlwaysTriggerForSingleWord:enabled"/>
   <int value="-954789862" label="ProductivityLauncher:enabled"/>
+  <int value="-954302223" label="OfflineItemsInNotifications:enabled"/>
   <int value="-953440781" label="SimplifiedBookmarkSaveFlow:disabled"/>
   <int value="-953330528" label="UserAgentOverrideExperiment:disabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>

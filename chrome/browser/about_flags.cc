@@ -5227,6 +5227,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSysUiShouldHoldbackTaskManagementName,
      flag_descriptions::kSysUiShouldHoldbackTaskManagementDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackTaskManagement)},
+    {"offline-items-in-notifications",
+     flag_descriptions::kOfflineItemsInNotificationsName,
+     flag_descriptions::kOfflineItemsInNotificationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOfflineItemsInNotifications)},
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
