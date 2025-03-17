@@ -124,27 +124,6 @@ std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
   return generator;
 }
 
-class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
-  METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
-
- public:
-  explicit TestBubbleDialogDelegateView(View* anchor)
-      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
-    SetOwnedByWidget(false);
-  }
-  ~TestBubbleDialogDelegateView() override = default;
-
-  bool ShouldShowCloseButton() const override {
-    reset_controls_called_ = true;
-    return true;
-  }
-
-  mutable bool reset_controls_called_ = false;
-};
-
-BEGIN_METADATA(TestBubbleDialogDelegateView)
-END_METADATA
-
 // Convenience to make constructing a GestureEvent simpler.
 ui::GestureEvent CreateTestGestureEvent(ui::EventType type, int x, int y) {
   return ui::GestureEvent(x, y, 0, base::TimeTicks(),
@@ -180,6 +159,27 @@ class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
 };
 
 }  // namespace
+
+class WidgetTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
+  METADATA_HEADER(WidgetTestBubbleDialogDelegateView, BubbleDialogDelegateView)
+
+ public:
+  explicit WidgetTestBubbleDialogDelegateView(View* anchor)
+      : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
+    SetOwnedByWidget(false);
+  }
+  ~WidgetTestBubbleDialogDelegateView() override = default;
+
+  bool ShouldShowCloseButton() const override {
+    reset_controls_called_ = true;
+    return true;
+  }
+
+  mutable bool reset_controls_called_ = false;
+};
+
+BEGIN_METADATA(WidgetTestBubbleDialogDelegateView)
+END_METADATA
 
 // A view that keeps track of the events it receives, and consumes all scroll
 // gesture events and ui::EventType::kScroll events.
@@ -2372,8 +2372,8 @@ TEST_F(WidgetObserverTest, DestroyBubble) {
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   anchor->Show();
 
-  auto bubble_delegate =
-      std::make_unique<TestBubbleDialogDelegateView>(anchor->client_view());
+  auto bubble_delegate = std::make_unique<WidgetTestBubbleDialogDelegateView>(
+      anchor->client_view());
   {
     std::unique_ptr<Widget> bubble_widget =
         base::WrapUnique(BubbleDialogDelegateView::CreateBubble(
@@ -2858,8 +2858,8 @@ TEST_F(WidgetTest, BubbleControlsResetOnInit) {
   anchor->Show();
 
   {
-    auto bubble_delegate =
-        std::make_unique<TestBubbleDialogDelegateView>(anchor->client_view());
+    auto bubble_delegate = std::make_unique<WidgetTestBubbleDialogDelegateView>(
+        anchor->client_view());
     auto* bubble_delegate_ptr = bubble_delegate.get();
     std::unique_ptr<Widget> bubble_widget =
         base::WrapUnique(BubbleDialogDelegateView::CreateBubble(
@@ -3173,7 +3173,7 @@ TEST_F(WidgetTest, EventHandlersOnRootView) {
 
   // Change the handle mode of |view| so that events are marked as handled at
   // the target phase.
-  view->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  view->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
 
   // Dispatch a ui::EventType::kGestureTapDown and a
   // ui::EventType::kGestureTapCancel event. The events are handled at the
@@ -4221,7 +4221,7 @@ TEST_F(WidgetTest, GestureEndEvents) {
 
   // Change the handle mode of |view| to indicate that it would like
   // to handle all events, then send a GESTURE_TAP to set the gesture handler.
-  view->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  view->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
   ui::GestureEvent tap =
       CreateTestGestureEvent(ui::EventType::kGestureTap, 15, 15);
   widget->OnGestureEvent(&tap);
@@ -4250,7 +4250,7 @@ TEST_F(WidgetTest, GestureEndEvents) {
   widget->OnGestureEvent(&tap);
   EXPECT_TRUE(tap.handled());
   EXPECT_EQ(view, GetGestureHandler(root_view));
-  view->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  view->set_handle_mode(EventCountView::HandleMode::kPropagateEvents);
 
   // The gesture handler should remain unchanged on a ui::EventType::kGestureEnd
   // corresponding to a second touch point, but should be reset to NULL by a
@@ -4456,9 +4456,9 @@ TEST_F(WidgetTest, GestureEventDispatch) {
   v2->ResetCounts();
   v3->ResetCounts();
   v4->ResetCounts();
-  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
-  v2->set_handle_mode(EventCountView::CONSUME_EVENTS);
-  v3->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
+  v2->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
+  v3->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
   tap = CreateTestGestureEvent(ui::EventType::kGestureTap, 5, 5);
   widget->OnGestureEvent(&tap);
   EXPECT_EQ(0, v1->GetEventCount(ui::EventType::kGestureTap));
@@ -4475,7 +4475,7 @@ TEST_F(WidgetTest, GestureEventDispatch) {
   v2->ResetCounts();
   v3->ResetCounts();
   v4->ResetCounts();
-  v4->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v4->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
   tap = CreateTestGestureEvent(ui::EventType::kGestureTap, 5, 5);
   widget->OnGestureEvent(&tap);
   EXPECT_TRUE(tap.handled());
@@ -4504,7 +4504,7 @@ TEST_F(WidgetTest, GestureEventDispatch) {
   v2->ResetCounts();
   v3->ResetCounts();
   v4->ResetCounts();
-  v3->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  v3->set_handle_mode(EventCountView::HandleMode::kPropagateEvents);
   tap = CreateTestGestureEvent(ui::EventType::kGestureTap, 5, 5);
   widget->OnGestureEvent(&tap);
   EXPECT_EQ(0, v1->GetEventCount(ui::EventType::kGestureTap));
@@ -4549,7 +4549,7 @@ TEST_F(WidgetTest, ScrollGestureEventDispatch) {
 
   // Change the handle mode of |v3| to indicate that it would like to handle
   // gesture events.
-  v3->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v3->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
 
   // When no gesture handler is set, dispatching a
   // ui::EventType::kGestureTapDown should bubble up the views hierarchy until
@@ -4589,8 +4589,8 @@ TEST_F(WidgetTest, ScrollGestureEventDispatch) {
   // Change the handle mode of |v3| to indicate that it would no longer like
   // to handle events, and change the mode of |v1| to indicate that it would
   // like to handle events.
-  v3->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
-  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v3->set_handle_mode(EventCountView::HandleMode::kPropagateEvents);
+  v1->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
 
   // Dispatch a ui::EventType::kGestureScrollBegin event. Because the current
   // gesture handler (|v3|) does not handle scroll events, the event should
@@ -5137,7 +5137,7 @@ TEST_F(WidgetTest, MouseEventTypesViaGenerator) {
   WidgetAutoclosePtr widget(CreateTopLevelFramelessPlatformWidget());
   EventCountView* view =
       widget->GetRootView()->AddChildView(std::make_unique<EventCountView>());
-  view->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  view->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
   view->SetBounds(10, 10, 50, 40);
 
   widget->SetBounds(gfx::Rect(0, 0, 100, 80));

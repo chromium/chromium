@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/common/url_constants.h"
@@ -59,10 +59,10 @@ namespace extensions {
 
 using ContextType = extensions::browser_test_util::ContextType;
 
-class RuntimeApiTest : public ExtensionPlatformApiTest,
+class RuntimeApiTest : public ExtensionApiTest,
                        public testing::WithParamInterface<ContextType> {
  public:
-  RuntimeApiTest() : ExtensionPlatformApiTest(GetParam()) {}
+  RuntimeApiTest() : ExtensionApiTest(GetParam()) {}
   ~RuntimeApiTest() override = default;
   RuntimeApiTest(const RuntimeApiTest&) = delete;
   RuntimeApiTest& operator=(const RuntimeApiTest&) = delete;
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class RuntimeGetContextsApiTest : public ExtensionPlatformApiTest {
+class RuntimeGetContextsApiTest : public ExtensionApiTest {
  public:
   RuntimeGetContextsApiTest() = default;
   RuntimeGetContextsApiTest(const RuntimeGetContextsApiTest&) = delete;
@@ -690,7 +690,7 @@ class RuntimeGetContextsApiTest : public ExtensionPlatformApiTest {
   ~RuntimeGetContextsApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
 
     static constexpr char kManifest[] =
         R"({

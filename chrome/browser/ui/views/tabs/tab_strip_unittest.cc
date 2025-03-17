@@ -634,9 +634,7 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
 TEST_P(TabStripTest, TabGroupNeedsAttention) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {tab_groups::kTabGroupsSaveV2,
-       data_sharing::features::kDataSharingFeature},
-      {});
+      {data_sharing::features::kDataSharingFeature}, {});
   controller_->AddTab(0, TabActive::kInactive);
   controller_->AddTab(1, TabActive::kActive);
 

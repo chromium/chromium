@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.D
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
+import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
@@ -83,6 +84,21 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         return params -> params != null && params.url.equals(url.getSpec());
     }
 
+    private void testAccount(
+            PropertyModel accountModel,
+            Account expectedAccount,
+            Boolean expectClickListener,
+            Boolean expectShowIdp) {
+        assertEquals(
+                "Incorrect account", expectedAccount, accountModel.get(AccountProperties.ACCOUNT));
+        if (expectClickListener) {
+            assertNotNull(accountModel.get(AccountProperties.ON_CLICK_LISTENER));
+        } else {
+            assertNull(accountModel.get(AccountProperties.ON_CLICK_LISTENER));
+        }
+        assertEquals(accountModel.get(AccountProperties.SHOW_IDP), expectShowIdp);
+    }
+
     @Test
     public void testSingleAccountSignInHeader() {
         mMediator.showAccounts(
@@ -100,6 +116,12 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertEquals("Incorrect item sheet count", 1, mSheetAccountItems.size());
+        testAccount(
+                mSheetAccountItems.get(0).model,
+                mAnaAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ false);
     }
 
     @Test
@@ -119,6 +141,17 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
         assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
         assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+        assertEquals("Incorrect item sheet count", 2, mSheetAccountItems.size());
+        testAccount(
+                mSheetAccountItems.get(0).model,
+                mAnaAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ false);
+        testAccount(
+                mSheetAccountItems.get(1).model,
+                mBobAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ false);
     }
 
     /**
@@ -129,7 +162,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
     public void testNoBrandIcons() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                Arrays.asList(mAnaAccount),
+                Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);
@@ -691,6 +724,69 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         textView = addAccountButton.findViewById(R.id.title);
         assertEquals("Use a different account", textView.getText());
         assertFalse(containsItemOfType(mModel, ItemProperties.CONTINUE_BUTTON));
+    }
+
+    @Test
+    public void testMultipleIdentityProvidersSignInHeader() {
+        if (mRpMode == RpMode.ACTIVE) {
+            // Multiple identity providers are not supported in active mode right now.
+            return;
+        }
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                mTestEtldPlusOne,
+                Arrays.asList(mNewUserAccount, mAnaAccountWithUseDifferentAccount),
+                Arrays.asList(mIdpData, mIdpDataWithUseDifferentAccount),
+                /* isAutoReauthn= */ false,
+                /* newAccounts= */ Collections.EMPTY_LIST);
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
+        assertNull(headerModel.get(IDP_FOR_DISPLAY));
+        assertNull(headerModel.get(IDP_BRAND_ICON));
+        assertEquals((Integer) mRpMode, headerModel.get(RP_MODE));
+        assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
+        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
+        // Because of use a different account, size is 3.
+        assertEquals("Incorrect item sheet count", 3, mSheetAccountItems.size());
+        testAccount(
+                mSheetAccountItems.get(0).model,
+                mNewUserAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ true);
+        testAccount(
+                mSheetAccountItems.get(1).model,
+                mAnaAccountWithUseDifferentAccount,
+                /* expectClickListener= */ true,
+                /* expectShowIdp= */ true);
+
+        // Do not let test inputs be ignored.
+        mMediator.setComponentShowTime(-1000);
+        // Select the first account. It is new so it will require confirmation.
+        mSheetAccountItems
+                .get(0)
+                .model
+                .get(AccountProperties.ON_CLICK_LISTENER)
+                .onResult(new ButtonData(mNewUserAccount, /* idpMetadata= */ null));
+        headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
+        assertEquals(mTestEtldPlusOne2, headerModel.get(IDP_FOR_DISPLAY));
+        assertNotNull(headerModel.get(IDP_BRAND_ICON));
+        assertFalse(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
+        assertFalse(headerModel.get(IS_MULTIPLE_IDPS));
+
+        // Go back should show multiple IDP UI again.
+        pressBack();
+        assertFalse(mMediator.wasDismissed());
+        headerModel = mModel.get(ItemProperties.HEADER);
+        assertEquals(HeaderType.SIGN_IN, headerModel.get(TYPE));
+        assertEquals(mTestEtldPlusOne, headerModel.get(RP_FOR_DISPLAY));
+        assertNull(headerModel.get(IDP_FOR_DISPLAY));
+        assertNull(headerModel.get(IDP_BRAND_ICON));
+        assertTrue(headerModel.get(IS_MULTIPLE_ACCOUNT_CHOOSER));
+        assertTrue(headerModel.get(IS_MULTIPLE_IDPS));
     }
 
     private void pressBack() {

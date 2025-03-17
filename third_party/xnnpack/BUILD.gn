@@ -472,8 +472,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":u8-lut32norm_x64",
     ":u8-maxpool_sse2-no-sse3",
     ":u8-maxpool_x64",
-    ":u8-rmax_sse2-no-sse3",
-    ":u8-rmax_x64",
+    ":u8-rminmax_sse2-no-sse3",
+    ":u8-rminmax_x64",
     ":u8-vclamp_f16c-fma-avx2",
     ":u8-vclamp_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl",
     ":u8-vclamp_sse2-no-sse3",
@@ -931,8 +931,8 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":u8-lut32norm_x64_standalone",
     ":u8-maxpool_sse2-no-sse3_standalone",
     ":u8-maxpool_x64_standalone",
-    ":u8-rmax_sse2-no-sse3_standalone",
-    ":u8-rmax_x64_standalone",
+    ":u8-rminmax_sse2-no-sse3_standalone",
+    ":u8-rminmax_x64_standalone",
     ":u8-vclamp_f16c-fma-avx2_standalone",
     ":u8-vclamp_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
     ":u8-vclamp_sse2-no-sse3_standalone",
@@ -1142,7 +1142,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":u8-ibilinear_arm64",
     ":u8-lut32norm_arm64",
     ":u8-maxpool_arm64",
-    ":u8-rmax_arm64",
+    ":u8-rminmax_arm64",
     ":u8-vclamp_arm64",
     ":x16-pack-lh_arch=armv8.2-a+sve+sve2",
     ":x16-packw_arm64",
@@ -1333,7 +1333,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":u8-ibilinear_arm64_standalone",
     ":u8-lut32norm_arm64_standalone",
     ":u8-maxpool_arm64_standalone",
-    ":u8-rmax_arm64_standalone",
+    ":u8-rminmax_arm64_standalone",
     ":u8-vclamp_arm64_standalone",
     ":x16-pack-lh_arch=armv8.2-a+sve+sve2_standalone",
     ":x16-packw_arm64_standalone",
@@ -25798,7 +25798,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("u8-rmax_sse2-no-sse3") {
+  source_set("u8-rminmax_sse2-no-sse3") {
     cflags = [
       "-mno-sse3",
       "-msse2",
@@ -25806,7 +25806,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rmax/u8-rmax-sse2-u16.c",
+      "src/src/u8-rminmax/gen/u8-rmax-sse2-u16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -25824,7 +25824,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("u8-rmax_sse2-no-sse3_standalone") {
+  source_set("u8-rminmax_sse2-no-sse3_standalone") {
     cflags = [
       "-mno-sse3",
       "-msse2",
@@ -25832,7 +25832,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rmax/u8-rmax-sse2-u16.c",
+      "src/src/u8-rminmax/gen/u8-rmax-sse2-u16.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -25853,12 +25853,12 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     }
   }
 
-  source_set("u8-rmax_x64") {
+  source_set("u8-rminmax_x64") {
     cflags = []
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rmax/u8-rmax-scalar-u2.c",
+      "src/src/u8-rminmax/gen/u8-rmax-scalar-u2-acc2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -25876,12 +25876,12 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("u8-rmax_x64_standalone") {
+  source_set("u8-rminmax_x64_standalone") {
     cflags = []
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rmax/u8-rmax-scalar-u2.c",
+      "src/src/u8-rminmax/gen/u8-rmax-scalar-u2-acc2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -37404,13 +37404,13 @@ if (current_cpu == "arm64") {
     }
   }
 
-  source_set("u8-rmax_arm64") {
+  source_set("u8-rminmax_arm64") {
     cflags = []
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rmax/u8-rmax-neon-u16.c",
-      "src/src/u8-rmax/u8-rmax-scalar-u2.c",
+      "src/src/u8-rminmax/gen/u8-rmax-neon-u16.c",
+      "src/src/u8-rminmax/gen/u8-rmax-scalar-u2-acc2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -37428,13 +37428,13 @@ if (current_cpu == "arm64") {
   }
 
   # This is a target that cannot depend on //base.
-  source_set("u8-rmax_arm64_standalone") {
+  source_set("u8-rminmax_arm64_standalone") {
     cflags = []
 
     sources = [
       "src/include/xnnpack.h",
-      "src/src/u8-rmax/u8-rmax-neon-u16.c",
-      "src/src/u8-rmax/u8-rmax-scalar-u2.c",
+      "src/src/u8-rminmax/gen/u8-rmax-neon-u16.c",
+      "src/src/u8-rminmax/gen/u8-rmax-scalar-u2-acc2.c",
     ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]

@@ -39,6 +39,7 @@
 <translation id="1497802159252041924">इन्स्टल गर्ने क्रममा त्रुटि भयो: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">आफ्नो नयाँ Chrome प्रोफाइल आफूले चाहे जस्तो बनाउनुहोस्</translation>
 <translation id="1547295885616600893">ChromeOS अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />खुला स्रोत सफ्टवेयर<ph name="END_LINK_CROS_OSS" /> प्रयोग गरी निर्माण गरिएको हो।</translation>
+<translation id="1547469039832541117">हाइलाइट गरिएको कार्य अन्त्य गर्छ।</translation>
 <translation id="1553358976309200471">Chrome अपडेट गर्नुहोस्</translation>
 <translation id="1587223624401073077">Google Chrome ले तपाइँको क्यामेरा प्रयोग गर्दैछ।</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> खतरनाक छ, त्यसैले Chrome ले यसमाथि रोक लगाएको छ।</translation>

@@ -1271,7 +1271,11 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectDenied) {
 
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 
-  EXPECT_EQ("NotAllowedError", EvalJs(shell(), R"(
+  EXPECT_EQ(
+      "NotAllowedError, Failed to execute 'connect' on 'SmartCardContext': The "
+      "user has denied permission or the user attention requirement was not "
+      "fulfilled.",
+      EvalJs(shell(), R"(
     (async () => {
       let context = await navigator.smartCard.establishContext();
       let readers = await context.listReaders();
@@ -1279,7 +1283,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ConnectDenied) {
         let result = await context.connect(readers[0], "shared",
             {preferredProtocols: ["t0", "t1"]});
       } catch (e) {
-        return e.name;
+        return `${e.name}, ${e.message}`;
       }
       return "ok";
     })())"));

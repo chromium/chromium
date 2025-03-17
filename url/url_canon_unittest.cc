@@ -2654,40 +2654,6 @@ TEST_F(URLCanonTest, _itoa_s) {
   EXPECT_EQ('\xFF', buf[5]);
 }
 
-TEST_F(URLCanonTest, _itow_s) {
-  // We fill the buffer with 0xff to ensure that it's getting properly
-  // null-terminated. We also allocate one byte more than what we tell
-  // _itoa_s about, and ensure that the extra byte is untouched.
-  char16_t buf[6];
-  const char fill_mem = 0xff;
-  const char16_t fill_char = 0xffff;
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(0, _itow_s(12, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(u"12", std::u16string(buf));
-  EXPECT_EQ(fill_char, buf[3]);
-
-  // Test the edge cases - exactly the buffer size and one over
-  EXPECT_EQ(0, _itow_s(1234, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(u"1234", std::u16string(buf));
-  EXPECT_EQ(fill_char, buf[5]);
-
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(EINVAL, _itow_s(12345, buf, sizeof(buf) / 2 - 1, 10));
-  EXPECT_EQ(fill_char, buf[5]);  // should never write to this location
-
-  // Test the template overload (note that this will see the full buffer)
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(0, _itow_s(12, buf, 10));
-  EXPECT_EQ(u"12", std::u16string(buf));
-  EXPECT_EQ(fill_char, buf[3]);
-
-  memset(buf, fill_mem, sizeof(buf));
-  EXPECT_EQ(0, _itow_s(12345, buf, 10));
-  EXPECT_EQ(u"12345", std::u16string(buf));
-
-  EXPECT_EQ(EINVAL, _itow_s(123456, buf, 10));
-}
-
 #endif  // !WIN32
 
 // Returns true if the given two structures are the same.

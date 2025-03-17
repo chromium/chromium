@@ -19,7 +19,6 @@ features:
   dynamic_refresh: true
 owners:
 - lmasopust@google.com
-- rodmartin@google.com
 - cbe-device-trust-eng@google.com
 schema:
   items:

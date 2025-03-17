@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,6 +29,7 @@
 #include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/fake_authenticator.h"
+#include "remoting/protocol/jingle_messages.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/protocol_mock_objects.h"
@@ -62,10 +65,18 @@ const char kClientJid[] = "Client@gmail.com/321";
 // kHostJid the way it would be stored in the directory.
 const char kNormalizedHostJid[] = "host@gmail.com/123";
 
+NOINLINE base::Location GetTestLocation() {
+  return FROM_HERE;
+}
+
 class MockSessionManagerListener {
  public:
-  MOCK_METHOD2(OnIncomingSession,
-               void(Session*, SessionManager::IncomingSessionResponse*));
+  MOCK_METHOD(void,
+              OnIncomingSession,
+              (Session*,
+               SessionManager::IncomingSessionResponse*,
+               std::string*,
+               base::Location*));
 };
 
 class MockSessionEventHandler : public Session::EventHandler {
@@ -229,7 +240,7 @@ class JingleSessionTest : public testing::Test {
   }
 
   void SetHostExpectation(bool expect_fail) {
-    EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _))
+    EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _))
         .WillOnce(
             DoAll(WithArg<0>(Invoke(this, &JingleSessionTest::SetHostSession)),
                   SetArgPointee<1>(protocol::SessionManager::ACCEPT)));
@@ -365,7 +376,7 @@ TEST_F(JingleSessionTest, RejectConnection) {
   CreateSessionManagers(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
 
   // Reject incoming session.
-  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _))
+  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _))
       .WillOnce(SetArgPointee<1>(protocol::SessionManager::DECLINE));
 
   {
@@ -463,7 +474,7 @@ TEST_F(JingleSessionTest, ConnectWithBadMultistepAuth) {
 TEST_F(JingleSessionTest, TestIncompatibleProtocol) {
   CreateSessionManagers(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
 
-  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _)).Times(0);
+  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _)).Times(0);
 
   EXPECT_CALL(client_session_event_handler_,
               OnSessionStateChange(Session::FAILED))
@@ -484,7 +495,7 @@ TEST_F(JingleSessionTest, TestIncompatibleProtocol) {
 TEST_F(JingleSessionTest, TestLegacyIceConnection) {
   CreateSessionManagers(FakeAuthenticator::Config(FakeAuthenticator::ACCEPT));
 
-  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _)).Times(0);
+  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _)).Times(0);
 
   EXPECT_CALL(client_session_event_handler_,
               OnSessionStateChange(Session::FAILED))
@@ -506,7 +517,7 @@ TEST_F(JingleSessionTest, DeleteSessionOnIncomingConnection) {
                                         FakeAuthenticator::ACCEPT, true);
   CreateSessionManagers(auth_config);
 
-  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _))
+  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _))
       .WillOnce(
           DoAll(WithArg<0>(Invoke(this, &JingleSessionTest::SetHostSession)),
                 SetArgPointee<1>(protocol::SessionManager::ACCEPT)));
@@ -533,7 +544,7 @@ TEST_F(JingleSessionTest, DeleteSessionOnAuth) {
                                         FakeAuthenticator::ACCEPT, true);
   CreateSessionManagers(auth_config, kMessagesTillStarted);
 
-  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _))
+  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _))
       .WillOnce(
           DoAll(WithArg<0>(Invoke(this, &JingleSessionTest::SetHostSession)),
                 SetArgPointee<1>(protocol::SessionManager::ACCEPT)));
@@ -637,11 +648,40 @@ TEST_F(JingleSessionTest, ImmediatelyCloseSessionAfterConnect) {
           FakeAuthenticator::CLIENT, auth_config,
           client_signal_strategy_->GetLocalAddress().id(), kNormalizedHostJid));
 
-  client_session_->Close(ErrorCode::HOST_OVERLOAD);
+  client_session_->Close(ErrorCode::HOST_OVERLOAD, /* error_details= */ {},
+                         FROM_HERE);
   base::RunLoop().RunUntilIdle();
   // We should only send a SESSION_TERMINATE message if the session has been
   // closed before SESSION_INITIATE message.
   ASSERT_EQ(1U, host_signal_strategy_->received_messages().size());
+}
+
+TEST_F(JingleSessionTest, CloseWithErrorDetailsAndLocation) {
+  const int kAuthRoundtrips = 3;
+  FakeAuthenticator::Config auth_config(kAuthRoundtrips,
+                                        FakeAuthenticator::ACCEPT, true);
+  CreateSessionManagers(auth_config);
+  client_session_ = client_server_->Connect(
+      SignalingAddress(kNormalizedHostJid),
+      std::make_unique<FakeAuthenticator>(
+          FakeAuthenticator::CLIENT, auth_config,
+          client_signal_strategy_->GetLocalAddress().id(), kNormalizedHostJid));
+
+  client_session_->Close(ErrorCode::HOST_OVERLOAD, "fake_error_details",
+                         GetTestLocation());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(host_signal_strategy_->received_messages().size(), 1U);
+  JingleMessage message;
+  std::string err;
+  ASSERT_TRUE(message.ParseXml(
+      host_signal_strategy_->received_messages()[0].get(), &err));
+  ASSERT_EQ(message.error_code, ErrorCode::HOST_OVERLOAD);
+  ASSERT_EQ(message.error_details, "fake_error_details");
+  // Make sure the error location captures the file name and the function name.
+  ASSERT_NE(message.error_location.find("jingle_session_unittest.cc"),
+            std::string::npos);
+  ASSERT_NE(message.error_location.find("GetTestLocation"), std::string::npos);
 }
 
 TEST_F(JingleSessionTest, AuthenticatorRejectedAfterAccepted) {

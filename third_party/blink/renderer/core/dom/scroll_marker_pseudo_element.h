@@ -42,6 +42,8 @@ class ScrollMarkerPseudoElement : public PseudoElement {
                                      Element* ancestor,
                                      bool need_snap_container_search) final;
 
+  void ScrollIntoView(bool apply_snap_alignment);
+
  private:
   bool is_selected_ = false;
   WeakMember<ScrollMarkerGroupPseudoElement> scroll_marker_group_;

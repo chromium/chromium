@@ -72,21 +72,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_availability.h:AIAvailability) -->
 
-<!-- LINT.IfChange(AICapabilityAvailability) -->
-
-<enum name="AICapabilityAvailability">
-  <int value="0" label="Readily">
-    The model is available on-device and so creating will happen quickly.
-  </int>
-  <int value="1" label="AfterDownload">
-    The model is not available on-device, but the device is capable, so creating
-    the model will start the download process (which can take a while).
-  </int>
-  <int value="2" label="No">The model is not available for this device.</int>
-</enum>
-
-<!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_capability_availability.h:AICapabilityAvailability) -->
-
 <!-- LINT.IfChange(AIModelStreamingResponseStatus) -->
 
 <enum name="AIModelStreamingResponseStatus">

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/media/audio_decoder.h"
 
 #include <stdint.h>
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -74,8 +70,8 @@ bool DecodeAudioFileData(
   std::vector<base::SpanWriter<float>> dest_channels;
   dest_channels.reserve(number_of_channels);
   for (size_t ch = 0; ch < number_of_channels; ++ch) {
-    dest_channels.emplace_back(base::span(destination_bus->ChannelData(ch),
-                                          destination_bus->length()));
+    dest_channels.emplace_back(UNSAFE_TODO(base::span(
+        destination_bus->ChannelData(ch), destination_bus->length())));
   }
 
   // Append all `decoded_audio_packets`, channel per channel.

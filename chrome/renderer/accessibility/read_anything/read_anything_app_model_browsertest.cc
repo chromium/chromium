@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 using ::testing::ElementsAre;
+using ::testing::UnorderedElementsAre;
 
 class ReadAnythingAppModelNoInitTest : public ChromeRenderViewTest {
  public:
@@ -87,6 +89,14 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
         speech_playing);
   }
 
+  std::set<ui::AXNodeID> GetNotIgnoredIds(base::span<const ui::AXNodeID> ids) {
+    std::set<ui::AXNodeID> set;
+    for (auto id : ids) {
+      model().InsertIdIfNotIgnored(id, set);
+    }
+    return set;
+  }
+
   void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
     model().Reset(content_node_ids);
     model().ComputeDisplayNodeIdsForDistilledTree();
@@ -145,7 +155,7 @@ TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
   EXPECT_EQ(color_value, model().color_theme());
 }
 
-TEST_F(ReadAnythingAppModelTest, IsNodeIgnoredForReadAnything) {
+TEST_F(ReadAnythingAppModelTest, InsertIdIfNotIgnored) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData static_text_node = test::TextNode(/* id = */ 2);
@@ -161,16 +171,10 @@ TEST_F(ReadAnythingAppModelTest, IsNodeIgnoredForReadAnything) {
                   std::move(button_node)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_EQ(false, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(2),
-                                                      model().is_pdf()));
-  EXPECT_EQ(true, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(3),
-                                                     model().is_pdf()));
-  EXPECT_EQ(true, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(4),
-                                                     model().is_pdf()));
+  EXPECT_THAT(GetNotIgnoredIds({{2, 3, 4}}), UnorderedElementsAre(2));
 }
 
-TEST_F(ReadAnythingAppModelTest,
-       IsNodeIgnoredForReadAnything_TextFieldsNotIgnored) {
+TEST_F(ReadAnythingAppModelTest, InsertIdIfNotIgnored_TextFieldsNotIgnored) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData tree_node;
@@ -188,16 +192,11 @@ TEST_F(ReadAnythingAppModelTest,
                   std::move(textfield_node)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_EQ(true, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(2),
-                                                     model().is_pdf()));
-  EXPECT_EQ(false, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(3),
-                                                      model().is_pdf()));
-  EXPECT_EQ(false, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(4),
-                                                      model().is_pdf()));
+  EXPECT_THAT(GetNotIgnoredIds({{2, 3, 4}}), UnorderedElementsAre(3, 4));
 }
 
 TEST_F(ReadAnythingAppModelTest,
-       IsNodeIgnoredForReadAnything_InaccessiblePDFPageNodes) {
+       InsertIdIfNotIgnored_InaccessiblePDFPageNodes) {
   model().set_is_pdf(true);
 
   // PDF OCR output contains kBanner and kContentInfo (each with a static text
@@ -231,14 +230,7 @@ TEST_F(ReadAnythingAppModelTest,
                   std::move(static_text_end_node)};
 
   AccessibilityEventReceived({std::move(update)});
-  EXPECT_EQ(true, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(2),
-                                                     model().is_pdf()));
-  EXPECT_EQ(true, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(3),
-                                                     model().is_pdf()));
-  EXPECT_EQ(false, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(4),
-                                                      model().is_pdf()));
-  EXPECT_EQ(true, a11y::IsNodeIgnoredForReadAnything(model().GetAXNode(5),
-                                                     model().is_pdf()));
+  EXPECT_THAT(GetNotIgnoredIds({{2, 3, 4, 5}}), UnorderedElementsAre(4));
 }
 
 TEST_F(ReadAnythingAppModelTest, ModelUpdatesTreeState) {

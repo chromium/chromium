@@ -60,6 +60,7 @@ using base::test::RunOnceCallback;
 using base::test::ValueIs;
 using ::testing::AllOf;
 using ::testing::Eq;
+using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::Message;
 using ::testing::Ne;
@@ -149,8 +150,7 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest,
 
   EXPECT_THAT(
       *reader,
-      AllOf(Property(&SignedWebBundleReader::GetState,
-                     SignedWebBundleReader::State::kInitialized),
+      AllOf(Property(&SignedWebBundleReader::IsClosed, IsFalse()),
             Property(&SignedWebBundleReader::GetPrimaryURL, Ne(std::nullopt)),
             Property(&SignedWebBundleReader::GetEntries,
                      UnorderedElementsAre(
@@ -171,8 +171,7 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest, ReadValidResponse) {
 
   EXPECT_THAT(
       *reader,
-      AllOf(Property(&SignedWebBundleReader::GetState,
-                     SignedWebBundleReader::State::kInitialized),
+      AllOf(Property(&SignedWebBundleReader::IsClosed, IsFalse()),
             Property(&SignedWebBundleReader::GetPrimaryURL, Eq(std::nullopt)),
             Property(&SignedWebBundleReader::GetEntries,
                      UnorderedElementsAre(
@@ -238,12 +237,12 @@ TEST_F(SignedWebBundleReaderWithRealBundlesTest, Close) {
                                     .SetBaseUrl(kUrl)
                                     .SetIndexHTMLContent(kHtmlString)));
 
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   base::test::TestFuture<void> close_future;
   reader->Close(close_future.GetCallback());
   EXPECT_TRUE(close_future.Wait());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kClosed);
+  EXPECT_TRUE(reader->IsClosed());
 }
 
 class SignedWebBundleReaderTest : public testing::Test {
@@ -399,7 +398,7 @@ TEST_F(SignedWebBundleReaderTest, ReadValidIntegrityBlockAndMetadata) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   EXPECT_EQ(reader->GetPrimaryURL(), kUrl);
   EXPECT_EQ(reader->GetEntries().size(), 1ul);
@@ -532,7 +531,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponse) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
@@ -556,7 +555,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithFragment) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   GURL::Replacements replacements;
@@ -582,7 +581,7 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithPath) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   GURL::Replacements replacements;
@@ -614,7 +613,7 @@ TEST_F(SignedWebBundleReaderTest, ReadNonExistingResponseWithQuery) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   GURL::Replacements replacements;
@@ -646,7 +645,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseError) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
@@ -672,7 +671,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserDisconnect) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
@@ -717,7 +716,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseWithParserCrash) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
@@ -745,7 +744,7 @@ TEST_F(SignedWebBundleReaderTest, ReadResponseBody) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
@@ -770,7 +769,7 @@ TEST_F(SignedWebBundleReaderTest, CloseWhileReadingResponseBody) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
@@ -816,7 +815,7 @@ TEST_F(SignedWebBundleReaderTest, ResponseBodyEndDoesntFitInUint64) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   auto response = web_package::mojom::BundleResponse::New();
   response->response_code = 200;
@@ -867,7 +866,7 @@ TEST_P(SignedWebBundleReaderBaseUrlTest, IsPassedThroughCorrectly) {
                                        metadata_->Clone());
 
   ASSERT_OK_AND_ASSIGN(auto reader, future.Take());
-  EXPECT_EQ(reader->GetState(), SignedWebBundleReader::State::kInitialized);
+  EXPECT_FALSE(reader->IsClosed());
 
   EXPECT_EQ(on_create_parser_future.Take(), base_url_);
   EXPECT_TRUE(on_create_parser_future.IsEmpty());

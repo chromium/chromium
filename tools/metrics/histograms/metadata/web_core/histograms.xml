@@ -35,6 +35,33 @@ chromium-metrics-reviews@google.com.
   <variant name="VersionChange"/>
 </variants>
 
+<variants name="LevelDBBFEMethods">
+  <variant name=".CreateDir" summary="ChromiumEnv::CreateDir"/>
+  <variant name=".GetChildren" summary="ChromiumEnv::GetChildren"/>
+  <variant name=".GetFileSize" summary="ChromiumEnv::GetFileSize"/>
+  <variant name=".GetTestDirectory" summary="ChromiumEnv::GetTestDirectory"/>
+  <variant name=".LockFile" summary="ChromiumEnv::LockFile"/>
+  <variant name=".NewAppendableFile" summary="ChromiumEnv::NewAppendableFile"/>
+  <variant name=".NewLogger" summary="ChromiumEnv::NewLogger"/>
+  <variant name=".NewRandomAccessFile"
+      summary="ChromiumEnv::NewRandomAccessFile"/>
+  <variant name=".NewSequentialFile" summary="ChromiumEnv::NewSequentialFile"/>
+  <variant name=".NewWritableFile" summary="ChromiumEnv::NewWritableFile"/>
+  <variant name=".RandomAccessFileRead"
+      summary="ChromiumRandomAccessFile::Read"/>
+  <variant name=".RemoveDir" summary="ChromiumEnv::RemoveDir"/>
+  <variant name=".RemoveFile" summary="ChromiumEnv::RemoveFile"/>
+  <variant name=".RenameFile" summary="ChromiumEnv::RenameFile"/>
+  <variant name=".SequentialFileRead" summary="ChromiumSequentialFile::Read"/>
+  <variant name=".SequentialFileSkip" summary="ChromiumSequentialFile::Skip"/>
+  <variant name=".SyncParent" summary="ChromiumWritableFile::SyncParent"/>
+  <variant name=".UnlockFile" summary="ChromiumEnv::UnlockFile"/>
+  <variant name=".WritableFileAppend" summary="ChromiumWritableFile::Append"/>
+  <variant name=".WritableFileClose" summary="ChromiumWritableFile::Close"/>
+  <variant name=".WritableFileFlush" summary="ChromiumWritableFile::Flush"/>
+  <variant name=".WritableFileSync" summary="ChromiumWritableFile::Sync"/>
+</variants>
+
 <histogram name="WebCore.DistillabilityUs" units="microseconds"
     expires_after="2025-07-20">
   <owner>wychen@chromium.org</owner>
@@ -293,14 +320,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.LevelDBOpenErrors.BFE"
+<histogram name="WebCore.IndexedDB.LevelDBOpenErrors.BFE{LevelDBBFEMethods}"
     enum="PlatformFileError" expires_after="2025-04-13">
   <owner>estade@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Errors (base::File::Error) encountered by a single LevelDBEnv method when
-    opening an IndexedDB instance.
+    opening an IndexedDB instance. {LevelDBBFEMethods}
   </summary>
+  <token key="LevelDBBFEMethods" variants="LevelDBBFEMethods">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBOpenErrors.Corruption"
@@ -330,14 +361,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.LevelDBReadErrors.BFE"
+<histogram name="WebCore.IndexedDB.LevelDBReadErrors.BFE{LevelDBBFEMethods}"
     enum="PlatformFileError" expires_after="2025-02-24">
   <owner>estade@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Errors (base::File::Error) encountered by a single LevelDBEnv method when
-    reading from an IndexedDB instance.
+    reading from an IndexedDB instance. {LevelDBBFEMethods}
   </summary>
+  <token key="LevelDBBFEMethods" variants="LevelDBBFEMethods">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBReadErrors.Corruption"
@@ -367,14 +402,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE"
+<histogram name="WebCore.IndexedDB.LevelDBWriteErrors.BFE{LevelDBBFEMethods}"
     enum="PlatformFileError" expires_after="2025-02-24">
   <owner>estade@chromium.org</owner>
+  <owner>cmumford@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Errors (base::File::Error) encountered by a single LevelDBEnv method when
-    writing to an IndexedDB instance.
+    writing to an IndexedDB instance. {LevelDBBFEMethods}
   </summary>
+  <token key="LevelDBBFEMethods" variants="LevelDBBFEMethods">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="WebCore.IndexedDB.LevelDBWriteErrors.Corruption"

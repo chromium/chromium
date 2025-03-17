@@ -76,6 +76,16 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // Creates a mappable SharedImage with the given `usage` and `buffer_usage`.
     // Returns whether creation succeeded. After invocation, `shared_image()`
     // will be non-null if creation succeeded.
+    // NOTE: This can be called on worker threads but the client must ensure
+    // that `can_access_shared_image_on_compositor_thread` is false at any time
+    // this this method would be invoked on a worker thread. The standard usage
+    // model for doing so is to check on the compositor thread whether the
+    // backing's SharedImage exists *before* the initiation of the flow that
+    // would cause it to be created on a worker thread, set
+    // `can_access_shared_image_on_compositor_thread` to false if the
+    // SharedImage does not exist at that point, and set
+    // `can_access_shared_image_on_compositor_thread` back to true *after* the
+    // worker thread flow is known to have finished.
     bool CreateSharedImage(gpu::SharedImageInterface* sii,
                            const gpu::SharedImageUsageSet& usage,
                            std::string_view debug_label,
@@ -84,6 +94,17 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     void SetSharedImageForTesting(scoped_refptr<gpu::ClientSharedImage> si) {
       shared_image_ = std::move(si);
     }
+    // NOTE: This can be called on worker threads but the client must ensure
+    // that `can_access_shared_image_on_compositor_thread` is true at any time
+    // this method would be invoked on a worker thread. As the client can not in
+    // general a prior know when `clear_shared_image()` might need to be called
+    // as part of the worker thread flow (since it generally depends on some
+    // operation on the SharedImage failing), the standard usage model is *not*
+    // to call this on a worker thread but rather to record a boolean on the
+    // worker thread indicating whether the SharedImage needs to be cleared and
+    // to read that boolean on the compositor thread after the worker thread
+    // flow is known to have finished in order to actually clear the
+    // SharedImage.
     void clear_shared_image() { shared_image_.reset(); }
     scoped_refptr<gpu::ClientSharedImage> shared_image() {
       return shared_image_;

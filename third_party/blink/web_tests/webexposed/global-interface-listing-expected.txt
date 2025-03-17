@@ -22,15 +22,9 @@ interface AILanguageDetector
     method constructor
     method destroy
     method detect
-interface AILanguageDetectorCapabilities
-    attribute @@toStringTag
-    getter available
-    method constructor
-    method languageAvailable
 interface AILanguageDetectorFactory
     attribute @@toStringTag
     method availability
-    method capabilities
     method constructor
     method create
 interface AILanguageModel : EventTarget
@@ -67,12 +61,14 @@ interface AIRewriter
     getter expectedContextLanguages
     getter expectedInputLanguages
     getter format
+    getter inputQuota
     getter length
     getter outputLanguage
     getter sharedContext
     getter tone
     method constructor
     method destroy
+    method measureInputUsage
     method rewrite
     method rewriteStreaming
 interface AIRewriterFactory
@@ -85,12 +81,14 @@ interface AISummarizer
     getter expectedContextLanguages
     getter expectedInputLanguages
     getter format
+    getter inputQuota
     getter length
     getter outputLanguage
     getter sharedContext
     getter type
     method constructor
     method destroy
+    method measureInputUsage
     method summarize
     method summarizeStreaming
 interface AISummarizerFactory
@@ -116,12 +114,14 @@ interface AIWriter
     getter expectedContextLanguages
     getter expectedInputLanguages
     getter format
+    getter inputQuota
     getter length
     getter outputLanguage
     getter sharedContext
     getter tone
     method constructor
     method destroy
+    method measureInputUsage
     method write
     method writeStreaming
 interface AIWriterFactory
@@ -1466,7 +1466,6 @@ interface CaptureController : EventTarget
     method getSupportedZoomLevels
     method increaseZoomLevel
     method resetZoomLevel
-    method sendWheel
     method setFocusBehavior
     setter oncapturedmousechange
     setter onzoomlevelchange
@@ -5658,7 +5657,7 @@ interface ImageData
     getter colorSpace
     getter data
     getter height
-    getter storageFormat
+    getter pixelFormat
     getter width
     method constructor
 interface ImageDecoder
@@ -13172,7 +13171,6 @@ namespace console
     method moveBy
     method moveTo
     method open
-    method openDatabase
     method popinContextType
     method popinContextTypesSupported
     method postMessage

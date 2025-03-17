@@ -32,6 +32,7 @@
 <translation id="1478370723027452770">Chrome for Testingకు సంబంధించి సహాయాన్ని పొందండి</translation>
 <translation id="1497802159252041924">ఇన్‌స్టాలేషన్ ఎర్రర్: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
+<translation id="1547469039832541117">హైలైట్ అయిన టాస్క్‌ను ముగిస్తుంది.</translation>
 <translation id="1553461853655228091">మీ పరిసరాల 3D మ్యాప్‌ను క్రియేట్ చేయడానికి Chromiumకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{ఈ ఎక్స్‌టెన్షన్ ఇకపై సపోర్ట్ చేయదు. మీరు దాన్ని తీసివేయవలసిందిగా Chromium సిఫార్సు చేస్తోంది.}other{ఈ ఎక్స్‌టెన్షన్‌లు ఇకపై సపోర్ట్ చేయబడవు. మీరు వాటిని తీసివేయవలసిందిగా Chromium సిఫార్సు చేస్తోంది.}}</translation>
 <translation id="1574377791422810894">Chromium భద్రతా టూల్స్</translation>
@@ -222,6 +223,7 @@
 <translation id="4148957013307229264">వ్యవస్థాపిస్తోంది...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - నెట్‌వర్క్ సైన్ ఇన్ - Chromium</translation>
 <translation id="421369550622382712">Chromium కోసం గొప్ప యాప్‌లు, ఆటలు, ఎక్స్‌టెన్షన్‌లు మరియు థీమ్‌లను కనుగొనండి.</translation>
+<translation id="4217080900579554343">మీ కంప్యూటర్‌లన్నింటిలో ఈ ఎక్స్‌టెన్షన్‌తో పాటు మరిన్నింటిని పొందడానికి Chromiumకు సైన్ ఇన్ చేయండి</translation>
 <translation id="4217972271355023382">మీ తల్లి/తండ్రి ఛాయిస్‌లతో ఆన్‌లైన్‌లో సురక్షితంగా ఉండటానికి, మీరు ఇప్పటికే <ph name="USER_EMAIL_ADDRESS" />‌గా సైన్ ఇన్ చేసిన మీ Chromium ప్రొఫైల్‌కు మారండి</translation>
 <translation id="4222932583846282852">రద్దు చేస్తోంది...</translation>
 <translation id="4224210481850767180">ఇన్‌స్టాలేషన్ రద్దు చేయబడింది.</translation>

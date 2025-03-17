@@ -15,6 +15,7 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/webview_auth_delegate.h"
 #include "ash/webui/boca_ui/webview_auth_handler.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -439,6 +440,13 @@ class BocaAppPageHandlerTest : public testing::Test {
   FakePage* fake_page() { return fake_page_.get(); }
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &pref_service_;
+  }
+
+  void SetSessionCaptionInitializer(bool success) {
+    session_manager()->SetSessionCaptionInitializer(base::BindLambdaForTesting(
+        [success](base::OnceCallback<void(bool)> success_cb) {
+          std::move(success_cb).Run(success);
+        }));
   }
 
  private:
@@ -1186,7 +1194,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .WillOnce(Return(&session));
+      .WillRepeatedly(Return(&session));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
 
   // Page handler callback.
@@ -1219,17 +1227,48 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
                 GetCommonActiveSessionProto()));
           })));
 
+  SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
 }
 
+TEST_F(BocaAppPageHandlerTest, UpdateCaptionInitFailed) {
+  auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*session_manager(),
+              UpdateCurrentSession(_, /*dispatch_event=*/true))
+      .Times(0);
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+
+  // Page handler callback.
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
+      future;
+  // API callback.
+  base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
+
+  UpdateSessionRequest request(nullptr, kTestUrlBase, session.teacher(),
+                               session.session_id(), future.GetCallback());
+
+  EXPECT_CALL(*session_client_impl(), UpdateSession(_)).Times(0);
+
+  SetSessionCaptionInitializer(/*success=*/false);
+  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                          future_1.GetCallback());
+  ASSERT_TRUE(future_1.Wait());
+  EXPECT_TRUE(future_1.Get().has_value());
+  EXPECT_EQ(future_1.Get().value(),
+            mojom::UpdateSessionError::kPreconditionFailed);
+}
+
 TEST_F(BocaAppPageHandlerTest,
        UpdateCaptionConfigWithLocalConfigOnlyShouldNotSendServerRequest) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .WillOnce(Return(&session));
+      .WillRepeatedly(Return(&session));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
 
   // Page handler callback.
@@ -1256,7 +1295,6 @@ TEST_F(BocaAppPageHandlerTest,
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
   auto session = GetCommonActiveSessionProto();
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .Times(2)
       .WillRepeatedly(Return(&session));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   // Page handler callback.
@@ -1280,6 +1318,7 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
           })));
 
+  SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -1293,7 +1332,6 @@ TEST_F(BocaAppPageHandlerTest,
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .Times(2)
       .WillRepeatedly(Return(&session));
   // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
@@ -1332,6 +1370,7 @@ TEST_F(BocaAppPageHandlerTest,
                   request->on_task_config()->SerializeAsString());
         request->callback().Run(std::unique_ptr<::boca::Session>());
       })));
+  SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
@@ -1351,7 +1390,6 @@ TEST_F(BocaAppPageHandlerTest,
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .Times(2)
       .WillRepeatedly(Return(&session));
   // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
@@ -1391,6 +1429,7 @@ TEST_F(BocaAppPageHandlerTest,
       })));
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          future_1.GetCallback());
+  SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_2.GetCallback());
 
@@ -1407,7 +1446,6 @@ TEST_F(BocaAppPageHandlerTest,
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .Times(3)
       .WillRepeatedly(Return(&session));
   // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
@@ -1452,6 +1490,7 @@ TEST_F(BocaAppPageHandlerTest,
         request->callback().Run(
             std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
       })));
+  SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_1.GetCallback());
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
@@ -1470,7 +1509,6 @@ TEST_F(BocaAppPageHandlerTest,
               UpdateCurrentSession(_, /*dispatch_event=*/true))
       .Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
-      .Times(3)
       .WillRepeatedly(Return(&session));
   // Failed remote caption update should still dispatch local events.
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
@@ -1516,6 +1554,7 @@ TEST_F(BocaAppPageHandlerTest,
       })));
   boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
                                          future_1.GetCallback());
+  SetSessionCaptionInitializer(/*success=*/true);
   boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
                                           future_2.GetCallback());
   ASSERT_TRUE(future_1.Wait());

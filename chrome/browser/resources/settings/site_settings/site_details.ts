@@ -189,6 +189,11 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
       },
+
+      enableLocalNetworkAccessSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+      },
     };
   }
 
@@ -213,6 +218,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
   private enableKeyboardLockPrompt_: boolean;
+  private enableLocalNetworkAccessSetting_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

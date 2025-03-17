@@ -23,9 +23,10 @@ link for the type(s) of journey your feature will use:
 
 IPH and Tutorials use the [Help Bubble](help-bubbles.md) system. This system
 attaches help bubbles to named elements in the UI. If the element you wish to
-attach a bubble to is in a WebUI page or WebUI-based secondary UI, you will
-need to do additional work to prepare the page to support help bubbles;
-[see here](./webui/README.md) for instructions.
+attach a bubble to is in a WebUI in a tab or WebUI-based secondary UI, you will
+need to do additional work to prepare the WebUI to support help bubbles;
+[see here](./webui/README.md) for instructions. For instructions on how to
+create help bubbles with custom UI, [see here](./custom-help-bubbles.md).
 
 # Adding User Education to your non-Chrome-Desktop application
 

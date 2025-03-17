@@ -199,9 +199,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cast.Sender.VideoEncodeAcceleratorInitializeSuccess"
-    enum="BooleanSuccess" expires_after="2025-11-03">
+    enum="BooleanSuccess" expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Indicates whether initialization of a video encode accelerator for Cast
@@ -213,28 +212,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Audio.NegotiatedCodec" enum="AudioCodec"
-    expires_after="2025-08-31">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Records which audio codec was negotiated during a mirroring session.
   </summary>
 </histogram>
 
 <histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
-    expires_after="2025-08-31">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the currently set video bit rate during a Cast Streaming mirroring
     session. This metric is subsampled every 500 frames.
   </summary>
 </histogram>
 
-<histogram name="CastStreaming.Sender.Video.NegotiatedCodec" enum="VideoCodec"
-    expires_after="2025-08-31">
+<histogram name="CastStreaming.Sender.Video.EncoderType"
+    enum="CastStreamingVideoEncoderType" expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records which video codec was negotiated during a mirroring session. Records
+    the selected encoder configuration whenever a negotiation between the sender
+    and receiver devices is completed. This configuration includes the encoder
+    codec as well as whether it is software or hardware based.
+  </summary>
+</histogram>
+
+<histogram name="CastStreaming.Sender.Video.NegotiatedCodec" enum="VideoCodec"
+    expires_after="2026-03-12">
+  <owner>jophba@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Records which video codec was negotiated during a mirroring session.
   </summary>
@@ -242,11 +253,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageCaptureLatency"
-    units="ms" expires_after="2025-04-24">
+    units="ms" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
@@ -259,11 +270,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEncodeTime"
-    units="ms" expires_after="2025-04-24">
+    units="ms" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the average time required to encode {CastStreamingSenderAudioVideo}
@@ -276,11 +287,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEndToEndLatency"
-    units="ms" expires_after="2025-09-07">
+    units="ms" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
@@ -294,11 +305,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageNetworkLatency"
-    units="ms" expires_after="2025-04-24">
+    units="ms" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the average {CastStreamingSenderAudioVideo} latency in milliseconds
@@ -311,11 +322,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.ExceededPlayoutDelayPacketsPercentage"
-    units="%" expires_after="2025-04-24">
+    units="%" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records number of {CastStreamingSenderAudioVideo} packets that exceeded the
@@ -328,11 +339,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.LateFramesPercentage"
-    units="%" expires_after="2025-04-24">
+    units="%" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the percentage of {CastStreamingSenderAudioVideo} frames that are
@@ -346,11 +357,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.RetransmittedPacketsPercentage"
-    units="%" expires_after="2025-04-24">
+    units="%" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records number of {CastStreamingSenderAudioVideo} packets that had to be
@@ -363,11 +374,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.TransmissionRate"
-    units="kbps" expires_after="2025-04-24">
+    units="kbps" expires_after="2026-03-12">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the {CastStreamingSenderAudioVideo} packet transmission bitrate in
@@ -379,9 +390,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.{CastStreamingSender}.FrameDropped"
-    enum="CastStreamingFrameDropReason" expires_after="2025-09-07">
+    enum="CastStreamingFrameDropReason" expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the reason when an frame is dropped during a Cast Streaming session.
   </summary>
@@ -390,9 +401,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSender}.PercentDroppedFrames"
-    units="%" expires_after="2025-09-07">
+    units="%" expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
-  <owner>mfoltz@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
   <summary>
     Records the total percentage of frames dropped for a given Cast Streaming
     session.
@@ -4936,47 +4947,60 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.AudioBitrate" units="kbps"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Measured audio content transfer bitrate while remoting content.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioChannelLayout" enum="ChannelLayout"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
-  <summary>Audio channel layout used while remoting content.</summary>
+  <summary>
+    Audio channel layout used while remoting content.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioCodec" enum="AudioCodec"
-    expires_after="2025-08-24">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Audio codec used while remoting content.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecond" enum="AudioSampleRate"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
-  <summary>Audio sampling rate while remoting audio content.</summary>
+  <summary>
+    Audio sampling rate while remoting audio content.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.Remoting.AudioSamplesPerSecondUnexpected" units="Hz"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Audio sampling rate while remoting audio content (atypical values, in Hz).
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Remoting.Compatibility" enum="RemotingCompatibility"
-    expires_after="2025-06-08">
+    expires_after="2026-03-12">
   <owner>muyaoxu@google.com</owner>
+  <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Whether the given media is compatible with media remoting. Recorded whenever
@@ -4986,7 +5010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.RemotePlaybackEnabledByPage"
-    enum="BooleanEnabled" expires_after="2025-08-05">
+    enum="BooleanEnabled" expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -4997,35 +5021,35 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.SessionDuration" units="ms"
-    expires_after="2025-08-05">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Measures the duration of each remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartFailedReason"
-    enum="RemotingStartFailReason" expires_after="2025-08-05">
+    enum="RemotingStartFailReason" expires_after="2026-03-12">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the reason that a session failed to start.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStartTrigger"
-    enum="RemotingStartTrigger" expires_after="2025-08-05">
+    enum="RemotingStartTrigger" expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the trigger for starting a remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.SessionStopTrigger" enum="RemotingStopTrigger"
-    expires_after="2025-08-05">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>Tracks the trigger for stopping a remoting session.</summary>
 </histogram>
 
 <histogram name="Media.Remoting.ShortSessionDuration" units="ms"
-    expires_after="2025-08-05">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5034,41 +5058,53 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.TimeUntilFirstPlayout" units="ms"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Measures how long, from the start of a remoting session, until content began
     playing out on the remote device.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Remoting.TimeUntilRemoteInitialized" units="ms"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Measures how long, from the start of a remoting session, until a message was
     received from the remote device indicating initialization succeeded.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.Remoting.TrackConfiguration"
-    enum="RemotingTrackConfiguration" expires_after="2025-02-01">
+    enum="RemotingTrackConfiguration" expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
-  <summary>Tracks whether audio or video or both are remoted.</summary>
+  <summary>
+    Tracks whether audio or video or both are remoted.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoAspectRatio" units="%"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
-  <summary>Aspect ratio of video while remoting content.</summary>
+  <summary>
+    Aspect ratio of video while remoting content.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoBitrate" units="kbps"
-    expires_after="2025-08-31">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -5077,29 +5113,42 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodec" enum="VideoCodec"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
-  <summary>Video codec used while remoting content.</summary>
+  <summary>
+    Video codec used while remoting content.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoCodecProfile" enum="VideoCodecProfile"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
-  <summary>Video codec profile used while remoting content.</summary>
+  <summary>
+    Video codec profile used while remoting content.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoNaturalWidth" units="pixels"
-    expires_after="2025-02-01">
+    expires_after="2026-03-12">
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
-  <summary>Video width while remoting content.</summary>
+  <summary>
+    Video width while remoting content.
+
+    NOTE: was expired 2025-02-01 to 2025-03-12, some data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Media.Remoting.VideoPixelRateSupport"
-    enum="RemotingVideoPixelRateSupport" expires_after="2025-06-08">
+    enum="RemotingVideoPixelRateSupport" expires_after="2026-03-12">
   <owner>muyaoxu@google.com</owner>
+  <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
     Pixels-per-second in a video and whether the receiver supports its playback.

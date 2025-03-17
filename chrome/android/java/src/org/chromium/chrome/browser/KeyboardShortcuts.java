@@ -41,9 +41,10 @@ public class KeyboardShortcuts {
 
     private KeyboardShortcuts() {}
 
-    // KeyboardShortcutsSemanticMeaning defined in tools/metrics/histograms/enums.xml.
-    // Add new values before MAX_VALUE. These values are persisted to logs. Entries should not be
-    // renumbered and numeric values should never be reused.
+    // KeyboardShortcutsSemanticMeaning defined in
+    // tools/metrics/histograms/metadata/accessibility/enums.xml.
+    // Changing this also requires creating a new histogram: See
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#revising.
     // LINT.IfChange(KeyboardShortcutsSemanticMeaning)
     @IntDef({
         KeyboardShortcutsSemanticMeaning.UNKNOWN,
@@ -52,38 +53,65 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
         KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW,
         KeyboardShortcutsSemanticMeaning.RELOAD_TAB,
-        KeyboardShortcutsSemanticMeaning.CLOSE_TAB,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_TAB_BYPASSING_CACHE,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_LEFT,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_TAB_RIGHT,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB,
         KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TAB_SEARCH,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_MULTITASK_MENU,
+        KeyboardShortcutsSemanticMeaning.CLOSE_TAB,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_QUIT_CHROME,
         KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX,
-        KeyboardShortcutsSemanticMeaning.GO_BACK,
-        KeyboardShortcutsSemanticMeaning.GO_FORWARD,
-        KeyboardShortcutsSemanticMeaning.OPEN_MENU,
-        KeyboardShortcutsSemanticMeaning.OPEN_HELP,
-        KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_JUMP_TO_SEARCH,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_DOWN,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS,
         KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS,
         KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE,
-        KeyboardShortcutsSemanticMeaning.OPEN_HISTORY,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BOOKMARK_ALL_TABS,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_SHOW_BOOKMARKS_BAR,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_EXIT_IMMERSIVE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_INSPECT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_VIEW_SOURCE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TASK_MANAGER,
         KeyboardShortcutsSemanticMeaning.SAVE_PAGE,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SHOW_DOWNLOADS,
+        KeyboardShortcutsSemanticMeaning.OPEN_HISTORY,
+        KeyboardShortcutsSemanticMeaning.HISTORY_GO_BACK,
+        KeyboardShortcutsSemanticMeaning.HISTORY_GO_FORWARD,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLEAR_BROWSING_DATA,
         KeyboardShortcutsSemanticMeaning.PRINT,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BASIC_PRINT,
         KeyboardShortcutsSemanticMeaning.ZOOM_IN,
         KeyboardShortcutsSemanticMeaning.ZOOM_OUT,
         KeyboardShortcutsSemanticMeaning.ZOOM_RESET,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_SEARCH,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SHOW_DOWNLOADS,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HELP,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLEAR_BROWSING_DATA,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_AVATAR_MENU,
+        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FEEDBACK_FORM,
+        KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME,
+        KeyboardShortcutsSemanticMeaning.OPEN_HELP,
+        KeyboardShortcutsSemanticMeaning.OPEN_MENU,
+        KeyboardShortcutsSemanticMeaning.CUSTOM_EXTENSION_SHORTCUT,
         KeyboardShortcutsSemanticMeaning.MAX_VALUE
     })
     public @interface KeyboardShortcutsSemanticMeaning {
+        // TODO(crbug.com/402775002): Implement more of these!
         // Unrecognized key combination.
         int UNKNOWN = 0;
 
@@ -95,49 +123,94 @@ public class KeyboardShortcuts {
 
         // Tab control.
         int RELOAD_TAB = 5;
-        int CLOSE_TAB = 6;
+        int NOT_IMPLEMENTED_RELOAD_TAB_BYPASSING_CACHE = 6;
         int MOVE_TO_TAB_LEFT = 7;
         int MOVE_TO_TAB_RIGHT = 8;
         int MOVE_TO_SPECIFIC_TAB = 9;
         int MOVE_TO_LAST_TAB = 10;
+        int NOT_IMPLEMENTED_TAB_SEARCH = 11;
+        int NOT_IMPLEMENTED_TOGGLE_MULTITASK_MENU = 12;
+
+        // Closing.
+        int CLOSE_TAB = 13;
+        int NOT_IMPLEMENTED_CLOSE_WINDOW = 14;
+        int NOT_IMPLEMENTED_QUIT_CHROME = 15;
 
         // Navigation controls.
-        int JUMP_TO_OMNIBOX = 11;
-        int GO_BACK = 12;
-        int GO_FORWARD = 13;
+        int JUMP_TO_OMNIBOX = 16;
+        int NOT_IMPLEMENTED_JUMP_TO_SEARCH = 17;
+        int NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE = 18;
+        int NOT_IMPLEMENTED_SCROLL_DOWN = 19;
+        int NOT_IMPLEMENTED_SCROLL_UP = 20;
 
-        // 3-dot menu controls.
-        int OPEN_MENU = 14;
-        int OPEN_HELP = 15;
-        int FIND_IN_PAGE = 16;
-        int OPEN_BOOKMARKS = 17;
-        int BOOKMARK_PAGE = 18;
-        int OPEN_HISTORY = 19;
-        int SAVE_PAGE = 20;
-        int PRINT = 21;
+        // Top controls.
+        int NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR = 21;
+        int NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS = 22;
+        int NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS = 23;
+        int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU = 24;
+        int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT = 25;
+        int NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT = 26;
+        int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT = 27;
+        int NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT = 28;
+
+        // Accessibility.
+        int NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING = 29;
+        int NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS = 30;
+
+        // Bookmarks.
+        int OPEN_BOOKMARKS = 31;
+        int BOOKMARK_PAGE = 32;
+        int NOT_IMPLEMENTED_BOOKMARK_ALL_TABS = 33;
+        int NOT_IMPLEMENTED_TOGGLE_SHOW_BOOKMARKS_BAR = 34;
+
+        // Fullscreen.
+        int NOT_IMPLEMENTED_TOGGLE_IMMERSIVE = 35;
+        int NOT_IMPLEMENTED_EXIT_IMMERSIVE = 36;
+
+        // Developer tools.
+        int NOT_IMPLEMENTED_DEV_TOOLS = 37;
+        int NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE = 38;
+        int NOT_IMPLEMENTED_DEV_TOOLS_INSPECT = 39;
+        int NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE = 40;
+        int NOT_IMPLEMENTED_VIEW_SOURCE = 41;
+        int NOT_IMPLEMENTED_TASK_MANAGER = 42;
+
+        // Downloads.
+        int SAVE_PAGE = 43;
+        int NOT_IMPLEMENTED_SHOW_DOWNLOADS = 44;
+
+        // History.
+        int OPEN_HISTORY = 45;
+        int HISTORY_GO_BACK = 46;
+        int HISTORY_GO_FORWARD = 47;
+        int NOT_IMPLEMENTED_CLEAR_BROWSING_DATA = 48;
+
+        // Print.
+        int PRINT = 49;
+        int NOT_IMPLEMENTED_BASIC_PRINT = 50;
 
         // Zoom controls.
-        int ZOOM_IN = 22;
-        int ZOOM_OUT = 23;
-        int ZOOM_RESET = 24;
+        int ZOOM_IN = 51;
+        int ZOOM_OUT = 52;
+        int ZOOM_RESET = 53;
 
-        // Controls available in Desktop and other platforms but not implemented by Clank.
-        int NOT_IMPLEMENTED_FOCUS_SEARCH = 25;
-        int NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE = 26;
-        int NOT_IMPLEMENTED_SHOW_DOWNLOADS = 27;
-        int NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING = 28;
-        int NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD = 29;
-        int NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD = 30;
-        int NOT_IMPLEMENTED_HELP = 31;
-        int NOT_IMPLEMENTED_CLEAR_BROWSING_DATA = 32;
-        int NOT_IMPLEMENTED_CLOSE_WINDOW = 33;
-        int NOT_IMPLEMENTED_HOME = 34;
+        // Misc.
+        int NOT_IMPLEMENTED_AVATAR_MENU = 54;
+        int NOT_IMPLEMENTED_FEEDBACK_FORM = 55;
+        int FIND_IN_PAGE = 56;
+        int NOT_IMPLEMENTED_HOME = 57;
+        int OPEN_HELP = 58;
+        int OPEN_MENU = 59;
 
-        // Be sure to also update enums.xml when updating these values.
-        int MAX_VALUE = 35;
+        // Custom keyboard shortcut used by extensions.
+        // This enum isn't precisely a single semantic meaning, but we want to report metrics.
+        int CUSTOM_EXTENSION_SHORTCUT = 60;
+
+        // Max value.
+        int MAX_VALUE = 61;
     }
 
-    // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning)
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
 
     private static @KeyboardShortcutsSemanticMeaning int getKeyboardSemanticMeaning(
             int keyCodeAndMeta) {
@@ -159,10 +232,10 @@ public class KeyboardShortcuts {
             case KeyEvent.KEYCODE_F5:
             case KeyEvent.KEYCODE_REFRESH:
                 return KeyboardShortcutsSemanticMeaning.RELOAD_TAB;
-            case CTRL | KeyEvent.KEYCODE_W:
-            case CTRL | KeyEvent.KEYCODE_F4:
-            case KeyEvent.KEYCODE_BUTTON_B:
-                return KeyboardShortcutsSemanticMeaning.CLOSE_TAB;
+            case CTRL | KeyEvent.KEYCODE_F5:
+            case CTRL | KeyEvent.KEYCODE_REFRESH:
+            case SHIFT | KeyEvent.KEYCODE_REFRESH:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_TAB_BYPASSING_CACHE;
             case CTRL | SHIFT | KeyEvent.KEYCODE_TAB:
             case CTRL | KeyEvent.KEYCODE_PAGE_UP:
             case KeyEvent.KEYCODE_BUTTON_L1:
@@ -187,76 +260,6 @@ public class KeyboardShortcuts {
             case ALT | KeyEvent.KEYCODE_6:
             case ALT | KeyEvent.KEYCODE_7:
             case ALT | KeyEvent.KEYCODE_8:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB;
-            case CTRL | KeyEvent.KEYCODE_9:
-            case ALT | KeyEvent.KEYCODE_9:
-                return KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB;
-
-                // Navigation controls.
-            case CTRL | KeyEvent.KEYCODE_L:
-            case ALT | KeyEvent.KEYCODE_D:
-            case KeyEvent.KEYCODE_BUTTON_X:
-                return KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX;
-            case ALT | KeyEvent.KEYCODE_DPAD_LEFT:
-                return KeyboardShortcutsSemanticMeaning.GO_BACK;
-            case ALT | KeyEvent.KEYCODE_DPAD_RIGHT:
-            case KeyEvent.KEYCODE_FORWARD:
-            case KeyEvent.KEYCODE_BUTTON_START:
-                return KeyboardShortcutsSemanticMeaning.GO_FORWARD;
-
-                // 3-dot menu controls.
-            case ALT | KeyEvent.KEYCODE_E:
-            case ALT | KeyEvent.KEYCODE_F:
-            case KeyEvent.KEYCODE_F10:
-            case KeyEvent.KEYCODE_BUTTON_Y:
-                return KeyboardShortcutsSemanticMeaning.OPEN_MENU;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_SLASH: // i.e. Ctrl+?
-                return KeyboardShortcutsSemanticMeaning.OPEN_HELP;
-            case CTRL | KeyEvent.KEYCODE_F:
-            case CTRL | KeyEvent.KEYCODE_G:
-            case CTRL | SHIFT | KeyEvent.KEYCODE_G:
-            case KeyEvent.KEYCODE_F3:
-            case SHIFT | KeyEvent.KEYCODE_F3:
-                return KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_O:
-                return KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS;
-            case KeyEvent.KEYCODE_BOOKMARK:
-            case CTRL | KeyEvent.KEYCODE_D:
-                return KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE;
-            case CTRL | KeyEvent.KEYCODE_H:
-                return KeyboardShortcutsSemanticMeaning.OPEN_HISTORY;
-            case CTRL | KeyEvent.KEYCODE_S:
-                return KeyboardShortcutsSemanticMeaning.SAVE_PAGE;
-            case CTRL | KeyEvent.KEYCODE_P:
-                return KeyboardShortcutsSemanticMeaning.PRINT;
-
-                // Zoom controls.
-            case CTRL | KeyEvent.KEYCODE_PLUS:
-            case CTRL | KeyEvent.KEYCODE_EQUALS:
-            case CTRL | SHIFT | KeyEvent.KEYCODE_PLUS:
-            case CTRL | SHIFT | KeyEvent.KEYCODE_EQUALS:
-            case KeyEvent.KEYCODE_ZOOM_IN:
-                return KeyboardShortcutsSemanticMeaning.ZOOM_IN;
-            case CTRL | KeyEvent.KEYCODE_MINUS:
-            case KeyEvent.KEYCODE_ZOOM_OUT:
-                return KeyboardShortcutsSemanticMeaning.ZOOM_OUT;
-            case CTRL | KeyEvent.KEYCODE_0:
-                return KeyboardShortcutsSemanticMeaning.ZOOM_RESET;
-
-                // These are not implemented by Clank, but correspond to keyboard shortcuts that
-                // exist on Desktop or other platforms.
-            case CTRL | KeyEvent.KEYCODE_E:
-            case CTRL | KeyEvent.KEYCODE_K:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_SEARCH;
-            case CTRL | KeyEvent.KEYCODE_F5:
-            case CTRL | KeyEvent.KEYCODE_REFRESH:
-            case SHIFT | KeyEvent.KEYCODE_REFRESH:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE;
-            case CTRL | KeyEvent.KEYCODE_J:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SHOW_DOWNLOADS;
-            case CTRL | KeyEvent.KEYCODE_F7:
-            case KeyEvent.KEYCODE_F7:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING;
             case CTRL | KeyEvent.KEYCODE_NUMPAD_1:
             case CTRL | KeyEvent.KEYCODE_NUMPAD_2:
             case CTRL | KeyEvent.KEYCODE_NUMPAD_3:
@@ -273,21 +276,166 @@ public class KeyboardShortcuts {
             case ALT | KeyEvent.KEYCODE_NUMPAD_6:
             case ALT | KeyEvent.KEYCODE_NUMPAD_7:
             case ALT | KeyEvent.KEYCODE_NUMPAD_8:
-                return KeyboardShortcutsSemanticMeaning
-                        .NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD;
+                return KeyboardShortcutsSemanticMeaning.MOVE_TO_SPECIFIC_TAB;
+            case CTRL | KeyEvent.KEYCODE_9:
+            case ALT | KeyEvent.KEYCODE_9:
             case CTRL | KeyEvent.KEYCODE_NUMPAD_9:
             case ALT | KeyEvent.KEYCODE_NUMPAD_9:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD;
-            case KeyEvent.KEYCODE_F1:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HELP;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_DEL:
-                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLEAR_BROWSING_DATA;
+                return KeyboardShortcutsSemanticMeaning.MOVE_TO_LAST_TAB;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_A:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TAB_SEARCH;
+                // TODO(crbug.com/402775002): Figure out what shortcut does TOGGLE_MULTITASK_MENU.
+
+                // Closing.
+            case CTRL | KeyEvent.KEYCODE_W:
+            case CTRL | KeyEvent.KEYCODE_F4:
+            case KeyEvent.KEYCODE_BUTTON_B:
+                return KeyboardShortcutsSemanticMeaning.CLOSE_TAB;
             case CTRL | SHIFT | KeyEvent.KEYCODE_W:
             case ALT | KeyEvent.KEYCODE_F4:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLOSE_WINDOW;
+                // TODO(crbug.com/402775002): Change fn signature to allow (Alt + F then X) or
+                // Command+Q
+
+                // Navigation controls.
+            case CTRL | KeyEvent.KEYCODE_L:
+            case ALT | KeyEvent.KEYCODE_D:
+            case KeyEvent.KEYCODE_BUTTON_X:
+                return KeyboardShortcutsSemanticMeaning.JUMP_TO_OMNIBOX;
+            case CTRL | KeyEvent.KEYCODE_E:
+            case CTRL | KeyEvent.KEYCODE_K:
+                // TODO(crbug.com/402775002): Investigate supporting BROWSER_SEARCH button.
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_JUMP_TO_SEARCH;
+            case CTRL | KeyEvent.KEYCODE_F6:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_WEB_CONTENTS_PANE;
+            case KeyEvent.KEYCODE_SPACE:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_DOWN;
+            case SHIFT | KeyEvent.KEYCODE_SPACE:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SCROLL_UP;
+
+                // Top controls.
+            case ALT | SHIFT | KeyEvent.KEYCODE_T:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_TOOLBAR;
+            case ALT | SHIFT | KeyEvent.KEYCODE_B:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_KEYBOARD_FOCUS_BOOKMARKS;
+            case KeyEvent.KEYCODE_F6:
+                return KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS;
+            case SHIFT | KeyEvent.KEYCODE_F7:
+                return KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_OPEN_CONTEXT_MENU;
+            case CTRL | KeyEvent.KEYCODE_DPAD_LEFT:
+                return KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_LEFT;
+            case CTRL | KeyEvent.KEYCODE_DPAD_RIGHT:
+                return KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_FOCUSED_TAB_STRIP_ITEM_REORDER_RIGHT;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_PAGE_UP:
+                // TODO(crbug.com/402775002): Change fn signature to allow CTRL+SHIFT+FN+UpArrow.
+                return KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_LEFT;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_PAGE_DOWN:
+                // TODO(crbug.com/402775002): Change fn signature to allow CTRL+SHIFT+FN+DownArrow.
+                return KeyboardShortcutsSemanticMeaning
+                        .NOT_IMPLEMENTED_CURRENT_OPEN_TAB_REORDER_RIGHT;
+
+                // Accessibility.
+            case CTRL | KeyEvent.KEYCODE_F7:
+            case KeyEvent.KEYCODE_F7:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING;
+            case ALT | SHIFT | KeyEvent.KEYCODE_A:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS;
+
+                // Bookmarks.
+            case CTRL | SHIFT | KeyEvent.KEYCODE_O:
+                return KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS;
+            case KeyEvent.KEYCODE_BOOKMARK:
+            case CTRL | KeyEvent.KEYCODE_D:
+                return KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_D:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BOOKMARK_ALL_TABS;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_B:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_SHOW_BOOKMARKS_BAR;
+
+                // Fullscreen.
+            case KeyEvent.KEYCODE_F11:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE;
+                // TODO(crbug.com/402775002): Allow long press on Esc.
+
+                // Developer tools.
+            case CTRL | SHIFT | KeyEvent.KEYCODE_I:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_J:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_CONSOLE;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_C:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_INSPECT;
+            case KeyEvent.KEYCODE_F12:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_DEV_TOOLS_TOGGLE;
+            case CTRL | KeyEvent.KEYCODE_U:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_VIEW_SOURCE;
+            case SHIFT | KeyEvent.KEYCODE_ESCAPE:
+                // TODO(crbug.com/402775002): Change fn signature to allow Command+Esc.
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TASK_MANAGER;
+
+                // Downloads.
+            case CTRL | KeyEvent.KEYCODE_S:
+                return KeyboardShortcutsSemanticMeaning.SAVE_PAGE;
+            case CTRL | KeyEvent.KEYCODE_J:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_SHOW_DOWNLOADS;
+
+                // History.
+            case CTRL | KeyEvent.KEYCODE_H:
+                return KeyboardShortcutsSemanticMeaning.OPEN_HISTORY;
+            case ALT | KeyEvent.KEYCODE_DPAD_LEFT:
+                return KeyboardShortcutsSemanticMeaning.HISTORY_GO_BACK;
+            case ALT | KeyEvent.KEYCODE_DPAD_RIGHT:
+            case KeyEvent.KEYCODE_FORWARD:
+            case KeyEvent.KEYCODE_BUTTON_START:
+                return KeyboardShortcutsSemanticMeaning.HISTORY_GO_FORWARD;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_DEL:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_CLEAR_BROWSING_DATA;
+
+                // Print.
+            case CTRL | KeyEvent.KEYCODE_P:
+                return KeyboardShortcutsSemanticMeaning.PRINT;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_P:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BASIC_PRINT;
+
+                // Zoom controls.
+            case CTRL | KeyEvent.KEYCODE_PLUS:
+            case CTRL | KeyEvent.KEYCODE_EQUALS:
+            case CTRL | SHIFT | KeyEvent.KEYCODE_PLUS:
+            case CTRL | SHIFT | KeyEvent.KEYCODE_EQUALS:
+            case KeyEvent.KEYCODE_ZOOM_IN:
+                return KeyboardShortcutsSemanticMeaning.ZOOM_IN;
+            case CTRL | KeyEvent.KEYCODE_MINUS:
+            case KeyEvent.KEYCODE_ZOOM_OUT:
+                return KeyboardShortcutsSemanticMeaning.ZOOM_OUT;
+            case CTRL | KeyEvent.KEYCODE_0:
+                return KeyboardShortcutsSemanticMeaning.ZOOM_RESET;
+
+                // Misc.
+            case CTRL | SHIFT | KeyEvent.KEYCODE_M:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_AVATAR_MENU;
+            case ALT | SHIFT | KeyEvent.KEYCODE_I:
+                return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FEEDBACK_FORM;
+            case CTRL | KeyEvent.KEYCODE_F:
+            case CTRL | KeyEvent.KEYCODE_G:
+            case CTRL | SHIFT | KeyEvent.KEYCODE_G:
+            case KeyEvent.KEYCODE_F3:
+            case SHIFT | KeyEvent.KEYCODE_F3:
+                return KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE;
             case ALT | KeyEvent.KEYCODE_HOME:
             case KeyEvent.KEYCODE_HOME:
                 return KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_HOME;
+            case CTRL | SHIFT | KeyEvent.KEYCODE_SLASH: // i.e. Ctrl+?
+            case KeyEvent.KEYCODE_F1:
+                return KeyboardShortcutsSemanticMeaning.OPEN_HELP;
+            case ALT | KeyEvent.KEYCODE_E:
+            case ALT | KeyEvent.KEYCODE_F:
+            case KeyEvent.KEYCODE_F10:
+            case KeyEvent.KEYCODE_BUTTON_Y:
+                return KeyboardShortcutsSemanticMeaning.OPEN_MENU;
         }
 
         return KeyboardShortcutsSemanticMeaning.UNKNOWN;
@@ -716,10 +864,10 @@ public class KeyboardShortcuts {
                         }
                     }
                     return true;
-                case KeyboardShortcutsSemanticMeaning.GO_BACK:
+                case KeyboardShortcutsSemanticMeaning.HISTORY_GO_BACK:
                     if (currentTab != null && currentTab.canGoBack()) currentTab.goBack();
                     return true;
-                case KeyboardShortcutsSemanticMeaning.GO_FORWARD:
+                case KeyboardShortcutsSemanticMeaning.HISTORY_GO_FORWARD:
                     if (currentTab != null && currentTab.canGoForward()) currentTab.goForward();
                     return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:

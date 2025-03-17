@@ -2246,7 +2246,6 @@
 <translation id="2530166226437958497">تحديد المشاكل وحلّها</translation>
 <translation id="2531530485656743109">‏<ph name="BEGIN_PARAGRAPH1" />حدث خطأ وتعذَّر تثبيت نظام التشغيل <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />للحصول على مزيد من المساعدة، يُرجى الانتقال إلى g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">الحصول على مزيد من المعلومات</translation>
 <translation id="2532144599248877204">يمكنك إطالة عمر البطارية عن طريق الإبقاء على مستوى شحن البطارية عند %80 تقريبًا. سيتم شحن البطارية بالكامل قبل فصل الجهاز عادةً عن مصدر الطاقة.</translation>
 <translation id="2532146950330687938">جارٍ تحضير الجهاز…</translation>
 <translation id="2532198298278778531">‏إدارة "نظام أسماء النطاقات" (DNS) الآمن من خلال إعدادات ChromeOS Flex</translation>
@@ -2802,7 +2801,6 @@
 <translation id="2921081876747860777">يُرجى إنشاء كلمة مرور لحماية بياناتك المحلية.</translation>
 <translation id="2923006468155067296">سيتم قفل الجهاز <ph name="DEVICE_TYPE" /> الآن.
 يتطلَّب <ph name="DOMAIN" /> منك الإبقاء على بطاقتك الذكية مُدخَلة.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{‫<ph name="TASK_ROW" />}zero{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مَهمة أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}two{‫<ph name="TASK_ROW" />. مَهمتان أخريان (<ph name="OTHER_TASK_NUM" />) في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}few{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مهام أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}many{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مَهمة أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}other{‫<ph name="TASK_ROW" />. ‫<ph name="OTHER_TASK_NUM" /> مَهمة أخرى في مجموعة المهام نفسها: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">إزالة هذا الحساب</translation>
 <translation id="2923644930701689793">الوصول إلى ألبوم الكاميرا في هاتفك</translation>
 <translation id="292371311537977079">‏إعدادات Chrome</translation>
@@ -6906,6 +6904,7 @@
 <translation id="5865508026715185451">سيتم إيقاف تطبيق <ph name="APP_NAME" /> مؤقتًا بعد قليل.</translation>
 <translation id="586567932979200359">أنت تشغّل <ph name="PRODUCT_NAME" /> من صورته على القرص. ويسمح لك تثبيته على الكمبيوتر بتشغيله بدون الحاجة إلى صورة القرص، كما يضمن ذلك الحفاظ على تحديثه بشكل مستمر.</translation>
 <translation id="5865733239029070421">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
+<translation id="5866363217037791319">إنهاء المهمّة</translation>
 <translation id="5868434909835797817">الميكروفون غير مفعَّل على جهازك.</translation>
 <translation id="5868479397518301468">انتهت مهلة تسجيل الدخول إلى الملف الشخصي</translation>
 <translation id="5868822853313956582">استخدام ألوان الجهاز</translation>
@@ -10641,7 +10640,6 @@
 <translation id="8524841856047224176">يمكنك تخصيص خلفيات الكاميرا لمكالمات الفيديو وغير ذلك</translation>
 <translation id="8525306231823319788">ملء الشاشة</translation>
 <translation id="8525461909394569609">يحتوي هذا التطبيق على محتوى من الموقع الالكتروني</translation>
-<translation id="8526313996927074827">‏يُدرج الروابط ورموز الإيموجي وغيرها، ويساعد في الكتابة أيضًا باستخدام الذكاء الاصطناعي من Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">مكبّرات الصوت</translation>
 <translation id="8527257351549797148">قد تطلب منك مؤسستك التسجيل لتتمكن من الوصول إلى التطبيقات والإضافات وغير ذلك. ويتيح ذلك للمؤسسة إدارة بعض الإعدادات مثل إعدادات الأمان والأجهزة.</translation>
@@ -11101,6 +11099,7 @@
 <translation id="883924185304953854">البحث باستخدام الصور</translation>
 <translation id="8841786407272321022">‏تم حفظ كلمة المرور على هذا الجهاز فقط. لحفظ كلمات مرور جديدة في حسابك على Google، يجب تحديث "خدمات Google Play".</translation>
 <translation id="8841843049738266382">قراءة قائمة المستخدمين المسموح بهم وتغييرها</translation>
+<translation id="8841884135319684422">إنهاء المهمّة</translation>
 <translation id="8842594465773264717">حذف بصمة الإصبع هذه</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8846132060409673887">قراءة نموذج هذا الكمبيوتر والشركة المصنِّعة</translation>

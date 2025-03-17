@@ -40,8 +40,14 @@ build_webui("build") {
   extra_grdp_deps = [ ":glic_api_injection_grdp" ]
   extra_grdp_files = [ "$target_gen_dir/glic_api_injection.grdp" ]
 
-  mojo_files_deps = [ "//chrome/browser/glic:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/glic/glic.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/glic:mojo_bindings_ts__generator",
+    "//components/content_settings/core/common:content_settings_types_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/glic/glic.mojom-webui.ts",
+    "$root_gen_dir/components/content_settings/core/common/content_settings_types.mojom-webui.ts",
+  ]
 
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",

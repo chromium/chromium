@@ -2442,11 +2442,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2812417768214606683">此政策指定了一系列不受 <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> 和 <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" /> 政策约束的 USB 存储设备。
 
 条目是成对的 USB 供应商标识符和产品标识符，用于标识特定的 USB 设备型号。</translation>
-<translation id="2815701930753942156">此政策指定了一系列每周时段，在这些时段无法使用 <ph name="PRODUCT_OS_NAME" /> 设备。所有正在进行的会话都将关闭，登录将被阻止。
-
-不支持重叠的时段。
-
-这些时段以 <ph name="PRODUCT_OS_NAME" /> 设备的系统时区为准。</translation>
 <translation id="2816964824289752181">允许第三方使用 <ph name="DESK_API_NAME" /> 控制 <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2818074121667686266">如果此政策已启用或未设置，系统将会在收到针对录音设备的使用请求时提示用户，但 AudioCaptureAllowedUrls 列表中设置的网址除外。
 
@@ -7412,7 +7407,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果未设置此政策，则默认情况下，快速配对功能对于企业用户处于停用状态，对于不受管理的账号则处于启用状态。</translation>
 <translation id="6401669939808766804">使用户退出</translation>
 <translation id="640244877779556713">启用表情符号建议</translation>
-<translation id="6402928885627067154">指定 ChromeOS 设备每周哪些时段无法使用</translation>
 <translation id="6403114173011456561">作为 <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> 政策的补充政策，用于控制触摸虚拟键盘。
 
       如果无障碍虚拟键盘已开启，此政策将不会产生任何影响。

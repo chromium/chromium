@@ -5635,7 +5635,11 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
 
   if (AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates()) {
     // Can only add new objects while processing deferred events.
-    AddInlineTextBoxChildren();
+    if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
+      AddInlineTextBoxChildrenWithBlockFlowIterator();
+    } else {
+      AddInlineTextBoxChildren();
+    }
     // Avoid adding these children twice.
     SetNeedsToUpdateChildren(false);
     // If inline text box children were added, mark the node dirty so that the
@@ -5648,6 +5652,27 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
   } else {
     // Wait until processing deferred events.
     AXObjectCache().ChildrenChanged(this);
+  }
+}
+
+void AXNodeObject::AddInlineTextBoxChildrenWithBlockFlowIterator() {
+  CHECK(GetDocument());
+  CHECK(ShouldLoadInlineTextBoxes());
+  CHECK(GetLayoutObject());
+  GetLayoutObject()->CheckIsNotDestroyed();
+  CHECK(GetLayoutObject()->IsText()) << GetLayoutObject() << " " << this;
+  CHECK(!GetLayoutObject()->NeedsLayout());
+  CHECK(AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates())
+      << AXObjectCache();
+
+  AXBlockFlowIterator it(this);
+  while (it.Next()) {
+    AXObject* box =
+        AXObjectCache().GetOrCreate(it.CurrentFragmentIndex(), this);
+    if (!box) {
+      return;
+    }
+    children_.push_back(box);
   }
 }
 
@@ -5665,13 +5690,6 @@ void AXNodeObject::AddInlineTextBoxChildren() {
   CHECK(AXObjectCache().lifecycle().StateAllowsImmediateTreeUpdates())
       << AXObjectCache();
 
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  AXBlockFlowIterator it;
-  if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
-    it = AXBlockFlowIterator(this);
-  }
-#endif
-
   auto* layout_text = To<LayoutText>(GetLayoutObject());
   for (auto* box = layout_text->FirstAbstractInlineTextBox(); box;
        box = box->NextInlineTextBox()) {
@@ -5681,67 +5699,6 @@ void AXNodeObject::AddInlineTextBoxChildren() {
     }
 
     children_.push_back(ax_box);
-
-#if EXPENSIVE_DCHECKS_ARE_ON()
-    if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
-      DCHECK(it.Next()) << "Failed to advance the BlockFlow Iterator while "
-                           "processing AxInlineTextBox children of "
-                        << this << " which has layout " << GetLayoutObject()
-                        << "\n and the AITB produced " << box->GetText();
-
-      WTF::String fragment_text = it.GetText();
-      WTF::String abstract_inline_text = box->GetText();
-
-      if (!ShouldSkipAxBlockFlowIteratorComparison()) {
-        DCHECK_EQ(fragment_text, abstract_inline_text)
-            << "Mismatch in extracted text fragment: " << abstract_inline_text
-            << " vs " << fragment_text;
-
-        AbstractInlineTextBox* next_on_line_box = box->NextOnLine();
-        AbstractInlineTextBox* previous_on_line_box = box->PreviousOnLine();
-
-        std::optional<AXBlockFlowIterator::MapKey> next_fragment_key =
-            it.NextOnLine();
-        std::optional<AXBlockFlowIterator::MapKey> previous_fragment_key =
-            it.PreviousOnLine();
-
-        if (next_on_line_box) {
-          DCHECK(next_fragment_key) << "Failed to find next on line fragment";
-          InlineCursor cursor = next_on_line_box->GetCursor();
-          DCHECK_EQ(&cursor.Items(), next_fragment_key->first);
-          wtf_size_t item_index = static_cast<wtf_size_t>(
-              cursor.CurrentItem() - &cursor.Items().front());
-          DCHECK_EQ(item_index, next_fragment_key->second)
-              << "Mismatched fragment indices";
-        } else {
-          // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
-          // box fragments. Currently, we fall back to the parent when
-          // AbstractInlineTextBox::NextOnLine is null. This fallback should no
-          // longer be necessary.
-          DCHECK(!next_fragment_key)
-              << "Expected not to find a next on line fragment";
-        }
-
-        if (previous_on_line_box) {
-          DCHECK(previous_fragment_key)
-              << "Failed to find previous on line fragment";
-          InlineCursor cursor = previous_on_line_box->GetCursor();
-          DCHECK_EQ(&cursor.Items(), previous_fragment_key->first);
-          wtf_size_t item_index = static_cast<wtf_size_t>(
-              cursor.CurrentItem() - &cursor.Items().front());
-          DCHECK_EQ(item_index, previous_fragment_key->second)
-              << "Mismatched fragment indices";
-        } else {
-          // TODO: Update once AXBlockFlowIterator::NextOnLine navigates into
-          // box fragments. Currently, we fall back to the parent when
-          // AbstractInlineTextBox::NextOnLine is null. This fallback should no
-          // longer be necessary.
-          DCHECK(!previous_fragment_key)
-              << "Expected not to find a previous on line fragment";
-        }
-      }
-    }
-#endif
   }
 }
 
@@ -5941,7 +5898,11 @@ void AXNodeObject::AddChildrenImpl() {
   CHECK(CanHaveChildren());
 
   if (ShouldLoadInlineTextBoxes() && HasLayoutText(this)) {
-    AddInlineTextBoxChildren();
+    if (::features::IsAccessibilityBlockFlowIteratorEnabled()) {
+      AddInlineTextBoxChildrenWithBlockFlowIterator();
+    } else {
+      AddInlineTextBoxChildren();
+    }
     CHECK_ATTACHED();
     return;
   }
@@ -6122,46 +6083,6 @@ void AXNodeObject::CheckValidChild(AXObject* child) {
 }
 #endif
 
-#if EXPENSIVE_DCHECKS_ARE_ON()
-bool AXNodeObject::ShouldSkipAxBlockFlowIteratorComparison() const {
-  if (auto* layout_text = To<LayoutText>(GetLayoutObject());
-      layout_text->GetFirstLetterPart()) {
-    // Explicitly skip the check if the layout text has a first letter
-    // pseudo-element part. Currently, this is prefixed to the text, but this is
-    // problematic since:
-    //   * not accounted for in the glyph vector
-    //   * can have a different style including flow direction
-    //   * can be multiple characters due to punctuation
-    return true;
-  }
-
-  // Skips the processing of <ruby> and <tr> tags, including all their children
-  // (text). This is not implemented yet, so the comparison does not make sense.
-  using ax::mojom::blink::Role;  // Using declaration for the scope of the
-                                 // function
-  const Role& role = RoleValue();
-  if (role == Role::kRubyAnnotation || role == Role::kRuby) {
-    return true;
-  }
-
-  if (role == Role::kStaticText) {
-    auto check_ancestor = [this](int ancestor_level) {
-      const AXObject* ancestor = this;
-      for (int i = 0; i < ancestor_level && ancestor; ++i) {
-        ancestor = ancestor->ParentObjectIncludedInTree();
-      }
-      return ancestor && (ancestor->RoleValue() == Role::kRubyAnnotation ||
-                          ancestor->RoleValue() == Role::kRuby);
-    };
-
-    if (check_ancestor(1) || check_ancestor(2)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-#endif
 
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
   if (!child)

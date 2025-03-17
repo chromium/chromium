@@ -37,7 +37,7 @@ std::optional<size_t> ReadFile(base::File* file,
                                scoped_refptr<net::IOBuffer> buffer,
                                int buffer_length) {
   return file->ReadAtCurrentPosNoBestEffort(
-      buffer->span().first(base::checked_cast<size_t>(buffer_length)));
+      buffer->first(base::checked_cast<size_t>(buffer_length)));
 }
 
 // Seeks the file, returns 0 on success, or errno on an error.

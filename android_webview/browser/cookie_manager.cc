@@ -20,7 +20,6 @@
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_client_hints_controller_delegate.h"
 #include "android_webview/browser/aw_cookie_access_policy.h"
-#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "base/android/build_info.h"
 #include "base/android/callback_android.h"
@@ -29,7 +28,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -96,8 +94,6 @@ void MaybeRunCookieCallback(base::OnceCallback<void(bool)> callback,
 }
 
 const char kSecureCookieHistogramName[] = "Android.WebView.SecureCookieAction";
-const char kPartitionedCookiesAreExcludedHistogramName[] =
-    "Android.WebView.PartitionedCookiesExcluded";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -591,19 +587,6 @@ void CookieManager::GetCookieListAsyncHelper(const GURL& host,
         base::BindOnce(&CookieManager::GetCookieListCompleted,
                        base::Unretained(this), std::move(complete), result));
   }
-
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewPartitionedCookiesExcluded)) {
-    // We only want to execute this for metrics so we offload this work to later
-    // so that we don't block the sync get cookies operation on this call.
-    // This won't be looking at the same state as the initial GetCookie call
-    // but we are okay with that because Android developers are likely going
-    // to try call this after the cookie they care about has been set.
-    cookie_store_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&CookieManager::RecordExcludedPartitionedCookies,
-                       base::Unretained(this), host));
-  }
 }
 
 void CookieManager::GetCookieListCompleted(
@@ -809,32 +792,6 @@ void CookieManager::ClearClientHintsCachedPerOriginMapIfNeeded() {
     GetContext()->GetPrefService()->SetDict(
         prefs::kClientHintsCachedPerOriginMap, base::Value::Dict());
     should_clear_client_hints_cached_per_origin_map_ = false;
-  }
-}
-
-void CookieManager::RecordExcludedPartitionedCookies(const GURL& host) {
-  auto record_cookies_excluded_callback =
-      base::BindOnce([](std::optional<bool> are_excluded) {
-        if (are_excluded.has_value()) {
-          base::UmaHistogramBoolean(kPartitionedCookiesAreExcludedHistogramName,
-                                    *are_excluded);
-        }
-      });
-
-  net::CookiePartitionKey cpk = net::CookiePartitionKey::FromWire(
-      net::SchemefulSite(host),
-      net::CookiePartitionKey::AncestorChainBit::kSameSite);
-
-  if (GetMojoCookieManager()) {
-    GetMojoCookieManager()->SiteHasCookieInOtherPartition(
-        net::SchemefulSite(host),
-        std::optional<net::CookiePartitionKey>(net::CookiePartitionKey(cpk)),
-        std::move(record_cookies_excluded_callback));
-  } else {
-    std::optional<bool> cookies_excluded =
-        GetCookieStore()->SiteHasCookieInOtherPartition(
-            net::SchemefulSite(host), cpk);
-    std::move(record_cookies_excluded_callback).Run(cookies_excluded);
   }
 }
 

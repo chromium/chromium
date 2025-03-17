@@ -2,6 +2,7 @@
   "gn_args": {
     "dcheck_always_on": false,
     "debuggable_apks": false,
+    "enable_android_secondary_abi": true,
     "is_component_build": false,
     "is_debug": false,
     "strip_debug_info": true,

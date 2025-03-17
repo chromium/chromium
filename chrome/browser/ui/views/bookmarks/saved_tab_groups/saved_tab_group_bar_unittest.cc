@@ -109,12 +109,6 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
   // Returns the sync id of the group that was added.
   base::Uuid EnforceGroupSaved(tab_groups::SavedTabGroup group) {
     const LocalTabGroupID local_id = group.local_group_id().value();
-
-    if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-      // the group must be manually saved.
-      service()->SaveGroup(group);
-    }
-
     return service()->GetGroup(local_id).value().saved_guid();
   }
 
@@ -235,7 +229,7 @@ TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
   }
 }
 
-TEST_F(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisibleForV2) {
+TEST_F(SavedTabGroupBarUnitTest, EverthingButtonAlwaysVisible) {
   // Verify the initial count of saved tab group buttons.
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
@@ -492,7 +486,7 @@ TEST_F(SavedTabGroupBarUnitTest, PinAndUnpinMultipleTabGroups) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 }
 
-TEST_F(SavedTabGroupBarUnitTest, OnlyShowEverthingButtonForV2) {
+TEST_F(SavedTabGroupBarUnitTest, OnlyShowEverthingButton) {
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
 
   AddGroupFromLocal();

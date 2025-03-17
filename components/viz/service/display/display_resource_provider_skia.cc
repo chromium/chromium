@@ -166,7 +166,8 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
               resource.transferable.texture_target(),
               resource.transferable.size, resource.transferable.format,
               maybe_concurrent_reads, resource.transferable.ycbcr_info,
-              std::move(image_color_space), raw_draw_is_possible);
+              std::move(image_color_space), resource.transferable.origin,
+              raw_draw_is_possible);
     }
     resource.locked_for_external_use = true;
 

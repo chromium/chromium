@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -23,7 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 public class NtpCardsContainerViewUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock NtpCardsListItemView mListItemView;
+
     private NtpCardsContainerView mContainerView;
 
     @Before

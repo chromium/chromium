@@ -20,6 +20,8 @@
 namespace content {
 
 class PrefetchStreamingURLLoader;
+class ServiceWorkerClient;
+class ServiceWorkerMainResourceHandle;
 
 // `PrefetchResponseReader` stores the prefetched data needed for serving, and
 // serves URLLoaderClients (`serving_url_loader_clients_`). One
@@ -64,9 +66,11 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // `PrefetchStreamingURLLoader` to `event_queue_` and existing
   // `serving_url_loader_clients_`.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void OnReceiveResponse(std::optional<PrefetchErrorOnResponseReceived> status,
-                         network::mojom::URLResponseHeadPtr head,
-                         mojo::ScopedDataPipeConsumerHandle body);
+  void OnReceiveResponse(
+      std::optional<PrefetchErrorOnResponseReceived> status,
+      network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle);
   void HandleRedirect(PrefetchRedirectStatus redirect_status,
                       const net::RedirectInfo& redirect_info,
                       network::mojom::URLResponseHeadPtr redirect_head);
@@ -89,7 +93,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   //   checks.
   // - Checking `Servable()`/`GetServableState()`.
   //   `cacheable_duration` is checked only there.
-  PrefetchRequestHandler CreateRequestHandler();
+  std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+  CreateRequestHandler();
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
@@ -133,8 +138,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // The callbacks are called in-order for each of
   // `serving_url_loader_clients_`, regardless of whether events are added
   // before or after clients are added.
-  void AddEventToQueue(
-      base::RepeatingCallback<void(ServingUrlLoaderClientId)> callback);
+  using EventCallback = base::RepeatingCallback<void(ServingUrlLoaderClientId)>;
+  void AddEventToQueue(EventCallback callback);
   // Sends all stored events in `event_queue_` to the client.
   // Called when a new client (identified by `client_id_`) is added.
   void RunEventQueue(ServingUrlLoaderClientId client_id);
@@ -172,8 +177,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   const bool is_reusable_;
 
   // All URLLoader events are queued up here.
-  std::vector<base::RepeatingCallback<void(ServingUrlLoaderClientId)>>
-      event_queue_;
+  std::vector<EventCallback> event_queue_;
 
   // The status of the event queue.
   enum class EventQueueStatus {
@@ -220,7 +224,14 @@ class CONTENT_EXPORT PrefetchResponseReader final
     kFailedRedirect
   };
 
+  // Always access/update through `load_state()` and
+  // `SetLoadStateAndAddEventToQueue()` below, to avoid unintentional state
+  // changes and missing related callbacks on state changes.
   LoadState load_state_{LoadState::kStarted};
+
+  LoadState load_state() const { return load_state_; }
+  void SetLoadStateAndAddEventToQueue(LoadState new_load_state,
+                                      EventCallback callback);
 
   // Used for UMA recording.
   // TODO(crbug.com/40064891): we might want to adapt these flags and UMA
@@ -272,6 +283,12 @@ class CONTENT_EXPORT PrefetchResponseReader final
   scoped_refptr<PrefetchResponseReader> self_pointer_;
 
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader_;
+
+  // TODO(https://crbug.com/40947546): Currently redirects are not supported for
+  // ServiceWorker-controlled prefetches and thus we don't care about alignment
+  // between `PrefetchResponseReader`, `PrefetchStreamingURLLoader` and
+  // `PrefetchContainer` in terms of `ServiceWorkerMainResourceHandle`.
+  std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   base::WeakPtrFactory<PrefetchResponseReader> weak_ptr_factory_{this};
 };

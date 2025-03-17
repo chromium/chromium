@@ -15,6 +15,7 @@ schema_sources_ = [
   "activity_log_private.json",
   "cookies.json",
   "developer_private.idl",
+  "identity.idl",
   "notifications.idl",
 ]
 
@@ -59,7 +60,6 @@ if (enable_extensions) {
     "font_settings.json",
     "gcm.json",
     "history.json",
-    "identity.idl",
     "image_writer_private.idl",
     "instance_id.json",
     "language_settings_private.idl",

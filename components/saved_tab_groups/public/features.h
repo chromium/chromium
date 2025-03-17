@@ -40,8 +40,6 @@ BASE_DECLARE_FEATURE(kEnableUrlRestriction);
 
 BASE_DECLARE_FEATURE(kEnableOriginatingSavedGroupCleanUp);
 
-extern bool IsTabGroupsSaveV2Enabled();
-
 extern bool IsTabGroupSyncServiceDesktopMigrationEnabled();
 
 extern bool IsTabGroupSyncDelegateAndroidEnabled();

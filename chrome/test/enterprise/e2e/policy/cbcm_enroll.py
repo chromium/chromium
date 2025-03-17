@@ -7,6 +7,8 @@ from absl import app
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from test_util import create_chrome_webdriver
 from test_util import getElementFromShadowRoot
@@ -17,6 +19,7 @@ def main(argv):
   os.environ["CHROME_LOG_FILE"] = r"C:\temp\chrome_log.txt"
 
   driver = create_chrome_webdriver(chrome_options=options)
+  driver.implicitly_wait(10)
 
   try:
     # Verify Policy status legend in chrome://policy page
@@ -24,7 +27,9 @@ def main(argv):
     driver.get(policy_url)
     # Give the page 10 seconds for enrollment and legend rending
     time.sleep(10)
-    driver.find_element(By.ID, 'reload-policies').click
+    driver.find_element(By.ID, 'reload-policies').click()
+    # Wait for rerender
+    time.sleep(10)
     status_box = driver.find_element(By.CSS_SELECTOR, "status-box")
     el = getElementFromShadowRoot(driver, status_box, ".status-box-fields")
 
@@ -36,9 +41,12 @@ def main(argv):
                                 'machine-enrollment-device-id').text
     print("DEVICE_ID=" + device_id.strip())
 
-    ## Upload a report and wait 5 seconds for the completion
-    driver.find_element(By.ID, 'upload-report').click
-    time.sleep(5)
+    driver.find_element(By.ID, 'more-actions-button').click()
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.element_to_be_clickable((By.ID, 'upload-report'))).click()
+    wait.until(
+        EC.visibility_of_element_located(
+            (By.XPATH, '//*[text()="Data sent to admin console"]')))
   except Exception as error:
     print(error)
   finally:

@@ -11,6 +11,7 @@ Network.onRequestWillBeSent{
     redirectHasExtraInfo : false
     request : {
         headers : {
+            Accept-Language : en-us,en;q=0.9
             Upgrade-Insecure-Requests : 1
             User-Agent : <string>
             sec-ch-ua : "content_shell";v="999"
@@ -36,9 +37,9 @@ Network.onRequestWillBeSentExtraInfo{
         requestTime : <number>
     }
     headers : {
-        Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-        Accept-Encoding : gzip, deflate, br
-        Accept-Language : en-us,en
+        Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding : gzip, deflate, br, zstd
+        Accept-Language : en-us,en;q=0.9
         Connection : keep-alive
         Host : 127.0.0.1:8443
         Sec-Fetch-Dest : document
@@ -52,6 +53,7 @@ Network.onRequestWillBeSentExtraInfo{
         sec-ch-ua-platform : "Unknown"
     }
     requestId : <string>
+    siteHasCookieInOtherPartition : false
 }
 Network.onResponseReceived{
     frameId : <string>
@@ -59,20 +61,22 @@ Network.onResponseReceived{
     loaderId : <string>
     requestId : <string>
     response : {
-        connectionId : 10
+        alternateProtocolUsage : unspecifiedReason
+        charset : 
+        connectionId : 18
         connectionReused : true
-        encodedDataLength : 263
+        encodedDataLength : 261
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 395
+            Content-Length : 474
             Content-Type : text/html
             Date : <string>
             ETag : <string>
-            Keep-Alive : timeout=9999
+            Keep-Alive : timeout=10
             Last-Modified : <string>
             Server : Apache
         }
@@ -99,7 +103,7 @@ Network.onResponseReceived{
             validFrom : 1542841725
             validTo : 1858201725
         }
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : {
@@ -111,8 +115,8 @@ Network.onResponseReceived{
             proxyStart : -1
             pushEnd : 0
             pushStart : 0
-            receiveHeadersStart : <number>
             receiveHeadersEnd : <number>
+            receiveHeadersStart : <number>
             requestTime : <number>
             sendEnd : <number>
             sendStart : <number>
@@ -131,14 +135,21 @@ Network.onResponseReceived{
 Network.onResponseReceivedExtraInfo{
     blockedCookies : [
     ]
+    cookiePartitionKey : {
+        hasCrossSiteAncestor : false
+        topLevelSite : https://127.0.0.1
+    }
+    cookiePartitionKeyOpaque : false
+    exemptedCookies : [
+    ]
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 395
+        Content-Length : 474
         Content-Type : text/html
         Date : <string>
         ETag : <string>
-        Keep-Alive : timeout=9999
+        Keep-Alive : timeout=10
         Last-Modified : <string>
         Server : Apache
     }
@@ -148,9 +159,8 @@ Network.onResponseReceivedExtraInfo{
     statusCode : 200
 }
 Network.onLoadingFinished{
-    encodedDataLength : 658
+    encodedDataLength : 735
     requestId : <string>
-    shouldReportCorbBlocking : false
     timestamp : <number>
 }
 Message 1
@@ -166,14 +176,18 @@ Network.onRequestWillBeSent{
     redirectHasExtraInfo : false
     request : {
         headers : {
-            Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+            Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
             Purpose : prefetch
+            Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html
             Sec-Purpose : prefetch
             Upgrade-Insecure-Requests : 1
+            sec-ch-ua : "content_shell";v="999"
+            sec-ch-ua-mobile : ?0
+            sec-ch-ua-platform : "Unknown"
         }
         initialPriority : VeryLow
         method : GET
-        referrerPolicy : unsafe-url
+        referrerPolicy : strict-origin-when-cross-origin
         url : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2
     }
     requestId : <string>
@@ -188,20 +202,25 @@ Network.onRequestWillBeSentExtraInfo{
         requestTime : <number>
     }
     headers : {
-        Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-        Accept-Encoding : gzip, deflate, br
+        Accept : text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        Accept-Encoding : gzip, deflate, br, zstd
         Accept-Language : en-us,en
         Connection : keep-alive
         Host : 127.0.0.1:8443
         Purpose : prefetch
-        Sec-Fetch-Dest : empty
-        Sec-Fetch-Mode : no-cors
+        Referer : https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html
+        Sec-Fetch-Dest : document
+        Sec-Fetch-Mode : navigate
         Sec-Fetch-Site : none
         Sec-Purpose : prefetch
         Upgrade-Insecure-Requests : 1
         User-Agent : <string>
+        sec-ch-ua : "content_shell";v="999"
+        sec-ch-ua-mobile : ?0
+        sec-ch-ua-platform : "Unknown"
     }
     requestId : <string>
+    siteHasCookieInOtherPartition : false
 }
 Network.onResponseReceived{
     frameId : <string>
@@ -209,20 +228,22 @@ Network.onResponseReceived{
     loaderId : <string>
     requestId : <string>
     response : {
-        connectionId : 10
+        alternateProtocolUsage : unspecifiedReason
+        charset : 
+        connectionId : 18
         connectionReused : true
-        encodedDataLength : 263
+        encodedDataLength : 261
         fromDiskCache : false
-        fromPrefetchCache : false
+        fromPrefetchCache : true
         fromServiceWorker : false
         headers : {
             Accept-Ranges : bytes
             Connection : Keep-Alive
-            Content-Length : 395
+            Content-Length : 474
             Content-Type : text/html
             Date : <string>
             ETag : <string>
-            Keep-Alive : timeout=9999
+            Keep-Alive : timeout=10
             Last-Modified : <string>
             Server : Apache
         }
@@ -249,7 +270,7 @@ Network.onResponseReceived{
             validFrom : 1542841725
             validTo : 1858201725
         }
-        securityState : insecure
+        securityState : secure
         status : 200
         statusText : OK
         timing : {
@@ -261,8 +282,8 @@ Network.onResponseReceived{
             proxyStart : -1
             pushEnd : 0
             pushStart : 0
-            receiveHeadersStart : <number>
             receiveHeadersEnd : <number>
+            receiveHeadersStart : <number>
             requestTime : <number>
             sendEnd : <number>
             sendStart : <number>
@@ -281,14 +302,21 @@ Network.onResponseReceived{
 Network.onResponseReceivedExtraInfo{
     blockedCookies : [
     ]
+    cookiePartitionKey : {
+        hasCrossSiteAncestor : false
+        topLevelSite : https://127.0.0.1
+    }
+    cookiePartitionKeyOpaque : false
+    exemptedCookies : [
+    ]
     headers : {
         Accept-Ranges : bytes
         Connection : Keep-Alive
-        Content-Length : 395
+        Content-Length : 474
         Content-Type : text/html
         Date : <string>
         ETag : <string>
-        Keep-Alive : timeout=9999
+        Keep-Alive : timeout=10
         Last-Modified : <string>
         Server : Apache
     }
@@ -298,12 +326,12 @@ Network.onResponseReceivedExtraInfo{
     statusCode : 200
 }
 Network.onLoadingFinished{
-    encodedDataLength : 658
+    encodedDataLength : 735
     requestId : <string>
     timestamp : <number>
 }
 Prefetch response body{
-    base64Encoded : false
-    body : <!DOCTYPE html> <html> <script>   let script = document.createElement('script');   script.type = 'speculationrules';   script.textContent = JSON.stringify({ prefetch: [{ source: "list", urls: ["https://127.0.0.1:8443/inspector-protocol/prefetch/resources/prefetch.https.html?page=2"] }] });   document.head.appendChild(script); </script> <body> This is a test page for prefetch! </body> </html> 
+    code : -32000
+    message : No resource with given identifier found
 }
 

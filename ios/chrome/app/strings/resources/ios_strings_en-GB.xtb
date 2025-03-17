@@ -447,6 +447,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2829172210806130158">Search your screen</translation>
 <translation id="2834399722155632105">3. Tap Password options</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Time</translation>
 <translation id="284581348330507117">Create unique passwords</translation>
 <translation id="2856883624744451946">Name group</translation>
 <translation id="2858204748079866344">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
@@ -649,7 +650,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3858860766373142691">Name</translation>
 <translation id="3868495844258915202">Show full URL</translation>
 <translation id="3875783148670536197">Show me how</translation>
-<translation id="3876833929577368454">Ask me every time</translation>
 <translation id="3885587018298784481">Join a family group</translation>
 <translation id="3888863481921783344">This will be used to show you possible invitees to your event.</translation>
 <translation id="3891414008432200754">Price</translation>
@@ -904,6 +904,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="4896467949657706481">Tabs were closed; you were signed out</translation>
 <translation id="4913626501929406101">You can securely share a copy of your password with someone in your family group. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Accept</translation>
+<translation id="4932733599132424254">Date</translation>
 <translation id="4936354130727646074">Never move</translation>
 <translation id="4937410517508563815">Save passwords in account</translation>
 <translation id="4938338714234463591">This will let you use your voice with certain features on websites.</translation>
@@ -1470,7 +1471,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7346909386216857016">OK, got it</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
-<translation id="7359341089141286329">Auto-track all detected parcels</translation>
 <translation id="7363349185727752629">A guide to your privacy choices</translation>
 <translation id="736564850024123010">Switch the position of your address bar for a customised experience.</translation>
 <translation id="7366909168761621528">Browsing data</translation>
@@ -1718,6 +1718,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8307481894409578819">This file could not be uploaded</translation>
 <translation id="8319076807703933069">New search</translation>
+<translation id="8320212361750431956">Recent activity</translation>
 <translation id="833647236762414178">Create, save and manage your passwords and passkeys to easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="8349305172487531364">Bookmarks bar</translation>
@@ -1747,7 +1748,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8438566539970814960">Make searches and browsing better</translation>
 <translation id="8439758443371991593">Hide Add to reading list</translation>
 <translation id="8449869326050867919">Password shared</translation>
-<translation id="8453847087068411809">Never auto-detect parcels</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474378002946546633">Allow notifications</translation>
 <translation id="8477178913400731244">Delete data</translation>

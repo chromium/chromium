@@ -307,8 +307,7 @@ TEST_F(ProfileManagerIOSImplTest, CreateProfileAsync) {
 }
 
 // Tests that Profile marked for deletion does not create a new profile.
-// TODO(crbug.com/403245048): Test consistently fails ios-asan.
-TEST_F(ProfileManagerIOSImplTest, DISABLED_CreateProfile_MarkedForDeletion) {
+TEST_F(ProfileManagerIOSImplTest, CreateProfile_MarkedForDeletion) {
   // Create a few profiles synchronously.
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
@@ -571,8 +570,7 @@ TEST_F(ProfileManagerIOSImplTest, ReserveNewProfileName) {
 
 // Tests that marking profile for deletion invoke
 // OnProfileMarkedForPermanentDeletion(...) on the observers.
-// TODO(crbug.com/403245048): Test consistently fails ios-asan.
-TEST_F(ProfileManagerIOSImplTest, DISABLED_MarkProfileForDeletion) {
+TEST_F(ProfileManagerIOSImplTest, MarkProfileForDeletion) {
   // Create a few profiles synchronously.
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
@@ -597,9 +595,8 @@ TEST_F(ProfileManagerIOSImplTest, DISABLED_MarkProfileForDeletion) {
 
 // Tests that marking unloaded profile for deletion does not invoke
 // OnProfileMarkedForPermanentDeletion(...) on the observers.
-// TODO(crbug.com/403245048): Test consistently fails ios-asan.
 TEST_F(ProfileManagerIOSImplTest,
-       DISABLED_MarkProfileForDeletion_UnloadedProfileShouldNotCallObserver) {
+       MarkProfileForDeletion_UnloadedProfileShouldNotCallObserver) {
   // Create a few profiles synchronously.
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));
@@ -631,10 +628,8 @@ TEST_F(ProfileManagerIOSImplTest,
 
 // Tests that it is not possible to create a profile with a name marked for
 // deletion.
-// TODO(crbug.com/403245048): Test consistently fails ios-asan.
-TEST_F(
-    ProfileManagerIOSImplTest,
-    DISABLED_MarkProfileForDeletion_CantCreateProfileWithProfileMarkedForDeletion) {
+TEST_F(ProfileManagerIOSImplTest,
+       MarkProfileForDeletion_CantCreateProfileWithProfileMarkedForDeletion) {
   // Create a few profiles synchronously.
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName1));
   ASSERT_TRUE(profile_manager().CreateProfile(kProfileName2));

@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
 #import "components/data_sharing/public/group_data.h"
 
 @protocol ApplicationCommands;
@@ -36,6 +37,11 @@ enum class ShareKitFlowOutcome;
 
 // The preview items to show in the preview screen.
 @property(nonatomic, copy) NSArray<ShareKitPreviewItem*>* previewItems;
+
+// Callback to be called when the collaboration group has been successfully
+// joined. The callback parameter is to be called to dismiss the screen.
+@property(nonatomic, copy) void (^joinCollaborationGroupSuccessBlock)
+    (ProceduralBlock);
 
 @end
 

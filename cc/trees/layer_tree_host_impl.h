@@ -859,6 +859,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
       const viz::ViewTransitionElementResourceId& id,
       const gfx::RectF& rect);
 
+  void UpdateChildLocalSurfaceId();
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -895,8 +897,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Holds image decode cache instance. It can either be a shared cache or
   // a cache create by this instance. Which is used depends on the settings.
   class ImageDecodeCacheHolder;
-
-  void UpdateChildLocalSurfaceId();
 
   void CollectScrollbarUpdatesForCommit(
       CompositorCommitData* commit_data) const;

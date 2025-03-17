@@ -122,6 +122,9 @@ class CORE_EXPORT {{class_name}} final : public {{property.superclass}} {
   void ApplyInherit(StyleResolverState&) const override;
   void ApplyValue(StyleResolverState&, const CSSValue&, ValueMode) const override;
   {% endif %}
+  {% if property.includes_currentcolor %}
+  [[nodiscard]] bool IsAffectedByCurrentColor(const ComputedStyle& style) const override;
+  {% endif %}
   {% endif %} {# not is_alias #}
 };
 

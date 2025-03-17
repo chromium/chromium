@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/constants/ash_features.h"
+#include "ash/test/ash_test_base.h"
 #include "base/containers/adapters.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -26,36 +27,28 @@ class TestPrivacyHubHandler : public PrivacyHubHandler {
   using PrivacyHubHandler::HandleInitialCameraLedFallbackState;
   using PrivacyHubHandler::HandleInitialMicrophoneSwitchState;
 };
-
-using cps = cros::mojom::CameraPrivacySwitchState;
 }  // namespace
 
-class PrivacyHubHandlerTest : public testing::Test {
-  // This has to go before privacy_hub_handler_ because in the
-  // CameraHalDispatcherImpl constructor a call to
-  // base::SequencedTaskRunner::GetCurrentDefault() is made which requires a
-  // task_environment. Initialization order of the members takes care
-  // of providing this before privacy_hub_handler_ is constructed.
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
-  // This has to go before privacy_hub_handler_ because PrivacyHubHandler
-  // constructor  requires CrasAudioHandler to be initialized.
-  // ScopedCrasAudioHandlerForTesting is a helper class that initializes
-  // CrasAudioHandler in it's constructor.
-  ScopedCrasAudioHandlerForTesting cras_audio_handler_;
-
-  // Has to go before privacy_hub_handler_ as it references its
-  // address and destruction order guarantees no invalid pointers.
-  content::TestWebUI web_ui_;
-
+class PrivacyHubHandlerTest : public AshTestBase {
  public:
   PrivacyHubHandlerTest()
       : this_test_name_(
             testing::UnitTest::GetInstance()->current_test_info()->name()) {
-    privacy_hub_handler_.set_web_ui(&web_ui_);
-    privacy_hub_handler_.AllowJavascriptForTesting();
-
     feature_list_.InitWithFeatures({features::kCrosPrivacyHub}, {});
+  }
+
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+
+    privacy_hub_handler_ = std::make_unique<TestPrivacyHubHandler>();
+    privacy_hub_handler_->set_web_ui(&web_ui_);
+    privacy_hub_handler_->AllowJavascriptForTesting();
+  }
+
+  void TearDown() override {
+    privacy_hub_handler_.reset();
+    AshTestBase::TearDown();
   }
 
   [[nodiscard]] base::Value GetLastWebUIListenerData(
@@ -68,7 +61,7 @@ class PrivacyHubHandlerTest : public testing::Test {
     return GetLastWebUIData("cr.webUIResponse", callback);
   }
 
-  TestPrivacyHubHandler privacy_hub_handler_;
+  std::unique_ptr<TestPrivacyHubHandler> privacy_hub_handler_;
   const std::string this_test_name_;
 
  protected:
@@ -104,6 +97,7 @@ class PrivacyHubHandlerTest : public testing::Test {
     return base::Value();
   }
 
+  content::TestWebUI web_ui_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -152,7 +146,7 @@ class PrivacyHubHandlerCameraSwitchTest
 
 TEST_P(PrivacyHubHandlerMicrophoneTest,
        MicrophoneHardwarePrivacySwitchChanged) {
-  privacy_hub_handler_.MicrophoneHardwareToggleChanged(GetParam());
+  privacy_hub_handler_->MicrophoneHardwareToggleChanged(GetParam());
 
   const base::Value data =
       GetLastWebUIListenerData("microphone-hardware-toggle-changed");
@@ -163,7 +157,7 @@ TEST_P(PrivacyHubHandlerMicrophoneTest,
 TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
   SetParamValueMicrophoneMute();
 
-  privacy_hub_handler_.HandleInitialMicrophoneSwitchState(
+  privacy_hub_handler_->HandleInitialMicrophoneSwitchState(
       base::Value::List().Append(this_test_name_));
 
   const base::Value data = GetLastWebUIResponse(this_test_name_);
@@ -173,7 +167,7 @@ TEST_P(PrivacyHubHandlerMicrophoneTest, HandleInitialMicrophoneSwitchState) {
 
 TEST_P(PrivacyHubHandlerCameraSwitchTest,
        ForceDisableCameraSwitchSwitchChanged) {
-  privacy_hub_handler_.SetForceDisableCameraSwitch(GetParam());
+  privacy_hub_handler_->SetForceDisableCameraSwitch(GetParam());
 
   const base::Value data =
       GetLastWebUIListenerData("force-disable-camera-switch");
@@ -196,7 +190,7 @@ TEST_P(PrivacyHubHandlerCameraLedFallbackTest,
   base::Value::List args;
   args.Append(this_test_name_);
 
-  privacy_hub_handler_.HandleInitialCameraLedFallbackState(args);
+  privacy_hub_handler_->HandleInitialCameraLedFallbackState(args);
 
   const base::Value data = GetLastWebUIResponse(this_test_name_);
 
@@ -209,13 +203,13 @@ INSTANTIATE_TEST_SUITE_P(CameraLedFallback,
                          testing::PrintToStringParamName());
 
 TEST_F(PrivacyHubHandlerTest, MicrophoneMutedBySecurityCurtainChanged) {
-  privacy_hub_handler_.OnInputMutedBySecurityCurtainChanged(true);
+  privacy_hub_handler_->OnInputMutedBySecurityCurtainChanged(true);
 
   ExpectValueMatchesBoolParam(
       true,
       GetLastWebUIListenerData("microphone-muted-by-security-curtain-changed"));
 
-  privacy_hub_handler_.OnInputMutedBySecurityCurtainChanged(false);
+  privacy_hub_handler_->OnInputMutedBySecurityCurtainChanged(false);
 
   ExpectValueMatchesBoolParam(
       false,
@@ -229,8 +223,8 @@ TEST_F(PrivacyHubHandlerDeathTest,
        HandleInitialMicrophoneSwitchStateNoCallbackId) {
   base::Value::List args;
 
-  EXPECT_DEATH(privacy_hub_handler_.HandleInitialMicrophoneSwitchState(args),
-               ".*Callback ID is required.*");
+  EXPECT_DEATH(privacy_hub_handler_->HandleInitialMicrophoneSwitchState(args),
+               ".*");
 }
 
 TEST_F(PrivacyHubHandlerDeathTest, HandleInitialMicrophoneSwitchStateWithArgs) {
@@ -238,8 +232,8 @@ TEST_F(PrivacyHubHandlerDeathTest, HandleInitialMicrophoneSwitchStateWithArgs) {
   args.Append(this_test_name_);
   args.Append(base::Value());
 
-  EXPECT_DEATH(privacy_hub_handler_.HandleInitialMicrophoneSwitchState(args),
-               ".*Did not expect arguments.*");
+  EXPECT_DEATH(privacy_hub_handler_->HandleInitialMicrophoneSwitchState(args),
+               ".*");
 }
 
 #endif

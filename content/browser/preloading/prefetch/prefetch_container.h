@@ -52,6 +52,7 @@ class PreloadingAttempt;
 class ProxyLookupClientImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
+class ServiceWorkerClient;
 
 // Holds the relevant size information of the prefetched response. The struct is
 // installed onto `PrefetchContainer`, and gets passed into
@@ -560,6 +561,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
+  // Set a callback for waiting for prefetch completion in tests.
+  using PrefetchResponseCompletedCallbackForTesting =
+      base::RepeatingCallback<void(base::WeakPtr<PrefetchContainer>)>;
+  static void SetPrefetchResponseCompletedCallbackForTesting(
+      PrefetchResponseCompletedCallbackForTesting callback);
+
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
     return no_vary_search_data_;
   }
@@ -674,7 +681,8 @@ class CONTENT_EXPORT PrefetchContainer {
     const SinglePrefetch& GetCurrentSinglePrefetchToServe() const;
 
     // See the comment for `PrefetchResponseReader::CreateRequestHandler()`.
-    PrefetchRequestHandler CreateRequestHandler();
+    std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+    CreateRequestHandler();
 
     // See the corresponding functions on `PrefetchResponseReader`.
     // These apply to the current `SinglePrefetch` (and so, may change as the
@@ -764,6 +772,12 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool is_in_dtor() const { return is_in_dtor_; }
 
+  void OnServiceWorkerStateDetermined(
+      PrefetchServiceWorkerState service_worker_state);
+  PrefetchServiceWorkerState service_worker_state() const {
+    return service_worker_state_;
+  }
+
  protected:
   friend class PrefetchContainerTestBase;
 
@@ -838,6 +852,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;
+
+  PrefetchServiceWorkerState service_worker_state_ =
+      PrefetchServiceWorkerState::kAllowed;
 
   // The origin and URL that initiates the prefetch request.
   // For renderer-initiated prefetch, this is calculated by referring

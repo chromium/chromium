@@ -1712,7 +1712,7 @@
     },
     {
       "id": 300,
-      "cr_bugs": [775898, 785648],
+      "cr_bugs": [775898],
       "description": "Direct composition causes rendering issues on Intel SandyBridge and IvyBridge GPUs on early versions of RS3",
       "os": {
         "type" : "win",
@@ -1727,7 +1727,7 @@
         "ivybridge"
       ],
       "features": [
-        "disable_direct_composition"
+        "disable_direct_composition_video_overlays"
       ]
     },
     {

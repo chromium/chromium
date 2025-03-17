@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -169,7 +170,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     }
 
     @Override
-    public void selectTabAndHideHubLayout(int tabId) {
+    public void selectTabAndHideHubLayout(@TabId int tabId) {
         TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER);
         startHiding();
     }
@@ -457,7 +458,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     @Override
     public void onTabCreated(
             long time,
-            int tabId,
+            @TabId int tabId,
             int tabIndex,
             int sourceTabId,
             boolean newIsIncognito,
@@ -495,33 +496,17 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         HUB_LAYOUT_EXPAND_NEW_TAB_DURATION_MS,
                         mOnToolbarAlphaChange);
 
-        Rect containerViewRect = new Rect();
-        containerView.getGlobalVisibleRect(containerViewRect);
-        int searchBoxHeight =
-                OmniboxFeatures.sAndroidHubSearch.isEnabled()
-                        ? HubUtils.getSearchBoxHeight(
-                                containerView, R.id.hub_toolbar, R.id.toolbar_action_container)
-                        : 0;
-
-        View paneHost = mHubController.getPaneHostView();
-        assert paneHost.isLaidOut();
-        Rect finalRect = new Rect();
-        paneHost.getGlobalVisibleRect(finalRect);
-        // Account for the hub's search box container height.
-        finalRect.offset(0, -searchBoxHeight);
-        finalRect.bottom += searchBoxHeight;
-        // Ignore edge offset and just ensure the width is correct. See crbug/1502437.
-        finalRect.offset(-finalRect.left, -containerViewRect.top);
-
         // TODO(crbug.com/40285429): Supply this from HubController so it can look like the
         // animation originated from wherever on the Hub was clicked. This defaults to the top
         // left/right of the pane host view.
         boolean isRtl = LocalizationUtils.isLayoutRtl();
+        Rect finalRect = new Rect();
+        getFinalRectForNewTabAnimation(containerView, newIsIncognito, finalRect);
         Rect initialRect;
         int cornerRadius;
         if (ChromeFeatureList.sShowNewTabAnimations.isEnabled()) {
             // Without this code, the upper corner shows a bit of blinking when running the
-            // animation. This ensures the {@link ShrinkExpandImageView} fully covers the upper
+            // animation. This ensures the {@link ShrinkExpandImageView} fully covers the origin
             // corner.
             if (isRtl) {
                 finalRect.right += 1;
@@ -677,6 +662,37 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         return pane.createHideHubLayoutAnimatorProvider(containerView);
     }
 
+    /**
+     * Updates the final {@link Rect} that will be used for the new foreground tab animation.
+     *
+     * @param containerView The {@link HubContainerView} that contains all the Hub UI.
+     * @param newIsIncognito true if the new tab is an incognito tab.
+     * @param finalRect The {@link Rect} that will get updated for the animation.
+     */
+    @VisibleForTesting
+    void getFinalRectForNewTabAnimation(
+            HubContainerView containerView, boolean newIsIncognito, Rect finalRect) {
+        View paneHost = mHubController.getPaneHostView();
+        assert paneHost.isLaidOut();
+        paneHost.getGlobalVisibleRect(finalRect);
+        Rect containerViewRect = new Rect();
+        containerView.getGlobalVisibleRect(containerViewRect);
+
+        if (mTabModelSelector.isIncognitoBrandedModelSelected() != newIsIncognito) {
+            // Start from above the toolbar when switching models.
+            finalRect.top = containerViewRect.top;
+        } else if (OmniboxFeatures.sAndroidHubSearch.isEnabled()) {
+            // Account for the hub's search box container height.
+            int searchBoxHeight =
+                    HubUtils.getSearchBoxHeight(
+                            containerView, R.id.hub_toolbar, R.id.toolbar_action_container);
+            finalRect.offset(0, -searchBoxHeight);
+            finalRect.bottom += searchBoxHeight;
+        }
+        // Ignore edge offset and just ensure the width is correct. See crbug.com/1502437.
+        finalRect.offset(-finalRect.left, -containerViewRect.top);
+    }
+
     private void maybeAddPaneAnimationListener(HubLayoutAnimationRunner animationRunner) {
         @Nullable Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         if (pane == null) return;
@@ -717,7 +733,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         return mLayoutTabs[0];
     }
 
-    private void createLayoutTabForTabId(int tabId) {
+    private void createLayoutTabForTabId(@TabId int tabId) {
         LayoutTab layoutTab = createLayoutTab(tabId, mTabModelSelector.isIncognitoSelected());
         mLayoutTabs = new LayoutTab[] {layoutTab};
         updateCacheVisibleIds(Collections.singletonList(tabId));
@@ -775,10 +791,11 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
     /**
      * Returns the tab id for a {@link Tab}.
+     *
      * @param tab The {@link Tab} to get an ID for or null.
      * @return the {@code tab}'s ID or {@link Tab#INVALID_TAB_ID} if null.
      */
-    private int getIdForTab(@Nullable Tab tab) {
+    private @TabId int getIdForTab(@Nullable Tab tab) {
         return tab == null ? Tab.INVALID_TAB_ID : tab.getId();
     }
 

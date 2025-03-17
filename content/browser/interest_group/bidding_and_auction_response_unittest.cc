@@ -643,9 +643,7 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
 TEST(BiddingAndAuctionResponseTest, ParseFails) {
   static const base::Value kTestCases[] = {
       base::Value(1),                                          // Not a dict
-      base::Value(base::Value::Dict()),                        // empty
       base::Value(base::Value::Dict().Set("isChaff", 1)),      // wrong type
-      base::Value(base::Value::Dict().Set("isChaff", false)),  // missing fields
       base::Value(
           CreateValidResponseDict().Set("adRenderURL", 1)),  // not a string
       base::Value(
@@ -713,6 +711,11 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
             return response;
           }(),
       },
+      {
+          base::Value(base::Value::Dict()),
+          {},
+      },
+      {base::Value(base::Value::Dict().Set("isChaff", false)), {}},
       {
           base::Value(CreateValidResponseDict()),
           CreateExpectedValidResponse(),

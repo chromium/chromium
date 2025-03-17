@@ -8,11 +8,11 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_focused_tab_manager.h"
-#include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -106,6 +106,7 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
   input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
+  inputs_modes_used_.insert(mode);
 }
 
 void GlicMetrics::OnResponseStarted() {
@@ -231,6 +232,19 @@ void GlicMetrics::OnGlicWindowClose() {
   }
   session_responses_ = 0;
   session_start_time_ = base::TimeTicks();
+
+  InputModesUsed modes_used = InputModesUsed::kNone;
+  if (!inputs_modes_used_.empty()) {
+    if (inputs_modes_used_.size() == 2) {
+      modes_used = InputModesUsed::kTextAndAudio;
+    } else {
+      modes_used = inputs_modes_used_.contains(mojom::WebClientMode::kAudio)
+                       ? InputModesUsed::kOnlyAudio
+                       : InputModesUsed::kOnlyText;
+    }
+  }
+  inputs_modes_used_.clear();
+  base::UmaHistogramEnumeration("Glic.Session.InputModesUsed", modes_used);
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,

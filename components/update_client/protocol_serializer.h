@@ -55,7 +55,6 @@ protocol_request::App MakeProtocolApp(
     int install_date,
     const std::string& install_source,
     const std::string& install_location,
-    const std::string& fingerprint,
     const std::map<std::string, std::string>& installer_attributes,
     const std::string& cohort,
     const std::string& cohort_hint,

@@ -23,24 +23,13 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 /** A utility class to handle saving and restoring the UI state across fold transitions. */
 public class FoldTransitionController {
     public static final String DID_CHANGE_TABLET_MODE = "did_change_tablet_mode";
-    static final String URL_BAR_FOCUS_STATE = "url_bar_focus_state";
-    static final String URL_BAR_EDIT_TEXT = "url_bar_edit_text";
-    static final String KEYBOARD_VISIBILITY_STATE = "keyboard_visibility_state";
-    static final String TAB_SWITCHER_VISIBILITY_STATE = "tab_switcher_visibility_state";
+    static final String ACTIVITY_RECREATION_UI_STATE = "activity_recreation_ui_state";
 
     private final OneshotSupplier<ToolbarManager> mToolbarManagerSupplier;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
     private final ActivityTabProvider mActivityTabProvider;
     private final Handler mLayoutStateHandler;
-    private UiState mRetainedUiState;
-
-    /** Used to preserve and restore the UI state of the activity. */
-    private static class UiState {
-        boolean mIsUrlBarFocused;
-        String mUrlBarEditText;
-        boolean mIsKeyboardShown;
-        boolean mIsTabSwitcherShown;
-    }
+    private ActivityRecreationUiState mRetainedUiState;
 
     /**
      * Construct a {@link FoldTransitionController} instance.
@@ -62,13 +51,13 @@ public class FoldTransitionController {
     }
 
     /**
-     * Saves the relevant UI to {@link UiState} before the activity is recreated on a device fold
-     * transition. This preserves the actual UI state, that could change before {@code
-     * Activity#onSaveInstanceState()} is called. For e.g. url bar focus is cleared before {@code
-     * Activity#onSaveInstanceState()}.
+     * Saves the relevant UI to {@link ActivityRecreationUiState} before the activity is recreated
+     * on a device fold transition. This preserves the actual UI state, that could change before
+     * {@code Activity#onSaveInstanceState()} is called. For e.g. url bar focus is cleared before
+     * {@code Activity#onSaveInstanceState()}.
      */
     public void prepareUiState() {
-        mRetainedUiState = new UiState();
+        mRetainedUiState = new ActivityRecreationUiState();
         if (mToolbarManagerSupplier.hasValue() && mToolbarManagerSupplier.get().isUrlBarFocused()) {
             mRetainedUiState.mIsUrlBarFocused = true;
             mRetainedUiState.mUrlBarEditText =
@@ -87,8 +76,8 @@ public class FoldTransitionController {
     }
 
     /**
-     * Saves the relevant UI from {@link UiState} to {@link Bundle} when the activity is recreated
-     * on a device fold transition. Expected to be invoked during {@code
+     * Saves the relevant UI from {@link ActivityRecreationUiState} to {@link Bundle} when the
+     * activity is recreated on a device fold transition. Expected to be invoked during {@code
      * Activity#onSaveInstanceState()}.
      *
      * @param savedInstanceState The {@link Bundle} where the UI state will be saved.
@@ -101,14 +90,8 @@ public class FoldTransitionController {
         if (savedInstanceState == null) return;
 
         savedInstanceState.putBoolean(DID_CHANGE_TABLET_MODE, didChangeTabletMode);
-        if (mRetainedUiState == null) return;
-        savedInstanceState.putBoolean(URL_BAR_FOCUS_STATE, mRetainedUiState.mIsUrlBarFocused);
-        if (mRetainedUiState.mIsUrlBarFocused) {
-            savedInstanceState.putString(URL_BAR_EDIT_TEXT, mRetainedUiState.mUrlBarEditText);
-        }
-        savedInstanceState.putBoolean(KEYBOARD_VISIBILITY_STATE, mRetainedUiState.mIsKeyboardShown);
-        savedInstanceState.putBoolean(
-                TAB_SWITCHER_VISIBILITY_STATE, mRetainedUiState.mIsTabSwitcherShown);
+        if (mRetainedUiState == null || mRetainedUiState.shouldRetainState()) return;
+        savedInstanceState.putParcelable(ACTIVITY_RECREATION_UI_STATE, mRetainedUiState);
     }
 
     /**
@@ -126,17 +109,19 @@ public class FoldTransitionController {
             return;
         }
 
+        ActivityRecreationUiState uiState =
+                savedInstanceState.getParcelable(ACTIVITY_RECREATION_UI_STATE);
+        if (uiState == null) {
+            return;
+        }
         restoreOmniboxState(
-                savedInstanceState,
+                uiState,
                 mToolbarManagerSupplier.get(),
                 mLayoutManagerSupplier.get(),
                 mLayoutStateHandler);
         restoreKeyboardState(
-                savedInstanceState,
-                mActivityTabProvider,
-                mLayoutManagerSupplier.get(),
-                mLayoutStateHandler);
-        restoreTabSwitcherState(savedInstanceState, mLayoutManagerSupplier.get());
+                uiState, mActivityTabProvider, mLayoutManagerSupplier.get(), mLayoutStateHandler);
+        restoreTabSwitcherState(uiState, mLayoutManagerSupplier.get());
     }
 
     private boolean getKeyboardVisibilityState() {
@@ -219,14 +204,14 @@ public class FoldTransitionController {
     }
 
     private static void restoreOmniboxState(
-            @NonNull Bundle savedInstanceState,
+            @NonNull ActivityRecreationUiState uiState,
             ToolbarManager toolbarManager,
             @NonNull LayoutManager layoutManager,
             Handler layoutStateHandler) {
-        if (toolbarManager == null || !savedInstanceState.getBoolean(URL_BAR_FOCUS_STATE, false)) {
+        if (toolbarManager == null || !uiState.mIsUrlBarFocused) {
             return;
         }
-        String urlBarText = savedInstanceState.getString(URL_BAR_EDIT_TEXT, "");
+        String urlBarText = uiState.mUrlBarEditText;
         restoreUiStateOnLayoutDoneShowing(
                 layoutManager,
                 layoutStateHandler,
@@ -234,16 +219,13 @@ public class FoldTransitionController {
     }
 
     private static void restoreKeyboardState(
-            @NonNull Bundle savedInstanceState,
+            @NonNull ActivityRecreationUiState uiState,
             @NonNull ActivityTabProvider activityTabProvider,
             @NonNull LayoutManager layoutManager,
             Handler layoutStateHandler) {
         // Restore the keyboard only if the omnibox focus was not restored, because omnibox code
         // is assumed to restore the keyboard on omnibox focus restoration.
-        if (savedInstanceState.getBoolean(URL_BAR_FOCUS_STATE, false)) {
-            return;
-        }
-        if (!savedInstanceState.getBoolean(KEYBOARD_VISIBILITY_STATE, false)) {
+        if (uiState.mIsUrlBarFocused || !uiState.mIsKeyboardShown) {
             return;
         }
         restoreUiStateOnLayoutDoneShowing(
@@ -251,8 +233,8 @@ public class FoldTransitionController {
     }
 
     private static void restoreTabSwitcherState(
-            @NonNull Bundle savedInstanceState, @NonNull LayoutManager layoutManager) {
-        if (!savedInstanceState.getBoolean(TAB_SWITCHER_VISIBILITY_STATE, false)) {
+            @NonNull ActivityRecreationUiState uiState, @NonNull LayoutManager layoutManager) {
+        if (!uiState.mIsTabSwitcherShown) {
             return;
         }
         layoutManager.showLayout(LayoutType.TAB_SWITCHER, false);

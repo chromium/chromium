@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
+#include "ash/public/cpp/privacy_hub_delegate.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -41,10 +42,10 @@ GeolocationPrivacySwitchController* GeolocationPrivacySwitchController::Get() {
 void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // The primary user has an exclusive control over the system geolocation
-  // setting. Return preemptively for the secondary users.
-  if (primary_user_pref_change_registrar_) {
-    return;
-  }
+  // setting. Stop observation immediately to keep subscribing to the primary
+  // user pref service.
+  CHECK(!primary_user_pref_change_registrar_);
+  session_observation_.Reset();
 
   // At this point the `pref_service` belongs to the primary user of the
   // seession. Subscribing to pref changes.
@@ -63,6 +64,14 @@ void GeolocationPrivacySwitchController::OnActiveUserPrefServiceChanged(
 
   if (features::IsCrosPrivacyHubLocationEnabled()) {
     UpdateNotification();
+  }
+}
+
+void GeolocationPrivacySwitchController::
+    NotifySystemGeolocationAccessLevelChanged(
+        GeolocationAccessLevel access_level) {
+  if (frontend_) {
+    frontend_->SystemGeolocationAccessLevelChanged(access_level);
   }
 }
 
@@ -85,6 +94,7 @@ void GeolocationPrivacySwitchController::OnPreferenceChanged() {
       cached_access_level_ = new_access_level;
     }
     UpdateNotification();
+    NotifySystemGeolocationAccessLevelChanged(new_access_level);
   } else {
     // Feature disabled means geolocation is always allowed
     CHECK(primary_user_pref_change_registrar_);
@@ -196,6 +206,14 @@ void GeolocationPrivacySwitchController::ApplyArcLocationUpdate(
     // Restore previous location level, which is blocking.
     SetAccessLevel(PreviousAccessLevel());
   }
+}
+
+void GeolocationPrivacySwitchController::SetFrontend(
+    PrivacyHubDelegate* frontend) {
+  frontend_ = frontend;
+  // Notify the active System WebUI of the potential changes of the system
+  // location setting.
+  NotifySystemGeolocationAccessLevelChanged(AccessLevel());
 }
 
 }  // namespace ash

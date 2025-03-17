@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -92,6 +93,34 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle),
       request_info.begin_params->skip_service_worker));
+}
+
+std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
+ServiceWorkerMainResourceLoaderInterceptor::CreateForPrefetch(
+    const network::ResourceRequest& resource_request,
+    base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+
+  if (!ShouldCreateForNavigation(
+          resource_request.url, resource_request.destination,
+          navigation_handle->context_wrapper()->browser_context())) {
+    return nullptr;
+  }
+
+  if (!navigation_handle->context_wrapper()->context()) {
+    return nullptr;
+  }
+
+  navigation_handle->set_service_worker_client(
+      navigation_handle->context_wrapper()
+          ->context()
+          ->service_worker_client_owner()
+          .CreateServiceWorkerClientForPrefetch(),
+      resource_request.trusted_params->isolation_info);
+
+  return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
+      std::move(navigation_handle), resource_request.skip_service_worker));
 }
 
 std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>

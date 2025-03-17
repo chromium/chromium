@@ -9,6 +9,8 @@ import("//components/optimization_guide/features.gni")
 
 static_library("browser") {
   sources = [
+    "ai_page_content_metadata.cc",
+    "ai_page_content_metadata.h",
     "page_content_proto_provider.cc",
     "page_content_proto_provider.h",
     "page_content_proto_util.cc",

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/screen_util.h"
@@ -21,6 +22,7 @@
 #include "ash/wm/wm_event.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
@@ -490,25 +492,15 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
     return;
   }
 
-  std::unique_ptr<UpdateSessionRequest> request =
-      std::make_unique<UpdateSessionRequest>(
-          session_client_impl_->sender(), base_url_, user_identity_,
-          session->session_id(),
-          base::BindOnce(&BocaAppHandler::OnUpdatedCaptionConfig,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-  auto captions_config = CaptionConfigMojomToProto(config->Clone());
-  // Record the current caption update so that on task change won't override it.
-  // Will be reset on callback run.
-  latest_caption_config_ =
-      std::make_unique<::boca::CaptionsConfig>(*captions_config);
-  request->set_captions_config(std::move(captions_config));
-
-  if (!latest_ontask_config_) {
-    latest_ontask_config_ = std::make_unique<::boca::OnTaskConfig>(
-        GetSessionConfigSafe(session).on_task_config());
+  // Skip caption initialization when disabling captions.
+  if (!config->session_caption_enabled) {
+    UpdateCaptionConfigInternal(std::move(config), std::move(callback),
+                                /*can_proceed=*/true);
+    return;
   }
-  request->set_on_task_config(std::move(latest_ontask_config_));
-  session_client_impl_->UpdateSession(std::move(request));
+  BocaAppClient::Get()->GetSessionManager()->InitSessionCaption(base::BindOnce(
+      &BocaAppHandler::UpdateCaptionConfigInternal,
+      weak_ptr_factory_.GetWeakPtr(), std::move(config), std::move(callback)));
 }
 
 void BocaAppHandler::SetFloatMode(bool is_float_mode,
@@ -837,5 +829,37 @@ void BocaAppHandler::OnAccessCodeSubmitted(
         std::move(result.value()), /*dispatch_event=*/true);
     std::move(callback).Run(std::nullopt);
   }
+}
+
+void BocaAppHandler::UpdateCaptionConfigInternal(
+    mojom::CaptionConfigPtr config,
+    UpdateCaptionConfigCallback callback,
+    bool can_proceed) {
+  if (!can_proceed) {
+    LOG(ERROR) << "[Boca] Caption initialization failed.";
+    std::move(callback).Run(mojom::UpdateSessionError::kPreconditionFailed);
+    return;
+  }
+  auto* session =
+      BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
+  std::unique_ptr<UpdateSessionRequest> request =
+      std::make_unique<UpdateSessionRequest>(
+          session_client_impl_->sender(), base_url_, user_identity_,
+          session->session_id(),
+          base::BindOnce(&BocaAppHandler::OnUpdatedCaptionConfig,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  auto captions_config = CaptionConfigMojomToProto(config->Clone());
+  // Record the current caption update so that on task change won't override it.
+  // Will be reset on callback run.
+  latest_caption_config_ =
+      std::make_unique<::boca::CaptionsConfig>(*captions_config);
+  request->set_captions_config(std::move(captions_config));
+
+  if (!latest_ontask_config_) {
+    latest_ontask_config_ = std::make_unique<::boca::OnTaskConfig>(
+        GetSessionConfigSafe(session).on_task_config());
+  }
+  request->set_on_task_config(std::move(latest_ontask_config_));
+  session_client_impl_->UpdateSession(std::move(request));
 }
 }  // namespace ash::boca

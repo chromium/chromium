@@ -1145,6 +1145,8 @@ void InProcessIntermediateDumpHandler::WriteDataSegmentAnnotations(
         WriteCrashpadAnnotationsList(writer, crashpad_info.get());
         WriteCrashpadSimpleAnnotationsDictionary(writer, crashpad_info.get());
         WriteCrashpadExtraMemoryRanges(writer, crashpad_info.get());
+        WriteCrashpadIntermediateDumpExtraMemoryRanges(writer,
+                                                       crashpad_info.get());
       }
     } else if (strcmp(section_vm_read_ptr->sectname, "__crash_info") == 0) {
       ScopedVMRead<crashreporter_annotations_t> crash_info;
@@ -1285,6 +1287,43 @@ void InProcessIntermediateDumpHandler::WriteCrashpadExtraMemoryRanges(
                        IntermediateDumpKey::kModuleExtraMemoryRegionData,
                        reinterpret_cast<const void*>(address),
                        size);
+  }
+}
+
+void InProcessIntermediateDumpHandler::
+    WriteCrashpadIntermediateDumpExtraMemoryRanges(
+        IOSIntermediateDumpWriter* writer,
+        CrashpadInfo* crashpad_info) {
+  if (!crashpad_info->intermediate_dump_extra_memory_ranges()) {
+    return;
+  }
+
+  ScopedVMRead<SimpleAddressRangeBag> intermediate_dump_extra_memory;
+  if (!intermediate_dump_extra_memory.Read(
+          crashpad_info->intermediate_dump_extra_memory_ranges())) {
+    CRASHPAD_RAW_LOG(
+        "Unable to read intermediate dump extra memory ranges object");
+    return;
+  }
+
+  IOSIntermediateDumpWriter::ScopedArray module_extra_memory_regions_array(
+      writer, IntermediateDumpKey::kModuleIntermediateDumpExtraMemoryRegions);
+
+  SimpleAddressRangeBag::Iterator iterator(
+      *(intermediate_dump_extra_memory.get()));
+  while (const SimpleAddressRangeBag::Entry* entry = iterator.Next()) {
+    const uint64_t& address = entry->base;
+    const uint64_t& size = entry->size;
+    IOSIntermediateDumpWriter::ScopedArrayMap memory_region_map(writer);
+    WriteProperty(
+        writer,
+        IntermediateDumpKey::kModuleIntermediateDumpExtraMemoryRegionAddress,
+        &address);
+    WritePropertyBytes(
+        writer,
+        IntermediateDumpKey::kModuleIntermediateDumpExtraMemoryRegionData,
+        reinterpret_cast<const void*>(address),
+        size);
   }
 }
 

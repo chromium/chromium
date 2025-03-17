@@ -162,9 +162,12 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
         return false;
       }
       const base::Value::List* app_list =
-          doc->FindListByDottedPath("request.app");
+          doc->FindListByDottedPath("request.apps");
       if (!app_list) {
-        return false;
+        app_list = doc->FindListByDottedPath("request.app");  // V3 fallback.
+        if (!app_list) {
+          return false;
+        }
       }
       for (const base::Value& app : *app_list) {
         if (const auto* dict = app.GetIfDict()) {
@@ -198,7 +201,7 @@ Matcher GetUpdaterEnableUpdatesMatcher() {
         return false;
       }
       const base::Value::List* app_list =
-          doc->FindListByDottedPath("request.app");
+          doc->FindListByDottedPath("request.apps");
       if (!app_list) {
         return false;
       }

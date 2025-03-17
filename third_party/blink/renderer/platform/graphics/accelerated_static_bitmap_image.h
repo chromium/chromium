@@ -57,20 +57,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gfx::Size& size,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      sk_sp<SkColorSpace> sk_color_space,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::PlatformThreadRef context_thread_ref,
-      scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-      viz::ReleaseCallback release_callback);
-
-  static scoped_refptr<AcceleratedStaticBitmapImage>
-  CreateFromCanvasSharedImage(
-      scoped_refptr<gpu::ClientSharedImage>,
-      const gpu::SyncToken&,
-      GLuint shared_image_texture_id,
-      const gfx::Size& size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,

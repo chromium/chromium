@@ -122,7 +122,7 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 #if BUILDFLAG(IS_WIN)
   // This has to be called after a context is created, active GPU is identified,
   // and GPU driver bug workarounds are computed again. Otherwise the workaround
-  // |disable_direct_composition| may not be correctly applied.
+  // `disable_direct_composition_video_overlays` may not be correctly applied.
   // Also, this has to be called after falling back to SwiftShader decision is
   // finalized because this function depends on GL is ANGLE's GLES or not.
   gl::DirectCompositionOverlayWorkarounds workarounds = {
@@ -148,7 +148,7 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
   if (gpu_info->gpu.vendor_string.find("Qualcomm") != std::string::npos) {
     gfx::SurfaceControl::EnableQualcommUBWC();
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
@@ -167,7 +167,7 @@ bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
   return true;
 #else
   return true;
-#endif
+#endif  // BUILDFLAG(IS_LINUX)
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
@@ -226,7 +226,7 @@ void DisableInProcessGpuGraphite(GpuFeatureInfo& gpu_feature_info,
     gpu_preferences.gr_context_type = GrContextType::kGL;
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_VULKAN)
 bool MatchGLInfo(const std::string& field, const std::string& patterns) {
@@ -275,7 +275,7 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
   uint64_t system_device_id_low_power =
       gpu_low_power ? gpu_low_power->system_device_id : 0;
   uint64_t system_device_id_default = gpu_default->system_device_id;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   DCHECK(gpu_default);
 
   if (gpu_info.GpuCount() <= 1) {
@@ -330,7 +330,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   GPU_STARTUP_TRACE_EVENT("gpu::GpuInit::InitializeAndStartSandbox");
 #if BUILDFLAG(IS_CHROMEOS)
   LOG(WARNING) << "Starting gpu initialization.";
-#endif
+#endif  //  BUILDFLAG(IS_CHROMEOS)
   gpu_preferences_ = gpu_preferences;
   // Blocklist decisions based on basic GPUInfo may not be final. It might
   // need more context based GPUInfo. In such situations, switching to
@@ -340,10 +340,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   needs_more_info = false;
   CollectBasicGraphicsInfo(command_line, &gpu_info_);
 
-  IntelGpuSeriesType intel_gpu_series_type = GetIntelGpuSeriesType(
-      gpu_info_.active_gpu().vendor_id, gpu_info_.active_gpu().device_id);
-  UMA_HISTOGRAM_ENUMERATION("GPU.IntelGpuSeriesType", intel_gpu_series_type);
-
   // Set keys for crash logging based on preliminary gpu info, in case we
   // crash during feature collection.
   SetKeysForCrashLogging(gpu_info_);
@@ -351,7 +347,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   gpu_info_.subpixel_font_rendering = false;
 #else
   gpu_info_.subpixel_font_rendering = true;
-#endif
+#endif  // defined(SUBPIXEL_FONT_RENDERING_DISABLED)
 
   if (gpu_preferences_.enable_perf_data_collection) {
     // This is only enabled on the info collection GPU process.
@@ -474,7 +470,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // we can share the D3D11 device between ANGLE and Dawn.
     gl::GLDisplayEGL::EnableANGLEDebugLayer();
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
   if (gl::GetGLImplementation() != gl::kGLImplementationDisabled) {
     gl_display = gl::init::InitializeGLNoExtensionsOneOff(
         /*init_bindings*/ false, gl::GpuPreference::kDefault);
@@ -501,9 +497,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #elif BUILDFLAG(IS_WIN)
     // Graphite requires ANGLE D3D11 (or Swiftshader, handled below) on Windows
     constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kD3D11;
-#else
+#else   // !IS_APPLE && !IS_WIN
     constexpr auto kRequiredANGLEImplementation = gl::ANGLEImplementation::kNone;
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
     if (kRequiredANGLEImplementation == gl::ANGLEImplementation::kNone ||
         gl::GetANGLEImplementation() == kRequiredANGLEImplementation) {
       // If ANGLE is using required implementation, fallback is not needed.
@@ -539,7 +535,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // The sandbox is not started yet.
     sandbox_helper_->PreSandboxStartup(gpu_preferences);
   }
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   ResumeGpuWatchdog(watchdog_thread_.get());
 
@@ -562,7 +558,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_info_.passthrough_cmd_decoder = true;
     gpu_preferences_.use_passthrough_cmd_decoder = true;
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/233238923): While passthrough is rolling out on CrOS, it's useful
@@ -675,7 +671,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         GPU_STARTUP_TRACE_EVENT("Load dxcompiler.dll");
         base::LoadNativeLibrary(module_path.Append(L"dxcompiler.dll"), nullptr);
       }
-#endif
+#endif  // defined(DAWN_USE_BUILT_DXC)
 
       // Preload a redistributable DirectML.dll that allows testing WebNN
       // against newer release of DirectML before it is integrated into
@@ -705,7 +701,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       LOG(FATAL) << "Vulkan initialization failed";
 #else
       gpu_preferences_.gr_context_type = GrContextType::kGL;
-#endif
+#endif  // BUILDFLAG(IS_FUCHSIA)
     }
   } else {
     // TODO(crbug.com/40700374): It would be better to cleanly tear
@@ -822,7 +818,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       recreate_watchdog = true;
     }
   }
-#endif
+#endif  // IS_LINUX || (IS_CHROMEOS && !IS_CHROMEOS_DEVICE)
   gpu_info_.gl_implementation_parts = gl::GetGLImplementationParts();
   bool software_rendering = false;
   if (gl_use_swiftshader_ ||
@@ -844,13 +840,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
   }
 
-  UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
-
   if (!gpu_info_.sandboxed && !attempted_startsandbox) {
     gpu_info_.sandboxed = sandbox_helper_->EnsureSandboxInitialized(
         watchdog_thread_.get(), &gpu_info_, gpu_preferences_);
   }
-  UMA_HISTOGRAM_BOOLEAN("GPU.Sandboxed", gpu_info_.sandboxed);
 
   InitializeDawnProcs();
 
@@ -870,7 +863,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         return false;
       }
       // SkiaGraphite is disabled by software_rendering_list.json
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
       gpu_preferences_.gr_context_type = GrContextType::kGL;
     }
   }
@@ -885,7 +878,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
     gl::InitializeDirectComposition(std::move(d3d11_device));
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
@@ -924,6 +917,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_OZONE)
 
+  RecordUMA();
   if (!watchdog_thread_) {
     watchdog_init.SetGpuWatchdogPtr(nullptr);
   }
@@ -936,7 +930,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (gpu_feature_info_.IsWorkaroundEnabled(FLUSH_BEFORE_CREATE_FENCE)) {
     gl::GLFenceEGL::FlushBeforeCreateFence();
   }
-#endif
+#endif  // !BUILDFLAG(IS_MAC)
 
   return true;
 }
@@ -969,7 +963,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   default_offscreen_surface_ =
       gl::init::CreateOffscreenGLSurface(gl_display, gfx::Size());
-#else
+#else  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
@@ -1023,7 +1017,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     // happen and keeps Chrome and linux-chromeos usable with rr.
     gl_use_swiftshader_ = true;
   }
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // IS_LINUX || (IS_CHROMEOS && !IS_CHROMEOS_DEVICE)
 
   if (!gl_disabled && !gl_use_swiftshader_) {
     CollectContextGraphicsInfo(&gpu_info_);
@@ -1118,7 +1112,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
   InitializeDawnProcs();
 #if !BUILDFLAG(IS_ANDROID)
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
@@ -1135,6 +1128,27 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SetSkiaBackendType();
+  RecordUMA();
+}
+
+void GpuInit::RecordUMA() {
+  // Don't record UMA from the GPU info collection process as it's not
+  // represenative of a real GPU process launch.
+  if (gpu_preferences_.enable_perf_data_collection) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
+  IntelGpuSeriesType intel_gpu_series_type = GetIntelGpuSeriesType(
+      gpu_info_.active_gpu().vendor_id, gpu_info_.active_gpu().device_id);
+  UMA_HISTOGRAM_ENUMERATION("GPU.IntelGpuSeriesType", intel_gpu_series_type);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
+
+  UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
+
+  UMA_HISTOGRAM_BOOLEAN("GPU.Sandboxed", gpu_info_.sandboxed);
+  // Record the Skia backend type on GPU initialization.
+  UMA_HISTOGRAM_ENUMERATION("GPU.SkiaBackendType", gpu_info_.skia_backend_type);
 }
 
 void GpuInit::SaveHardwareGpuInfoAndGpuFeatureInfo() {
@@ -1196,13 +1210,11 @@ void GpuInit::SetSkiaBackendType() {
       break;
 #else
       NOTREACHED();
-#endif
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
     }
   }
 
   gpu_info_.skia_backend_type = skia_backend_type;
-  // Record the Skia backend type on GPU initialization.
-  UMA_HISTOGRAM_ENUMERATION("GPU.SkiaBackendType", skia_backend_type);
   // Record SkiaBackendType as gr-context-type crash key.
   static crash_reporter::CrashKeyString<24> crash_key("gr-context-type");
   crash_key.Set(SkiaBackendTypeToString(skia_backend_type));

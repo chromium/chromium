@@ -5,6 +5,9 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/privacy_hub_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -14,12 +17,15 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash::settings {
 
 PrivacyHubHandler::PrivacyHubHandler()
     : mic_muted_by_security_curtain_(
-          CrasAudioHandler::Get()->IsInputMutedBySecurityCurtain()) {}
+          CrasAudioHandler::Get()->IsInputMutedBySecurityCurtain()) {
+  this_account_id_ = Shell::Get()->session_controller()->GetActiveAccountId();
+}
 
 PrivacyHubHandler::~PrivacyHubHandler() {
   privacy_hub_util::SetFrontend(nullptr);
@@ -42,6 +48,11 @@ void PrivacyHubHandler::RegisterMessages() {
       "getInitialCameraSwitchForceDisabledState",
       base::BindRepeating(
           &PrivacyHubHandler::HandleInitialCameraSwitchForceDisabledState,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getInitialGeolocationAccessLevelState",
+      base::BindRepeating(
+          &PrivacyHubHandler::HandleInitialPrimaryUserLocationState,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getCameraLedFallbackState",
@@ -80,6 +91,12 @@ void PrivacyHubHandler::SetForceDisableCameraSwitch(bool disabled) {
   NotifyJS("force-disable-camera-switch", base::Value(disabled));
 }
 
+void PrivacyHubHandler::SystemGeolocationAccessLevelChanged(
+    GeolocationAccessLevel access_level) {
+  NotifyJS("system-geolocation-access-level-changed",
+           base::Value(static_cast<int>(access_level)));
+}
+
 void PrivacyHubHandler::OnInputMutedBySecurityCurtainChanged(bool muted) {
   if (mic_muted_by_security_curtain_ == muted) {
     return;
@@ -87,6 +104,14 @@ void PrivacyHubHandler::OnInputMutedBySecurityCurtainChanged(bool muted) {
   mic_muted_by_security_curtain_ = muted;
 
   NotifyJS("microphone-muted-by-security-curtain-changed", base::Value(muted));
+}
+void PrivacyHubHandler::OnActiveUserSessionChanged(
+    const AccountId& account_id) {
+  // If the user associated to this instance has become active, mark this
+  // instance as the active frontend.
+  if (account_id == this_account_id_) {
+    privacy_hub_util::SetFrontend(this);
+  }
 }
 
 void PrivacyHubHandler::HandleInitialMicrophoneSwitchState(
@@ -115,6 +140,14 @@ void PrivacyHubHandler::HandleInitialCameraLedFallbackState(
     const base::Value::List& args) {
   const auto callback_id = ValidateArgs(args);
   const auto value = base::Value(privacy_hub_util::UsingCameraLEDFallback());
+  ResolveJavascriptCallback(callback_id, value);
+}
+
+void PrivacyHubHandler::HandleInitialPrimaryUserLocationState(
+    const base::Value::List& args) {
+  const auto callback_id = ValidateArgs(args);
+  const auto value = base::Value(
+      static_cast<int>(privacy_hub_util::GetSystemGeolocationAccessLevel()));
   ResolveJavascriptCallback(callback_id, value);
 }
 

@@ -1184,4 +1184,23 @@ void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server) {
                           base::OwnedRef(navigation_counter))));
 }
 
+LoadingStartObserver::LoadingStartObserver(WebContents* web_contents,
+                                           Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+
+LoadingStartObserver::~LoadingStartObserver() = default;
+
+void LoadingStartObserver::DidStartLoading() {
+  callback_.Run();
+}
+
+LoadingStopObserver::LoadingStopObserver(WebContents* web_contents,
+                                         Callback callback)
+    : WebContentsObserver(web_contents), callback_(std::move(callback)) {}
+LoadingStopObserver::~LoadingStopObserver() = default;
+
+void LoadingStopObserver::DidStopLoading() {
+  callback_.Run();
+}
+
 }  // namespace content

@@ -33,6 +33,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -184,13 +185,7 @@ TableView::TableView() : weak_factory_(this) {
   views::HighlightPathGenerator::Install(
       this, std::make_unique<TableView::HighlightPathGenerator>());
 
-  FocusRing::Install(this);
-  views::FocusRing::Get(this)->SetHasFocusPredicate(
-      base::BindRepeating([](const View* view) {
-        const auto* v = views::AsViewClass<TableView>(view);
-        CHECK(v);
-        return v->HasFocus() && !v->header_row_is_active_;
-      }));
+  InstallFocusRing();
   GetViewAccessibility().SetRole(ax::mojom::Role::kListGrid);
   GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
@@ -228,7 +223,7 @@ std::unique_ptr<ScrollView> TableView::CreateScrollViewWithTable(
 
   table_ptr->on_scroll_view_scrolled_ =
       scroll_view->AddContentsScrolledCallback(base::BindRepeating(
-          &TableView::UpdateHoverAtMouseLocation, base::Unretained(table_ptr)));
+          &TableView::SyncHoverToScroll, base::Unretained(table_ptr)));
   table_ptr->CreateHeaderIfNecessary(scroll_view.get());
 
   return scroll_view;
@@ -247,7 +242,7 @@ Builder<ScrollView> TableView::CreateScrollViewBuilderWithTable(
             // based on the new content under the cursor.
             table_view->on_scroll_view_scrolled_ =
                 scroll_view->AddContentsScrolledCallback(
-                    base::BindRepeating(&TableView::UpdateHoverAtMouseLocation,
+                    base::BindRepeating(&TableView::SyncHoverToScroll,
                                         base::Unretained(table_view)));
 
             table_view->CreateHeaderIfNecessary(scroll_view);
@@ -259,6 +254,7 @@ void TableView::Init(ui::TableModel* model,
                      const std::vector<ui::TableColumn>& columns,
                      TableType table_type,
                      bool single_selection) {
+  hover_layer_.SetBounds(gfx::Rect(0, 0, 1, 1));
   SetColumns(columns);
   SetTableType(table_type);
   SetSingleSelection(single_selection);
@@ -457,6 +453,7 @@ void TableView::ToggleSortOrder(size_t visible_column_index) {
         column.title));
   }
   SetSortDescriptors(sort);
+  ForceHoverUpdate();
   UpdateFocusRings();
 }
 
@@ -637,8 +634,8 @@ void TableView::SetMouseHoveringEnabled(bool enabled) {
   SchedulePaint();
 }
 
-bool TableView::IsHoveringEnabled() const {
-  return hovering_enabled_ && GetWidget() && GetWidget()->IsActive();
+bool TableView::IsHoverEffectEnabled() const {
+  return hovering_enabled_;
 }
 
 void TableView::Layout(PassKey) {
@@ -655,6 +652,10 @@ void TableView::Layout(PassKey) {
         UpdateVisibleColumnSizes();
       }
     }
+
+    // Reset the scroll offset, and flush changes to the hover layer when the
+    // size of the scroll view changes.
+    SyncHoverToScroll();
   }
   // We have to override Layout like this since we're contained in a ScrollView.
   gfx::Size pref = GetPreferredSize({});
@@ -831,40 +832,115 @@ bool TableView::HandleKeyPressedForKeyboardNavigationByCell(
   return false;
 }
 
-void TableView::UpdateHover(std::optional<gfx::Point> view_coordinates) {
-  if (!IsHoveringEnabled()) {
+void TableView::SyncHoverToScroll() {
+  if (!IsHoverEffectEnabled()) {
     return;
   }
-
-  // If no coordinates are passed in, unhighlight all rows.
-  if (!view_coordinates.has_value()) {
-    hovered_rows_ = std::nullopt;
-    SchedulePaint();
-    return;
+  if (ScrollView* scroll_view = ScrollView::GetScrollViewForContents(this)) {
+    gfx::PointF current_offset = scroll_view->CurrentOffset();
+    scroll_offset_.set_x(static_cast<int>(current_offset.x()));
+    scroll_offset_.set_y(static_cast<int>(current_offset.y()));
   }
 
-  const std::optional<GroupRange> previous_hovered_rows = hovered_rows_;
-  // Calculate the row index. Use floor() to account for negative y-coordinates.
-  const float row_float = static_cast<float>(view_coordinates->y()) /
-                          static_cast<float>(row_height_);
-  const int row = static_cast<int>(std::floor(row_float));
-  const bool in_bounds = row >= 0 && static_cast<size_t>(row) < GetRowCount();
-  hovered_rows_ = in_bounds ? std::make_optional<GroupRange>(
-                                  GetGroupRange(static_cast<size_t>(row)))
-                            : std::nullopt;
-
-  if (previous_hovered_rows != hovered_rows_) {
-    SchedulePaint();
-  }
+  ForceHoverUpdate();
 }
 
-void TableView::UpdateHoverAtMouseLocation() {
-  if (!IsHoveringEnabled()) {
+void TableView::ForceHoverUpdate() {
+  SetHover(ConvertPointFromScreen(
+      this, display::Screen::GetScreen()->GetCursorScreenPoint()));
+}
+
+void TableView::SetHover(gfx::Point view_coordinates) {
+  if (!IsHoverEffectEnabled()) {
     return;
   }
 
-  gfx::Point cursor_pos(display::Screen::GetScreen()->GetCursorScreenPoint());
-  UpdateHover(ConvertPointFromScreen(this, cursor_pos));
+  // If the mouse is not in the view, or mouse events are disabled, unhighlight
+  // all rows.
+  if (!IsMouseHovered()) {
+    ClearHover();
+    return;
+  }
+
+  // Calculate the row index. Use floor() to account for negative y-coordinates.
+  const float row_float = static_cast<float>(view_coordinates.y()) /
+                          static_cast<float>(row_height_);
+  const int row = static_cast<int>(std::floor(row_float));
+  const size_t row_as_sizet = static_cast<size_t>(row);
+  const bool out_of_bounds = row < 0 || row_as_sizet >= GetRowCount();
+
+  if (out_of_bounds) {
+    hovered_rows_ = std::nullopt;
+    view_index_of_row_under_cursor_ = std::nullopt;
+    UpdateHoverLayer();
+    return;
+  }
+
+  // Set the hovered rows, which will be the original row(s) (row(s) before
+  // sorting) under the mouse cursor. These rows are in terms of model
+  // indices.
+  hovered_rows_ = GetGroupRange(ViewToModel(row_as_sizet));
+  view_index_of_row_under_cursor_ = row_as_sizet;
+
+  // If any hovered rows are selected indices, don't highlight them.
+  if (hovered_rows_.has_value()) {
+    const size_t start = hovered_rows_->start;
+    const size_t end = start + hovered_rows_->length;
+    for (size_t i = start; i < end; ++i) {
+      if (selection_model_.IsSelected(i)) {
+        hovered_rows_ = std::nullopt;
+        break;
+      }
+    }
+  }
+
+  // Flush changes to the layer.
+  UpdateHoverLayer();
+}
+
+void TableView::ClearHover() {
+  hovered_rows_ = std::nullopt;
+  UpdateHoverLayer();
+}
+
+void TableView::UpdateHoverLayer() {
+  if (!IsHoverEffectEnabled()) {
+    return;
+  }
+
+  // Parent it to ScrollView's Viewport if we haven't already.
+  if (hover_layer_.parent() != parent()->layer()) {
+    CHECK(parent()->parent() == ScrollView::GetScrollViewForContents(this))
+        << "Not parented to a ScrollView. Mouse hovering is only supported for "
+           "TableViews who are parented to a ScrollView.";
+    parent()->layer()->Add(&hover_layer_);
+  }
+
+  if (!hovered_rows_.has_value() ||
+      !view_index_of_row_under_cursor_.has_value()) {
+    hover_layer_.SetTransform(gfx::Transform());
+    return;
+  }
+
+  const GroupRange& range = hovered_rows_.value();
+  const size_t model_index =
+      ViewToModel(view_index_of_row_under_cursor_.value());
+  const size_t start =
+      view_index_of_row_under_cursor_.value() - (model_index - range.start);
+  const size_t end = start + range.length - 1;
+
+  // Otherwise, if the hovered rows are within bounds, set the hover transform.
+  if (end <= GetRowCount()) {
+    gfx::Rect row_start_bounds = GetRowBounds(start);
+
+    hover_layer_.SetTransform(
+        gfx::Transform(gfx::AxisTransform2d::FromScaleAndTranslation(
+            gfx::Vector2dF(
+                row_start_bounds.width(),
+                row_start_bounds.height() * static_cast<int>(range.length)),
+            gfx::Vector2dF(row_start_bounds.x() - scroll_offset_.x(),
+                           row_start_bounds.y() - scroll_offset_.y()))));
+  }
 }
 
 bool TableView::OnMousePressed(const ui::MouseEvent& event) {
@@ -878,6 +954,7 @@ bool TableView::OnMousePressed(const ui::MouseEvent& event) {
     return true;
   }
 
+  ClearHover();
   if (event.GetClickCount() == 2) {
     SelectByViewIndex(static_cast<size_t>(row));
     if (observer_) {
@@ -892,12 +969,16 @@ bool TableView::OnMousePressed(const ui::MouseEvent& event) {
   return true;
 }
 
+void TableView::OnMouseEntered(const ui::MouseEvent& event) {
+  SetHover(event.location());
+}
+
 void TableView::OnMouseMoved(const ui::MouseEvent& event) {
-  UpdateHover(event.location());
+  SetHover(event.location());
 }
 
 void TableView::OnMouseExited(const ui::MouseEvent& event) {
-  UpdateHover(std::nullopt);
+  ClearHover();
 }
 
 void TableView::OnGestureEvent(ui::GestureEvent* event) {
@@ -1028,6 +1109,17 @@ void TableView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   // If the bounds change, we need to update the bounds of our AXVirtualView
   // children.
   UpdateVirtualAccessibilityChildrenVisibilityState();
+
+  // Recompute the hovered rows and transform of the hover layer.
+  ForceHoverUpdate();
+}
+
+void TableView::OnThemeChanged() {
+  View::OnThemeChanged();
+
+  // Update the color by resolving the the color token.
+  hover_layer_.SetColor(
+      GetColorProvider()->GetColor(ui::kColorTableRowHighlight));
 }
 
 void TableView::OnModelChanged() {
@@ -1039,6 +1131,7 @@ void TableView::OnModelChanged() {
 
 void TableView::OnItemsChanged(size_t start, size_t length) {
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
+  ForceHoverUpdate();
 }
 
 void TableView::OnItemsAdded(size_t start, size_t length) {
@@ -1065,6 +1158,7 @@ void TableView::OnItemsAdded(size_t start, size_t length) {
   UpdateVirtualAccessibilityChildrenVisibilityState();
   PreferredSizeChanged();
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, true);
+  ForceHoverUpdate();
 }
 
 void TableView::OnItemsMoved(size_t old_start,
@@ -1072,6 +1166,7 @@ void TableView::OnItemsMoved(size_t old_start,
                              size_t new_start) {
   selection_model_.Move(old_start, new_start, length);
   SortItemsAndUpdateMapping(/*schedule_paint=*/true);
+  ForceHoverUpdate();
 }
 
 void TableView::OnItemsRemoved(size_t start, size_t length) {
@@ -1137,6 +1232,7 @@ void TableView::OnItemsRemoved(size_t start, size_t length) {
   UpdateVirtualAccessibilityChildrenBounds();
   PreferredSizeChanged();
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, true);
+  ForceHoverUpdate();
   if (observer_) {
     observer_->OnSelectionChanged();
   }
@@ -1281,21 +1377,14 @@ void TableView::OnPaintImpl(gfx::Canvas* canvas) {
       color_provider->GetColor(selected_text_color_id(HasFocus()));
   const SkColor alternate_bg_color =
       color_provider->GetColor(BackgroundAlternateColorId());
-  const SkColor hovered_bg_color =
-      color_provider->GetColor(ui::kColorTableRowHighlight);
   const int cell_margin = GetCellMargin();
   const int cell_element_spacing = GetCellElementSpacing();
   std::optional<cc::PaintFlags> icon_background_paint_flags;
-  const GroupRange range = hovered_rows_.value_or(GroupRange({0, 0}));
   for (size_t i = region.min_row; i < region.max_row; ++i) {
     const size_t model_index = ViewToModel(i);
     const bool is_selected = selection_model_.IsSelected(model_index);
-    const bool is_hovered = range.start <= i && i < range.start + range.length;
-
     if (is_selected) {
       canvas->FillRect(GetRowBounds(i), selected_bg_color);
-    } else if (hovering_enabled_ && is_hovered) {
-      canvas->FillRect(GetRowBounds(i), hovered_bg_color);
     } else if (alternating_row_colors_ &&
                alternate_bg_color != default_bg_color && (i % 2)) {
       canvas->FillRect(GetRowBounds(i), alternate_bg_color);
@@ -1769,6 +1858,7 @@ void TableView::SetSelectionModel(ui::ListSelectionModel new_selection) {
 
   UpdateFocusRings();
   ScheduleUpdateAccessibilityFocusIfNeeded();
+  ForceHoverUpdate();
   if (observer_) {
     observer_->OnSelectionChanged();
   }
@@ -2123,6 +2213,32 @@ std::unique_ptr<AXVirtualView> TableView::CreateCellAccessibilityView(
   return ax_cell;
 }
 
+void TableView::InstallFocusRing() {
+  // Remove and reinstall a new focus ring, if one is already present.
+  if (views::FocusRing::Get(this)) {
+    views::FocusRing::Remove(this);
+  }
+
+  FocusRing::Install(this);
+  FocusRing* focus_ring = views::FocusRing::Get(this);
+  if (table_style().inset_focus_ring) {
+    focus_ring->SetOutsetFocusRingDisabled(true);
+    focus_ring->SetHaloInset(0);
+  }
+  focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
+    const auto* v = views::AsViewClass<TableView>(view);
+    CHECK(v);
+    const bool table_focused = v->HasFocus() && !v->header_row_is_active_;
+    // Note: Checking if there is a selected row prevents the focus ring
+    // from highlighting the whole table, which is the default fallback
+    // behavior if there is no highlight path.
+    if (v->table_style().inset_focus_ring) {
+      return table_focused && v->GetFirstSelectedRow().has_value();
+    }
+    return table_focused;
+  }));
+}
+
 void TableView::UpdateFocusRings() {
   views::FocusRing::Get(this)->SchedulePaint();
   if (header_) {
@@ -2402,6 +2518,13 @@ void TableView::SetHeaderStyle(const TableHeaderStyle& style) {
 
 void TableView::SetTableStyle(const TableStyle& style) {
   table_style_ = style;
+
+  // Reinstall the Focus Ring since TableStyle has influence on its appearance.
+  InstallFocusRing();
+  if (header_) {
+    header_->InstallFocusRing();
+  }
+
   SchedulePaint();
 }
 

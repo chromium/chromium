@@ -618,6 +618,7 @@ if (current_toolchain == default_toolchain) {
       "//components/infobars/android:infobar_android_enums_java",
       "//components/infobars/android:java",
       "//components/infobars/core:infobar_enums_java",
+      "//components/input/android:java",
       "//components/installedapp/android:java",
       "//components/javascript_dialogs/android:java",
       "//components/language/android:java",
@@ -909,6 +910,7 @@ if (current_toolchain == default_toolchain) {
       "//components/saved_tab_groups/internal:java",
       "//components/saved_tab_groups/public:conversion_utils_java",
       "//components/segmentation_platform/internal:internal_java",
+      "//components/visited_url_ranking/internal:internal_java",
     ]
   }
 
@@ -2335,6 +2337,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/fast_checkout/internal:javatests",
       "//chrome/browser/ui/android/plus_addresses:javatests",
       "//chrome/browser/ui/android/webid/internal:javatests",
+      "//chrome/browser/util:javatests",
       "//components/ip_protection/android/android_auth_client_lib/javatests:ip_protection_auth_javatests",
     ]
 
@@ -3278,6 +3281,7 @@ group("jni_headers") {
     "//chrome/browser/segmentation_platform:jni_headers",
     "//chrome/browser/ssl/android:jni_headers",
     "//chrome/browser/tab:jni_headers",
+    "//chrome/browser/tab_group_suggestion:jni_headers",
     "//chrome/browser/tab_group_sync:factory_jni_headers",
     "//chrome/browser/tab_group_sync:jni_headers",
     "//chrome/browser/tab_ui/android:jni_headers",

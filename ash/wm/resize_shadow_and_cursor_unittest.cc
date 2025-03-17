@@ -243,8 +243,9 @@ TEST_F(ResizeShadowAndCursorTest, DefaultCursorOnBubbleWidgetCorners) {
 
   // Create the bubble widget.
   views::Widget* bubble(views::BubbleDialogDelegateView::CreateBubble(
-      new views::BubbleDialogDelegateView(child_view,
-                                          views::BubbleBorder::NONE)));
+      new views::BubbleDialogDelegateView(
+          views::BubbleDialogDelegateView::CreatePassKey(), child_view,
+          views::BubbleBorder::NONE)));
   bubble->Show();
 
   // Get the screen rectangle for the bubble frame

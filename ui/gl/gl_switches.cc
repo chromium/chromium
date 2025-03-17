@@ -135,8 +135,10 @@ const char kDisableGLExtensions[] = "disable-gl-extensions";
 // Enables SwapBuffersWithBounds if it is supported.
 const char kEnableSwapBuffersWithBounds[] = "enable-swap-buffers-with-bounds";
 
-// Enables using DirectComposition video overlays, even if hardware overlays
-// aren't supported.
+// Disable DirectComposition.
+const char kDisableDirectComposition[] = "disable-direct-composition";
+
+// Enable DirectComposition video overlays even if hardware doesn't support it.
 const char kEnableDirectCompositionVideoOverlays[] =
     "enable-direct-composition-video-overlays";
 
@@ -166,6 +168,7 @@ const char* const kGLSwitchesCopiedFromGpuProcessHost[] = {
     kOverrideUseSoftwareGLForTests,
     kUseANGLE,
     kEnableSwapBuffersWithBounds,
+    kDisableDirectComposition,
     kEnableDirectCompositionVideoOverlays,
     kDirectCompositionVideoSwapChainFormat,
     kEnableUnsafeSwiftShader,

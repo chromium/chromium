@@ -215,14 +215,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".RTTBelow200" summary="RTT less than 200ms"/>
 </variants>
 
-<variants name="SafeSitesFilterType">
-  <variant name="" summary="for all users"/>
-  <variant name=".SafeSitesFilterDisabled"
-      summary="for Safe Sites Filter disabled users"/>
-  <variant name=".SafeSitesFilterEnabled"
-      summary="for Safe Sites Filter enabled users"/>
-</variants>
-
 <variants name="TabInitializationStatus">
   <variant name="" summary="any"/>
   <variant name=".FromNewTabPage" summary="navigation from new tab page"/>
@@ -248,6 +240,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".ReadingList"/>
   <variant name=".ShoppingInsightsSidePanel"/>
   <variant name=".TabSearch"/>
+  <variant name=".UserEducation"/>
   <variant name=".UserNotesSidePanel"/>
 </variants>
 
@@ -1439,32 +1432,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint{SafeSitesFilter}"
+    name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint"
     units="ms" expires_after="2025-08-10">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Measures the time in milliseconds from navigation timing's navigation start
     to the time when the page first paints content, for Google Search page
-    loads, {SafeSitesFilter}. A contentful paint includes a paint of text,
-    image, SVG, or canvas. Only recorded for Search navigations that start in
-    the foreground and stay in the foreground until the first contentful paint.
+    loads. A contentful paint includes a paint of text, image, SVG, or canvas.
+    Only recorded for Search navigations that start in the foreground and stay
+    in the foreground until the first contentful paint.
   </summary>
-  <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
-<histogram
-    name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}{SafeSitesFilter}"
+<histogram name="PageLoad.Clients.GoogleSearch.PaintTiming.{MileStone}"
     units="ms" expires_after="2025-08-01">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     Measures the time from navigation start to the time {MileStone}, for Google
-    Search page loads, {SafeSitesFilter}. The actual value is recorded via
-    `startTime` in performance.mark()'s markOptions. If `startTime` is not set,
-    this metric is not recorded. This is recorded by emitting
-    `performance.mark()` in JavaScript, which is done after the navigation
-    commit phase in Search. This is only recorded in the outermost main frame.
+    Search page loads. The actual value is recorded via `startTime` in
+    performance.mark()'s markOptions. If `startTime` is not set, this metric is
+    not recorded. This is recorded by emitting `performance.mark()` in
+    JavaScript, which is done after the navigation commit phase in Search. This
+    is only recorded in the outermost main frame.
   </summary>
   <token key="MileStone">
     <variant name="AFTEnd" summary="AFT end event is sent"/>
@@ -1476,7 +1467,6 @@ chromium-metrics-reviews@google.com.
         summary="end of the header chunk start event is sent"/>
     <variant name="HeaderChunkStart" summary="beginning of the header chunk"/>
   </token>
-  <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
 <histogram
@@ -1525,17 +1515,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint{SafeSitesFilter}"
+    name="PageLoad.Clients.GoogleSearch{Granularity}.PaintTiming.NavigationToLargestContentfulPaint"
     units="ms" expires_after="2025-08-17">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
     Measures the time in milliseconds from navigation timing's navigation start
     to the time when the page first paints the experimental largest content
-    (text or image) within viewport, for Google Search page loads,
-    {SafeSitesFilter}. See http://bit.ly/largest_contentful_paint_explainer for
-    more details. Differs from
-    SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that removed
+    (text or image) within viewport, for Google Search page loads. See
+    http://bit.ly/largest_contentful_paint_explainer for more details. Differs
+    from SubFrame.PaintTiming.NavigationToLargestContentfulPaint in that removed
     content is still considered a valid candidate. Only recorded for Search
     navigations that happen entirely in the foreground. The metric is emitted
     when the navigation is completed or the app is backgrounded on Android.
@@ -1545,7 +1534,6 @@ chromium-metrics-reviews@google.com.
     <variant name="" summary=""/>
     <variant name=".FineGrained" summary="Metric is clipped to 10 seconds."/>
   </token>
-  <token key="SafeSitesFilter" variants="SafeSitesFilterType"/>
 </histogram>
 
 <histogram

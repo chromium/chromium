@@ -80,13 +80,11 @@ TEST_F(ReminderNotificationsCoordinatorTest,
 
   UIViewController* presented_view_controller =
       view_controller_.presentedViewController;
-  EXPECT_EQ(UIModalPresentationPageSheet,
-            presented_view_controller.modalPresentationStyle);
 
   UISheetPresentationController* sheet_controller =
       presented_view_controller.sheetPresentationController;
   EXPECT_TRUE(sheet_controller.prefersEdgeAttachedInCompactHeight);
-  EXPECT_EQ(1u, sheet_controller.detents.count);
+  EXPECT_EQ(2u, sheet_controller.detents.count);
 }
 
 // Tests that tapping the primary action dismisses the UI and sends the command.

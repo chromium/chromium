@@ -217,9 +217,18 @@ void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
 }
 
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
-                         sceneState:(SceneState*)sceneState
-                         completion:(OnProfileSwitchCompletion)completion {
+                         sceneState:(SceneState*)sceneState {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+
+  __weak __typeof(_delegate) weakDelegate = _delegate;
+  OnProfileSwitchCompletion completion = base::BindOnce(
+      [](__typeof(_delegate) delegate, bool success,
+         Browser* new_profile_browser) {
+        [delegate didSwitchToProfileWithSuccess:success
+                              newProfileBrowser:new_profile_browser];
+      },
+      weakDelegate);
+
   std::optional<std::string> profileName =
       GetApplicationContext()
           ->GetAccountProfileMapper()

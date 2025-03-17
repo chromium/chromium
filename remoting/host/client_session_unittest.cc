@@ -274,7 +274,7 @@ void ClientSessionTest::SetUp() {
 void ClientSessionTest::TearDown() {
   if (client_session_) {
     if (connection_->is_connected()) {
-      client_session_->DisconnectSession(ErrorCode::OK);
+      client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
     }
     client_session_.reset();
     desktop_environment_factory_.reset();
@@ -643,7 +643,7 @@ TEST_F(ClientSessionTest, MultiMonMouseMove) {
   // Events should clamp to the entire desktop (800+1024, 35+768).
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(2000, 1000));
 
-  client_session_->DisconnectSession(ErrorCode::OK);
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
   EXPECT_EQ(7U, mouse_events_.size());
@@ -699,7 +699,7 @@ TEST_F(ClientSessionTest, MultiMonMouseMove_SameSize) {
   // Events should clamp to the entire desktop (800+800, 35+600).
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(2000, 1000));
 
-  client_session_->DisconnectSession(ErrorCode::OK);
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
   EXPECT_EQ(7U, mouse_events_.size());
@@ -754,7 +754,7 @@ TEST_F(ClientSessionTest, DisableInputs) {
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 3));
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(300, 301));
 
-  client_session_->DisconnectSession(ErrorCode::OK);
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
   EXPECT_EQ(2U, mouse_events_.size());
@@ -844,7 +844,7 @@ TEST_F(ClientSessionTest, RestoreEventState) {
   mousedown.set_button_down(true);
   connection_->input_stub()->InjectMouseEvent(mousedown);
 
-  client_session_->DisconnectSession(ErrorCode::OK);
+  client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
   client_session_.reset();
 
   EXPECT_EQ(2U, mouse_events_.size());

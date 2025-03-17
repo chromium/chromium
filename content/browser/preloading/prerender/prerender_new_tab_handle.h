@@ -68,9 +68,9 @@ class PrerenderNewTabHandle {
     return attributes_.eagerness;
   }
 
- private:
   PrerenderHostRegistry& GetPrerenderHostRegistry();
 
+ private:
   const PrerenderAttributes attributes_;
 
   // Used for creating WebContentsImpl that contains a prerendered page for a

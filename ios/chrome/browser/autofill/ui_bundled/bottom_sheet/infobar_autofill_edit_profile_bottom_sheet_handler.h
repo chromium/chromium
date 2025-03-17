@@ -7,10 +7,19 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_handler.h"
 
+namespace web {
+class WebState;
+}  // namespace web
+
 // Handler that provides the AutofillEditProfileBottomSheetCoordinator with the
 // logic that is specific to an infobar-triggerred address edit.
 @interface InfobarAutofillEditProfileBottomSheetHandler
     : NSObject <AutofillEditProfileBottomSheetHandler>
+
+- (instancetype)initWithWebState:(web::WebState*)webState
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

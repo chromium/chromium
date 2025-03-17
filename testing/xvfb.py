@@ -611,18 +611,6 @@ def _weston_config_file_path():
 
 
 def _run_with_mutter(cmd, env, stdoutfile, cwd):
-  # Ensure mutter is checked out first.
-  if not os.path.isdir(
-      os.path.join(os.path.dirname(__file__), '..', 'third_party', 'mutter',
-                   'src')):
-    print(
-        'In order to run tests using mutter, its sources need to be checked out'
-        ' explicitly and built.\n'
-        'Add \'"checkout_mutter": True\' in the "custom_vars" section of your'
-        ' .gclient file, and run gclient sync.\n'
-        'Then build the test executable or mutter and run this script again.',
-        file=sys.stderr)
-    return 1
   with dbus_session(env):
     mutter_proc = None
 
@@ -631,6 +619,19 @@ def _run_with_mutter(cmd, env, stdoutfile, cwd):
       compositor_found, cmd = _run_with_wayland_common(mutter_executable, cmd,
                                                        env)
       if not compositor_found:
+        # Ensure mutter is checked out if the compositor is not found.
+        if not os.path.isdir(
+            os.path.join(os.path.dirname(__file__), '..', 'third_party',
+                         'mutter', 'src')):
+          print(
+              'In order to run tests using mutter, its sources need to be '
+              'checked outexplicitly and built.\n'
+              'Add \'"checkout_mutter": True\' in the "custom_vars" section '
+              'of your .gclient file, and run gclient sync.\n'
+              'Then build the test executable or mutter and run this script '
+              'again.',
+              file=sys.stderr)
+          return 1
         return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
       # Use headless wayland backend with a virtual monitor of appropriate size.

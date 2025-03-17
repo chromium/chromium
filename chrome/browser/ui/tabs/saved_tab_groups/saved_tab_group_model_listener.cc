@@ -57,10 +57,6 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
     return;
   }
 
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return;
-  }
-
   if (local_tab_group_listeners_.contains(group_id)) {
     return;
   }

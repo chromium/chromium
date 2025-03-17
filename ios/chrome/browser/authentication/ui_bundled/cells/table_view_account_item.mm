@@ -318,13 +318,10 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
 - (NSString*)accessibilityValue {
   UIImageView* statusIcon = base::apple::ObjCCast<UIImageView>(_statusView);
   if (statusIcon.image != nil) {
-    return
-        [NSString stringWithFormat:
-                      @"%@, %@", self.detailTextLabel.text,
-                      l10n_util::GetNSString(
-                          IDS_IOS_ITEM_ACCOUNT_ERROR_BADGE_ACCESSIBILITY_HINT)];
+    return l10n_util::GetNSString(
+        IDS_IOS_ITEM_ACCOUNT_ERROR_BADGE_ACCESSIBILITY_HINT);
   }
-  return self.detailTextLabel.text;
+  return nil;
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {

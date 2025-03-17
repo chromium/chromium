@@ -144,7 +144,7 @@
             title="${item.ariaLabel}"
             aria-haspopup="menu"
             iron-icon="${item.icon}"
-            @click="${this.onTextStyleMenuButtonClick_}">
+            @click="${this.onTextStyleMenuButtonClickFromOverflow_}">
         </cr-icon-button>
       `)}
     </cr-action-menu>
@@ -169,7 +169,9 @@
   `}'>
   </cr-lazy-render-lit>
   <highlight-menu
-    id="highlightMenu" @highlight-change="${this.onHighlightChange_}">
+      id="highlightMenu"
+      .settingsPrefs="${this.settingsPrefs}"
+      @highlight-change="${this.onHighlightChange_}">
   </highlight-menu>
   <cr-lazy-render-lit id="fontSizeMenu" .template='${() => html`
     <cr-action-menu @keydown="${this.onFontSizeMenuKeyDown_}"
@@ -196,9 +198,16 @@
     </cr-action-menu>
   `}'>
   </cr-lazy-render-lit>
-  <color-menu id="colorMenu"></color-menu>
-  <line-spacing-menu id="lineSpacingMenu"></line-spacing-menu>
-  <letter-spacing-menu id="letterSpacingMenu"></letter-spacing-menu>
+  <color-menu id="colorMenu" .settingsPrefs="${this.settingsPrefs}">
+  </color-menu>
+  <line-spacing-menu
+      id="lineSpacingMenu"
+      .settingsPrefs="${this.settingsPrefs}">
+  </line-spacing-menu>
+  <letter-spacing-menu
+      id="letterSpacingMenu"
+      .settingsPrefs="${this.settingsPrefs}">
+  </letter-spacing-menu>
   <cr-lazy-render-lit id="fontMenu" .template='${() => html`
     <cr-action-menu accessibility-label="$i18n{fontNameTitle}"
         role-description="$i18n{menu}">

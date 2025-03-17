@@ -7,7 +7,6 @@ include_rules = [
   "+components/policy/core/common",
   "+components/tab_groups",
   "+components/version_info",
-  "+third_party/boringssl/src/include/openssl",
 ]
 
 specific_include_rules = {

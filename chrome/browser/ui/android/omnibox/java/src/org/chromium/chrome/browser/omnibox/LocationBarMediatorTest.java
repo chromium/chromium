@@ -1531,6 +1531,19 @@ public class LocationBarMediatorTest {
         assertEquals(1, sGeoHeaderStopCount);
     }
 
+    @Test
+    public void testDeleteButtonClicked() {
+        mMediator.onFinishNativeInitialization();
+        mMediator.deleteButtonClicked(null);
+
+        verify(mUrlCoordinator)
+                .setUrlBarData(
+                        UrlBarData.EMPTY,
+                        UrlBar.ScrollType.SCROLL_TO_BEGINNING,
+                        SelectionState.SELECT_ALL);
+        verify(mUrlCoordinator).requestAccessibilityFocus();
+    }
+
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {
         return actual -> {
             UrlBarData expected = UrlBarData.forNonUrlText(query);

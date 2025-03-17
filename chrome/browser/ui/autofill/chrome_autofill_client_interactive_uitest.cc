@@ -76,7 +76,7 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
     // `BrowserWindow::MaybeShowFeaturePromo()` doesn't work in tests unless the
     // IPH feature is explicitly enabled.
     iph_feature_list_.InitAndEnableFeatures(
-        {feature_engagement::kIPHAutofillPredictionImprovementsFeature});
+        {feature_engagement::kIPHAutofillAiOptInFeature});
   }
 
   void SetUpOnMainThread() override {
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
   WaitUntilSuggestionsHaveBeenShown();
 
   EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
-      feature_engagement::kIPHAutofillPredictionImprovementsFeature));
+      feature_engagement::kIPHAutofillAiOptInFeature));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {

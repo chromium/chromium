@@ -201,6 +201,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(crbug.com/41441927): WebUSB is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kWebUsb);
 
+  // Disable Web Serial API on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kWebSerialAPI);
+
   // Disable TFLite based language detection on webview until webview supports
   // ML model delivery via Optimization Guide component.
   // TODO(crbug.com/40819484): Enable the feature on Webview.

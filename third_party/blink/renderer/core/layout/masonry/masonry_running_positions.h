@@ -18,12 +18,26 @@ struct GridSpan;
 // used to calculate the next position that an item should be placed.
 class CORE_EXPORT MasonryRunningPositions {
  public:
-  explicit MasonryRunningPositions(const wtf_size_t size)
-      : running_positions_(size) {}
+  // Struct to keep track of a span of tracks' start lines and their
+  // max-positions, where the max-position of a span represents the maximum
+  // running position of all tracks in a span. This will always be used in
+  // conjunction with a span size, so we can calculate the ending line using
+  // `start_line` and a given span size.
+  struct MaxPositionSpan {
+    bool operator==(const MaxPositionSpan& other) const {
+      return (start_line == other.start_line) && (max_pos == other.max_pos);
+    }
 
-  // Return the first span with the minimum max-position that comes after
-  // the auto-placement cursor in masonry's flow.
-  GridSpan DetermineMinMaxPositionSpan(wtf_size_t span_size) const;
+    wtf_size_t start_line;
+    LayoutUnit max_pos;
+  };
+
+  MasonryRunningPositions(wtf_size_t size, LayoutUnit tie_threshold)
+      : running_positions_(size), tie_threshold_(tie_threshold) {}
+
+  // Return the first span within `tie_threshold_` of the minimum max-position
+  // that comes after the auto-placement cursor in masonry's flow.
+  MaxPositionSpan GetFirstEligibleLine(wtf_size_t span_size);
 
   // Update all the running positions for the tracks within the given lines to
   // have the inputted `running_position`.
@@ -33,24 +47,27 @@ class CORE_EXPORT MasonryRunningPositions {
  private:
   friend class MasonryLayoutAlgorithmTest;
 
-  // Struct to keep track of a span of tracks' start lines and their
-  // max-positions, where the max-position of a span represents the maximum
-  // running position of all tracks in a span. This will always be used in
-  // conjunction with a span size, so we can calculate the ending line using
-  // `start_line` and a given span size.
-  struct MaxPositionSpan {
-    wtf_size_t start_line;
-    LayoutUnit max_pos;
-  };
+  // For testing only.
+  MasonryRunningPositions(const Vector<LayoutUnit>& running_positions,
+                          LayoutUnit tie_threshold)
+      : running_positions_(running_positions), tie_threshold_(tie_threshold) {}
 
-  // Given span size, returns a list of spans that have a max-position within
-  // the tie-threshold of the minimum max-position.
-  Vector<MaxPositionSpan> GetAllMaxPositionSpans(wtf_size_t span_size) const;
+  void SetAutoPlacementCursorForTesting(wtf_size_t cursor) {
+    auto_placement_cursor_ = cursor;
+  }
+
+  // For each track span of size `span_size` in `running_positions_`, compute
+  // its max-position and return a vector where the index corresponds to the
+  // track number and the value corresponds to the max-position for that track.
+  Vector<LayoutUnit> GetMaxPositionsForAllTracks(wtf_size_t span_size) const;
 
   // The index of the `running_positions_` vector corresponds to the track
   // number, while the value of the vector item corresponds to the current
   // running position of the track. Note that the tracks are 0-indexed.
   Vector<LayoutUnit> running_positions_;
+
+  wtf_size_t auto_placement_cursor_{0};
+  LayoutUnit tie_threshold_;
 };
 
 }  // namespace blink

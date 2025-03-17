@@ -1416,6 +1416,12 @@
   <message name="IDS_AI_INTRO_SLIDE_WRITE_TEXT" desc="The text of the write info slide">
     Right-click in a text box to use Help me write
   </message>
+  <message name="IDS_AI_INTRO_SLIDE_IMAGE_TITLE" desc="The title of the info slide for image generation feature">
+    Create images with AI
+  </message>
+  <message name="IDS_AI_INTRO_SLIDE_IMAGE_TEXT" desc="The text of the info slide for image generation feature">
+    Right-click to easily visualize your ideas
+  </message>
   <message name="IDS_AI_INTRO_SLIDE_WALLPAPER_TITLE" desc="The title of the wallpaper info slide">
     Create wallpapers with AI
   </message>
@@ -6855,7 +6861,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Quick Insert
   </message>
   <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_TEXT" desc="Text inside the first description section.">
-    Insert links, emojis, and more. You can also get help writing with Google AI.
+    Insert links, emojis, and more. You can also get help writing and creating images with Google AI.
   </message>
   <message name="IDS_OOBE_SPLIT_MODIFIER_INFO_FIRST_DESCRIPTION_ACCESSIBILITY" desc="Additional information for the accessibility tools for the first description section.">
     Quick insert key is located beneath the tab key

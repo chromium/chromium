@@ -408,7 +408,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
                       &image_orientation))
                 return nullptr;
               break;
-            case ImageSerializationTag::kImageDataStorageFormatTag:
+            case ImageSerializationTag::kImageDataPixelFormatTag:
               // Does not apply to ImageBitmap.
               return nullptr;
           }
@@ -450,8 +450,8 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
     case kImageDataTag: {
       SerializedPredefinedColorSpace predefined_color_space =
           SerializedPredefinedColorSpace::kSRGB;
-      SerializedImageDataStorageFormat image_data_storage_format =
-          SerializedImageDataStorageFormat::kUint8Clamped;
+      SerializedImageDataPixelFormat image_data_pixel_format =
+          SerializedImageDataPixelFormat::kRgbaUnorm8;
       uint32_t width = 0, height = 0;
       const void* pixels = nullptr;
       if (Version() >= 18) {
@@ -466,13 +466,15 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
               break;
             case ImageSerializationTag::kPredefinedColorSpaceTag:
               if (!ReadUint32Enum<SerializedPredefinedColorSpace>(
-                      &predefined_color_space))
+                      &predefined_color_space)) {
                 return nullptr;
+              }
               break;
-            case ImageSerializationTag::kImageDataStorageFormatTag:
-              if (!ReadUint32Enum<SerializedImageDataStorageFormat>(
-                      &image_data_storage_format))
+            case ImageSerializationTag::kImageDataPixelFormatTag:
+              if (!ReadUint32Enum<SerializedImageDataPixelFormat>(
+                      &image_data_pixel_format)) {
                 return nullptr;
+              }
               break;
             case ImageSerializationTag::kCanvasPixelFormatTag:
             case ImageSerializationTag::kOriginCleanTag:
@@ -496,7 +498,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       }
 
       SerializedImageDataSettings settings(predefined_color_space,
-                                           image_data_storage_format);
+                                           image_data_pixel_format);
       ImageData* image_data = ImageData::ValidateAndCreate(
           width, height, std::nullopt, settings.GetImageDataSettings(),
           ImageData::ValidateAndCreateParams(), exception_state);

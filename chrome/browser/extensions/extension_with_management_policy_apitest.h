@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
 
 struct ManagementPolicyRequestLog {
   std::string all_headers;
@@ -22,7 +22,7 @@ struct ManagementPolicyRequestLog {
 // API integration tests. This class enables easy declaration of
 // ExtensionSettings policies and functions commonly used during these tests.
 class ExtensionApiTestWithManagementPolicy
-    : public extensions::ExtensionPlatformApiTest {
+    : public extensions::ExtensionApiTest {
  public:
   explicit ExtensionApiTestWithManagementPolicy(
       ContextType context_type = ContextType::kFromManifest);

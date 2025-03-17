@@ -144,9 +144,9 @@ class TestPrefetchOriginProber : public PrefetchOriginProber {
   int num_probes_{0};
 };
 
-class TestPrefetchService : public PrefetchService {
+class TestPrefetchServiceForInterceptor final : public PrefetchService {
  public:
-  explicit TestPrefetchService(BrowserContext* browser_context)
+  explicit TestPrefetchServiceForInterceptor(BrowserContext* browser_context)
       : PrefetchService(browser_context) {}
 
   void TakePrefetchOriginProber(
@@ -208,8 +208,8 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
     test_content_browser_client_ = std::make_unique<
         ::testing::StrictMock<ScopedMockContentBrowserClient>>();
 
-    std::unique_ptr<TestPrefetchService> prefetch_service =
-        std::make_unique<TestPrefetchService>(browser_context());
+    auto prefetch_service =
+        std::make_unique<TestPrefetchServiceForInterceptor>(browser_context());
 
     PrefetchService::SetFromFrameTreeNodeIdForTesting(
         web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
@@ -234,8 +234,8 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
     PrefetchingMetricsTestBase::TearDown();
   }
 
-  TestPrefetchService* GetPrefetchService() {
-    return static_cast<TestPrefetchService*>(
+  TestPrefetchServiceForInterceptor* GetPrefetchService() {
+    return static_cast<TestPrefetchServiceForInterceptor*>(
         PrefetchService::GetFromFrameTreeNodeId(
             web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
   }
@@ -1180,14 +1180,14 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
       // Another request is created for the same PrefetchContainer while
       // prefetching is still ongoing.
       another_request =
-          weak_prefetch_container->CreateReader().CreateRequestHandler();
+          weak_prefetch_container->CreateReader().CreateRequestHandler().first;
       break;
 
     case NotServableReason::kAnotherRequestCompleted:
       // Another request is created for the same PrefetchContainer while
       // prefetching is still ongoing,
       another_request =
-          weak_prefetch_container->CreateReader().CreateRequestHandler();
+          weak_prefetch_container->CreateReader().CreateRequestHandler().first;
 
       // and, prefetch and the other request completed.
       {

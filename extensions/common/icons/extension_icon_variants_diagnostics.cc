@@ -74,6 +74,13 @@ constexpr Diagnostic diagnostics[] = {
         Severity::kWarning,
         "Unexpected 'color_scheme'.",
     },
+    {
+        Feature::kIconVariants,
+        Id::kIconVariantsNotEnabled,
+        Surface::kManifest,
+        Severity::kWarning,
+        "'icon_variants' not enabled.",
+    },
 };
 
 // TODO(crbug.com/343748805): Use e.g. flat_map when there are many diagnostics.

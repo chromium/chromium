@@ -117,6 +117,14 @@ void PaintArtifactCompositor::SetLCDTextPreference(
   lcd_text_preference_ = preference;
 }
 
+void PaintArtifactCompositor::SetDevicePixelRatio(float ratio) {
+  if (device_pixel_ratio_ == ratio) {
+    return;
+  }
+  SetNeedsUpdate();
+  device_pixel_ratio_ = ratio;
+}
+
 std::unique_ptr<JSONArray> PaintArtifactCompositor::GetPendingLayersAsJSON()
     const {
   std::unique_ptr<JSONArray> result = std::make_unique<JSONArray>();
@@ -764,6 +772,7 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
       --candidate_index;
       PendingLayer& candidate_layer = pending_layers_[candidate_index];
       if (candidate_layer.Merge(new_layer, compositor_.lcd_text_preference_,
+                                compositor_.device_pixel_ratio_,
                                 is_composited_scroll)) {
         pending_layers_.pop_back();
         break;

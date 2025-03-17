@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import type {PrivacyHubBrowserProxy} from 'chrome://os-settings/lazy_load.js';
+import {GeolocationAccessLevel} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
@@ -10,6 +11,7 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
   microphoneToggleIsEnabled: boolean;
   microphoneMutedBySecurityCurtain: boolean;
   cameraSwitchIsForceDisabled: boolean;
+  primaryUserLocationAccessLevel: GeolocationAccessLevel;
   cameraLEDFallbackState: boolean;
   currentTimeZoneName: string;
   currentSunRiseTime: string;
@@ -19,6 +21,7 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
       'getInitialMicrophoneHardwareToggleState',
       'getInitialMicrophoneMutedBySecurityCurtainState',
       'getInitialCameraSwitchForceDisabledState',
+      'getInitialGeolocationAccessLevelState',
       'getCameraLedFallbackState',
       'getCurrentTimeZoneName',
       'getCurrentSunriseTime',
@@ -27,6 +30,7 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
     this.microphoneToggleIsEnabled = false;
     this.microphoneMutedBySecurityCurtain = false;
     this.cameraSwitchIsForceDisabled = false;
+    this.primaryUserLocationAccessLevel = GeolocationAccessLevel.DISALLOWED;
     this.cameraLEDFallbackState = false;
     this.currentTimeZoneName = 'Test Time Zone';
     this.currentSunRiseTime = '7:00AM';
@@ -46,6 +50,11 @@ export class TestPrivacyHubBrowserProxy extends TestBrowserProxy implements
   getInitialCameraSwitchForceDisabledState(): Promise<boolean> {
     this.methodCalled('getInitialCameraSwitchForceDisabledState');
     return Promise.resolve(this.cameraSwitchIsForceDisabled);
+  }
+
+  getInitialGeolocationAccessLevelState(): Promise<GeolocationAccessLevel> {
+    this.methodCalled('getInitialGeolocationAccessLevelState');
+    return Promise.resolve(this.primaryUserLocationAccessLevel);
   }
 
   getCameraLedFallbackState(): Promise<boolean> {

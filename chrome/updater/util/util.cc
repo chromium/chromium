@@ -261,16 +261,18 @@ GURL AppendQueryParameter(const GURL& url,
 
 #if BUILDFLAG(IS_WIN)
 
-std::wstring GetTaskNamePrefix(UpdaterScope scope) {
-  std::wstring task_name = GetTaskDisplayName(scope);
+std::wstring GetTaskNamePrefix(UpdaterScope scope,
+                               const base::Version& version) {
+  std::wstring task_name = GetTaskDisplayName(scope, version);
   std::erase_if(task_name, base::IsAsciiWhitespace<wchar_t>);
   return task_name;
 }
 
-std::wstring GetTaskDisplayName(UpdaterScope scope) {
+std::wstring GetTaskDisplayName(UpdaterScope scope,
+                                const base::Version& version) {
   return base::StrCat({base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L" Task ",
                        IsSystemInstall(scope) ? L"System " : L"User ",
-                       kUpdaterVersionUtf16});
+                       base::UTF8ToWide(version.GetString())});
 }
 
 base::CommandLine GetCommandLineLegacyCompatible() {

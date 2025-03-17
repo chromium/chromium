@@ -453,6 +453,19 @@ class WebmMuxerTestUnparametrized : public testing::Test {
     return result;
   }
 
+  bool AddVideoWithTransformation(VideoTransformation transformation) {
+    Muxer::VideoParameters params(gfx::Size(1, 1), 0, media::VideoCodec::kVP8,
+                                  gfx::ColorSpace(), transformation);
+    auto buffer =
+        media::DecoderBuffer::CopyFrom(base::as_byte_span("video_at_offset"));
+    buffer->set_is_key_frame(true);
+    bool result = webm_muxer_->PutFrame(
+        Muxer::EncodedFrame{std::move(params), std::nullopt, buffer},
+        base::TimeDelta());
+    got_video_ = true;
+    return result;
+  }
+
   bool AddAudioAtOffsetWithDuration(int system_timestamp_offset_ms,
                                     int duration_ms) {
     int frame_rate_hz = 48000;
@@ -466,6 +479,27 @@ class WebmMuxerTestUnparametrized : public testing::Test {
     return webm_muxer_->PutFrame(
         Muxer::EncodedFrame{std::move(audio_params), std::nullopt, buffer},
         base::Milliseconds(system_timestamp_offset_ms));
+  }
+
+  mkvmuxer::Projection* GetVideoTrackTransformation() const {
+    mkvmuxer::VideoTrack* const video_track =
+        reinterpret_cast<mkvmuxer::VideoTrack*>(
+            webm_muxer_->segment_.GetTrackByNumber(
+                webm_muxer_->video_track_index_));
+    return video_track->projection();
+  }
+
+  void RunTransformationTest(VideoTransformation transformation,
+                             double pitch,
+                             double yaw,
+                             double roll) {
+    SCOPED_TRACE(transformation.ToString());
+    CreateMuxer(true, true);
+    AddVideoWithTransformation(transformation);
+    mkvmuxer::Projection* projection = GetVideoTrackTransformation();
+    EXPECT_EQ(projection->pose_pitch(), pitch);
+    EXPECT_EQ(projection->pose_yaw(), yaw);
+    EXPECT_EQ(projection->pose_roll(), roll);
   }
 
   MOCK_METHOD(void, OnWrite, ());
@@ -617,6 +651,32 @@ TEST_F(WebmMuxerTestUnparametrized, ForwardsAudioVideoMuxingError) {
   // sample.
   ASSERT_TRUE(AddVideoAtOffset(0, /*is_key_frame=*/true));
   ASSERT_FALSE(AddAudioAtOffsetWithDuration(0, 10));
+}
+
+TEST_F(WebmMuxerTestUnparametrized, Transformations) {
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_0, false), 0.0, 0.0,
+                        0.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_0, true), 0.0, 180.0,
+                        0.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_90, false), 0.0, 0.0,
+                        -90.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_90, true), 0.0,
+                        180.0, 90.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_180, false), 0.0,
+                        0.0, 180.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_180, true), 0.0,
+                        180.0, 180.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_270, false), 0.0,
+                        0.0, 90.0);
+
+  RunTransformationTest(VideoTransformation(VIDEO_ROTATION_270, true), 0.0,
+                        180.0, -90.0);
 }
 
 }  // namespace media

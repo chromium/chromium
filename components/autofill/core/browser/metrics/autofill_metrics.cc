@@ -292,6 +292,8 @@ std::string_view AutofillMetrics::GetDialogTypeStringForLogging(
       return "CardInfoRetrievalEnrolledUnmask";
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return "3dsFetchVirtualCard";
+    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+      return "BnplFetchVirtualCard";
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }

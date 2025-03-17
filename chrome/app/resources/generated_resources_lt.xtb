@@ -2257,7 +2257,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2530166226437958497">Trikčių šalinimas</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Įvyko klaida, todėl nepavyko įdiegti „<ph name="DEVICE_OS" />“.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jei reikia daugiau pagalbos, apsilankykite adresu g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Gauti daugiau informacijos</translation>
 <translation id="2532144599248877204">Ilgesnis akumuliatoriaus veikimo laikas, nuolat užtikrinant maždaug 80 proc. akumuliatoriaus įkrovos lygį. Akumuliatorius bus visiškai įkrautas prieš įprastai jį atjungiant nuo maitinimo šaltinio.</translation>
 <translation id="2532146950330687938">Ruošiamas įrenginys...</translation>
 <translation id="2532198298278778531">Valdykite saugią DNS „ChromeOS Flex“ nustatymuose</translation>
@@ -2813,7 +2812,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2921081876747860777">Sukurkite slaptažodį, kad apsaugotumėte vietinius duomenis.</translation>
 <translation id="2923006468155067296">Jūsų „<ph name="DEVICE_TYPE" />“ įrenginys dabar bus užrakintas.
 <ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Kitos užduotys (<ph name="OTHER_TASK_NUM" />) toje pačioje užduočių grupėje: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Pašalinti šią paskyrą</translation>
 <translation id="2923644930701689793">Galimybė pasiekti telefono fotoaparato aplanką</translation>
 <translation id="292371311537977079">„Chrome“ nustatymai</translation>
@@ -10653,7 +10651,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8524841856047224176">Suasmeninkite fotoaparato fonus, kad galėtumėte atlikti vaizdo skambučius ir kitus veiksmus</translation>
 <translation id="8525306231823319788">Viso ekrano režimas</translation>
 <translation id="8525461909394569609">Šioje programoje yra žiniatinklio turinio iš</translation>
-<translation id="8526313996927074827">Įterpkite nuorodų, jaustukų ir kt. Be to, galite gauti pagalbos rašydami naudodami „Google“ DI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Garsiakalbiai</translation>
 <translation id="8527257351549797148">Jūsų organizacija gali reikalauti užsiregistruoti, kad galėtumėte pasiekti programas, plėtinius ir kt. Tai taip pat suteikia organizacijai galimybę tvarkyti saugos ir įrenginio nustatymus ir kt.</translation>

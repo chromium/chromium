@@ -314,28 +314,14 @@ void ActionButtonContainerView::OnSmartActionsButtonFadedOut() {
     return;
   }
 
-  // Remove Scanner action buttons and keep other buttons. We need to copy the
-  // old action buttons vector since we will be removing buttons from the
-  // original vector.
-  std::vector<std::unique_ptr<ActionButtonView>> action_buttons_to_keep;
-  views::View::Views old_action_buttons = GetActionButtons();
-  for (views::View* view : old_action_buttons) {
-    auto action_button = action_button_row_->RemoveChildViewT(
-        views::AsViewClass<ActionButtonView>(view));
-    if (action_button->GetID() != ActionButtonViewID::kSmartActionsButton) {
-      action_buttons_to_keep.push_back(std::move(action_button));
-    }
-  }
-  CHECK(GetActionButtons().empty());
+  RemoveSmartActionsButton();
 
-  // Add the buttons to keep back into the action button container and
-  // collapse them into icon buttons.
-  for (std::unique_ptr<ActionButtonView>& action_button :
-       action_buttons_to_keep) {
+  // Collapse the remaining buttons into icon buttons.
+  for (views::View* view : GetActionButtons()) {
+    auto* action_button = views::AsViewClass<ActionButtonView>(view);
     if (action_button->rank().type != ActionButtonType::kScanner) {
       action_button->CollapseToIconButton();
     }
-    action_button_row_->AddChildView(std::move(action_button));
   }
 
   // Compute bounds required to slide in the new icon buttons from the left edge
@@ -369,6 +355,17 @@ void ActionButtonContainerView::OnSmartActionsButtonFadedOut() {
       .At(base::TimeDelta())
       .SetDuration(kSmartActionsButtonTransitionSlideInDuration)
       .SetTransform(layer, gfx::Transform(), gfx::Tween::ACCEL_LIN_DECEL_100);
+}
+
+void ActionButtonContainerView::RemoveSmartActionsButton() {
+  // Note that `views::View::GetViewByID` recursively a view's children, so if
+  // `ActionButtonView` contains any children with ID `kSmartActionsButton = 1`,
+  // this will fail.
+  // As of writing, `ActionButtonView`'s children all have an ID of 0.
+  if (views::View* smart_actions_button = action_button_row_->GetViewByID(
+          ActionButtonViewID::kSmartActionsButton)) {
+    action_button_row_->RemoveChildViewT(smart_actions_button);
+  }
 }
 
 void ActionButtonContainerView::SetWidgetEventsEnabled(bool enabled) {

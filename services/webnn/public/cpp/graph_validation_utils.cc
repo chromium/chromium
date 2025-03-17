@@ -32,19 +32,27 @@ namespace {
 
 // The error message labels for corresponding operands.
 static constexpr char kBiasParam[] = "bias";
+static constexpr char kCellStateParam[] = "cellState";
 static constexpr char kConditionParam[] = "condition";
 static constexpr char kFalseValueParam[] = "falseValue";
 static constexpr char kFilterParam[] = "filter";
-static constexpr char kGemmAParam[] = "gemm_a";
-static constexpr char kGemmBParam[] = "gemm_b";
-static constexpr char kGemmCParam[] = "gemm_c";
+static constexpr char kGemmAParam[] = "gemmA";
+static constexpr char kGemmBParam[] = "gemmB";
+static constexpr char kGemmCParam[] = "gemmC";
+static constexpr char kHiddenStateParam[] = "hiddenState";
 static constexpr char kIndicesParam[] = "indices";
+static constexpr char kInitialCellStateParam[] = "initialCellState";
+static constexpr char kInitialHiddenStateParam[] = "initialHiddenState";
 static constexpr char kMeanParam[] = "mean";
+static constexpr char kPeepholeWeightParam[] = "peepholeWeight";
+static constexpr char kRecurrentBiasParam[] = "recurrentBias";
+static constexpr char kRecurrentWeightParam[] = "recurrentWeight";
 static constexpr char kScaleParam[] = "scale";
 static constexpr char kSlopeParam[] = "slope";
 static constexpr char kTrueValueParam[] = "trueValue";
 static constexpr char kUpdatesParam[] = "updates";
 static constexpr char kVarianceParam[] = "variance";
+static constexpr char kWeightParam[] = "weight";
 static constexpr char kZeroPointParam[] = "zeroPoint";
 
 // Calculate the output size for conv2d based on WebNN spec:
@@ -299,11 +307,6 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
     base::span<const uint32_t> expected_shape,
     OperandDataType input_data_type,
     std::string_view label) {
-  if (operand.Rank() != expected_shape.size()) {
-    return base::unexpected(ErrorWithLabel(
-        label, base::StringPrintf("The %s operand should be a %zu-D tensor.",
-                                  operand_name, expected_shape.size())));
-  }
   if (!std::ranges::equal(operand.shape(), expected_shape)) {
     return base::unexpected(ErrorWithLabel(
         label,
@@ -1609,16 +1612,11 @@ ValidateGruAndInferOutput(const ContextProperties& context_properties,
         ErrorWithLabel(label, "The hidden size must be greater than 0."));
   }
 
-  // Validate the weight operand.
-  if (input.Rank() != 3) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input must be a 3-D tensor."));
-  }
-  if (!context_properties.data_type_limits.gru_input.Has(input.data_type())) {
+  // Validate the input operand.
+  if (!context_properties.data_type_limits.gru_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        NotSupportedInputArgumentTypeError(
-            input.data_type(), context_properties.data_type_limits.gru_input)));
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.gru_input)));
   }
 
   const std::vector<uint32_t>& input_dimensions = input.shape();
@@ -1639,42 +1637,77 @@ ValidateGruAndInferOutput(const ContextProperties& context_properties,
       attributes.direction == RecurrentNetworkDirection::kBoth ? 2 : 1;
 
   // Validate the weight operand.
+  if (!context_properties.data_type_limits.gru_input.Supports(weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kWeightParam, weight,
+                   context_properties.data_type_limits.gru_input)));
+  }
   std::array<uint32_t, 3> expected_weight_shape = {
       num_directions, three_times_hidden_size, input_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      weight, "weight", expected_weight_shape, input.data_type(), label));
+      weight, kWeightParam, expected_weight_shape, input.data_type(), label));
 
   // Validate the recurrent weight operand.
+  if (!context_properties.data_type_limits.gru_input.Supports(
+          recurrent_weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kRecurrentWeightParam, recurrent_weight,
+                   context_properties.data_type_limits.gru_input)));
+  }
   std::array<uint32_t, 3> expected_recurrent_weight_shape = {
       num_directions, three_times_hidden_size, hidden_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      recurrent_weight, "recurrent weight", expected_recurrent_weight_shape,
+      recurrent_weight, kRecurrentWeightParam, expected_recurrent_weight_shape,
       input.data_type(), label));
 
   // Validate the bias operand.
-  std::array<uint32_t, 2> expected_bias_shape = {num_directions,
-                                                 three_times_hidden_size};
   if (attributes.bias) {
-    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(*attributes.bias, "bias",
-                                                    expected_bias_shape,
-                                                    input.data_type(), label));
+    if (!context_properties.data_type_limits.gru_bias.Supports(
+            attributes.bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kBiasParam, attributes.bias.value(),
+                     context_properties.data_type_limits.gru_bias)));
+    }
+    std::array<uint32_t, 2> expected_bias_shape = {num_directions,
+                                                   three_times_hidden_size};
+    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+        *attributes.bias, kBiasParam, expected_bias_shape, input.data_type(),
+        label));
   }
 
   // Validate the recurrent bias operand.
-  std::array<uint32_t, 2> expected_recurrent_bias_shape = {
-      num_directions, three_times_hidden_size};
   if (attributes.recurrent_bias) {
+    if (!context_properties.data_type_limits.gru_bias.Supports(
+            attributes.recurrent_bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kRecurrentBiasParam, attributes.recurrent_bias.value(),
+                     context_properties.data_type_limits.gru_bias)));
+    }
+    std::array<uint32_t, 2> expected_recurrent_bias_shape = {
+        num_directions, three_times_hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        *attributes.recurrent_bias, "recurrent bias",
+        *attributes.recurrent_bias, kRecurrentBiasParam,
         expected_recurrent_bias_shape, input.data_type(), label));
   }
 
   // Validate the initial hidden state operand.
-  std::array<uint32_t, 3> expected_initial_hidden_state_shape = {
-      num_directions, batch_size, hidden_size};
   if (attributes.initial_hidden_state) {
+    if (!context_properties.data_type_limits.gru_input.Supports(
+            attributes.initial_hidden_state.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          NotSupportedArgumentError(
+              kInitialHiddenStateParam, attributes.initial_hidden_state.value(),
+              context_properties.data_type_limits.gru_input)));
+    }
+    std::array<uint32_t, 3> expected_initial_hidden_state_shape = {
+        num_directions, batch_size, hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        *attributes.initial_hidden_state, "initial hidden state",
+        *attributes.initial_hidden_state, kInitialHiddenStateParam,
         expected_initial_hidden_state_shape, input.data_type(), label));
   }
 
@@ -1723,17 +1756,11 @@ base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
         ErrorWithLabel(label, "The hidden size must be greater than 0."));
   }
 
-  // Validate the weight operand.
-  if (input.Rank() != 2) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input must be a 2-D tensor."));
-  }
-  if (!context_properties.data_type_limits.gru_cell_input.Has(
-          input.data_type())) {
+  // Validate the input operand.
+  if (!context_properties.data_type_limits.gru_cell_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.gru_cell_input)));
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.gru_cell_input)));
   }
 
   const uint32_t batch_size = input.shape()[0];
@@ -1747,39 +1774,73 @@ base::expected<OperandDescriptor, std::string> ValidateGruCellAndInferOutput(
   }
 
   // Validate the weight operand.
+  if (!context_properties.data_type_limits.gru_cell_input.Supports(weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kWeightParam, weight,
+                   context_properties.data_type_limits.gru_cell_input)));
+  }
   std::array<uint32_t, 2> expected_weight_shape = {three_times_hidden_size,
                                                    input_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      weight, "weight", expected_weight_shape, input.data_type(), label));
+      weight, kWeightParam, expected_weight_shape, input.data_type(), label));
 
   // Validate the recurrent weight operand.
+  if (!context_properties.data_type_limits.gru_cell_input.Supports(
+          recurrent_weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kRecurrentWeightParam, recurrent_weight,
+                   context_properties.data_type_limits.gru_cell_input)));
+  }
   std::array<uint32_t, 2> expected_recurrent_weight_shape = {
       three_times_hidden_size, hidden_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      recurrent_weight, "recurrent weight", expected_recurrent_weight_shape,
+      recurrent_weight, kRecurrentWeightParam, expected_recurrent_weight_shape,
       input.data_type(), label));
 
   // Validate the hidden state operand.
+  if (!context_properties.data_type_limits.gru_cell_input.Supports(
+          hidden_state)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kHiddenStateParam, hidden_state,
+                   context_properties.data_type_limits.gru_cell_input)));
+  }
   std::array<uint32_t, 2> expected_hidden_state_shape = {batch_size,
                                                          hidden_size};
-  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(hidden_state, "hidden state",
-                                                  expected_hidden_state_shape,
-                                                  input.data_type(), label));
+  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+      hidden_state, kHiddenStateParam, expected_hidden_state_shape,
+      input.data_type(), label));
 
   // Validate the bias operand.
-  std::array<uint32_t, 1> expected_bias_shape = {three_times_hidden_size};
   if (attributes.bias) {
-    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(*attributes.bias, "bias",
-                                                    expected_bias_shape,
-                                                    input.data_type(), label));
+    if (!context_properties.data_type_limits.gru_cell_bias.Supports(
+            attributes.bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kBiasParam, attributes.bias.value(),
+                     context_properties.data_type_limits.gru_cell_bias)));
+    }
+    std::array<uint32_t, 1> expected_bias_shape = {three_times_hidden_size};
+    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+        *attributes.bias, kBiasParam, expected_bias_shape, input.data_type(),
+        label));
   }
 
   // Validate the recurrent bias operand.
-  std::array<uint32_t, 1> expected_recurrent_bias_shape = {
-      three_times_hidden_size};
   if (attributes.recurrent_bias) {
+    if (!context_properties.data_type_limits.gru_cell_bias.Supports(
+            attributes.recurrent_bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kRecurrentBiasParam, attributes.recurrent_bias.value(),
+                     context_properties.data_type_limits.gru_cell_bias)));
+    }
+    std::array<uint32_t, 1> expected_recurrent_bias_shape = {
+        three_times_hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        *attributes.recurrent_bias, "recurrent bias",
+        *attributes.recurrent_bias, kRecurrentBiasParam,
         expected_recurrent_bias_shape, input.data_type(), label));
   }
 
@@ -1963,15 +2024,11 @@ ValidateLstmAndInferOutput(const ContextProperties& context_properties,
         ErrorWithLabel(label, "The hidden size is too large."));
   }
 
-  if (input.Rank() != 3) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should be a 3-D tensor."));
-  }
-  if (!context_properties.data_type_limits.lstm_input.Has(input.data_type())) {
+  // Validate the input operand.
+  if (!context_properties.data_type_limits.lstm_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.lstm_input)));
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.lstm_input)));
   }
 
   const auto& input_dimensions = input.shape();
@@ -1986,61 +2043,111 @@ ValidateLstmAndInferOutput(const ContextProperties& context_properties,
       attributes.direction == RecurrentNetworkDirection::kBoth ? 2 : 1;
 
   // Validate the weight operand.
+  if (!context_properties.data_type_limits.lstm_input.Supports(weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kWeightParam, weight,
+                   context_properties.data_type_limits.lstm_input)));
+  }
   uint32_t expected_weight_shape[3] = {direction_count, four_times_hidden_size,
                                        input_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      weight, "weight", expected_weight_shape, input.data_type(), label));
+      weight, kWeightParam, expected_weight_shape, input.data_type(), label));
 
   // Validate the recurrent weight operand.
+  if (!context_properties.data_type_limits.lstm_input.Supports(
+          recurrent_weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kRecurrentWeightParam, recurrent_weight,
+                   context_properties.data_type_limits.lstm_input)));
+  }
   uint32_t expected_recurrent_weight_shape[3] = {
       direction_count, four_times_hidden_size, hidden_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      recurrent_weight, "recurrent weight", expected_recurrent_weight_shape,
+      recurrent_weight, kRecurrentWeightParam, expected_recurrent_weight_shape,
       input.data_type(), label));
 
   // Validate the bias operand.
   if (attributes.bias) {
+    if (!context_properties.data_type_limits.lstm_bias.Supports(
+            attributes.bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kBiasParam, attributes.bias.value(),
+                     context_properties.data_type_limits.lstm_bias)));
+    }
     uint32_t expected_bias_shape[2] = {direction_count, four_times_hidden_size};
-    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(attributes.bias.value(),
-                                                    "bias", expected_bias_shape,
-                                                    input.data_type(), label));
+    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+        attributes.bias.value(), kBiasParam, expected_bias_shape,
+        input.data_type(), label));
   }
 
   // Validate the recurrent bias operand.
   if (attributes.recurrent_bias) {
+    if (!context_properties.data_type_limits.lstm_bias.Supports(
+            attributes.recurrent_bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kRecurrentBiasParam, attributes.recurrent_bias.value(),
+                     context_properties.data_type_limits.lstm_bias)));
+    }
     uint32_t expected_recurrent_bias_shape[2] = {direction_count,
                                                  four_times_hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        attributes.recurrent_bias.value(), "recurrent bias",
+        attributes.recurrent_bias.value(), kRecurrentBiasParam,
         expected_recurrent_bias_shape, input.data_type(), label));
   }
 
   // Validate the peephole weight operand.
   if (attributes.peephole_weight) {
+    if (!context_properties.data_type_limits.lstm_bias.Supports(
+            attributes.peephole_weight.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kPeepholeWeightParam, attributes.peephole_weight.value(),
+                     context_properties.data_type_limits.lstm_bias)));
+    }
     // Here `3 * hidden_size` will not overflow because `4 * hidden_size` has
     // already been checked.
     uint32_t expected_peephole_weight_shape[2] = {direction_count,
                                                   3 * hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        attributes.peephole_weight.value(), "peephole weight",
+        attributes.peephole_weight.value(), kPeepholeWeightParam,
         expected_peephole_weight_shape, input.data_type(), label));
   }
 
   // Validate the initial hidden state operand.
   if (attributes.initial_hidden_state) {
+    if (!context_properties.data_type_limits.lstm_input.Supports(
+            attributes.initial_hidden_state.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          NotSupportedArgumentError(
+              kInitialHiddenStateParam, attributes.initial_hidden_state.value(),
+              context_properties.data_type_limits.lstm_input)));
+    }
     uint32_t expected_initial_hidden_state_shape[3] = {direction_count,
                                                        batch_size, hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        attributes.initial_hidden_state.value(), "initial hidden state",
+        attributes.initial_hidden_state.value(), kInitialHiddenStateParam,
         expected_initial_hidden_state_shape, input.data_type(), label));
   }
 
   // Validate the initial cell state operand.
   if (attributes.initial_cell_state) {
+    if (!context_properties.data_type_limits.lstm_input.Supports(
+            attributes.initial_cell_state.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          NotSupportedArgumentError(
+              kInitialCellStateParam, attributes.initial_cell_state.value(),
+              context_properties.data_type_limits.lstm_input)));
+    }
     uint32_t expected_initial_cell_state_shape[3] = {direction_count,
                                                      batch_size, hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        attributes.initial_cell_state.value(), "initial cell state",
+        attributes.initial_cell_state.value(), kInitialCellStateParam,
         expected_initial_cell_state_shape, input.data_type(), label));
   }
 
@@ -2099,71 +2206,115 @@ ValidateLstmCellAndInferOutput(const ContextProperties& context_properties,
         ErrorWithLabel(label, "The hidden size is too large."));
   }
 
-  if (input.Rank() != 2) {
-    return base::unexpected(
-        ErrorWithLabel(label, "The input should be a 2-D tensor."));
-  }
-  if (!context_properties.data_type_limits.lstm_cell_input.Has(
-          input.data_type())) {
+  // Validate the input operand.
+  if (!context_properties.data_type_limits.lstm_cell_input.Supports(input)) {
     return base::unexpected(ErrorWithLabel(
-        label, NotSupportedInputArgumentTypeError(
-                   input.data_type(),
-                   context_properties.data_type_limits.lstm_cell_input)));
+        label,
+        NotSupportedInputArgumentError(
+            input, context_properties.data_type_limits.lstm_cell_input)));
   }
 
   const uint32_t batch_size = input.shape()[0];
   const uint32_t input_size = input.shape()[1];
 
   // Validate the weight operand.
+  if (!context_properties.data_type_limits.lstm_cell_input.Supports(weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kWeightParam, weight,
+                   context_properties.data_type_limits.lstm_cell_input)));
+  }
   std::array<uint32_t, 2> expected_weight_shape = {four_times_hidden_size,
                                                    input_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      weight, "weight", expected_weight_shape, input.data_type(), label));
+      weight, kWeightParam, expected_weight_shape, input.data_type(), label));
 
   // Validate the hidden state operand.
+  if (!context_properties.data_type_limits.lstm_cell_input.Supports(
+          hidden_state)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kHiddenStateParam, hidden_state,
+                   context_properties.data_type_limits.lstm_cell_input)));
+  }
   std::array<uint32_t, 2> expected_hidden_state_shape = {batch_size,
                                                          hidden_size};
-  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(hidden_state, "hidden state",
-                                                  expected_hidden_state_shape,
-                                                  input.data_type(), label));
+  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+      hidden_state, kHiddenStateParam, expected_hidden_state_shape,
+      input.data_type(), label));
 
   // Validate the cell state operand.
+  if (!context_properties.data_type_limits.lstm_cell_input.Supports(
+          cell_state)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kCellStateParam, cell_state,
+                   context_properties.data_type_limits.lstm_cell_input)));
+  }
   std::array<uint32_t, 2> expected_cell_state_shape = {batch_size, hidden_size};
-  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(cell_state, "cell state",
+  RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(cell_state, kCellStateParam,
                                                   expected_cell_state_shape,
                                                   input.data_type(), label));
 
   // Validate the recurrent weight operand.
+  if (!context_properties.data_type_limits.lstm_cell_input.Supports(
+          recurrent_weight)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentError(
+                   kRecurrentWeightParam, recurrent_weight,
+                   context_properties.data_type_limits.lstm_cell_input)));
+  }
   std::array<uint32_t, 2> expected_recurrent_weight_shape = {
       four_times_hidden_size, hidden_size};
   RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-      recurrent_weight, "recurrent weight", expected_recurrent_weight_shape,
+      recurrent_weight, kRecurrentWeightParam, expected_recurrent_weight_shape,
       input.data_type(), label));
 
   // Validate the bias operand.
   if (attributes.bias) {
+    if (!context_properties.data_type_limits.lstm_cell_bias.Supports(
+            attributes.bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kBiasParam, attributes.bias.value(),
+                     context_properties.data_type_limits.lstm_cell_bias)));
+    }
     std::array<uint32_t, 1> expected_bias_shape = {four_times_hidden_size};
-    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(attributes.bias.value(),
-                                                    "bias", expected_bias_shape,
-                                                    input.data_type(), label));
+    RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
+        attributes.bias.value(), kBiasParam, expected_bias_shape,
+        input.data_type(), label));
   }
 
   // Validate the recurrent bias operand.
   if (attributes.recurrent_bias) {
+    if (!context_properties.data_type_limits.lstm_cell_bias.Supports(
+            attributes.recurrent_bias.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kRecurrentBiasParam, attributes.recurrent_bias.value(),
+                     context_properties.data_type_limits.lstm_cell_bias)));
+    }
     std::array<uint32_t, 1> expected_recurrent_bias_shape = {
         four_times_hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        attributes.recurrent_bias.value(), "recurrent bias",
+        attributes.recurrent_bias.value(), kRecurrentBiasParam,
         expected_recurrent_bias_shape, input.data_type(), label));
   }
 
   // Validate the peephole weight operand.
   if (attributes.peephole_weight) {
+    if (!context_properties.data_type_limits.lstm_cell_bias.Supports(
+            attributes.peephole_weight.value())) {
+      return base::unexpected(ErrorWithLabel(
+          label, NotSupportedArgumentError(
+                     kPeepholeWeightParam, attributes.peephole_weight.value(),
+                     context_properties.data_type_limits.lstm_cell_bias)));
+    }
     // Here `3 * hidden_size` will not overflow because `4 * hidden_size` has
     // already been checked.
     std::array<uint32_t, 1> expected_peephole_weight_shape = {3 * hidden_size};
     RETURN_IF_ERROR(ValidateRecurrentNetworkOperand(
-        attributes.peephole_weight.value(), "peephole weight",
+        attributes.peephole_weight.value(), kPeepholeWeightParam,
         expected_peephole_weight_shape, input.data_type(), label));
   }
 

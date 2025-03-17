@@ -329,7 +329,7 @@ class TCPSocketTest
         ASSERT_LE(total_received + read_result, expected_size);
         received_data_buffer.subspan(total_received)
             .copy_prefix_from(
-                read_buffer->span().first(static_cast<size_t>(read_result)));
+                read_buffer->first(static_cast<size_t>(read_result)));
 
         total_received += read_result;
         DVLOG(1) << "Copied data in while loop. Size " << total_received;
@@ -671,7 +671,7 @@ TEST_P(TCPSocketTest, CancelPendingReadIfReady) {
   }
 
   ASSERT_EQ(static_cast<int>(kMsg.size()), read_result);
-  ASSERT_EQ(read_buffer->span().first(static_cast<size_t>(read_result)),
+  ASSERT_EQ(read_buffer->first(static_cast<size_t>(read_result)),
             base::as_byte_span(kMsg));
 }
 
@@ -948,8 +948,7 @@ TEST_P(TCPSocketTest, LargeDataReadWithCancelReadIfReady) {
       // Append received data to the buffer using spans.
       base::span<uint8_t>(received_data)
           .subspan(received_data_size, static_cast<size_t>(read_result))
-          .copy_from(
-              read_buffer->span().first(static_cast<size_t>(read_result)));
+          .copy_from(read_buffer->first(static_cast<size_t>(read_result)));
       received_data_size += read_result;
       chunk_received += read_result;
     }
@@ -1042,7 +1041,7 @@ TEST_P(TCPSocketTest, ReadBiggerRead) {
 
   ASSERT_EQ(static_cast<int>(kMsg.size()), read_result);
   ASSERT_EQ(base::span(kMsg),
-            read_buffer->span().first(static_cast<uint8_t>(read_result)));
+            read_buffer->first(static_cast<uint8_t>(read_result)));
 }
 
 // This test is similar to ReadComplete, but with a smaller buffer size than the

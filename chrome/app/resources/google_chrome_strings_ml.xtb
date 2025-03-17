@@ -39,6 +39,7 @@
 <translation id="1497802159252041924">ഇൻസ്‌റ്റാൾ ചെയ്യലിൽ പിശക്: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">നിങ്ങളുടെ പുതിയ Chrome പ്രൊഫൈൽ ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="1547295885616600893">ChromeOS സാധ്യമാക്കിയത് അധിക <ph name="BEGIN_LINK_CROS_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയർ<ph name="END_LINK_CROS_OSS" /> ഉപയോഗിച്ചാണ്.</translation>
+<translation id="1547469039832541117">ഹൈലൈറ്റ് ചെയ്ത ടാസ്‌ക് അവസാനിപ്പിക്കുന്നു.</translation>
 <translation id="1553358976309200471">Chrome അപ്‌ഡേറ്റുചെയ്യുക</translation>
 <translation id="1587223624401073077">Google Chrome നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> അപകടകരമായതിനാൽ, Chrome ഇതിനെ ബ്ലോക്കുചെയ്‌തു.</translation>
@@ -175,6 +176,7 @@
 <translation id="3140883423282498090">നിങ്ങളുടെ മാറ്റങ്ങൾ അടുത്ത തവണ Google Chrome വീണ്ടും ആരംഭിക്കുമ്പോൾ പ്രാബല്യത്തിൽ വരും.</translation>
 <translation id="3149510190863420837">Chrome അപ്ലിക്കേഷനുകൾ</translation>
 <translation id="3161522574479303604">എല്ലാ ഭാഷകളും</translation>
+<translation id="319199214552513804">ഈ വിപുലീകരണവും മറ്റും നിങ്ങളുടെ എല്ലാ കമ്പ്യൂട്ടറുകളിലും ലഭിക്കാൻ, Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3196187562065225381">ഫയൽ അപകടകരമായതിനാൽ Chrome ഈ ഡൗൺലോഡ് ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="3222857603094643834">Google Lens ഉപയോഗിച്ച് ഈ പേജിൽ എന്തും തിരയുക</translation>
 <translation id="3226612997184048185">ബുക്ക്‌മാർക്കുകൾ നിങ്ങളുടെ Google Account-ലും സംരക്ഷിക്കുകയാണെങ്കിൽ, Chrome-ൽ ഉൽപ്പന്ന വിലകൾ ട്രാക്ക് ചെയ്യാനും അവയുടെ വില കുറയുമ്പോൾ അറിയിപ്പ് നേടാനുമാകും</translation>

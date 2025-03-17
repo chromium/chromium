@@ -96,6 +96,9 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   // on its properties.
   void AddBnplIssuer(const BnplIssuer& bnpl_issuer);
 
+  // Clears BNPL issuers from `TestPaymentsDataManager`.
+  void ClearBnplIssuers();
+
   // Adds offer data to `autofill_offer_data_`.
   void AddAutofillOfferData(const AutofillOfferData& offer_data);
 

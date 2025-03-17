@@ -22,6 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="StartActivityType">
+  <variant name="Tabbed"
+      summary="Chrome starts up with intent to ChromeTabbedActivity"/>
+  <variant name="WebApk"
+      summary="Chrome starts up with intent to WebApkActivity"/>
+</variants>
+
 <histogram name="Startup.AfterStartupTaskCount" units="units"
     expires_after="2025-08-24">
   <owner>michaeln@chromium.org</owner>
@@ -103,7 +110,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint"
+<histogram
+    name="Startup.Android.Cold.TimeToFirstContentfulPaint.{StartActivityType}"
     units="ms" expires_after="2025-07-13">
   <owner>pasko@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
@@ -112,11 +120,12 @@ chromium-metrics-reviews@google.com.
     paint of the first loaded page. It's not recorded when the first loaded page
     is non http(s) page like a chrome error page, a new tab page, a blank page.
     It's also not recorded if the application wasn't in the foreground since the
-    start till the end of event.
+    start till the end of event. {StartActivityType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Startup.Android.Cold.TimeToFirstContentfulPaint3"
+<histogram
+    name="Startup.Android.Cold.TimeToFirstContentfulPaint3.{StartActivityType}"
     units="ms" expires_after="2025-07-26">
   <owner>pasko@chromium.org</owner>
   <owner>nafisabedin@google.com</owner>
@@ -151,11 +160,12 @@ chromium-metrics-reviews@google.com.
 
     NOTE: This metric is broken before October 2024 on Pixel 6+ on Android 14+
     due to an issue with the recording of BrowserProcessCreationReason affecting
-    ColdStartTracker downstream.
+    ColdStartTracker downstream. {StartActivityType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Startup.Android.Cold.TimeToFirstNavigationCommit"
+<histogram
+    name="Startup.Android.Cold.TimeToFirstNavigationCommit.{StartActivityType}"
     units="ms" expires_after="2025-07-13">
   <owner>pasko@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
@@ -165,7 +175,7 @@ chromium-metrics-reviews@google.com.
     document. It's not recorded when the first loaded page is non http(s) page
     like a chrome error page, a new tab page, a blank page. It's also not
     recorded if the application wasn't in the foreground since the start till
-    the end of event.
+    the end of event. {StartActivityType}
   </summary>
 </histogram>
 
@@ -193,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Startup.Android.Cold.TimeToFirstNavigationCommit3.{ActivityType}"
+    name="Startup.Android.Cold.TimeToFirstNavigationCommit3.{StartActivityType}"
     units="ms" expires_after="never">
 <!-- expires-never: used for a guiding metric: TimeToFirstVisibleContent4 -->
 
@@ -202,7 +212,7 @@ chromium-metrics-reviews@google.com.
   <owner>nafisabedin@google.com</owner>
   <summary>
     The time from activity creation on a cold start to the FirstNavigationCommit
-    happening for a particular {ActivityType}. Cold start is determined by
+    happening for a particular {StartActivityType}. Cold start is determined by
     whether the process creation reason is Activity.
 
     Recorded for both Tabbed Activities and WebApks only during cold starts.
@@ -226,10 +236,6 @@ chromium-metrics-reviews@google.com.
     due to an issue with the recording of BrowserProcessCreationReason affecting
     ColdStartTracker downstream.
   </summary>
-  <token key="ActivityType">
-    <variant name="Tabbed"/>
-    <variant name="WebApk"/>
-  </token>
 </histogram>
 
 <histogram name="Startup.Android.Cold.TimeToFirstVisibleContent" units="ms"

@@ -5968,6 +5968,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5363" label="CrossOriginOwnerInterestGroupSubframeCheckFailed"/>
   <int value="5364" label="PreferredAudioOutputDevices"/>
   <int value="5365" label="SharedStorageAPI_SelectURL_Method_CalledWithOneURL"/>
+  <int value="5366" label="V8AIRewriter_MeasureInputUsage_Method"/>
+  <int value="5367" label="V8AIRewriter_InputQuota_AttributeGetter"/>
+  <int value="5368" label="V8AISummarizer_MeasureInputUsage_Method"/>
+  <int value="5369" label="V8AISummarizer_InputQuota_AttributeGetter"/>
+  <int value="5370" label="V8AIWriter_MeasureInputUsage_Method"/>
+  <int value="5371" label="V8AIWriter_InputQuota_AttributeGetter"/>
+  <int value="5372" label="SpeculationRulesTargetHintBlank"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -6476,6 +6483,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="User signs in with a new account"/>
   <int value="1" label="User signs in with existing account"/>
   <int value="2" label="User does not sign in"/>
+</enum>
+
+<enum name="FedCmUserAction">
+  <int value="0" label="User signed in"/>
+  <int value="1" label="User ignored the UI"/>
+  <int value="2" label="User closed the UI"/>
 </enum>
 
 <enum name="FedCmUserInfoStatus">

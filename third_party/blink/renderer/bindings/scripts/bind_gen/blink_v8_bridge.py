@@ -986,6 +986,7 @@ def typed_array_element_type(idl_type):
         'Uint32Array': 'unsigned long',
         'BigUint64Array': 'unsigned long long',
         'Uint8ClampedArray': 'octet',
+        'Float16Array': 'unsigned short',
         'Float32Array': 'unrestricted float',
         'Float64Array': 'unrestricted double',
     }

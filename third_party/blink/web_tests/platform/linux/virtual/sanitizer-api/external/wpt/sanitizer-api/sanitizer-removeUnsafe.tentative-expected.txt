@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] removeUnsafe removes the right elements and attributes
+  assert_equals: expected 7 but got 2
+[FAIL] removeUnsafe with default config
+  assert_equals: removeElements are added expected 7 but got 2
+Harness: the test ran to completion.
+

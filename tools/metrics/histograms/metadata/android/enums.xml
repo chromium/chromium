@@ -93,11 +93,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="FALLBACK_ON_TIMEOUT_UNSANDBOXED"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidDefaultBrowserState) -->
+
 <enum name="AndroidDefaultBrowserPromoOutcomeType">
   <int value="0" label="No Default"/>
   <int value="1" label="Other Default"/>
   <int value="2" label="Chrome Default"/>
+  <int value="3" label="Other Chrome Default"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/util/android/java/src/org/chromium/chrome/browser/util/DefaultBrowserInfo.java:AndroidDefaultBrowserState)-->
 
 <enum name="AndroidDefaultBrowserPromoType">
   <int value="0" label="No Default"/>
@@ -614,14 +619,14 @@ chromium-metrics-reviews@google.com.
   <int value="121" label="WebViewCompat.getNavigationClient"/>
   <int value="122" label="WebViewCompat.setNavigationClient"/>
   <int value="123" label="Navigation.getUrl"/>
-  <int value="124" label="Navigation.isPageInitiated"/>
+  <int value="124" label="Navigation.wasInitiatedByPage"/>
   <int value="125" label="Navigation.isSameDocument"/>
   <int value="126" label="Navigation.isReload"/>
   <int value="127" label="Navigation.isHistory"/>
   <int value="128" label="Navigation.isRestore"/>
   <int value="129" label="Navigation.isBack"/>
   <int value="130" label="Navigation.isForward"/>
-  <int value="131" label="Navigation.hasCommitted"/>
+  <int value="131" label="Navigation.didCommit"/>
   <int value="132" label="Navigation.didCommitErrorPage"/>
   <int value="133" label="Navigation.getStatusCode"/>
   <int value="134" label="WebViewCompat.clearAsyncShouldInterceptRequest"/>
@@ -633,6 +638,10 @@ chromium-metrics-reviews@google.com.
   <int value="138" label="WebViewCompat.WebResponseCallback.doNotIntercept"/>
   <int value="139" label="WebViewCompat.WebResponseCallback.intercept"/>
   <int value="140" label="Navigation.getPage"/>
+  <int value="141" label="WebSettingsCompat.setPaymentRequestEnabled"/>
+  <int value="142" label="WebSettingsCompat.getPaymentRequestEnabled"/>
+  <int value="143" label="WebSettingsCompat.setHasEnrolledInstrumentEnabled"/>
+  <int value="144" label="WebSettingsCompat.getHasEnrolledInstrumentEnabled"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

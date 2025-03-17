@@ -616,7 +616,6 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kTips:
       return YES;
     case ContentSuggestionsModuleType::kTabResumption:
-      return !IsTabResumption1_5Enabled();
     case ContentSuggestionsModuleType::kTipsWithProductImage:
       return NO;
     default:

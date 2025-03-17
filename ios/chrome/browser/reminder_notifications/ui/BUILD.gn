@@ -4,17 +4,31 @@
 
 source_set("ui") {
   sources = [
+    "constants.h",
+    "constants.mm",
+    "reminder_notifications_date_picker_interaction_handler.h",
+    "reminder_notifications_date_picker_table_view.h",
+    "reminder_notifications_date_picker_table_view.mm",
+    "reminder_notifications_date_picker_table_view_cell.h",
+    "reminder_notifications_date_picker_table_view_cell.mm",
     "reminder_notifications_view_controller.h",
     "reminder_notifications_view_controller.mm",
   ]
-  public_deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
+  public_deps = [
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
   deps = [
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ui/base",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {

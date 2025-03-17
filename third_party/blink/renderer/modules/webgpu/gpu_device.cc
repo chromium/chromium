@@ -702,11 +702,6 @@ void GPUDevice::OnPopErrorScopeCallback(
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
                                        StringFromASCIIAndUTF8(message));
       return;
-    default:
-      // TODO(crbug.com/402220413): Remove default once EmptyStack is removed.
-      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       "Unknown error in popErrorScope");
-      return;
   }
   switch (type) {
     case wgpu::ErrorType::NoError:

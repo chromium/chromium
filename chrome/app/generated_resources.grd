@@ -865,10 +865,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="The name of the Autofill Feedback command in the content area context menu">
             Help improve autofill
           </message>
-          <!-- TODO(359570730): remove non translateable flag  -->
-          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS" desc="The name of the Autofill context menu entry that will initiate filling using improved predictions." translateable="false">
-            Autocomplete
-          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select password
           </message>
@@ -4434,6 +4430,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERT_X509_SCT_LIST" desc="description of extension Signed Certificate Timestamp List">
           Signed Certificate Timestamp List
         </message>
+        <message name="IDS_CERT_QC_STATEMENTS" desc="description of extension Qualified Certificate Statements">
+          Qualified Certificate Statements
+        </message>
         <message name="IDS_CERT_X509_POLICY_MAPPINGS" desc="description of extension Certificate Policy Mappings">
           Certificate Policy Mappings
         </message>
@@ -4593,6 +4592,24 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERT_EKU_OCSP_SIGNING" desc="description of extended key usage Signing OCSP Responses">
           Signing OCSP Responses
         </message>
+
+        <message name="IDS_CERT_POLICY_ETSI_QEVCP_W" desc="description of ETSI qualified website certificates that offer the Extended Validated level of assurance" translateable="false">
+          ETSI QEVCP-w
+        </message>
+        <message name="IDS_CERT_POLICY_ETSI_QNCP_W" desc="description of ETSI qualified website certificates that offer the Organization Validated or Individual Validated level of assurance" translateable="false">
+          ETSI QNCP-w
+        </message>
+
+        <message name="IDS_CERT_QC_ETSI_QCS_QCCOMPLIANCE" desc="description of ETSI qualified certificate statement compliance" translateable="false">
+          ETSI QcCompliance
+        </message>
+        <message name="IDS_CERT_QC_ETSI_QCS_QCTYPE" desc="description of ETSI qualified certificate statement certificate type" translateable="false">
+          ETSI QcType
+        </message>
+        <message name="IDS_CERT_QC_ETSI_QCT_WEB" desc="description of ETSI qualified certificate statement certificate type for web site authentication" translateable="false">
+          ETSI qct-web
+        </message>
+
         <message name="IDS_CERT_EKU_MS_INDIVIDUAL_CODE_SIGNING" desc="description of extended key usage Microsoft Individual Code Signing">
           Microsoft Individual Code Signing
         </message>
@@ -4944,7 +4961,11 @@ are declared in tools/grit/grit_args.gni.
         <ph name="NUM_HANDLES">$1<ex>300</ex></ph> (<ph name="NUM_KILOBYTES_LIVE">$2<ex>500</ex></ph> peak)
       </message>
       <message name="IDS_TASK_MANAGER_TASK_GROUP_CONNECT_TEXT" desc="The text used to connect tasks in the same task group for accessibility features. [ICU_Syntax]">
-        {NUM_TASKS, plural, =1 {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>} other {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>. Other <ph name="OTHER_TASK_NUM">{OTHER_TASK_NUM}<ex>2</ex></ph> tasks in the same task group: <ph name="OTHER_TASKS">{OTHER_TASKS}<ex>TaskA TaskB</ex></ph>}}
+        {NUM_TASKS, plural,
+          =0 {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>}
+          =1 {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>. Another task in the same task group: <ph name="OTHER_TASKS">{OTHER_TASKS}<ex>TaskA</ex></ph>}
+          other {<ph name="TASK_ROW">{TASK_ROW}<ex>MyTask</ex></ph>. Other # tasks in the same task group: <ph name="OTHER_TASKS">{OTHER_TASKS}<ex>TaskA, TaskB, and TaskC</ex></ph>}
+        }
       </message>
       <message name="IDS_TASK_MANAGER_WEB_BROWSER_CELL_TEXT" desc="The text of the web browser process row">
         Browser

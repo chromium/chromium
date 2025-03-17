@@ -181,13 +181,10 @@ class SavedTabGroupInteractiveTest
   void SetUp() override {
     if (IsMigrationEnabled()) {
       scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveV2,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveV2},
-          {tab_groups::kTabGroupSyncServiceDesktopMigration});
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
     }
 
     SavedTabGroupInteractiveTestBase::SetUp();
@@ -352,58 +349,6 @@ class SavedTabGroupInteractiveTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// Used to test SavedTabGroups V1 specific features such as the save toggle.
-class SavedTabGroupInteractiveTestV1
-    : public SavedTabGroupInteractiveTestBase,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SavedTabGroupInteractiveTestV1() = default;
-  ~SavedTabGroupInteractiveTestV1() override = default;
-
-  void SetUp() override {
-    if (IsMigrationEnabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {tab_groups::kTabGroupsSaveV2});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
-               tab_groups::kTabGroupsSaveV2});
-    }
-
-    SavedTabGroupInteractiveTestBase::SetUp();
-  }
-
-  bool IsMigrationEnabled() const { return GetParam(); }
-
-  MultiStep SaveGroupLeaveEditorBubbleOpen(tab_groups::TabGroupId group_id) {
-    return Steps(EnsureNotPresent(kTabGroupEditorBubbleId),
-                 // Right click on the header to open the editor bubble.
-                 HoverTabGroupHeader(group_id), ClickMouse(ui_controls::RIGHT),
-                 // Wait for the tab group editor bubble to appear.
-                 WaitForShow(kTabGroupEditorBubbleId),
-                 // Click the save toggle and make sure the saved tab group
-                 // appears in the bookmarks bar.
-                 PressButton(kTabGroupEditorBubbleSaveToggleId));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTestV1,
-                       ToggleSavedStateOfGroup) {
-  const tab_groups::TabGroupId& group_id =
-      browser()->tab_strip_model()->AddToNewGroup({0});
-  RunTestSequence(FinishTabstripAnimations(), ShowBookmarksBar(),
-                  // Verify pressing the toggle saves the group.
-                  SaveGroupLeaveEditorBubbleOpen(group_id),
-                  EnsurePresent(kSavedTabGroupButtonElementId),
-                  // Verify pressing the toggle again unsaves the group.
-                  PressButton(kTabGroupEditorBubbleSaveToggleId),
-                  EnsureNotPresent(kSavedTabGroupButtonElementId));
-}
 
 IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest, CreateGroupAndSave) {
   browser()->tab_strip_model()->AddToNewGroup({0});
@@ -1221,7 +1166,4 @@ INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
                          SavedTabGroupInteractiveTest,
                          testing::Bool());
 
-INSTANTIATE_TEST_SUITE_P(SavedTabGroupBar,
-                         SavedTabGroupInteractiveTestV1,
-                         testing::Bool());
 }  // namespace tab_groups

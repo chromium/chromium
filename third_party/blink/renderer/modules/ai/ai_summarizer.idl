@@ -20,13 +20,31 @@ interface AISummarizer {
     CallWith=ScriptState,
     RaisesException
   ]
-  Promise<DOMString> summarize(DOMString input, optional AISummarizerSummarizeOptions options = {});
+  Promise<DOMString> summarize(
+    DOMString input,
+    optional AISummarizerSummarizeOptions options = {}
+  );
+
   [
     Measure,
     CallWith=ScriptState,
     RaisesException
   ]
-  ReadableStream summarizeStreaming(DOMString input, optional AISummarizerSummarizeOptions options = {});
+  ReadableStream summarizeStreaming(
+    DOMString input,
+    optional AISummarizerSummarizeOptions options = {}
+  );
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional AISummarizerSummarizeOptions options = {}
+  );
+
   [
     Measure,
     CallWith=ScriptState,
@@ -48,4 +66,6 @@ interface AISummarizer {
   readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
   [Measure]
   readonly attribute DOMString? outputLanguage;
+  [Measure]
+  readonly attribute unrestricted double inputQuota;
 };

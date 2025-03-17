@@ -2257,7 +2257,6 @@
 <translation id="2530166226437958497">Вирішення проблем</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Сталася помилка. Не вдалося встановити <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Щоб дізнатися більше, перейдіть на сторінку g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Докладніша інформація</translation>
 <translation id="2532144599248877204">Подовжує час роботи акумулятора, підтримуючи його заряд на рівні 80%. Акумулятор буде повністю заряджено до того часу, коли ви зазвичай відключаєте пристрій від джерела живлення.</translation>
 <translation id="2532146950330687938">Підготовка пристрою…</translation>
 <translation id="2532198298278778531">Керувати захищеним DNS-сервером у налаштуваннях ОС Chrome Flex</translation>
@@ -2813,7 +2812,6 @@
 <translation id="2921081876747860777">Створіть пароль, щоб захистити дані на пристрої.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> зараз буде заблоковано.
 Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдань у тій самій групі: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ще <ph name="OTHER_TASK_NUM" /> завдання в тій самій групі: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Видалити цей обліковий запис</translation>
 <translation id="2923644930701689793">Отримайте доступ до фотоплівки на телефоні</translation>
 <translation id="292371311537977079">Налаштування Chrome</translation>
@@ -6915,6 +6913,7 @@
 <translation id="5865508026715185451">Додаток <ph name="APP_NAME" /> невдовзі буде призупинено</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працює, використовуючи своє зображення диска. Встановлення веб-переглядача на комп'ютер дозволить працювати без використання зображення диска та гарантуватиме його постійне оновлення.</translation>
 <translation id="5865733239029070421">Автоматично надсилає статистику використання та звіти про аварійне завершення роботи в Google</translation>
+<translation id="5866363217037791319">Завершити завдання</translation>
 <translation id="5868434909835797817">На вашому пристрої вимкнено мікрофон</translation>
 <translation id="5868479397518301468">Час очікування входу минув</translation>
 <translation id="5868822853313956582">Підлаштовуватися до кольорів пристрою</translation>
@@ -10645,7 +10644,6 @@
 <translation id="8524841856047224176">Персоналізуйте фони для відеодзвінків тощо</translation>
 <translation id="8525306231823319788">На весь екран</translation>
 <translation id="8525461909394569609">Цей додаток містить веб-контент з інших джерел</translation>
-<translation id="8526313996927074827">Вставляйте посилання, смайли тощо. Ви також можете писати тексти за допомогою ШІ від Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527257351549797148">Можливо, ваша організація вимагатиме від вас зареєструватися, щоб ви могли отримати доступ до додатків, розширень тощо. Це також дасть змогу вашій організації керувати налаштуваннями безпеки й пристрою.</translation>
@@ -11104,6 +11102,7 @@
 <translation id="883924185304953854">Пошук за зображенням</translation>
 <translation id="8841786407272321022">Пароль збережено лише на цьому пристрої. Щоб зберігати нові паролі в обліковому записі Google, оновіть сервіси Google Play.</translation>
 <translation id="8841843049738266382">Переглядати та змінювати користувачів із білого списку</translation>
+<translation id="8841884135319684422">Завершити завдання</translation>
 <translation id="8842594465773264717">Видалити цей відбиток</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
 <translation id="8846132060409673887">Показувати виробника й модель цього комп’ютера</translation>

@@ -7,7 +7,7 @@ import("//build/config/android/rules.gni")
 java_group("public_java") {
   deps = [
     "factory:public_java",
-    "public:public_java",
+    "//chrome/browser/keyboard_accessory/android/java",
   ]
 }
 
@@ -22,7 +22,7 @@ java_group("internal_java") {
 group("jni_headers") {
   public_deps = [
     "//chrome/android/features/keyboard_accessory/internal:jni",
-    "//chrome/android/features/keyboard_accessory/public:jni",
+    "//chrome/browser/keyboard_accessory/android/java:jni",
   ]
 }
 
@@ -56,7 +56,6 @@ android_library("test_java") {
     ":test_resources",
     "internal:internal_java",
     "internal:java_resources",
-    "public:public_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
@@ -67,6 +66,7 @@ android_library("test_java") {
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
     "//chrome/browser/password_manager/android:test_support_java",
@@ -142,11 +142,11 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_util_java",
-    "//chrome/android/features/keyboard_accessory/public:public_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",

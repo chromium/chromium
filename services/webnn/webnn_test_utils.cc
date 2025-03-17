@@ -640,8 +640,10 @@ ContextProperties GetContextPropertiesForTesting() {
        /*gelu_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*gemm_a=*/{SupportedDataTypes::All(), kMaxRank},
        /*gemm_c=*/{SupportedDataTypes::All(), kMaxRank},
-       /*gru_input=*/SupportedDataTypes::All(),
-       /*gru_cell_input=*/SupportedDataTypes::All(),
+       /*gru_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gru_bias=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gru_cell_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*gru_cell_bias=*/{SupportedDataTypes::All(), kMaxRank},
        /*hard_sigmoid_input=*/
        {SupportedDataTypes::All(), kMaxRank},
        /*hard_swish_input=*/
@@ -652,8 +654,10 @@ ContextProperties GetContextPropertiesForTesting() {
        /*leaky_relu_input=*/
        {SupportedDataTypes::All(), kMaxRank},
        /*linear_input=*/{SupportedDataTypes::All(), kMaxRank},
-       /*lstm_input=*/SupportedDataTypes::All(),
-       /*lstm_cell_input=*/SupportedDataTypes::All(),
+       /*lstm_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lstm_bias=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lstm_cell_input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*lstm_cell_bias=*/{SupportedDataTypes::All(), kMaxRank},
        /*matmul_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*pad_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*average_pool2d_input=*/

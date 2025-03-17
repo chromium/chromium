@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/class_property.h"
@@ -533,6 +534,8 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   METADATA_HEADER(BubbleDialogDelegateView, View)
 
  public:
+  using PassKey = base::PassKey<BubbleDialogDelegateView>;
+
   template <typename T>
   static bool IsBubbleDialogDelegateView(const BubbleDialogDelegateView* view) {
     return ui::metadata::IsClass<T, BubbleDialogDelegateView>(view);
@@ -556,18 +559,30 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
       Widget::InitParams::Ownership ownership =
           Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET);
 
-  BubbleDialogDelegateView();
   // |shadow| usually doesn't need to be explicitly set, just uses the default
   // argument. Unless on Mac when the bubble needs to use Views base shadow,
   // override it with suitable bubble border type.
-  BubbleDialogDelegateView(
-      View* anchor_view,
-      BubbleBorder::Arrow arrow,
+  explicit BubbleDialogDelegateView(
+      View* anchor_view = nullptr,
+      BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
+
+  // For use with std::make_unique<>(). Callers still must be in the friend list
+  // below, just as with the private constructor.
+  explicit BubbleDialogDelegateView(
+      PassKey,
+      View* anchor_view = nullptr,
+      BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
+      BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
+      bool autosize = false)
+      : BubbleDialogDelegateView(anchor_view, arrow, shadow, autosize) {}
+
   BubbleDialogDelegateView(const BubbleDialogDelegateView&) = delete;
   BubbleDialogDelegateView& operator=(const BubbleDialogDelegateView&) = delete;
   ~BubbleDialogDelegateView() override;
+
+  static PassKey CreatePassKey() { return PassKey(); }
 
   // BubbleDialogDelegate:
   View* GetContentsView() override;

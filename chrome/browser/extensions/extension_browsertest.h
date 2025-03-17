@@ -45,6 +45,7 @@ class ServiceWorkerContext;
 
 namespace extensions {
 class ChromeExtensionTestNotificationObserver;
+class ExtensionBrowserTestPlatformDelegate;
 class ExtensionCacheFake;
 class ExtensionService;
 class ExtensionSet;
@@ -72,6 +73,10 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest,
   }
 
  protected:
+  // The platform delegate is an implementation detail of the test harness
+  // and should be able to access anything any general test would access.
+  friend class ExtensionBrowserTestPlatformDelegate;
+
   explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
   ~ExtensionBrowserTest() override;
 

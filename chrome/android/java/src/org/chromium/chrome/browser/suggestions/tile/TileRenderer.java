@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorStateListDrawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -16,6 +18,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
@@ -217,6 +220,13 @@ public class TileRenderer {
                                 .inflate(mLayout, parentView, false);
 
         tileView.initialize(tile, mTitleLinesCount);
+        // TODO(crbug.com/403353768): Unify tile background.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            tileView.setBackground(
+                    new ColorStateListDrawable(
+                            AppCompatResources.getColorStateList(
+                                    parentView.getContext(), R.color.tile_bg_color_list)));
+        }
 
         if (!mNativeInitializationComplete || setupDelegate == null) {
             return tileView;

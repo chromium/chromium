@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/ash/services/recording/recording_service_test_api.h"
+#include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -250,6 +251,11 @@ GURL TestCaptureModeDelegate::GetBaseSearchURLAndPostContent(
     gfx::Size image_original_size,
     TemplateURLRef::PostContent* post_content) {
   return GURL("https://lens.google.com/v3/upload");
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+TestCaptureModeDelegate::GetSharedURLLoaderFactory() const {
+  return base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
 }
 
 void TestCaptureModeDelegate::SendRegionSearch(

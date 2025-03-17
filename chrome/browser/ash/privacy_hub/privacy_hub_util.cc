@@ -238,6 +238,10 @@ bool IsCrosLocationOobeNegotiationNeeded() {
   return true;
 }
 
+GeolocationAccessLevel GetSystemGeolocationAccessLevel() {
+  return GeolocationPrivacySwitchController::Get()->AccessLevel();
+}
+
 namespace {
 std::optional<bool> camera_led_fallback_for_testing{};
 }

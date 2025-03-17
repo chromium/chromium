@@ -32,7 +32,6 @@ import type {ColorMenuElement} from './menus/color_menu.js';
 import type {HighlightMenuElement} from './menus/highlight_menu.js';
 import type {LetterSpacingMenuElement} from './menus/letter_spacing_menu.js';
 import type {LineSpacingMenuElement} from './menus/line_spacing_menu.js';
-import type {MenuStateItem} from './menus/menu_util.js';
 import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger, SpeechControls, TimeFrom, TimeTo} from './read_anything_logger.js';
 import {getCss} from './read_anything_toolbar.css.js';
@@ -176,7 +175,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private startTime_: number = Date.now();
   private constructorTime_: number = 0;
   private currentFocusId_: string = '';
-  private windowResizeCallback_: () => void;
+  private windowResizeCallback_: () => void = () => {};
   // The previous speech active status so we can track when it changes.
   private wasSpeechActive_: boolean = false;
   private spinnerDebouncerCallbackHandle_?: number;
@@ -218,6 +217,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       // Hide at least 3 buttons and more if needed.
       let numOverflowButtons = 3;
       let nextOverflowButton = buttons[buttons.length - numOverflowButtons];
+      assert(nextOverflowButton);
       // No need to hide a button if it only exceeds the width by a little (i.e.
       // only the padding overflows).
       const maxDiff = 10;
@@ -252,7 +252,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       const overflowedButtons =
           buttons.slice(buttons.length - numOverflowButtons);
       overflowedButtons.forEach(btn => this.hideElement_(btn, true));
-      toolbar.insertBefore(moreOptionsButton, overflowedButtons[0]);
+      toolbar.insertBefore(moreOptionsButton, overflowedButtons[0]!);
     }
   }
 
@@ -423,15 +423,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private restoreFontMenu_() {
+    assert(this.fontOptions_, 'No font options');
     // Default to the first font option if the previously used font is no
     // longer available.
     let currentFontIndex =
         this.fontOptions_.indexOf(chrome.readingMode.fontName);
     if (currentFontIndex < 0) {
       currentFontIndex = 0;
-      this.propagateFontChange_(this.fontOptions_[0]);
+      this.propagateFontChange_(this.fontOptions_[0]!);
     }
-    this.fontName_ = this.fontOptions_[currentFontIndex];
+    this.fontName_ = this.fontOptions_[currentFontIndex]!;
     if (!this.isReadAloudEnabled_) {
       const select = this.$.toolbarContainer.querySelector<HTMLSelectElement>(
           '#font-select');
@@ -454,11 +455,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         this.setHighlightButtonIcon_(highlightOn);
       }
     }
-  }
-
-  private getIndexOfSetting_(
-      menuArray: Array<MenuStateItem<any>>, dataToFind: any): number {
-    return menuArray.findIndex((item) => (item.data === dataToFind));
   }
 
   updateFonts() {
@@ -516,11 +512,19 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.fire(ToolbarEvent.PREVIOUS_GRANULARITY);
   }
 
+  protected onTextStyleMenuButtonClickFromOverflow_(e: Event) {
+    const currentTarget = e.currentTarget as HTMLElement;
+    const index = Number.parseInt(currentTarget.dataset['index']!);
+    const menu = this.moreOptionsButtons_[index];
+    assert(menu);
+    menu.openMenu(currentTarget);
+  }
+
   protected onTextStyleMenuButtonClick_(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number.parseInt(currentTarget.dataset['index']!);
     const menu = this.textStyleOptions_[index];
-
+    assert(menu);
     menu.openMenu(currentTarget);
   }
 
@@ -609,7 +613,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number.parseInt(currentTarget.dataset['index']!);
-    this.fontName_ = this.fontOptions_[index];
+    this.fontName_ = this.fontOptions_[index]!;
     this.propagateFontChange_(this.fontName_);
 
     this.closeMenus_();
@@ -635,7 +639,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // Log which rate is chosen by index rather than the rate value itself.
     this.logger_.logVoiceSpeed(index);
 
-    this.speechRate_ = this.rateOptions[index];
+    this.speechRate_ = this.rateOptions[index]!;
     chrome.readingMode.onSpeechRateChange(this.speechRate_);
     this.fire(ToolbarEvent.RATE);
 
@@ -797,6 +801,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     // list of focusable elements because it can become focused by tabbing while
     // the menu is open and we want the arrow key behavior to continue smoothly.
     const elementToFocus = focusableElements[newIndex];
+    assert(elementToFocus);
     if (elementToFocus.id === 'more' ||
         elementToFocus.classList.contains(moreOptionsClass.slice(1))) {
       const moreOptionsRendered = this.$.moreOptionsMenu.getIfExists();

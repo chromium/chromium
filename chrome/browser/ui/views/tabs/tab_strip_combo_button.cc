@@ -214,6 +214,32 @@ void TabStripComboButton::DidBecomeInactive(BrowserWindowInterface* browser) {
 void TabStripComboButton::OnThemeChanged() {
   views::View::OnThemeChanged();
   using_custom_theme_ = GetThemeProvider()->HasCustomImage(IDR_THEME_FRAME);
+
+  ui::ColorId foreground_active_color;
+  ui::ColorId foreground_inactive_color;
+  ui::ColorId background_active_color;
+  ui::ColorId background_inactive_color;
+  if (using_custom_theme_ || features::HasTabstripComboButtonWithBackground()) {
+    foreground_active_color = kColorNewTabButtonForegroundFrameActive;
+    foreground_inactive_color = kColorNewTabButtonForegroundFrameInactive;
+    background_active_color = kColorNewTabButtonCRBackgroundFrameActive;
+    background_inactive_color = kColorNewTabButtonCRBackgroundFrameInactive;
+  } else {
+    foreground_active_color = kColorTabForegroundInactiveFrameActive;
+    foreground_inactive_color = kColorNewTabButtonCRForegroundFrameInactive;
+    background_active_color = kColorNewTabButtonBackgroundFrameActive;
+    background_inactive_color = kColorNewTabButtonBackgroundFrameInactive;
+  }
+  new_tab_button_->SetForegroundFrameActiveColorId(foreground_active_color);
+  new_tab_button_->SetForegroundFrameInactiveColorId(foreground_inactive_color);
+  new_tab_button_->SetBackgroundFrameActiveColorId(background_active_color);
+  new_tab_button_->SetBackgroundFrameInactiveColorId(background_inactive_color);
+  tab_search_button_->SetForegroundFrameActiveColorId(foreground_active_color);
+  tab_search_button_->SetForegroundFrameInactiveColorId(
+      foreground_inactive_color);
+  tab_search_button_->SetBackgroundFrameActiveColorId(background_active_color);
+  tab_search_button_->SetBackgroundFrameInactiveColorId(
+      background_inactive_color);
 }
 
 void TabStripComboButton::UpdateSeparatorVisibility() {

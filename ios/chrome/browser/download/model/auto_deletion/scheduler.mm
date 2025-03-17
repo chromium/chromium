@@ -114,6 +114,10 @@ void Scheduler::ScheduleFile(ScheduledFile file) {
                      .Set("time", base::TimeToValue(file.download_time())));
 }
 
+void Scheduler::Clear() {
+  local_state_->ClearPref(prefs::kDownloadAutoDeletionScheduledFiles);
+}
+
 bool Scheduler::IsFileReadyForDeletion(base::Time instant,
                                        const ScheduledFile& file) {
   const base::Time download_date = file.download_time();

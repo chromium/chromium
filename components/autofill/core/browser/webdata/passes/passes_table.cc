@@ -33,7 +33,7 @@ std::optional<LoyaltyCard> LoyaltyCardFromStatement(sql::Statement& s) {
   LoyaltyCard card(/*loyalty_card_id=*/s.ColumnString(0),
                    /*merchant_name=*/s.ColumnString(1),
                    /*program_name=*/s.ColumnString(2),
-                   /*program_logo=*/GURL(s.ColumnString(3)),
+                   /*program_logo=*/GURL(s.ColumnStringView(3)),
                    /*unmasked_loyalty_card_suffix=*/s.ColumnString(4));
   // Ignore invalid loyalty cards, for more information see
   // `LoyaltyCard::IsValid()`. Loyalty cards coming from sync should be valid,

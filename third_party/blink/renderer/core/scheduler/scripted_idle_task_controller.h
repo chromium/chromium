@@ -142,6 +142,11 @@ class CORE_EXPORT ScriptedIdleTaskController
   void RemoveIdleTask(CallbackId id);
   void RemoveAllIdleTasks();
 
+  // Removes cancelled "scheduler idle tasks" from the scheduler queue if more
+  // than 1000 are accumulated. This should be invoked whenever the delta
+  // between the number of `IdleTask`s and "scheduler idle tasks" increases.
+  void CleanupSchedulerIdleTasks();
+
   void ContextPaused();
   void ContextUnpaused();
 

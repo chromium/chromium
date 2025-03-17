@@ -230,7 +230,7 @@ void Copier::CallRead() {
       [](scoped_refptr<net::IOBuffer> buffer,
          base::File file) -> base::FileErrorOr<FileAndInt> {
     std::optional<size_t> num_bytes_read =
-        file.ReadAtCurrentPosNoBestEffort(buffer->span().first(kBufferSize));
+        file.ReadAtCurrentPosNoBestEffort(buffer->first(kBufferSize));
     if (!num_bytes_read.has_value()) {
       return base::unexpected(base::File::GetLastFileError());
     }

@@ -196,6 +196,12 @@ extern const char kContentSettingsPartitioningDescription[];
 extern const char kCopyImageFilenameToClipboardName[];
 extern const char kCopyImageFilenameToClipboardDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kCredentialManagementThirdPartyWebApiRequestForwardingName[];
+extern const char
+    kCredentialManagementThirdPartyWebApiRequestForwardingDescription[];
+#endif  // IS_ANDROID
+
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrosSwitcherName[];
 extern const char kCrosSwitcherDescription[];
@@ -366,6 +372,8 @@ extern const char kAutofillEnableAmountExtractionAllowlistDesktopName[];
 extern const char kAutofillEnableAmountExtractionAllowlistDesktopDescription[];
 extern const char kAutofillEnableAmountExtractionDesktopName[];
 extern const char kAutofillEnableAmountExtractionDesktopDescription[];
+extern const char kAutofillEnableAmountExtractionDesktopLoggingName[];
+extern const char kAutofillEnableAmountExtractionDesktopLoggingDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -1579,6 +1587,9 @@ extern const char kOmniboxSearchAggregatorDescription[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestName[];
 extern const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[];
 
+extern const char kOmniboxUrlSuggestionsOnFocus[];
+extern const char kOmniboxUrlSuggestionsOnFocusDecription[];
+
 extern const char kOmniboxZeroSuggestPrefetchDebouncingName[];
 extern const char kOmniboxZeroSuggestPrefetchDebouncingDescription[];
 
@@ -2109,10 +2120,6 @@ extern const char kDataSharingDebugLogsDescription[];
 extern const char kTabGroupsDeferRemoteNavigationsId[];
 extern const char kTabGroupsDeferRemoteNavigationsName[];
 extern const char kTabGroupsDeferRemoteNavigationsDescription[];
-
-extern const char kTabGroupsSaveV2Id[];
-extern const char kTabGroupsSaveV2Name[];
-extern const char kTabGroupsSaveV2Description[];
 
 extern const char kTabGroupSyncServiceDesktopMigrationId[];
 extern const char kTabGroupSyncServiceDesktopMigrationName[];
@@ -2693,9 +2700,6 @@ extern const char kInterestFeedV2Description[];
 
 extern const char kLegacyTabStateDeprecationName[];
 extern const char kLegacyTabStateDeprecationDescription[];
-
-extern const char kLogoPolishName[];
-extern const char kLogoPolishDescription[];
 
 extern const char kMagicStackAndroidName[];
 extern const char kMagicStackAndroidDescription[];
@@ -4756,6 +4760,9 @@ extern const char kSupervisedUserLocalWebApprovalsDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kHistoryOptInEntryPointsName[];
 extern const char kHistoryOptInEntryPointsDescription[];
+
+extern const char kWebSerialAPIName[];
+extern const char kWebSerialAPIDescription[];
 
 extern const char kSupervisedUserForceSigninWithCapabilitiesName[];
 extern const char kSupervisedUserForceSigninWithCapabilitiesDescription[];

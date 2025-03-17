@@ -1300,6 +1300,7 @@
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7040729769968826896">Konuşmacı tanımlamaya izin ver</translation>
 <translation id="7041549558901442110">Cihaz bağlı değil.</translation>
+<translation id="704183341263526038">Jüpiter</translation>
 <translation id="7046522406494308071">Tüm kısayollar varsayılanlara sıfırlansın mı?</translation>
 <translation id="7049916119678019302">Metne dönüştürme modelini Ayarlar'dan indirin</translation>
 <translation id="7058278511608979688">Bitir ve kaydet</translation>
@@ -1552,7 +1553,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
 <translation id="8135609423982943441">Chromebook'unuz güvenli varsayılan ayarlara sıfırlandı. Bu değişiklikleri dilediğiniz zaman Ayarlar'dan düzenleyebilirsiniz.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
-<translation id="8140591278915222789">Kendi topluluğunuzu oluşturun</translation>
+<translation id="8140591278915222789">Kendiniz oluşturun</translation>
 <translation id="8143951647992294073">Seç: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Geliştirici araçları</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>

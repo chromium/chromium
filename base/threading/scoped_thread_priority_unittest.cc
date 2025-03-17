@@ -98,7 +98,7 @@ TEST_F(ScopedThreadPriorityTest, BasicTest) {
 }
 
 TEST_F(ScopedThreadPriorityDeathTest, NoRealTime) {
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     ScopedBoostPriority scoped_boost_priority(ThreadType::kRealtimeAudio);
   });
 }

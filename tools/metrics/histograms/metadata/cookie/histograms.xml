@@ -340,33 +340,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.ExpirationDuration400DaysGT.Subsampled" units="days"
-    expires_after="2025-10-31">
-  <owner>arichiv@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    Number of days until a cookie expires when set (for values over the
-    rfc6265bis limit of 400 days).
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.ExpirationDuration400DaysLTE.Subsampled" units="days"
-    expires_after="2025-10-31">
-  <owner>arichiv@chromium.org</owner>
-  <owner>bingler@chromium.org</owner>
-  <summary>
-    Number of days until a cookie expires when set (for values under or equal to
-    the rfc6265bis limit of 400 days).
-
-    Subsampled to 1/1000. See kHistogramSampleProbability in
-    net/cookies/cookie_constants.h for details.
-  </summary>
-</histogram>
-
-<histogram name="Cookie.ExpirationDurationMinutesNonSecure.Subsampled"
+<histogram name="Cookie.ExpirationDurationMinutesNonSecure.Subsampled2"
     units="minutes" expires_after="2025-10-31">
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
@@ -376,10 +350,14 @@ chromium-metrics-reviews@google.com.
 
     Subsampled to 1/1000. See kHistogramSampleProbability in
     net/cookies/cookie_constants.h for details.
+
+    The buckets range max was resized from 10 years in minutes in
+    Cookie.ExpirationDurationMinutesNonSecure.Subsampled to 400 days in minutes
+    as that's the cap on cookie max-age.
   </summary>
 </histogram>
 
-<histogram name="Cookie.ExpirationDurationMinutesSecure.Subsampled"
+<histogram name="Cookie.ExpirationDurationMinutesSecure.Subsampled2"
     units="minutes" expires_after="2025-10-31">
   <owner>arichiv@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
@@ -389,6 +367,10 @@ chromium-metrics-reviews@google.com.
 
     Subsampled to 1/1000. See kHistogramSampleProbability in
     net/cookies/cookie_constants.h for details.
+
+    The buckets range max was resized from 10 years in minutes in
+    Cookie.ExpirationDurationMinutesSecure.Subsampled to 400 days in minutes as
+    that's the cap on cookie max-age.
   </summary>
 </histogram>
 
@@ -616,6 +598,20 @@ chromium-metrics-reviews@google.com.
     whether it was used correctly (must have a __Host- prefix and must not have
     the SameParty attribute). Logged whenever a cookie is created from a string
     (from a Set-Cookie header or a write to document.cookie).
+
+    Subsampled to 1/1000. See kHistogramSampleProbability in
+    net/cookies/cookie_constants.h for details.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.IsPersistentWhenSet.Subsampled" enum="Boolean"
+    expires_after="2025-10-31">
+  <owner>arichiv@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Whether a cookie set via CookieMonster::SetCanonicalCookie or
+    CookieMonster::SetAllCookies is persistent (true) or session (false).
 
     Subsampled to 1/1000. See kHistogramSampleProbability in
     net/cookies/cookie_constants.h for details.

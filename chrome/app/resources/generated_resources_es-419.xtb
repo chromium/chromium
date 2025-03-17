@@ -2238,7 +2238,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2530166226437958497">Solución de problemas</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Hubo un problema y no se pudo instalar <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Obtener más información</translation>
 <translation id="2532144599248877204">Mantiene la batería alrededor del 80% para extender la duración de batería. La batería se cargará por completo en menos tiempo de lo que suele estar enchufado el dispositivo.</translation>
 <translation id="2532146950330687938">Preparando el dispositivo…</translation>
 <translation id="2532198298278778531">Administrar la función DNS seguro en la configuración de ChromeOS Flex</translation>
@@ -2794,7 +2793,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2921081876747860777">Crea una contraseña para proteger tus datos locales.</translation>
 <translation id="2923006468155067296">Se bloqueará tu <ph name="DEVICE_TYPE" /> ahora.
 <ph name="DOMAIN" /> requiere que no quites la tarjeta inteligente.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tareas más en el mismo grupo de tareas: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Quitar esta cuenta</translation>
 <translation id="2923644930701689793">Accede a la galería de fotos del teléfono</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
@@ -6900,6 +6898,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5865508026715185451">Pronto se pausará <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Instalarlo en tu computadora te permite ejecutarlo sin la imagen de disco y garantiza que se mantenga actualizado.</translation>
 <translation id="5865733239029070421">Envía automáticamente informes de fallas y estadísticas de uso a Google</translation>
+<translation id="5866363217037791319">Finalizar tarea</translation>
 <translation id="5868434909835797817">El micrófono está desactivado en tu dispositivo</translation>
 <translation id="5868479397518301468">Se agotó el tiempo de espera de acceso</translation>
 <translation id="5868822853313956582">Seguir los colores del dispositivo</translation>
@@ -10626,7 +10625,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8524841856047224176">Personaliza los fondos de tu cámara para videollamadas y mucho más</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8525461909394569609">Esta app incluye contenido web de</translation>
-<translation id="8526313996927074827">Inserta vínculos, emojis y más. También puedes obtener ayuda para escribir con la IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Bocinas</translation>
 <translation id="8527257351549797148">Es posible que tu organización requiera que te inscribas para acceder a apps, extensiones y mucho más. Esto también permite que tu organización administre, por ejemplo, la seguridad y la configuración del dispositivo.</translation>
@@ -11082,6 +11080,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="883924185304953854">Búsqueda por imagen</translation>
 <translation id="8841786407272321022">La contraseña se guardó solo en este dispositivo. Para guardar contraseñas nuevas en tu Cuenta de Google, actualiza los Servicios de Google Play.</translation>
 <translation id="8841843049738266382">Leer y cambiar la lista de usuarios permitidos</translation>
+<translation id="8841884135319684422">Finalizar tarea</translation>
 <translation id="8842594465773264717">Borrar esta huella dactilar</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8846132060409673887">Leer el fabricante y el modelo de esta computadora</translation>

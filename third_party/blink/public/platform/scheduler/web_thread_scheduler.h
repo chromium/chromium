@@ -93,9 +93,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler
   // once.
   virtual void SetRendererProcessType(WebRendererProcessType type);
 
-  // Enables the kInputScenarioPriorityBoost feature for the main thread.
-  virtual void EnableInputScenarioPriorityBoost();
-
   // IPC::Channel::UrgentMessageDelegate implementation:
   void OnUrgentMessageReceived() override;
   void OnUrgentMessageProcessed() override;

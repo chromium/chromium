@@ -12,28 +12,7 @@ BrowserUserEducationInterface*
 BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
     content::WebContents* contents) {
   auto* const tab = tabs::TabInterface::MaybeGetFromContents(contents);
-
-  // TODO(crbug.com/401757925): Remove after the issue is fixed.
-#if BUILDFLAG(IS_MAC)
-  if (!tab) {
-    VLOG(0) << "Tab not found.";
-  } else {
-    auto* browser_window_interface = tab->GetBrowserWindowInterface();
-    if (!browser_window_interface) {
-      VLOG(0) << "BrowserWindowInferface not found.";
-    } else {
-      auto* user_education_interface =
-          browser_window_interface->GetUserEducationInterface();
-      if (!user_education_interface) {
-        VLOG(0) << "UserEducationInterface not found.";
-      }
-      return user_education_interface;
-    }
-  }
-  return nullptr;
-#else
   return (tab && tab->GetBrowserWindowInterface())
              ? tab->GetBrowserWindowInterface()->GetUserEducationInterface()
              : nullptr;
-#endif
 }

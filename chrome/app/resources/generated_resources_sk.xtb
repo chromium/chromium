@@ -2243,7 +2243,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2530166226437958497">Riešenie problémov</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Vyskytol sa problém a systém <ph name="DEVICE_OS" /> sa nepodarilo nainštalovať.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ďalšiu pomoc získate na g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Viac informácií</translation>
 <translation id="2532144599248877204">Predlžuje výdrž batérie jej udržiavaním približne na 80 %. Batéria sa úplne dobije pred obvyklým odpojením zariadenia od napájania.</translation>
 <translation id="2532146950330687938">Zariadenie sa pripravuje…</translation>
 <translation id="2532198298278778531">Správa zabezpečeného DNS v nastaveniach systému Chrome OS Flex</translation>
@@ -2799,7 +2798,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2921081876747860777">Vytvorte si heslo na ochranu miestnych dát.</translation>
 <translation id="2923006468155067296">Vaše zariadenie <ph name="DEVICE_TYPE" /> bude teraz uzamknuté.
 <ph name="DOMAIN" /> vyžaduje, aby ste svoju čipovú kartu ponechali vloženú.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}few{<ph name="TASK_ROW" />. Ďalšie <ph name="OTHER_TASK_NUM" /> úlohy v rovnakej skupine úloh: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Other <ph name="OTHER_TASK_NUM" /> tasks in the same task group: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Ďalších <ph name="OTHER_TASK_NUM" /> úloh v rovnakej skupine úloh: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Odstrániť tento účet</translation>
 <translation id="2923644930701689793">Prístup k snímkam telefónu</translation>
 <translation id="292371311537977079">Nastavenia Chromu</translation>
@@ -6903,6 +6901,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="5865508026715185451">Aplikácia <ph name="APP_NAME" /> bude čoskoro pozastavená</translation>
 <translation id="586567932979200359">Prehliadač <ph name="PRODUCT_NAME" /> je spustený z jeho obrazu disku. Inštalácia do počítača vám umožní spustiť ho bez obrazu disku a zabezpečí jeho aktualizáciu.</translation>
 <translation id="5865733239029070421">Automaticky odosiela štatistiky o používaní a správy o zlyhaní Googlu</translation>
+<translation id="5866363217037791319">Ukončiť úlohu</translation>
 <translation id="5868434909835797817">Mikrofón zariadenia je vypnutý</translation>
 <translation id="5868479397518301468">Prihlásenie vypršalo</translation>
 <translation id="5868822853313956582">Použiť farby zariadenia</translation>
@@ -10632,7 +10631,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8524841856047224176">Prispôsobte si pozadia kamery pre videohovory a ďalšie akcie</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="8525461909394569609">Táto aplikácia zahŕňa webový obsah zo zdroja</translation>
-<translation id="8526313996927074827">Vkladajte odkazy, emodži a ďalšie položky. Umelá inteligencia od Googlu vám môže pomôcť s písaním.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Reproduktory</translation>
 <translation id="8527257351549797148">Vaša organizácia môže vyžadovať na prístup k aplikáciám, rozšíreniam a ďalšiemu obsahu registráciu. Umožňuje jej aj spravovať napríklad nastavenia zabezpečenia a zariadenia.</translation>
@@ -11090,6 +11088,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="883924185304953854">Vyhľadávanie podľa obrázka</translation>
 <translation id="8841786407272321022">Heslo je uložené iba v tomto zariadení. Ak chcete do svojho účtu Google ukladať nové heslá, aktualizujte Služby Google Play.</translation>
 <translation id="8841843049738266382">Čítať a meniť používateľov na zozname povolených</translation>
+<translation id="8841884135319684422">Ukončiť úlohu</translation>
 <translation id="8842594465773264717">Odstrániť tento odtlačok prsta</translation>
 <translation id="8845001906332463065">Získať pomoc</translation>
 <translation id="8846132060409673887">Prečítať informácie o výrobcovi a modeli tohto zariadenia</translation>

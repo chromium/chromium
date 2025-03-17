@@ -503,18 +503,11 @@ public abstract class ToolbarLayout extends FrameLayout
     void updateBackButtonVisibility(boolean canGoBack) {}
 
     /**
-     * Gives inheriting classes the chance to update the visibility of the
-     * forward button.
+     * Gives inheriting classes the chance to update the visibility of the forward button.
+     *
      * @param canGoForward Whether or not the current tab has any history to go forward to.
      */
     void updateForwardButtonVisibility(boolean canGoForward) {}
-
-    /**
-     * Gives inheriting classes the chance to update the visibility of the
-     * reload button.
-     * @param isReloading Whether or not the current tab is loading.
-     */
-    void updateReloadButtonVisibility(boolean isReloading) {}
 
     /**
      * Gives inheriting classes the chance to update the visual status of the bookmark button.

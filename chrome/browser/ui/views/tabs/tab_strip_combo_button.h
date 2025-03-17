@@ -14,6 +14,7 @@
 class BrowserWindowInterface;
 class TabSearchButton;
 class TabStrip;
+class TabStripControlButton;
 
 class TabStripComboButton : public views::View {
   METADATA_HEADER(TabStripComboButton, views::View)
@@ -34,14 +35,14 @@ class TabStripComboButton : public views::View {
   // views::View:
   void OnThemeChanged() override;
 
-  views::Button* new_tab_button() { return new_tab_button_; }
+  TabStripControlButton* new_tab_button() { return new_tab_button_; }
 
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
   views::Separator* separator() { return separator_; }
 
  private:
-  raw_ptr<views::Button> new_tab_button_ = nullptr;
+  raw_ptr<TabStripControlButton> new_tab_button_ = nullptr;
   raw_ptr<TabSearchButton> tab_search_button_ = nullptr;
   raw_ptr<views::Separator> separator_ = nullptr;
 

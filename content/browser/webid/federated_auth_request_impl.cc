@@ -5,6 +5,7 @@
 #include "content/browser/webid/federated_auth_request_impl.h"
 
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_macros.h"
@@ -1851,6 +1853,8 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Although not useful for catching malicious IDPs, it should only be a very
   // small percentage of the samples recorded.
   fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
+  fedcm_metrics_->RecordRpUrlHasPath(
+      render_frame_host().GetMainFrame()->GetLastCommittedURL().path() != "/");
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {
@@ -2348,6 +2352,15 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
     // auto re-authn with embargo.
     auto_reauthn_permission_delegate_->RemoveEmbargoForAutoReauthn(
         GetEmbeddingOrigin());
+
+    // Record page scroll Y-axis position upon account selection to analyse
+    // for intrusion. Do not record for auto re-authn because we want to detect
+    // whether users scroll the webpage before choosing to sign-in.
+    RenderFrameHostImpl* host_impl = static_cast<RenderFrameHostImpl*>(
+        render_frame_host().GetOutermostMainFrame());
+    host_impl->GetAssociatedLocalFrame()->GetScrollPosition(
+        base::BindOnce(&FedCmMetrics::RecordAccountSelectionScrollPosition,
+                       base::Unretained(fedcm_metrics_.get())));
   }
 
   fedcm_metrics_->RecordIsSignInUser(is_sign_in);

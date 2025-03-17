@@ -194,6 +194,7 @@
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>
 <translation id="8205266828577616993">上移标签页</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> 分钟前更新}other{<ph name="NUM_MINS_MANY" /> 分钟前更新}}</translation>
+<translation id="8236097722223016103">添加到书签</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8338427544764842461">您的标签页分组会保存在此处，并在您所有已登录账号的设备上更新。</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{展开包含 <ph name="TABS_COUNT_ONE" /> 个标签页的分享标签页分组，颜色为<ph name="COLOR_NAME" />。}other{展开包含 <ph name="TABS_COUNT_MANY" /> 个标签页的分享标签页分组，颜色为<ph name="COLOR_NAME" />。}}</translation>

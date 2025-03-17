@@ -37,7 +37,8 @@ DevToolsAgentHost::List DevToolsManagerDelegate::RemoteDebuggingTargets(
 
 scoped_refptr<DevToolsAgentHost> DevToolsManagerDelegate::CreateNewTarget(
     const GURL& url,
-    DevToolsManagerDelegate::TargetType target_type) {
+    DevToolsManagerDelegate::TargetType target_type,
+    bool new_window) {
   return nullptr;
 }
 

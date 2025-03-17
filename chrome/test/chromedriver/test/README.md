@@ -23,3 +23,15 @@ or, by abbreviating the filter:
 ```
 chrome/test/chromedriver/test/run_py_tests.py --chromedriver=out/Default/chromedriver --filter=\*testCanSetCheckboxWithSpaceKey
 ```
+
+# Android support
+
+Build chromedriver for desktop:
+```
+autoninja -C out/Desktop chromedriver
+```
+
+Run against a chrome APK (a Release build seems to be required, Debug builds time out):
+```
+chrome/test/chromedriver/test/run_py_tests.py --chromedriver out/Desktop/chromedriver --android-package chrome
+```

@@ -154,7 +154,8 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_TRUE(request.contains("@os"));
     EXPECT_EQ("fake_prodid", CHECK_DEREF(request.FindString("@updater")));
-    EXPECT_EQ("crx3,puff", CHECK_DEREF(request.FindString("acceptformat")));
+    EXPECT_EQ("crx3,download,puff,run",
+              CHECK_DEREF(request.FindString("acceptformat")));
     EXPECT_TRUE(request.contains("arch"));
     EXPECT_EQ("cr", CHECK_DEREF(request.FindString("dedup")));
     EXPECT_LT(0, request.FindByDottedPath("hw.physmemory")->GetInt());
@@ -162,7 +163,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_EQ("fake_channel_string",
               CHECK_DEREF(request.FindString("prodchannel")));
     EXPECT_EQ("30.0", CHECK_DEREF(request.FindString("prodversion")));
-    EXPECT_EQ("3.1", CHECK_DEREF(request.FindString("protocol")));
+    EXPECT_EQ("4.0", CHECK_DEREF(request.FindString("protocol")));
     EXPECT_TRUE(request.contains("requestid"));
     EXPECT_TRUE(request.contains("sessionid"));
     EXPECT_EQ("fake_channel_string",
@@ -175,7 +176,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_TRUE(request.FindByDottedPath("os.version")->is_string());
 
     const base::Value::Dict& app =
-        CHECK_DEREF(request.FindList("app"))[0].GetDict();
+        CHECK_DEREF(request.FindList("apps"))[0].GetDict();
     EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ("ap1", CHECK_DEREF(app.FindString("ap")));
     EXPECT_EQ("BRND", CHECK_DEREF(app.FindString("brand")));
@@ -187,7 +188,7 @@ TEST_P(PingManagerTest, SendPing) {
     EXPECT_EQ("cn1", CHECK_DEREF(app.FindString("cohortname")));
     EXPECT_EQ("ch1", CHECK_DEREF(app.FindString("cohorthint")));
     const base::Value::Dict& event =
-        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+        CHECK_DEREF(app.FindList("events"))[0].GetDict();
     EXPECT_EQ(1, event.FindInt("eventresult"));
     EXPECT_EQ(3, event.FindInt("eventtype"));
     EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
@@ -224,12 +225,12 @@ TEST_P(PingManagerTest, SendPing) {
     ASSERT_TRUE(root_val);
     const base::Value::Dict& root = root_val->GetDict();
     const base::Value::Dict* request = root.FindDict("request");
-    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
+    const base::Value& app_val = CHECK_DEREF(request->FindList("apps"))[0];
     const base::Value::Dict& app = app_val.GetDict();
     EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ("1.0", CHECK_DEREF(app.FindString("version")));
     const base::Value::Dict& event =
-        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+        CHECK_DEREF(app.FindList("events"))[0].GetDict();
     EXPECT_EQ(0, event.FindInt("eventresult"));
     EXPECT_EQ(3, event.FindInt("eventtype"));
     EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
@@ -238,7 +239,7 @@ TEST_P(PingManagerTest, SendPing) {
   }
 
   {
-    // Test the error values and the fingerprints.
+    // Test the error values.
     Component component(*update_context, "abc");
     component.crx_component_ = CrxComponent();
     component.crx_component_->app_id = "abc";
@@ -252,10 +253,6 @@ TEST_P(PingManagerTest, SendPing) {
     component.error_category_ = ErrorCategory::kDownload;
     component.error_code_ = 2;
     component.extra_code1_ = -1;
-    component.diff_error_category_ = ErrorCategory::kService;
-    component.diff_error_code_ = 20;
-    component.diff_extra_code1_ = -10;
-    component.crx_diffurls_.emplace_back("http://host/path");
     component.AppendEvent(component.MakeEventUpdateComplete());
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
@@ -268,25 +265,19 @@ TEST_P(PingManagerTest, SendPing) {
     const auto root = base::JSONReader::Read(msg);
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
-    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
+    const base::Value& app_val = CHECK_DEREF(request->FindList("apps"))[0];
     const base::Value::Dict& app = app_val.GetDict();
     EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ("1.0", CHECK_DEREF(app.FindString("version")));
     const base::Value::Dict& event =
-        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+        CHECK_DEREF(app.FindList("events"))[0].GetDict();
     EXPECT_EQ(0, event.FindInt("eventresult"));
     EXPECT_EQ(3, event.FindInt("eventtype"));
     EXPECT_EQ("2.0", CHECK_DEREF(event.FindString("nextversion")));
     EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
-    EXPECT_EQ(4, event.FindInt("differrorcat"));
-    EXPECT_EQ(20, event.FindInt("differrorcode"));
-    EXPECT_EQ(-10, event.FindInt("diffextracode1"));
-    EXPECT_EQ(0, event.FindInt("diffresult"));
     EXPECT_EQ(1, event.FindInt("errorcat"));
     EXPECT_EQ(2, event.FindInt("errorcode"));
     EXPECT_EQ(-1, event.FindInt("extracode1"));
-    EXPECT_EQ("next fp", CHECK_DEREF(event.FindString("nextfp")));
-    EXPECT_EQ("prev fp", CHECK_DEREF(event.FindString("previousfp")));
     interceptor->Reset();
   }
 
@@ -313,11 +304,11 @@ TEST_P(PingManagerTest, SendPing) {
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
     const base::Value::Dict& app =
-        CHECK_DEREF(request->FindList("app"))[0].GetDict();
+        CHECK_DEREF(request->FindList("apps"))[0].GetDict();
     EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ("1.0", CHECK_DEREF(app.FindString("version")));
     const base::Value::Dict& event =
-        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+        CHECK_DEREF(app.FindList("events"))[0].GetDict();
     EXPECT_EQ(0, event.FindInt("eventresult"));
     EXPECT_EQ(3, event.FindInt("eventtype"));
     EXPECT_EQ("1.0", CHECK_DEREF(event.FindString("previousversion")));
@@ -350,12 +341,12 @@ TEST_P(PingManagerTest, SendPing) {
     const auto root = base::JSONReader::Read(msg);
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
-    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
+    const base::Value& app_val = CHECK_DEREF(request->FindList("apps"))[0];
     const base::Value::Dict& app = app_val.GetDict();
     EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ("1.2.3.4", CHECK_DEREF(app.FindString("version")));
     const base::Value::Dict& event =
-        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+        CHECK_DEREF(app.FindList("events"))[0].GetDict();
     EXPECT_EQ(1, event.FindInt("eventresult"));
     EXPECT_EQ(4, event.FindInt("eventtype"));
     EXPECT_EQ("1.2.3.4", CHECK_DEREF(event.FindString("previousversion")));
@@ -419,12 +410,12 @@ TEST_P(PingManagerTest, SendPing) {
     const auto root = base::JSONReader::Read(msg);
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
-    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
+    const base::Value& app_val = CHECK_DEREF(request->FindList("apps"))[0];
     const base::Value::Dict& app = app_val.GetDict();
     EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
     EXPECT_EQ("1.2.3.4", CHECK_DEREF(app.FindString("version")));
     const base::Value::Dict& event =
-        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+        CHECK_DEREF(app.FindList("events"))[0].GetDict();
     EXPECT_EQ(false, event.FindInt("eventresult"));
     EXPECT_EQ(protocol_request::kEventAppCommandComplete,
               event.FindInt("eventtype"));

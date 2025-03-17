@@ -310,8 +310,13 @@ void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
     return;
   }
 
-  ProfileInfo info = std::move(iter->second);
-  profiles_map_.erase(iter);
+  // Use std::map::extract(...) to take ownership of the node after
+  // removing it from the map. Do not use `name` from this point as
+  // it may be invalidated by the removal -- e.g. UnloadAllProfiles
+  // pass a reference to the key as a parameter. Using the node key
+  // is fine though.
+  auto node = profiles_map_.extract(iter);
+  ProfileInfo& info = node.mapped();
 
   // If the profile is still loading, pretend that the loading failed
   // by calling the ProfileLoadedCallbacks with nullptr.
@@ -329,12 +334,12 @@ void ProfileManagerIOSImpl::UnloadProfile(std::string_view name) {
 
   // If the profile has been marked for deletion, then try to delete it
   // after notifying all observers that it has been unloaded.
-  if (IsProfileMarkedForDeletion(name)) {
+  if (IsProfileMarkedForDeletion(node.key())) {
     profile_deleter_.DeleteProfile(
-        name, profile_data_dir_,
+        node.key(), profile_data_dir_,
         base::BindOnce(&ProfileManagerIOSImpl::OnProfileDeletionComplete,
                        weak_ptr_factory_.GetWeakPtr(), base::DoNothing(),
-                       std::string(name)));
+                       std::string(node.key())));
   }
 }
 

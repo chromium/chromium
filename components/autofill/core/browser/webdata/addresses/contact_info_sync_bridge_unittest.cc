@@ -33,6 +33,7 @@ using testing::_;
 using testing::ElementsAre;
 using testing::Return;
 using testing::UnorderedElementsAre;
+using testing::ExplainMatchResult;
 
 constexpr char kGUID1[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kGUID2[] = "00000000-0000-0000-0000-000000000002";
@@ -49,6 +50,14 @@ MATCHER_P(ContactInfoSpecificsEqualsProfile, expected_profile, "") {
     return false;
   }
   return true;
+}
+
+MATCHER_P(HiddenContactInfoSpecificsEqualsProfile, expected_profile, "") {
+  if (!arg->specifics.contact_info().invisible_in_autofill()) {
+    return false;
+  }
+  return ExplainMatchResult(ContactInfoSpecificsEqualsProfile(expected_profile),
+                            arg, result_listener);
 }
 
 // Extracts all `ContactInfoSpecifics` from `batch`, converts them into
@@ -382,6 +391,20 @@ TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Remove) {
                                      TestProfile(kGUID1));
   EXPECT_CALL(mock_processor(), Delete(kGUID1, _, _));
   EXPECT_CALL(backend(), CommitChanges()).Times(0);
+
+  bridge().AutofillProfileChanged(change);
+}
+
+// Tests that the deduplication of account profiles is communicated to Sync.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_HideInAutofill) {
+  const AutofillProfile profile = TestProfile(kGUID1);
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{profile}));
+  ASSERT_THAT(GetAllDataFromTable(), ElementsAre(profile));
+
+  const AutofillProfileChange change(AutofillProfileChange::HIDE_IN_AUTOFILL,
+                                     kGUID1, profile);
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, HiddenContactInfoSpecificsEqualsProfile(profile), _));
 
   bridge().AutofillProfileChanged(change);
 }

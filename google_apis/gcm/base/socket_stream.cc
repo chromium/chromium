@@ -130,9 +130,8 @@ void SocketInputStream::ReadMore(
   size_t num_bytes = read_size_;
   if (result == MOJO_RESULT_OK) {
     DVLOG(1) << "Refreshing input stream, limit of " << num_bytes << " bytes.";
-    result =
-        stream_->ReadData(MOJO_READ_DATA_FLAG_NONE,
-                          read_buffer_->span().first(num_bytes), num_bytes);
+    result = stream_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                               read_buffer_->first(num_bytes), num_bytes);
     DVLOG(1) << "Read returned mojo result" << result;
   }
 
@@ -295,7 +294,7 @@ void SocketOutputStream::WriteMore(MojoResult result,
   DCHECK(write_callback_);
   DCHECK(write_buffer_);
 
-  const base::span<const uint8_t> bytes = write_buffer_->span().first(
+  const base::span<const uint8_t> bytes = write_buffer_->first(
       base::checked_cast<size_t>(write_buffer_->BytesRemaining()));
   DVLOG(1) << "Flushing " << bytes.size() << " bytes into socket.";
 

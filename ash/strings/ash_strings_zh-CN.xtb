@@ -661,7 +661,7 @@
 <translation id="3256109297135787951">取消任务栏中某项内容的突出显示状态</translation>
 <translation id="3260969790895726815">系统会在本地处理语音，并支持离线语音输入，但部分语音指令会不起作用。</translation>
 <translation id="3264031581203585083">隐藏所有 Google 云端硬盘建议</translation>
-<translation id="3265032511221679826">开启确切位置信息访问权限？</translation>
+<translation id="3265032511221679826">开启精确位置信息访问权限？</translation>
 <translation id="3269597722229482060">右键点击</translation>
 <translation id="3271554781793662131">搜索即可插入</translation>
 <translation id="3274634049061007184">查看手机中的应用</translation>
@@ -1686,6 +1686,7 @@
 <translation id="6542891623636520977">表情符号、GIF 等</translation>
 <translation id="6543942526104794893">确定要关闭面部动作吗？</translation>
 <translation id="6545382064335350438">仍然无法验证您的 PIN 码。请重试。</translation>
+<translation id="6546062506073634094">按内容和图片预览进行图片搜索</translation>
 <translation id="6555373427270923730">在地址栏中输入网址，然后按 <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 新安装</translation>

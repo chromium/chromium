@@ -209,7 +209,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 // assigned.
                 String tabGroupDisplayName =
                         TabGroupTitleUtils.getDisplayableTitle(
-                                activity, tabGroupModelFilter, tabId);
+                                activity, tabGroupModelFilter, tabGroupId);
 
                 // Create the group share flow and display the share bottom sheet.
                 TabUiUtils.startShareTabGroupFlow(

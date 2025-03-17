@@ -92,6 +92,11 @@ def read_file(path):
   return pathlib.Path(path).read_text()
 
 
+def write_file(path, contents):
+  """Writes contents to a file"""
+  return pathlib.Path(path).write_text(contents)
+
+
 def build(out_dir, build_target, extra_options=None):
   """Runs `ninja build`.
 

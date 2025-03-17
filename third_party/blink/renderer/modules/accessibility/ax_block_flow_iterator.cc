@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 
 #include <numeric>
+#include <optional>
+#include <utility>
 
+#include "base/check_deref.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
@@ -20,6 +23,7 @@
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -73,7 +77,36 @@ bool IncludeTrailingWhitespace(const WTF::String& text,
   return mapping_unit.GetLayoutObject() == layout_object;
 }
 
+template <typename T>
+T MoveIndexToNeighbor(const bool forward, const T& index) {
+  return forward ? index + 1 : index - 1;
+}
+
 }  // end anonymous namespace
+
+LayoutText* AXBlockFlowData::GetFirstLetterPseudoLayoutText(
+    FragmentIndex index) const {
+  const FragmentItem* item = ItemAt(index);
+  const auto it = layout_fragment_map_.find(item->GetLayoutObject());
+  if (it == layout_fragment_map_.end() || it->value != index) {
+    return nullptr;
+  }
+
+  const LayoutText* layout_text =
+      DynamicTo<LayoutText>(item->GetLayoutObject());
+  if (!layout_text) {
+    return nullptr;
+  }
+  Node* node = layout_text->GetNode();
+  if (!node) {
+    return nullptr;
+  }
+  if (const auto* layout_text_containing_letter =
+          DynamicTo<LayoutText>(node->GetLayoutObject())) {
+    return layout_text_containing_letter->GetFirstLetterPart();
+  }
+  return nullptr;
+}
 
 WTF::String AXBlockFlowData::GetText(wtf_size_t item_index) const {
   Position position = GetPosition(item_index);
@@ -91,9 +124,7 @@ WTF::String AXBlockFlowData::GetText(wtf_size_t item_index) const {
   wtf_size_t end_offset = item.TextOffset().end;
   wtf_size_t length = end_offset - start_offset;
 
-  // TODO: handle first line text content.
-  String full_text = fragment_items.Text(item.UsesFirstLineStyle());
-
+  const String& full_text = fragment_items.Text(item.UsesFirstLineStyle());
   const FragmentProperties& fragment_properties =
       fragment_properties_[item_index];
 
@@ -108,7 +139,64 @@ WTF::String AXBlockFlowData::GetText(wtf_size_t item_index) const {
     }
   }
 
+  if (LayoutText* first_letter = GetFirstLetterPseudoLayoutText(item_index)) {
+    // When the CSS first-letter pseudoselector is used, the LayoutText for the
+    // first letter is excluded from the accessibility tree, so we need to
+    // prepend its text here.
+    // TODO(accessibility): investigate and implement the correct solution for
+    // this, as this is not serializing always the correct style info.
+    return first_letter->TransformedText().SimplifyWhiteSpace() +
+           StringView(full_text, start_offset, length).ToString();
+  }
+
   return StringView(full_text, start_offset, length).ToString();
+}
+
+AXBlockFlowData::Neighbor AXBlockFlowData::ComputeNeighborOnLine(
+    FragmentIndex index,
+    bool forward) const {
+  CHECK(index < Size());
+  Position position = GetPosition(index);
+  const PhysicalBoxFragment* box_fragment =
+      BoxFragment(position.fragmentainer_index);
+  const FragmentItems& fragment_items = CHECK_DEREF(box_fragment->Items());
+  const auto& items_boundary =
+      forward ? fragment_items.Items().end() : fragment_items.Items().begin();
+  index = MoveIndexToNeighbor(forward, index);
+  for (auto it = fragment_items.Items().begin() +
+                 MoveIndexToNeighbor(forward, position.item_index);
+       it != items_boundary; it = MoveIndexToNeighbor(forward, it),
+            index = MoveIndexToNeighbor(forward, index)) {
+    switch (it->Type()) {
+      case FragmentItem::kText:
+      case FragmentItem::kGeneratedText:
+        if (it->GetLayoutObject()->IsText()) {
+          // TODO(accessibility): Investigate when an item can be text, but its
+          // LayoutObject is not marked as such.
+          return std::make_pair(it->GetLayoutObject(), index);
+        }
+        break;
+
+      case FragmentItem::kLine:
+        return FailureReason::kAtLineBoundary;
+
+      case FragmentItem::kBox:
+        if (it->BoxFragment()) {
+          // TODO(accessibility): Add a test that exercises this branch.
+          // TODO(crbug.com/399204651): Implement navigating into separate
+          // PhysicalBox
+          // fragments.
+          return FailureReason::kAtBoxFragment;
+        }
+        // Inline-box continues on to the next/previous item.
+        break;
+
+      case FragmentItem::kInvalid:
+        NOTREACHED();
+    }
+  }
+
+  return FailureReason::kAtLineBoundary;
 }
 
 const AXBlockFlowData::FragmentProperties& AXBlockFlowData::GetProperties(
@@ -292,9 +380,7 @@ const AXBlockFlowData::Position AXBlockFlowData::GetPosition(
 }
 
 const FragmentItem* AXBlockFlowData::ItemAt(wtf_size_t index) const {
-  if (index >= Size()) {
-    return nullptr;
-  }
+  CHECK(index < Size());
 
   Position position = GetPosition(index);
   const PhysicalBoxFragment* box_fragment =
@@ -315,7 +401,6 @@ AXBlockFlowIterator::AXBlockFlowIterator(const AXObject* object)
 
 bool AXBlockFlowIterator::Next() {
   text_.reset();
-  character_widths_.reset();
 
   if (!start_index_) {
     return false;
@@ -361,37 +446,55 @@ WTF::String AXBlockFlowIterator::GetTextForTesting(
   return StringView(full_text, start_offset, length).ToString();
 }
 
-const std::vector<int>& AXBlockFlowIterator::GetCharacterLayoutPixelOffsets() {
+void AXBlockFlowIterator::GetCharacterLayoutPixelOffsets(Vector<int>& offsets) {
   DCHECK(current_index_) << "Must call Next to set initial iterator position "
                             "before calling GetCharacterOffsets";
 
-  if (character_widths_) {
-    return character_widths_.value();
+  const wtf_size_t length = GetText().length();
+  offsets.resize(length);
+  const FragmentItem& item =
+      CHECK_DEREF(block_flow_data_->ItemAt(current_index_.value()));
+  const ShapeResultView* shape_result_view = item.TextShapeResult();
+  if (!shape_result_view) {
+    // When |fragment_| for BR, we don't have shape result.
+    // "aom-computed-boolean-properties.html" reaches here.
+    return;
   }
 
-  wtf_size_t length = GetText().length();
-  const FragmentItem& item = *block_flow_data_->ItemAt(current_index_.value());
-  const ShapeResultView* shape_result_view = item.TextShapeResult();
-  float width_tally = 0;
-  if (shape_result_view) {
     ShapeResult* shape_result = shape_result_view->CreateShapeResult();
-    if (shape_result) {
+    if (!shape_result) {
+      return;
+    }
       Vector<CharacterRange> ranges;
       shape_result->IndividualCharacterRanges(&ranges);
-      character_widths_ = std::vector<int>();
-      character_widths_->reserve(std::max(ranges.size(), length));
-      character_widths_->resize(0);
-      for (const auto& range : ranges) {
-        width_tally += range.Width();
-        character_widths_->push_back(roundf(width_tally));
+      float width_so_far = 0.0;
+      for (wtf_size_t i = 0; i < offsets.size(); ++i) {
+        if (i < ranges.size()) {
+          // The shaper can fail to return glyph metrics for all characters (see
+          // crbug.com/613915 and crbug.com/615661) so add empty ranges to
+          // ensure all characters have an associated range. This means that if
+          // there is no range value, we assume 0 and just add the previous
+          // offset.
+          width_so_far += ranges[i].Width();
+        }
+        offsets[i] = roundf(width_so_far);
       }
-    }
-  }
-  // Pad with zero-width characters to the required length.
-  for (wtf_size_t i = character_widths_->size(); i < length; i++) {
-    character_widths_->push_back(width_tally);
-  }
-  return character_widths_.value();
+}
+
+AXBlockFlowData::Neighbor AXBlockFlowIterator::NextOnLineAsIndex() {
+  DCHECK(current_index_)
+      << "Must call Next to set initial iterator position before calling "
+      << "NextOnLine";
+  return block_flow_data_->ComputeNeighborOnLine(current_index_.value(),
+                                                 /*forward=*/true);
+}
+
+AXBlockFlowData::Neighbor AXBlockFlowIterator::PreviousOnLineAsIndex() {
+  DCHECK(current_index_)
+      << "Must call Next to set initial iterator position before calling "
+      << "PreviousOnLine";
+  return block_flow_data_->ComputeNeighborOnLine(current_index_.value(),
+                                                 /*forward=*/false);
 }
 
 const std::optional<AXBlockFlowIterator::MapKey>
@@ -400,24 +503,22 @@ AXBlockFlowIterator::NextOnLine() {
       << "Must call Next to set initial iterator position before calling "
       << "NextOnLine";
 
-  const AXBlockFlowData::FragmentProperties& properties =
-      block_flow_data_->GetProperties(current_index_.value());
-  if (properties.next_on_line) {
-    const FragmentItem* item =
-        block_flow_data_->ItemAt(properties.next_on_line.value());
-    if (!item || !item->GetLayoutObject() ||
-        !item->GetLayoutObject()->IsText()) {
-      return std::nullopt;
-    }
-
-    const AXBlockFlowData::Position position =
-        block_flow_data_->GetPosition(properties.next_on_line.value());
-    const PhysicalBoxFragment* box_fragment =
-        block_flow_data_->BoxFragment(position.fragmentainer_index);
-    return MapKey(box_fragment->Items(), position.item_index);
+  auto result_or_status = NextOnLineAsIndex();
+  AXBlockFlowData::TextFragmentKey* index =
+      std::get_if<AXBlockFlowData::TextFragmentKey>(&result_or_status);
+  if (!index) {
+    return std::nullopt;
+  }
+  const FragmentItem* item = block_flow_data_->ItemAt(index->second);
+  if (!item || !item->GetLayoutObject() || !item->GetLayoutObject()->IsText()) {
+    return std::nullopt;
   }
 
-  return std::nullopt;
+  const AXBlockFlowData::Position position =
+      block_flow_data_->GetPosition(index->second);
+  const PhysicalBoxFragment* box_fragment =
+      block_flow_data_->BoxFragment(position.fragmentainer_index);
+  return MapKey(box_fragment->Items(), position.item_index);
 }
 
 const std::optional<AXBlockFlowIterator::MapKey>
@@ -425,25 +526,22 @@ AXBlockFlowIterator::PreviousOnLine() {
   DCHECK(current_index_)
       << "Must call Next to set initial iterator position before calling "
       << "PreviousOnLine";
-
-  const AXBlockFlowData::FragmentProperties& properties =
-      block_flow_data_->GetProperties(current_index_.value());
-  if (properties.previous_on_line) {
-    const FragmentItem* item =
-        block_flow_data_->ItemAt(properties.previous_on_line.value());
-    if (!item || !item->GetLayoutObject() ||
-        !item->GetLayoutObject()->IsText()) {
-      return std::nullopt;
-    }
-
-    const AXBlockFlowData::Position position =
-        block_flow_data_->GetPosition(properties.previous_on_line.value());
-    const PhysicalBoxFragment* box_fragment =
-        block_flow_data_->BoxFragment(position.fragmentainer_index);
-    return MapKey(box_fragment->Items(), position.item_index);
+  auto result_or_status = PreviousOnLineAsIndex();
+  AXBlockFlowData::TextFragmentKey* index =
+      std::get_if<AXBlockFlowData::TextFragmentKey>(&result_or_status);
+  if (!index) {
+    return std::nullopt;
+  }
+  const FragmentItem* item = block_flow_data_->ItemAt(index->second);
+  if (!item || !item->GetLayoutObject() || !item->GetLayoutObject()->IsText()) {
+    return std::nullopt;
   }
 
-  return std::nullopt;
+  const AXBlockFlowData::Position position =
+      block_flow_data_->GetPosition(index->second);
+  const PhysicalBoxFragment* box_fragment =
+      block_flow_data_->BoxFragment(position.fragmentainer_index);
+  return MapKey(box_fragment->Items(), position.item_index);
 }
 
 const AXBlockFlowIterator::MapKey AXBlockFlowIterator::GetMapKey() const {
@@ -456,6 +554,30 @@ const AXBlockFlowIterator::MapKey AXBlockFlowIterator::GetMapKey() const {
   const PhysicalBoxFragment* box_fragment =
       block_flow_data_->BoxFragment(position.fragmentainer_index);
   return MapKey(box_fragment->Items(), position.item_index);
+}
+
+PhysicalRect AXBlockFlowIterator::LocalBounds() const {
+  DCHECK(current_index_) << "Must call Next to set initial iterator position "
+                            "before calling LocalBounds";
+  return block_flow_data_->ItemAt(current_index_.value())
+      ->RectInContainerFragment();
+}
+
+TextOffsetRange AXBlockFlowIterator::TextOffset() const {
+  return block_flow_data_->ItemAt(current_index_.value())->TextOffset();
+}
+
+PhysicalDirection AXBlockFlowIterator::GetDirection() const {
+  auto* layout_text = To<LayoutText>(layout_object_);
+  return WritingDirectionMode(layout_text->Style()->GetWritingMode(),
+                              block_flow_data_->ItemAt(current_index_.value())
+                                  ->ResolvedDirection())
+      .InlineEnd();
+}
+
+bool AXBlockFlowIterator::IsLineBreak() const {
+  const FragmentItem* item = block_flow_data_->ItemAt(current_index_.value());
+  return item->IsText() && item->IsLineBreak();
 }
 
 }  // namespace blink

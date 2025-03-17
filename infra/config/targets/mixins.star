@@ -736,6 +736,15 @@ targets.mixin(
     ],
 )
 
+# TODO(fxbug.dev/370067428): Remove once Netstack2 no longer exists.
+targets.mixin(
+    name = "fuchsia-netstack2-x64",
+    generate_pyl_entry = False,
+    args = [
+        "--product=terminal_with_netstack2.x64",
+    ],
+)
+
 # TODO(b/300509814): Large device spec should be the default choice.
 # Choose virtual_device_large spec for more ram. This mixin works on emulators
 # only.

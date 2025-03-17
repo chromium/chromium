@@ -4,9 +4,10 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
 #import <string>
 
-#import "base/json/json_string_value_serializer.h"
+#import "base/json/json_writer.h"
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -67,10 +68,9 @@ constexpr int kTextInputFieldMaxLength = 524288;
 
 // Serializes a dictionary value in a NSString.
 NSString* SerializeDictValueToNSString(const base::Value::Dict& value) {
-  std::string output;
-  JSONStringValueSerializer serializer(&output);
-  EXPECT_TRUE(serializer.Serialize(value));
-  return base::SysUTF8ToNSString(output);
+  std::optional<std::string> output = base::WriteJson(value);
+  EXPECT_TRUE(output);
+  return base::SysUTF8ToNSString(*output);
 }
 
 base::Value::Dict ParsedField(std::string renderer_id,

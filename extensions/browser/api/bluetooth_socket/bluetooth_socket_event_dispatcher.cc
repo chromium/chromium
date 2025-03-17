@@ -202,7 +202,7 @@ void BluetoothSocketEventDispatcher::ReceiveCallback(
   bluetooth_socket::ReceiveInfo receive_info;
   receive_info.socket_id = params.socket_id;
   receive_info.data =
-      base::ToVector(io_buffer->span().first(static_cast<size_t>(bytes_read)));
+      base::ToVector(io_buffer->first(static_cast<size_t>(bytes_read)));
   auto args = bluetooth_socket::OnReceive::Create(receive_info);
   std::unique_ptr<Event> event(
       new Event(events::BLUETOOTH_SOCKET_ON_RECEIVE,

@@ -10,18 +10,13 @@
       "chromeos_lacros",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "FeedbackSurveysEnabled": false
-        },
-        "prefs": {
-          "policy.feedback_surveys_enabled": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.feedback_surveys_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

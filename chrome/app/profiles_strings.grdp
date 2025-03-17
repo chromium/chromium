@@ -1090,8 +1090,5 @@
       other {These extensions are saved in your Google Account, but any data they've saved only on this device may be deleted}
       }
     </message>
-    <message name="IDS_SIGNOUT_CONFIRMATION_EXTENSIONS_SECTION_TOOLTIP_ICON_ARIA_LABEL" desc="Label for the icon that shows the tooltip when hovered for the Extensions section in the Signout Confirmation dialog.">
-      Get more info
-    </message>
   </if>
 </grit-part>

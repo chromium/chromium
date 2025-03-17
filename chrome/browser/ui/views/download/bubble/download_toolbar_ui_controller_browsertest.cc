@@ -381,8 +381,9 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   download_item->Cancel(true);
 }
 
+// https://crbug.com/402616838: Test is flaky, disabled for investigation.
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
-                       ImageBadgeShowsForMultipleDownloads) {
+                       DISABLED_ImageBadgeShowsForMultipleDownloads) {
   controller(browser())->Show();
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(browser()), nullptr);

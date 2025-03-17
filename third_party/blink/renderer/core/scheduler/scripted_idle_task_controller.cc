@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 
+#include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -236,28 +237,8 @@ void ScriptedIdleTaskController::CancelCallback(CallbackId id) {
 
   RemoveIdleTask(id);
 
-  // Sweep the queue to remove cancelled idle tasks when 1000 are accumulated.
-  if (num_scheduler_idle_tasks_->data > idle_tasks_.size() &&
-      num_scheduler_idle_tasks_->data - idle_tasks_.size() > 1000 &&
-      base::FeatureList::IsEnabled(kRemoveCancelledScriptedIdleTasks)) {
-    const uint64_t num_scheduler_idle_tasks_before =
-        num_scheduler_idle_tasks_->data;
-    const uint64_t num_is_cancelled_checks_before = num_is_cancelled_checks_;
-
-    scheduler_->RemoveCancelledIdleTasks();
-
-    // IsCancelled() should be called exactly once per "scheduler idle task".
-    // TODO(crbug.com/394266102): Remove after the bug is understood and fixed.
-    CHECK_EQ(num_is_cancelled_checks_ - num_is_cancelled_checks_before,
-             num_scheduler_idle_tasks_before, base::NotFatalUntil::M138);
-
-    // There should be at most one "scheduler idle task" per IdleTask.
-    // Note: When tasks are in `idle_tasks_to_reschedule_`, it is possible to
-    // have less "scheduler idle tasks" than IdleTasks.
-    CHECK_LE(num_scheduler_idle_tasks_->data, idle_tasks_.size(),
-             base::NotFatalUntil::M138)
-        << " Wrapped: " << next_callback_id_wrapped_around_;
-  }
+  // The delta between `IdleTask`s and "scheduler idle tasks" increased.
+  CleanupSchedulerIdleTasks();
 }
 
 bool ScriptedIdleTaskController::HasCallback(CallbackId id) const {
@@ -337,6 +318,10 @@ void ScriptedIdleTaskController::SchedulerTimeoutTask(CallbackId id) {
 
   RunIdleTask(id, /*deadline=*/base::TimeTicks::Now(),
               IdleDeadline::CallbackType::kCalledByTimeout);
+
+  // The delta between `IdleTask`s and "scheduler idle tasks" increased when
+  // RunIdleTask() above removed the `IdleTask` from `idle_tasks_`.
+  CleanupSchedulerIdleTasks();
 }
 
 void ScriptedIdleTaskController::RunIdleTask(
@@ -393,6 +378,9 @@ void ScriptedIdleTaskController::RemoveAllIdleTasks() {
     idle_task.value->delayed_task_handle_.CancelTask();
   }
   idle_tasks_.clear();
+
+  // The delta between `IdleTask`s and "scheduler idle tasks" increased.
+  CleanupSchedulerIdleTasks();
 }
 
 void ScriptedIdleTaskController::ContextDestroyed() {
@@ -409,6 +397,43 @@ void ScriptedIdleTaskController::ContextLifecycleStateChanged(
 
 void ScriptedIdleTaskController::OnCheckSchedulerIdleTaskIsCancelled() {
   ++num_is_cancelled_checks_;
+}
+
+void ScriptedIdleTaskController::CleanupSchedulerIdleTasks() {
+  if (num_scheduler_idle_tasks_->data < idle_tasks_.size() ||
+      num_scheduler_idle_tasks_->data - idle_tasks_.size() <= 1000 ||
+      !base::FeatureList::IsEnabled(kRemoveCancelledScriptedIdleTasks)) {
+    return;
+  }
+
+  const uint64_t num_scheduler_idle_tasks_before =
+      num_scheduler_idle_tasks_->data;
+  const uint64_t num_is_cancelled_checks_before = num_is_cancelled_checks_;
+
+  scheduler_->RemoveCancelledIdleTasks();
+
+  // TODO(crbug.com/394266102): Remove after the bug is understood and fixed.
+  const uint64_t num_scheduler_idle_tasks_after =
+      num_scheduler_idle_tasks_->data;
+  const uint64_t num_is_cancelled_checks_after = num_is_cancelled_checks_;
+  const size_t num_idle_tasks = idle_tasks_.size();
+  base::debug::Alias(&num_scheduler_idle_tasks_before);
+  base::debug::Alias(&num_is_cancelled_checks_before);
+  base::debug::Alias(&num_scheduler_idle_tasks_after);
+  base::debug::Alias(&num_is_cancelled_checks_after);
+  base::debug::Alias(&num_idle_tasks);
+
+  // IsCancelled() should be called exactly once per "scheduler idle task".
+  // TODO(crbug.com/394266102): Remove after the bug is understood and fixed.
+  CHECK_EQ(num_is_cancelled_checks_ - num_is_cancelled_checks_before,
+           num_scheduler_idle_tasks_before, base::NotFatalUntil::M138);
+
+  // There should be at most one "scheduler idle task" per IdleTask.
+  // Note: When tasks are in `idle_tasks_to_reschedule_`, it is possible to
+  // have less "scheduler idle tasks" than IdleTasks.
+  CHECK_LE(num_scheduler_idle_tasks_->data, idle_tasks_.size(),
+           base::NotFatalUntil::M138)
+      << " Wrapped: " << next_callback_id_wrapped_around_;
 }
 
 void ScriptedIdleTaskController::ContextPaused() {

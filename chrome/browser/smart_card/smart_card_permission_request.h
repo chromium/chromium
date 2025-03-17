@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SMART_CARD_SMART_CARD_PERMISSION_REQUEST_H_
 #define CHROME_BROWSER_SMART_CARD_SMART_CARD_PERMISSION_REQUEST_H_
 
+#include <optional>
+
 #include "components/permissions/permission_request.h"
 
 namespace url {
@@ -32,6 +34,7 @@ class SmartCardPermissionRequest : public permissions::PermissionRequest {
       permissions::PermissionRequest* other_request) const override;
   std::u16string GetMessageTextFragment() const override;
   std::optional<std::u16string> GetAllowAlwaysText() const override;
+  std::optional<std::u16string> GetBlockText() const override;
 
   void OnPermissionDecided(ContentSetting result,
                            bool is_one_time,

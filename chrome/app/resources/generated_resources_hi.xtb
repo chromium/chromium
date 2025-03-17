@@ -2255,7 +2255,6 @@
 <translation id="2530166226437958497">समस्या का हल</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />किसी गड़बड़ी की वजह से <ph name="DEVICE_OS" /> को इंस्टॉल नहीं किया जा सका.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ज़्यादा जानकारी के लिए, यहां जाएं: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">ज़्यादा जानकारी पाएं</translation>
 <translation id="2532144599248877204">बैटरी को 80% के आस-पास रखकर, यह सुविधा आपकी बैटरी लाइफ़ बढ़ाती है. आम तौर पर, चार्जिंग से हटाने के पहले, बैटरी पूरी तरह से चार्ज हो जाएगी.</translation>
 <translation id="2532146950330687938">डिवाइस तैयार किया जा रहा है...</translation>
 <translation id="2532198298278778531">ChromeOS Flex की सेटिंग में सुरक्षित डीएनएस को मैनेज करें</translation>
@@ -2811,7 +2810,6 @@
 <translation id="2921081876747860777">कृपया अपने स्थानीय डेटा की सुरक्षा करने के लिए एक पासवर्ड बनाएं.</translation>
 <translation id="2923006468155067296">आपका <ph name="DEVICE_TYPE" /> अभी बंद हो जाएगा.
 <ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. उसी टास्क ग्रुप में मौजूद <ph name="OTHER_TASK_NUM" />अन्य टास्क: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. उसी टास्क ग्रुप में मौजूद <ph name="OTHER_TASK_NUM" />अन्य टास्क: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">यह खाता हटाएं</translation>
 <translation id="2923644930701689793">अपने फ़ोन के कैमरा रोल को ऐक्सेस करें</translation>
 <translation id="292371311537977079">Chrome की सेटिंग</translation>
@@ -6914,6 +6912,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> जल्द ही रुक जाएगा</translation>
 <translation id="586567932979200359">आप <ph name="PRODUCT_NAME" /> को उसकी डिस्क इमेज से चला रहे हैं. इसे अपने कंप्यूटर पर इंस्टॉल करने से यह आपको बिना डिस्क इमेज के चलाने देता है और पक्का करता है कि इससे यह 'अप टू डेट' रहेगा.</translation>
 <translation id="5865733239029070421">Google को इस्तेमाल के आंकड़े और गड़बड़ी की रिपोर्ट अपने-आप भेजती है</translation>
+<translation id="5866363217037791319">टास्क बंद करें</translation>
 <translation id="5868434909835797817">आपके डिवाइस का माइक्रोफ़ोन बंद है</translation>
 <translation id="5868479397518301468">साइन इन करने का समय खत्म हो गया</translation>
 <translation id="5868822853313956582">डिवाइस के रंगों को फ़ॉलो करें</translation>
@@ -10640,7 +10639,6 @@
 <translation id="8524841856047224176">वीडियो कॉल वगैरह के लिए, अपने कैमरे के बैकग्राउंड को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="8525306231823319788">फ़ुल स्‍क्रीन</translation>
 <translation id="8525461909394569609">इस ऐप्लिकेशन में मौजूद वेब कॉन्टेंट यहां से है</translation>
-<translation id="8526313996927074827">लिंक, इमोजी वगैरह जोड़ें. साथ ही, Google के एआई से कॉन्टेंट लिखने में मदद पाएं.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527257351549797148">आपका संगठन आपसे रजिस्टर करने को कह सकता है, ताकि आप ऐप्लिकेशन, एक्सटेंशन वगैरह ऐक्सेस कर सकें. इससे आपका संगठन, सुरक्षा और डिवाइस की सेटिंग जैसी चीज़ों को भी मैनेज कर सकता है.</translation>
@@ -11097,6 +11095,7 @@
 <translation id="883924185304953854">इमेज से खोजें</translation>
 <translation id="8841786407272321022">पासवर्ड सिर्फ़ इस डिवाइस पर सेव किया गया है. अपने Google खाते में नए पासवर्ड सेव करने के लिए, Google Play services को अपडेट करें.</translation>
 <translation id="8841843049738266382">अनुमित वाले उपयोगकर्ताओं की सूची को देखने और बदलाव करने का ऐक्सेस दें</translation>
+<translation id="8841884135319684422">टास्क बंद करें</translation>
 <translation id="8842594465773264717">इस फ़िंगरप्रिंट को मिटाएं</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8846132060409673887">इस कंप्यूटर का निर्माता और मॉडल पढ़ें</translation>

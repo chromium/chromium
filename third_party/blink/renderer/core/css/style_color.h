@@ -227,6 +227,9 @@ class CORE_EXPORT StyleColor {
     return color_or_unresolved_color_function_.unresolved_color_function !=
            nullptr;
   }
+  bool DependsOnCurrentColor() const {
+    return IsCurrentColor() || IsUnresolvedColorFunction();
+  }
   bool IsSystemColorIncludingDeprecated() const {
     return IsSystemColorIncludingDeprecated(color_keyword_);
   }

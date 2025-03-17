@@ -30,6 +30,9 @@
 namespace blink {
 struct InterestGroup;
 }
+namespace network {
+struct AdAuctionEventRecord;
+}
 
 namespace content {
 // InterestGroupStorage controls access to the Interest Group Database. All
@@ -90,7 +93,7 @@ class CONTENT_EXPORT InterestGroupStorage {
 
   // Gets lockout and cooldowns for sending forDebuggingOnly reports.
   std::optional<DebugReportLockoutAndCooldowns>
-  GetDebugReportLockoutAndCooldowns(base::flat_set<url::Origin> origins);
+  GetDebugReportLockoutAndCooldowns(const base::flat_set<url::Origin>& origins);
 
   // Updates the interest group `name` of `owner` with the populated fields of
   // `update`.
@@ -150,6 +153,10 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Updates the last time that the key was reported to the k-anonymity server.
   void UpdateLastKAnonymityReported(const std::string& hashed_key);
 
+  // Stores the view or click data in `record` so that it may be later included
+  // in view / click counts loaded for generateBid() browser signals.
+  void RecordViewClick(const network::AdAuctionEventRecord& record);
+
   // Gets a single interest group.
   std::optional<StorageInterestGroup> GetInterestGroup(
       const blink::InterestGroupKey& group_key);
@@ -179,8 +186,9 @@ class CONTENT_EXPORT InterestGroupStorage {
   // previously joined expires.
   void SetDebugReportLockoutUntilIGExpires();
 
-  void RemoveInterestGroupsMatchingOwnerAndJoiner(url::Origin owner,
-                                                  url::Origin joining_origin);
+  void RemoveInterestGroupsMatchingOwnerAndJoiner(
+      const url::Origin& owner,
+      const url::Origin& joining_origin);
 
   // Clear out storage for the matching owning storage key.
   void DeleteInterestGroupData(
@@ -207,7 +215,7 @@ class CONTENT_EXPORT InterestGroupStorage {
   // Update B&A keys for a coordinator. This function will overwrite any
   // existing keys for the coordinator.
   void SetBiddingAndAuctionServerKeys(const url::Origin& coordinator,
-                                      std::string serialized_keys,
+                                      std::string_view serialized_keys,
                                       base::Time expiration);
   // Load stored B&A server keys for a coordinator along with the keys'
   // expiration.

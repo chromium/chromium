@@ -3623,6 +3623,14 @@ be describing additional metrics about the same event.
       Records a 1 each time an accounts dialog is shown.
     </summary>
   </metric>
+  <metric name="AccountSelectionScrollPosition">
+    <summary>
+      Records the page scroll (y-axis) position upon account selection. Records
+      once per user selecting an account by clicking on a FedCM dialog.
+      Bucketized exponentially with a standard bucket spacing of 1.15. This is
+      in units of pixels.
+    </summary>
+  </metric>
   <metric name="AccountsRequestSent" enum="BooleanHit">
     <summary>
       Records a 1 each time a request is sent to the accounts endpoint.
@@ -3831,6 +3839,12 @@ be describing additional metrics about the same event.
       Records the RP mode of the FedCM API. Recorded once per API call together
       with Status.RequestIdToken when the request is fulfilled (either resolved
       or rejected).
+    </summary>
+  </metric>
+  <metric name="RpUrlHasPath" enum="Boolean">
+    <summary>
+      Whether the accounts dialog is shown on an RP URL which has a path.
+      Recorded each time the user is shown an accounts dialog.
     </summary>
   </metric>
   <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
@@ -7200,6 +7214,9 @@ be describing additional metrics about the same event.
     We consider a non-user-initiated navigation to be a client bounce if it
     navigates the page away within a short period of time without any user
     activation/interaction. Recorded when client bounce occurs.
+
+    The event is associated with the UKM source ID from the navigation ID of the
+    most recent primary page navigation since M135.
   </summary>
   <metric name="UserActivation.10s">
     <summary>
@@ -7262,11 +7279,11 @@ be describing additional metrics about the same event.
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Recorded when the source registration is processed by Attribution Reporting
-    API. The event is associated with the UKM source ID of the most recently
-    navigated primary page as a workaround for prerendered pages. For ongoing
-    navigation, the UKM source ID would be obtained from the navigation handle
-    to avoid the timing issue as the cached UKM source ID would not be updated
-    until the navigation completes.
+    API. The event is associated with the UKM source ID from the navigation ID
+    of the most recent primary page navigation as a workaround for prerendered
+    pages. For ongoing navigation, the UKM source ID would be obtained from the
+    navigation handle to avoid the timing issue as the cached UKM source ID
+    would not be updated until the navigation completes.
   </summary>
   <metric name="StoreSourceResult" enum="ConversionStorageSourceStatus">
     <summary>
@@ -7281,11 +7298,11 @@ be describing additional metrics about the same event.
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Recorded when the trigger registration is processed by Attribution Reporting
-    API. The event is associated with the UKM source ID of the most recently
-    navigated primary page as a workaround for prerendered pages. For ongoing
-    navigation, the UKM source ID would be obtained from the navigation handle
-    to avoid the timing issue as the cached UKM source ID would not be updated
-    until the navigation completes.
+    API. he event is associated with the UKM source ID from the navigation ID of
+    the most recent primary page navigation as a workaround for prerendered
+    pages. For ongoing navigation, the UKM source ID would be obtained from the
+    navigation handle to avoid the timing issue as the cached UKM source ID
+    would not be updated until the navigation completes.
   </summary>
   <metric name="CreateAggregatableReportStatus"
       enum="ConversionCreateAggregatableReportStatus">
@@ -10317,8 +10334,13 @@ be describing additional metrics about the same event.
   <summary>
     Measures the percentage of frames dropped in a sequence of frames.
 
-    The metric is reported once per page-load, and when the page closes (e.g.
-    the user closes the tab, or navigates away to a different page).
+    This metric is reported to the browser at least every 100 frames and at most
+    every 5s from the FrameSequenceMetrics trackers in the compositor. It is
+    available as `Graphics.Smoothness.PercentDroppedFrames4.AllSequences`.
+
+    The last value received by the browser is reported as a UKM when the page
+    closes (e.g. the user closes the tab, or navigates away to a different
+    page).
   </summary>
   <metric name="PercentDroppedFrames">
     <summary>

@@ -39,13 +39,11 @@ class ListenerDeferredTest : public InProcessBrowserTest,
     if (GetParam()) {
       features_.InitWithFeatures(
           {tab_groups::kTabGroupsDeferRemoteNavigations,
-           tab_groups::kTabGroupSyncServiceDesktopMigration,
-           tab_groups::kTabGroupsSaveV2},
+           tab_groups::kTabGroupSyncServiceDesktopMigration},
           {});
     } else {
       features_.InitWithFeatures(
-          {tab_groups::kTabGroupsDeferRemoteNavigations,
-           tab_groups::kTabGroupsSaveV2},
+          {tab_groups::kTabGroupsDeferRemoteNavigations},
           {tab_groups::kTabGroupSyncServiceDesktopMigration});
     }
   }

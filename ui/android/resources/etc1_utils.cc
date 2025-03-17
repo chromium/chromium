@@ -101,6 +101,14 @@ gfx::Size GetETCEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
 }
 
 #if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
+// Check that `data` is sufficiently aligned for `T` and cast it to a Rust slice
+// of `T`.
+//
+// When `data` is a pointer from `malloc`, it is safe to pass any scalar type as
+// `T`: "Pointers returned by allocation functions such as malloc are guaranteed
+// to be suitably aligned for any object, which means they are aligned at least
+// as strictly as max_align_t." PartitionAlloc also follows this rule (see
+// partition_alloc::internal::kAlignment).
 template <typename T>
 rust::Slice<T> CastToAlignedSlice(void* data, size_t bytes) {
   CHECK(base::IsAligned(data, alignof(T)));
@@ -133,14 +141,6 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
       info, ETC1RowBytes(encoded_size.width()), std::move(etc1_pixel_data)));
 
 #if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
-  // Usually, memory provided by malloc is at least pointer-aligned. We take
-  // advantage of this to avoid an unaligned fallback which would cause
-  // unpredictable performance.
-  //
-  // We have alignment checks when casting to a slice, but the following acts
-  // as an early check if the cast is likely to fail at the runtime.
-  static_assert(alignof(uint64_t) <= alignof(void*));
-
   constexpr int kBlockSize = 4;
   if (base::FeatureList::IsEnabled(kUseNewEtc1Encoder)) {
     compress_etc1(

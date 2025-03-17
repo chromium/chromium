@@ -74,6 +74,45 @@ chromium-metrics-reviews@google.com.
   <variant name=".Enterprise" summary="Applies only to enterprise checks."/>
 </variants>
 
+<variants name="ReferrerAttribution">
+  <variant name=".ApkDownloadTelemetry"
+      summary="APK downloads referrer attribution."/>
+  <variant name=".CSDAttribution"
+      summary="Client side detection referrer attribution."/>
+  <variant name=".DownloadAttribution"
+      summary="Download referrer attribution."/>
+  <variant name=".MalwareInterstitialAttribution"
+      summary="Malware interstitial referrer attribution."/>
+  <variant name=".NativeFileSystemWriteAttribution"
+      summary="Native File System Write attribution."/>
+  <variant name=".PasswordEventAttribution" summary=""/>
+  <variant name=".PhishingInterstitialAttribution"
+      summary="Phishing interstitial referrer attribution."/>
+  <variant name=".PPAPIDownloadAttribution"
+      summary="PPAPI download referrer attribution."/>
+  <variant name=".UwsInterstitialAttribution"
+      summary="UwS interstitial referrer attribution."/>
+</variants>
+
+<variants name="SafeBrowsing_V4Store_Metrics">
+  <variant name=".CertCsdDownloadAllowlist" summary=""/>
+  <variant name=".CertCsdDownloadWhitelist" summary=""/>
+  <variant name=".ChromeExtMalware" summary=""/>
+  <variant name=".IpMalware" summary=""/>
+  <variant name=".UrlBilling" summary=""/>
+  <variant name=".UrlCsdAllowlist" summary=""/>
+  <variant name=".UrlCsdDownloadAllowlist" summary=""/>
+  <variant name=".UrlCsdDownloadWhitelist" summary=""/>
+  <variant name=".UrlCsdWhitelist" summary=""/>
+  <variant name=".UrlHighConfidenceAllowlist" summary=""/>
+  <variant name=".UrlMalBin" summary=""/>
+  <variant name=".UrlMalware" summary=""/>
+  <variant name=".UrlSoceng" summary=""/>
+  <variant name=".UrlSubresourceFilter" summary=""/>
+  <variant name=".UrlSuspiciousSite" summary=""/>
+  <variant name=".UrlUws" summary=""/>
+</variants>
+
 <variants name="ThreatSources">
   <variant name=""/>
   <variant name=".AndroidSafeBrowsing"/>
@@ -644,7 +683,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.ClientSidePhishingDetection.AllowlistMatchResult"
-    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2025-04-20">
+    enum="SafeBrowsingAllowlistAsyncMatch" expires_after="2026-04-20">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2278,8 +2317,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.Pref.Extended" enum="BooleanEnabled"
-    expires_after="2025-07-13">
+<histogram name="SafeBrowsing.Pref.Extended{SafeBrowsingScoutOptInLocations}"
+    enum="BooleanEnabled" expires_after="2025-07-13">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2287,7 +2326,16 @@ useful for Chirp alerts (go/crca-alerts). -->
     Recorded for all non-Incognito profiles on profile startup.
 
     This metric is used to populate a dashboard on go/crsb-site.
+    {SafeBrowsingScoutOptInLocations}
   </summary>
+  <token key="SafeBrowsingScoutOptInLocations">
+    <variant name=""/>
+    <variant name=".AndroidSettings" summary="The settings UI on Android"/>
+    <variant name=".ChromeSettings" summary="The settings UI on Desktop"/>
+    <variant name=".DownloadPopup" summary="The Download Feedback popup"/>
+    <variant name=".SecurityInterstitial"
+        summary="One of the Security Interstitials (malware, SSL, etc)"/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.Pref.General" enum="BooleanEnabled"
@@ -2316,24 +2364,25 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.ReferrerAttributionResult"
+<histogram name="SafeBrowsing.ReferrerAttributionResult{ReferrerAttribution}"
     enum="SafeBrowsingAttributionResultTypes" expires_after="2025-08-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The result of referrer attribution, including different types of success or
     failure. This is incremented each time a safe browsing ping or download ping
-    is generated.
+    is generated. {ReferrerAttribution}
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.ReferrerURLChainSize" units="units"
-    expires_after="2025-07-13">
+<histogram name="SafeBrowsing.ReferrerURLChainSize{ReferrerAttribution}"
+    units="units" expires_after="2025-07-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The length of referrer URL chain we get from referrer attribution. This is
     logged each time a safe browsing ping or download ping is generated.
+    {ReferrerAttribution}
   </summary>
 </histogram>
 
@@ -3162,16 +3211,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4Database.Size" units="KB"
-    expires_after="2025-08-31">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    The size of the SafeBrowsing database or file on disk in kilobytes, after
-    reading it from disk on startup and after a database update has occurred.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.V4Database.SizeLinear{ThreatTypeKB}"
     units="100 KB" expires_after="2025-09-07">
   <owner>kristianm@chromium.org</owner>
@@ -3202,6 +3241,21 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="ThreatType">
     <variant name="" summary="all"/>
     <variant name=".UrlSoceng" summary="social engineering"/>
+  </token>
+</histogram>
+
+<histogram name="SafeBrowsing.V4Database.Size{SafeBrowsing_V4Store_Metrics}"
+    units="KB" expires_after="2025-08-31">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The size of the SafeBrowsing database or file on disk in kilobytes, after
+    reading it from disk on startup and after a database update has occurred.
+    {SafeBrowsing_V4Store_Metrics}
+  </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
   </token>
 </histogram>
 
@@ -3351,17 +3405,24 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2"
+<histogram
+    name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2{SafeBrowsing_V4Store_Metrics}"
     units="entries" expires_after="2025-07-06">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of additions hashes in a SafeBrowsing list full update.
     This was added in M92 to accomodate a larger maximum size.
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result"
+<histogram
+    name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4ApplyUpdateResult" expires_after="never">
 <!-- expires-never: This reports the outcome of applying a full
 update for a store received from PVer4 Safe Browsing service.
@@ -3372,21 +3433,32 @@ update (when that happens, no list gets updated). -->
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the result of applying a full update for a store received from PVer4
-    SafeBrowsing service.
+    SafeBrowsing service. {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdateDuration"
+<histogram
+    name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdateDuration{SafeBrowsing_V4Store_Metrics}"
     units="ms" expires_after="2025-07-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how long it took to perform a full update of a V4 store. This is
     recorded in thread time, to avoid recording any disk operations.
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessFullUpdate.DecodeAdditions.Result"
+<histogram
+    name="SafeBrowsing.V4ProcessFullUpdate.DecodeAdditions.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4DecodeResult" expires_after="never">
 <!-- expires-never: This reports the outcome of decoding the latest update
 received from reason Safe Browsing to apply to the local Safe Browsing
@@ -3399,30 +3471,46 @@ and applied correctly. -->
     Track the result of decoding the Rice-encoded list of additions of 4-byte
     hash prefixes. This is logged once per store, per update containing
     Rice-encoded additions. This histogram is specific to processing full
-    updates received from the server.
+    updates received from the server. {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessFullUpdate.RemovalsHashesCount"
+<histogram
+    name="SafeBrowsing.V4ProcessFullUpdate.RemovalsHashesCount{SafeBrowsing_V4Store_Metrics}"
     units="entries" expires_after="2026-01-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of removals hashes in a SafeBrowsing list full update.
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount"
+<histogram
+    name="SafeBrowsing.V4ProcessPartialUpdate.AdditionsHashesCount{SafeBrowsing_V4Store_Metrics}"
     units="entries" expires_after="2025-04-27">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of additions hashes in a SafeBrowsing list partial
-    update.
+    update. {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result"
+<histogram
+    name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdate.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2026-01-06">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
@@ -3431,21 +3519,32 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the result of applying a partial update for a store received from
-    PVer4 SafeBrowsing service.
+    PVer4 SafeBrowsing service. {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdateDuration"
+<histogram
+    name="SafeBrowsing.V4ProcessPartialUpdate.ApplyUpdateDuration{SafeBrowsing_V4Store_Metrics}"
     units="ms" expires_after="2025-06-22">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how long it took to perform a partial update of a V4 store. This is
     recorded in thread time, to avoid recording any disk operations.
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessPartialUpdate.DecodeAdditions.Result"
+<histogram
+    name="SafeBrowsing.V4ProcessPartialUpdate.DecodeAdditions.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4DecodeResult" expires_after="never">
 <!-- expires-never: This reports the outcome of decoding the latest update
 received from reason Safe Browsing to apply to the local Safe Browsing
@@ -3458,11 +3557,16 @@ and applied correctly. -->
     Track the result of decoding the Rice-encoded list of additions of 4-byte
     hash prefixes. This is logged once per store, per update containing
     Rice-encoded additions. This histogram is specific to processing partial
-    updates received from the server.
+    updates received from the server. {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessPartialUpdate.DecodeRemovals.Result"
+<histogram
+    name="SafeBrowsing.V4ProcessPartialUpdate.DecodeRemovals.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4DecodeResult" expires_after="never">
 <!-- expires-never: This reports the outcome of decoding the latest update
 received from reason Safe Browsing to apply to the local Safe Browsing
@@ -3474,20 +3578,31 @@ and applied correctly. -->
   <summary>
     Track the result of decoding the Rice-encoded list of indexes of hash
     prefixes to remove since the last update. This is logged once per store, per
-    update containing Rice-encoded removals.
+    update containing Rice-encoded removals. {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ProcessPartialUpdate.RemovalsHashesCount"
+<histogram
+    name="SafeBrowsing.V4ProcessPartialUpdate.RemovalsHashesCount{SafeBrowsing_V4Store_Metrics}"
     units="entries" expires_after="2025-11-15">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the number of removals hashes in a SafeBrowsing list partial update.
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ReadFromDisk.ApplyUpdate.Result"
+<histogram
+    name="SafeBrowsing.V4ReadFromDisk.ApplyUpdate.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4ApplyUpdateResult" expires_after="never">
 <!-- expires-never: This reports the reason for the failure to use the Safe
 Browsing database present on user's disk upon launch. Having this information
@@ -3498,11 +3613,16 @@ parsed correctly. -->
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Track the result of applying an ListUpdateResponse read from disk after
-    parsing it successfully as a protobuf.
+    parsing it successfully as a protobuf. {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ReadFromDisk.DecodeAdditions.Result"
+<histogram
+    name="SafeBrowsing.V4ReadFromDisk.DecodeAdditions.Result{SafeBrowsing_V4Store_Metrics}"
     enum="SafeBrowsingV4DecodeResult" expires_after="never">
 <!-- expires-never: This reports the outcome of decoding the latest update
 received from reason Safe Browsing to apply to the local Safe Browsing
@@ -3515,17 +3635,28 @@ and applied correctly. -->
     Track the result of decoding the Rice-encoded list of additions of 4-byte
     hash prefixes. This is logged once per store, per Chrome launch. It is
     specific to processing V4StoreFileFormat proto read from disk.
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="SafeBrowsing.V4ReadFromDisk.VerifyChecksumDuration" units="ms"
-    expires_after="2025-07-13">
+<histogram
+    name="SafeBrowsing.V4ReadFromDisk.VerifyChecksumDuration{SafeBrowsing_V4Store_Metrics}"
+    units="ms" expires_after="2025-07-13">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how long it took to verify the checksum of a V4 store. This is
     recorded in thread time, to avoid recording any disk operations.
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -3540,8 +3671,9 @@ and applied correctly. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.V4Store.IsStoreValid" enum="BooleanValid"
-    expires_after="2025-08-10">
+<histogram
+    name="SafeBrowsing.V4Store.IsStoreValid{SafeBrowsing_V4Store_Metrics}"
+    enum="BooleanValid" expires_after="2025-08-10">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3549,7 +3681,12 @@ and applied correctly. -->
     once for every 256 times (a heuristic applied starting M104 for making
     recording more efficient) a store is checked (a few times for each download,
     and once when a potentially dangerous subresource is loaded).
+    {SafeBrowsing_V4Store_Metrics}
   </summary>
+  <token key="SafeBrowsing_V4Store_Metrics"
+      variants="SafeBrowsing_V4Store_Metrics">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SafeBrowsing.V4Store.ReadyOnStartup" enum="BooleanReady"

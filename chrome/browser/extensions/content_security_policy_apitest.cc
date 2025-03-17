@@ -4,7 +4,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
@@ -21,7 +21,7 @@
 
 namespace extensions {
 
-using ExtensionCspApiTest = ExtensionPlatformApiTest;
+using ExtensionCspApiTest = ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionCspApiTest, ContentSecurityPolicy) {
   ASSERT_TRUE(StartEmbeddedTestServer());

@@ -122,8 +122,9 @@ class CertProvisioningWorker {
   virtual const std::optional<BackendServerError>& GetLastBackendServerError()
       const = 0;
   // Return a message describing the reason for failure when the worker fails.
-  // In case the worker did not fail, the message is empty.
-  virtual std::string GetFailureMessage() const = 0;
+  // In case the worker did not fail, the message is empty. It can be shown in
+  // the UI, but should not be logged.
+  virtual std::string GetFailureMessageWithPii() const = 0;
 };
 
 }  // namespace cert_provisioning

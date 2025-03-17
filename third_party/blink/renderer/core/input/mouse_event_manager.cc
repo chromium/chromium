@@ -437,33 +437,6 @@ void MouseEventManager::SetElementUnderMouse(
   // Clear the "removed" state for the updated `element_under_mouse_`.
   original_element_under_mouse_removed_ = false;
 
-  // TODO(mustaq): Why do we need the `ScrollableArea` code below and not in
-  // `PointerEventManager::SetElementUnderPointer()`?
-  PaintLayer* layer_for_last_node =
-      event_handling_util::LayerForNode(last_element_under_mouse);
-  PaintLayer* layer_for_node_under_mouse =
-      event_handling_util::LayerForNode(element_under_mouse_.Get());
-  Page* page = frame_->GetPage();
-
-  if (page && (layer_for_last_node &&
-               (!layer_for_node_under_mouse ||
-                layer_for_node_under_mouse != layer_for_last_node))) {
-    // The mouse has moved between layers.
-    if (ScrollableArea* scrollable_area_for_last_node =
-            event_handling_util::AssociatedScrollableArea(layer_for_last_node))
-      scrollable_area_for_last_node->MouseExitedContentArea();
-  }
-
-  if (page && (layer_for_node_under_mouse &&
-               (!layer_for_last_node ||
-                layer_for_node_under_mouse != layer_for_last_node))) {
-    // The mouse has moved between layers.
-    if (ScrollableArea* scrollable_area_for_node_under_mouse =
-            event_handling_util::AssociatedScrollableArea(
-                layer_for_node_under_mouse))
-      scrollable_area_for_node_under_mouse->MouseEnteredContentArea();
-  }
-
   if (last_element_under_mouse &&
       last_element_under_mouse->GetDocument() != frame_->GetDocument()) {
     last_element_under_mouse = nullptr;

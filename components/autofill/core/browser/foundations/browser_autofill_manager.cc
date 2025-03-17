@@ -1208,8 +1208,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
                             std::move(autofill_ai_suggestions),
                             /*ranking_context=*/std::nullopt);
     return;
-  } else if (delegate && form_structure && autofill_field &&
-             delegate->ShouldDisplayIph(*autofill_field) &&
+  } else if (suggestions.empty() && delegate &&
+             delegate->ShouldDisplayIph(form.global_id(), field.global_id()) &&
              client().ShowAutofillFieldIphForFeature(
                  field, AutofillClient::IphFeature::kAutofillAi)) {
     return;

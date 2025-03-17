@@ -37,6 +37,7 @@
 <translation id="1497802159252041924">Ошибка установки: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="1507198376417198979">Настройте новый профиль Chrome</translation>
 <translation id="1547295885616600893">Chrome OS работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
+<translation id="1547469039832541117">Завершить выбранную задачу.</translation>
 <translation id="1553358976309200471">Обновить Chrome</translation>
 <translation id="1587223624401073077">Google Chrome использует камеру.</translation>
 <translation id="1587325591171447154">Chrome заблокировал файл <ph name="FILE_NAME" /> как опасный.</translation>
@@ -171,6 +172,7 @@
 <translation id="3140883423282498090">Внесенные изменения станут активны после перезапуска Google Chrome.</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
 <translation id="3161522574479303604">Все языки</translation>
+<translation id="319199214552513804">Чтобы пользоваться этим и другими расширениями на всех компьютерах, войдите в Chrome.</translation>
 <translation id="3196187562065225381">Chrome заблокировал скачивание, поскольку файл опасен</translation>
 <translation id="3222857603094643834">Находите любую информацию на этой странице с помощью Google Объектива</translation>
 <translation id="3226612997184048185">Если вы также сохраняете закладки в аккаунте Google, то можете сможете отслеживать в Chrome цены на товары и получать уведомления о скидках.</translation>

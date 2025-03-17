@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
@@ -165,6 +166,10 @@ public class LocationBarLayout extends FrameLayout {
 
     /* package */ void setDeleteButtonTint(ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(mDeleteButton, colorStateList);
+    }
+
+    /* package */ void setDeleteButtonBackground(@DrawableRes int resourceId) {
+        mDeleteButton.setBackgroundResource(resourceId);
     }
 
     /* package */ void setLensButtonTint(ColorStateList colorStateList) {

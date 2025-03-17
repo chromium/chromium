@@ -113,6 +113,13 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // we might have display with 120 Hz.
   static const int kCopyRequestSkipOverlayFrames = 10;
 
+  const std::unordered_map<ProposedCandidateKey,
+                           OverlayCandidateTemporalTracker,
+                           ProposedCandidateKeyHasher>&
+  GetTrackedCandidatesForTesting() const {
+    return tracked_candidates_;
+  }
+
  protected:
   virtual gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& overlay) const;

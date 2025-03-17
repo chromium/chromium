@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SHARED_STORAGE_TEST_SHARED_STORAGE_OBSERVER_H_
 
 #include <optional>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -25,13 +26,13 @@ class TestSharedStorageObserver
   using AccessScope = blink::SharedStorageAccessScope;
 
   struct Access {
-    blink::SharedStorageAccessScope scope;
+    AccessScope scope;
     AccessMethod method;
     FrameTreeNodeId main_frame_id;
     std::string owner_origin;
     SharedStorageEventParams params;
-    friend bool operator==(const TestSharedStorageObserver::Access& lhs,
-                           const TestSharedStorageObserver::Access& rhs);
+    friend bool operator==(const Access& lhs, const Access& rhs);
+    friend std::ostream& operator<<(std::ostream& os, const Access& access);
   };
 
   TestSharedStorageObserver();

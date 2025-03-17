@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/data_sharing/public/features.h"
 #include "components/plus_addresses/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
@@ -43,7 +44,8 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
          commerce::kProductSpecifications,
          plus_addresses::features::kPlusAddressesEnabled,
          plus_addresses::features::kPlusAddressFullFormFill,
-         safe_browsing::kEsbAsASyncedSetting},
+         safe_browsing::kEsbAsASyncedSetting,
+         data_sharing::features::kDataSharingFeature},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }

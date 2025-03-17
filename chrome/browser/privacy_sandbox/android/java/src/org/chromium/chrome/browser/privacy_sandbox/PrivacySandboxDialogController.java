@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
@@ -90,7 +90,7 @@ public class PrivacySandboxDialogController {
 
     /** Launches an appropriate dialog if necessary and returns whether that happened. */
     public static boolean maybeLaunchPrivacySandboxDialog(
-            Context context,
+            Activity activity,
             Profile profile,
             int surfaceType,
             ActivityWindowAndroid activityWindowAndroid) {
@@ -107,7 +107,7 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_CONSENT:
                 dialog =
                         new PrivacySandboxDialogConsentEEA(
-                                context,
+                                activity,
                                 privacySandboxBridge,
                                 sDisableAnimations,
                                 surfaceType,
@@ -118,12 +118,16 @@ public class PrivacySandboxDialogController {
                 return true;
             case PromptType.M1_NOTICE_EEA:
                 showNoticeEEA(
-                        context, privacySandboxBridge, surfaceType, profile, activityWindowAndroid);
+                        activity,
+                        privacySandboxBridge,
+                        surfaceType,
+                        profile,
+                        activityWindowAndroid);
                 return true;
             case PromptType.M1_NOTICE_ROW:
                 dialog =
                         new PrivacySandboxDialogNoticeROW(
-                                context,
+                                activity,
                                 privacySandboxBridge,
                                 surfaceType,
                                 profile,
@@ -137,7 +141,7 @@ public class PrivacySandboxDialogController {
             case PromptType.M1_NOTICE_RESTRICTED:
                 dialog =
                         new PrivacySandboxDialogNoticeRestricted(
-                                context,
+                                activity,
                                 privacySandboxBridge,
                                 surfaceType,
                                 sShowMoreButtonForTesting);
@@ -153,7 +157,7 @@ public class PrivacySandboxDialogController {
 
     /** Shows the NoticeEEA dialog. */
     public static void showNoticeEEA(
-            Context context,
+            Activity activity,
             PrivacySandboxBridge privacySandboxBridge,
             @SurfaceType int surfaceType,
             Profile profile,
@@ -164,7 +168,7 @@ public class PrivacySandboxDialogController {
                     ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
                 dialog =
                         new PrivacySandboxDialogNoticeEeaV2(
-                                context,
+                                activity,
                                 privacySandboxBridge,
                                 surfaceType,
                                 profile,
@@ -172,7 +176,7 @@ public class PrivacySandboxDialogController {
             } else {
                 dialog =
                         new PrivacySandboxDialogNoticeEEA(
-                                context, privacySandboxBridge, surfaceType);
+                                activity, privacySandboxBridge, surfaceType);
             }
             if (sOnDialogDismissedRunnable != null) {
                 dialog.setOnDismissListener(d -> sOnDialogDismissedRunnable.run());

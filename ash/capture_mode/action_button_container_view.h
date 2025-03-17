@@ -119,6 +119,10 @@ class ASH_EXPORT ActionButtonContainerView : public views::View {
   // copy text and search buttons.
   void StartSmartActionsButtonTransition();
 
+  // Removes the smart actions button. Called after the user declines the
+  // disclaimer shown by the smart actions button.
+  void RemoveSmartActionsButton();
+
   ErrorView* error_view_for_testing() { return error_view_; }
 
  private:

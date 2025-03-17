@@ -68,9 +68,7 @@ class CONTENT_EXPORT AttributionHost
 #endif
 
   ukm::SourceId GetPageUkmSourceId() const {
-    return primary_main_frame_data_.has_value()
-               ? primary_main_frame_data_->ukm_source_id
-               : ukm::kInvalidSourceId;
+    return last_primary_frame_ukm_source_id_;
   }
 
  private:
@@ -90,7 +88,6 @@ class CONTENT_EXPORT AttributionHost
     std::map<url::Origin, int> num_data_hosts_registered_by_reporting_origin;
     bool has_user_activation = false;
     bool has_user_interaction = false;
-    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   };
 
   // blink::mojom::AttributionHost:
@@ -134,6 +131,7 @@ class CONTENT_EXPORT AttributionHost
 
   std::optional<base::Time> last_navigation_time_;
   std::optional<PrimaryMainFrameData> primary_main_frame_data_;
+  ukm::SourceId last_primary_frame_ukm_source_id_ = ukm::kInvalidSourceId;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

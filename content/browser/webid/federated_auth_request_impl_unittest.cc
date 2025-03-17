@@ -35,6 +35,7 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
+#include "content/public/test/fake_local_frame.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -8108,4 +8109,33 @@ TEST_F(FederatedAuthRequestImplTest,
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
   CheckAllFedCmSessionIDs();
 }
+
+// Tests that we record whether the RP's URL has a path when an accounts dialog
+// is shown.
+TEST_F(FederatedAuthRequestImplTest, MetricsForRpUrlHasPath) {
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  ExpectUkmValueInEntry("RpUrlHasPath", FedCmEntry::kEntryName, false);
+  CheckAllFedCmSessionIDs();
+}
+
+// Tests that we record the scroll position when an account is selected.
+TEST_F(FederatedAuthRequestImplTest, MetricsForAccountSelectionScrollPosition) {
+  // Mock the `GetScrollPosition` call.
+  TestRenderFrameHost* test_rfh =
+      static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame());
+  test_rfh->ResetLocalFrame();
+  FakeLocalFrame local_frame;
+  local_frame.Init(test_rfh->GetRemoteAssociatedInterfaces());
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  ExpectUkmValueInEntry("AccountSelectionScrollPosition",
+                        FedCmEntry::kEntryName, 0);
+  CheckAllFedCmSessionIDs();
+}
+
 }  // namespace content

@@ -1725,22 +1725,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 
   if (kIPHAutofillCreditCardBenefitFeature.name == feature->name) {
-    // Credit card benefit IPH is shown:
-    // * once for an installation, 10-year window is used as the maximum
-    // * when a credit card benefit is displayed for the first time
+    // The credit card benefit IPH appears up to three times over 10 years and
+    // only once per session. Dismissing it stops it from showing again.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(ANY, 0);
-    // This promo blocks specific promos in the same session.
-    config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
-    config.session_rate_impact.affected_features.emplace();
-    config.session_rate_impact.affected_features->push_back(
-        "IPH_AutofillVirtualCardSuggestion");
-    config.trigger =
-        EventConfig("autofill_credit_card_benefit_iph_trigger",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
+    config.session_rate = Comparator(LESS_THAN, 1);
+    config.trigger = EventConfig("autofill_credit_card_benefit_iph_trigger",
+                                 Comparator(LESS_THAN, 3), 90, 360);
     config.used =
         EventConfig("autofill_credit_card_benefit_iph_accepted",
                     Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,

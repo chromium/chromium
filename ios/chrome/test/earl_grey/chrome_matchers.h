@@ -629,6 +629,9 @@ id<GREYMatcher> RegularTabGrid();
 // Returns a matcher for the incognito tab grid.
 id<GREYMatcher> IncognitoTabGrid();
 
+// Returns a matcher for the Inactive Tabs tab grid.
+id<GREYMatcher> InactiveTabGrid();
+
 // Returns a matcher for the button to close the cell at `index` in the
 // tab grid.
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index);

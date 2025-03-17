@@ -7,7 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_features.h"
@@ -28,8 +28,7 @@ namespace {
 using ContextType = extensions::browser_test_util::ContextType;
 using extensions::ScopedCurrentChannel;
 
-class DeclarativeNetRequestApiTest
-    : public extensions::ExtensionPlatformApiTest {
+class DeclarativeNetRequestApiTest : public extensions::ExtensionApiTest {
  public:
   DeclarativeNetRequestApiTest() {
     feature_list_.InitWithFeatures(
@@ -39,7 +38,7 @@ class DeclarativeNetRequestApiTest
         /*disabled_features=*/{features::kHttpsUpgrades});
   }
   explicit DeclarativeNetRequestApiTest(ContextType context_type)
-      : extensions::ExtensionPlatformApiTest(context_type) {
+      : extensions::ExtensionApiTest(context_type) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
@@ -54,7 +53,7 @@ class DeclarativeNetRequestApiTest
  protected:
   // ExtensionApiTest override.
   void SetUpOnMainThread() override {
-    extensions::ExtensionPlatformApiTest::SetUpOnMainThread();
+    extensions::ExtensionApiTest::SetUpOnMainThread();
     ASSERT_TRUE(StartEmbeddedTestServer());
 
     // Map all hosts to localhost.

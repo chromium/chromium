@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
 
-#include "base/functional/bind.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
@@ -32,23 +31,12 @@ content::WebContents* GetWebContentsToUse(
 }
 
 void MaybeShowFeaturePromo(content::WebContents* contents) {
-  VLOG(0) << "Getting user education interface for PDF Searchify...";
   BrowserUserEducationInterface* user_education_interface =
       BrowserUserEducationInterface::MaybeGetForWebContentsInTab(contents);
   if (user_education_interface) {
-    auto params = user_education::FeaturePromoParams(
-        feature_engagement::kIPHPdfSearchifyFeature);
-#if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/401757925): Remove after the issue is fixed.
-    params.show_promo_result_callback =
-        base::BindOnce([](user_education::FeaturePromoResult result) {
-          VLOG(0) << "Feature promo result: " << result;
-        });
-#endif
-    VLOG(0) << "Triggering feature promo.";
-    user_education_interface->MaybeShowFeaturePromo(std::move(params));
-  } else {
-    VLOG(0) << "Feature Promo interface not available.";
+    user_education_interface->MaybeShowFeaturePromo(
+        user_education::FeaturePromoParams(
+            feature_engagement::kIPHPdfSearchifyFeature));
   }
 }
 

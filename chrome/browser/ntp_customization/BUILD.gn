@@ -6,13 +6,19 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetDelegate.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCardsContainerView.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCardsCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCardsListItemView.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMainBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediator.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationViewProperties.java",
   ]
   deps = [
     ":java_resources",
+    "//base:supplier_java",
     "//chrome/browser/magic_stack/android:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
@@ -20,6 +26,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
   ]
   resources_package = "org.chromium.chrome.browser.ntp_customization"
 }
@@ -33,6 +40,7 @@ android_resources("java_resources") {
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_middle.xml",
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_single.xml",
     "java/res/drawable/ntp_customization_bottom_sheet_list_item_background_top.xml",
+    "java/res/layout/ntp_customization_bottom_sheet.xml",
     "java/res/layout/ntp_customization_main_bottom_sheet.xml",
     "java/res/layout/ntp_customization_ntp_cards_bottom_sheet.xml",
     "java/res/layout/ntp_customization_ntp_cards_list_item.xml",
@@ -52,8 +60,11 @@ robolectric_library("junit") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCardsContainerViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCardsCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationBottomSheetContentUnitTest.java",
     "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationCoordinatorUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMainBottomSheetContentUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationMediatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/ntp_customization/NtpCustomizationViewBinderUnitTest.java",
   ]
   deps = [
     ":java",
@@ -68,5 +79,6 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

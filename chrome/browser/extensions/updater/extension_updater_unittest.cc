@@ -1616,13 +1616,13 @@ class ExtensionUpdaterTest : public testing::Test {
     // the testing profile.  Any action the CrxInstallers take is on the testing
     // profile's extension service, not on our mock |service|.
     TestingProfile profile;
+    // TODO(crbug.com/396722906): Delete this when CrxInstaller no longer has
+    // dependencies on ExtensionService.
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(&profile))
         ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
                                  base::FilePath(), false);
-    ExtensionService* extension_service =
-        ExtensionSystem::Get(&profile)->extension_service();
     scoped_refptr<MockCrxInstaller> mock_installer =
-        base::MakeRefCounted<MockCrxInstaller>(extension_service);
+        base::MakeRefCounted<MockCrxInstaller>(&profile);
 
     // Do nothing when called the first time, by ExtensionUpdater
     // But do the real action when called later on by this test code.
@@ -2036,16 +2036,16 @@ class ExtensionUpdaterTest : public testing::Test {
     // service, not on our mock |service|.  This allows us to fake
     // the CrxInstaller actions we want.
     TestingProfile profile;
+    // TODO(crbug.com/396722906): Delete this when CrxInstaller no longer has
+    // dependencies on ExtensionService.
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(&profile))
         ->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
                                  base::FilePath(), false);
-    ExtensionService* extension_service =
-        ExtensionSystem::Get(&profile)->extension_service();
 
     scoped_refptr<FakeCrxInstaller> fake_crx1 =
-        base::MakeRefCounted<FakeCrxInstaller>(extension_service);
+        base::MakeRefCounted<FakeCrxInstaller>(&profile);
     scoped_refptr<FakeCrxInstaller> fake_crx2 =
-        base::MakeRefCounted<FakeCrxInstaller>(extension_service);
+        base::MakeRefCounted<FakeCrxInstaller>(&profile);
 
     if (updates_start_running) {
       // Add mock CrxInstaller to be returned by

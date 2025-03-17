@@ -74,8 +74,10 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors gelu_input,
                  SupportedTensors gemm_a,
                  SupportedTensors gemm_c,
-                 SupportedDataTypes gru_input,
-                 SupportedDataTypes gru_cell_input,
+                 SupportedTensors gru_input,
+                 SupportedTensors gru_bias,
+                 SupportedTensors gru_cell_input,
+                 SupportedTensors gru_cell_bias,
                  SupportedTensors hard_sigmoid_input,
                  SupportedTensors hard_swish_input,
                  SupportedTensors instance_normalization_input,
@@ -83,8 +85,10 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors layer_normalization_input,
                  SupportedTensors leaky_relu_input,
                  SupportedTensors linear_input,
-                 SupportedDataTypes lstm_input,
-                 SupportedDataTypes lstm_cell_input,
+                 SupportedTensors lstm_input,
+                 SupportedTensors lstm_bias,
+                 SupportedTensors lstm_cell_input,
+                 SupportedTensors lstm_cell_bias,
                  SupportedTensors matmul_input,
                  SupportedTensors pad_input,
                  SupportedTensors average_pool2d_input,
@@ -195,8 +199,10 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors gelu_input;
   SupportedTensors gemm_a;
   SupportedTensors gemm_c;
-  SupportedDataTypes gru_input;
-  SupportedDataTypes gru_cell_input;
+  SupportedTensors gru_input;
+  SupportedTensors gru_bias;
+  SupportedTensors gru_cell_input;
+  SupportedTensors gru_cell_bias;
   SupportedTensors hard_sigmoid_input;
   SupportedTensors hard_swish_input;
   SupportedTensors instance_normalization_input;
@@ -204,8 +210,10 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors layer_normalization_input;
   SupportedTensors leaky_relu_input;
   SupportedTensors linear_input;
-  SupportedDataTypes lstm_input;
-  SupportedDataTypes lstm_cell_input;
+  SupportedTensors lstm_input;
+  SupportedTensors lstm_bias;
+  SupportedTensors lstm_cell_input;
+  SupportedTensors lstm_cell_bias;
   SupportedTensors matmul_input;
   SupportedTensors pad_input;
   SupportedTensors average_pool2d_input;
@@ -310,7 +318,9 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gemm_a == rhs.gemm_a &&
          lhs.gemm_c == rhs.gemm_c &&
          lhs.gru_input == rhs.gru_input &&
+         lhs.gru_bias == rhs.gru_bias &&
          lhs.gru_cell_input == rhs.gru_cell_input &&
+         lhs.gru_cell_bias == rhs.gru_cell_bias &&
          lhs.hard_sigmoid_input == rhs.hard_sigmoid_input &&
          lhs.hard_swish_input == rhs.hard_swish_input &&
          lhs.instance_normalization_input == rhs.instance_normalization_input &&
@@ -319,7 +329,9 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.leaky_relu_input == rhs.leaky_relu_input &&
          lhs.linear_input == rhs.linear_input &&
          lhs.lstm_input == rhs.lstm_input &&
+         lhs.lstm_bias == rhs.lstm_bias &&
          lhs.lstm_cell_input == rhs.lstm_cell_input &&
+         lhs.lstm_cell_bias == rhs.lstm_cell_bias &&
          lhs.matmul_input == rhs.matmul_input &&
          lhs.pad_input == rhs.pad_input &&
          lhs.average_pool2d_input == rhs.average_pool2d_input &&

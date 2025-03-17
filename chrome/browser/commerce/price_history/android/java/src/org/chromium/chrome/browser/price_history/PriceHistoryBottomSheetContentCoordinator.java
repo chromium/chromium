@@ -67,6 +67,7 @@ public class PriceHistoryBottomSheetContentCoordinator
         return new PropertyModel.Builder(CommerceBottomSheetContentProperties.ALL_KEYS)
                 .with(CommerceBottomSheetContentProperties.TYPE, ContentType.PRICE_INSIGHTS)
                 .with(CommerceBottomSheetContentProperties.HAS_TITLE, false)
+                .with(CommerceBottomSheetContentProperties.HAS_CUSTOM_PADDING, true)
                 .with(
                         CommerceBottomSheetContentProperties.CUSTOM_VIEW,
                         mPriceHistoryContentContainer)

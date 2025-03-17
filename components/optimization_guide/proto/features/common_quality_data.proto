@@ -6,8 +6,6 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
-import "components/optimization_guide/proto/common_types.proto";
-
 option java_outer_classname = "CommonFeatureDataProto";
 
 option java_package = "org.chromium.components.optimization_guide.features.proto";

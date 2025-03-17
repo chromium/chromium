@@ -18,7 +18,6 @@ virtual/trust-tokens/wpt_internal/*
 virtual/private-aggregation-developer-mode/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
 virtual/fenced-frame-mparch-internal/wpt_internal/*
-virtual/prefetch-no-vary-search/wpt_internal/*
 virtual/js-shared-memory/wpt_internal/*
 virtual/text-size-adjust/wpt_internal/*
 virtual/text-size-adjust-with-os-font-scale/wpt_internal/*
@@ -841,7 +840,6 @@ external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy-attribute.h
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy.https.html
 external/wpt/scroll-animations/css/animation-fill-outside-range-test.html
 external/wpt/scroll-animations/css/animation-range-visual-test.html
-external/wpt/scroll-animations/css/printing/*
 external/wpt/scroll-animations/css/scroll-timeline-dynamic.tentative.html
 external/wpt/scroll-animations/css/view-timeline-range-animation.html
 external/wpt/scroll-animations/scroll-timelines/layout-changes-on-percentage-based-timeline.html

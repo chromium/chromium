@@ -22,11 +22,13 @@ struct GroupSuggestion {
   ~GroupSuggestion();
   GroupSuggestion(const GroupSuggestion&) = delete;
   GroupSuggestion& operator=(const GroupSuggestion&) = delete;
+  GroupSuggestion(GroupSuggestion&&);
+  GroupSuggestion& operator=(GroupSuggestion&&);
 
   // The list of tabs / URLs to suggest, in order of relevance. For the initial
   // prototype, the current tab is always the first entry in the list. This need
   // not be the tab order in the group, if the group is created.
-  std::vector<URLVisitAggregate> visits;
+  std::vector<int> tab_ids;
 
   enum class SuggestionReason {
     kUnknown = 0,
@@ -51,6 +53,8 @@ struct GroupSuggestions {
   ~GroupSuggestions();
   GroupSuggestions(const GroupSuggestions&) = delete;
   GroupSuggestions& operator=(const GroupSuggestions&) = delete;
+  GroupSuggestions(GroupSuggestions&&);
+  GroupSuggestions& operator=(GroupSuggestions&&);
 
   // List of suggestions ordered by priority.
   // Currently the service only supports one suggestion at a time.

@@ -306,15 +306,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AndroidBootTime" units="ms" expires_after="2025-07-27">
+<histogram name="Arc.AndroidBootTime{AndroidBootTypes}" units="ms"
+    expires_after="2025-07-27">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
     The time elapsed for booting up the ARC instance.
 
     This metric is capped at 60 seconds, see Arc.UiAvailable if you need a
-    metric that tracks longer.
+    metric that tracks longer. {AndroidBootTypes}
   </summary>
+  <token key="AndroidBootTypes">
+    <variant name=""/>
+    <variant name=".FirstBoot" summary="For the very first boot, aka opt-in."/>
+    <variant name=".FirstBootAfterUpdate"
+        summary="For the first boot after Chrome OS update."/>
+    <variant name=".RegularBoot" summary="For a regular boot."/>
+  </token>
 </histogram>
 
 <histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2025-08-10">

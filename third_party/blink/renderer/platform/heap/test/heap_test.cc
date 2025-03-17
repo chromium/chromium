@@ -736,8 +736,8 @@ TEST_F(HeapTest, LargeVector) {
   ClearOutOldGarbage();
 
   const wtf_size_t size = kLargeObjectSize / sizeof(Member<IntWrapper>);
-  Persistent<HeapVector<Member<IntWrapper>>> vector =
-      MakeGarbageCollected<HeapVector<Member<IntWrapper>>>(size);
+  Persistent<GCedHeapVector<Member<IntWrapper>>> vector =
+      MakeGarbageCollected<GCedHeapVector<Member<IntWrapper>>>(size);
   EXPECT_LE(size, vector->capacity());
 }
 
@@ -926,10 +926,10 @@ TEST_F(HeapTest, HeapCollectionTypes) {
   using PrimitiveMember = GCedHeapHashMap<int, Member<IntWrapper>>;
   using MemberSet = GCedHeapHashSet<Member<IntWrapper>>;
   using MemberCountedSet = GCedHeapHashCountedSet<Member<IntWrapper>>;
-  typedef HeapVector<Member<IntWrapper>, 2> MemberVector;
+  using MemberVector = GCedHeapVector<Member<IntWrapper>, 2>;
   using MemberDeque = GCedHeapDeque<Member<IntWrapper>>;
-  typedef HeapVector<PairWrappedUnwrapped, 2> VectorWU;
-  typedef HeapVector<PairUnwrappedWrapped, 2> VectorUW;
+  using VectorWU = GCedHeapVector<PairWrappedUnwrapped, 2>;
+  using VectorUW = GCedHeapVector<PairUnwrappedWrapped, 2>;
 
   Persistent<MemberMember> member_member = MakeGarbageCollected<MemberMember>();
   Persistent<MemberMember> member_member2 =
@@ -1036,17 +1036,17 @@ TEST_F(HeapTest, HeapCollectionTypes) {
       EXPECT_EQ(1u, deque->size());
       EXPECT_EQ(2u, deque2->size());
 
-      MemberVector& cvec = container->vector;
+      auto& cvec = container->vector;
       cvec.swap(*vector.Get());
       vector2->swap(cvec);
       vector->swap(cvec);
 
-      VectorWU& cvec_wu = container->vector_wu;
+      auto& cvec_wu = container->vector_wu;
       cvec_wu.swap(*vector_wu.Get());
       vector_wu2->swap(cvec_wu);
       vector_wu->swap(cvec_wu);
 
-      VectorUW& cvec_uw = container->vector_uw;
+      auto& cvec_uw = container->vector_uw;
       cvec_uw.swap(*vector_uw.Get());
       vector_uw2->swap(cvec_uw);
       vector_uw->swap(cvec_uw);
@@ -1430,8 +1430,8 @@ TEST_F(HeapTest, HeapWeakCollectionSimple) {
   ClearOutOldGarbage();
   IntWrapper::destructor_calls_ = 0;
 
-  Persistent<HeapVector<Member<IntWrapper>>> keep_numbers_alive =
-      MakeGarbageCollected<HeapVector<Member<IntWrapper>>>();
+  Persistent<GCedHeapVector<Member<IntWrapper>>> keep_numbers_alive =
+      MakeGarbageCollected<GCedHeapVector<Member<IntWrapper>>>();
 
   using WeakStrong =
       GCedHeapHashMap<WeakMember<IntWrapper>, Member<IntWrapper>>;
@@ -1495,8 +1495,8 @@ template <typename Set>
 void OrderedSetHelper(bool strong) {
   IntWrapper::destructor_calls_ = 0;
 
-  Persistent<HeapVector<Member<IntWrapper>>> keep_numbers_alive =
-      MakeGarbageCollected<HeapVector<Member<IntWrapper>>>();
+  Persistent<GCedHeapVector<Member<IntWrapper>>> keep_numbers_alive =
+      MakeGarbageCollected<GCedHeapVector<Member<IntWrapper>>>();
 
   Persistent<Set> set1 = MakeGarbageCollected<Set>();
   Persistent<Set> set2 = MakeGarbageCollected<Set>();
@@ -1869,8 +1869,8 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
       Persistent<WeakOrderedSet> weak_ordered_set =
           MakeGarbageCollected<WeakOrderedSet>();
 
-      Persistent<HeapVector<Member<IntWrapper>>> keep_numbers_alive =
-          MakeGarbageCollected<HeapVector<Member<IntWrapper>>>();
+      Persistent<GCedHeapVector<Member<IntWrapper>>> keep_numbers_alive =
+          MakeGarbageCollected<GCedHeapVector<Member<IntWrapper>>>();
       for (int i = 0; i < 128; i += 2) {
         auto* wrapped = MakeGarbageCollected<IntWrapper>(i);
         auto* wrapped2 = MakeGarbageCollected<IntWrapper>(i + 1);
@@ -2154,7 +2154,7 @@ TEST_F(HeapTest, CollectionNesting) {
   int k;
   int* key = &k;
   IntWrapper::destructor_calls_ = 0;
-  typedef HeapVector<Member<IntWrapper>> IntVector;
+  typedef GCedHeapVector<Member<IntWrapper>> IntVector;
   typedef GCedHeapDeque<Member<IntWrapper>> IntDeque;
   GCedHeapHashMap<void*, Member<IntVector>>* map =
       MakeGarbageCollected<GCedHeapHashMap<void*, Member<IntVector>>>();
@@ -2225,7 +2225,8 @@ TEST_F(HeapTest, CollectionNesting3) {
   ClearOutOldGarbage();
   IntWrapper::destructor_calls_ = 0;
   typedef HeapVector<Member<IntWrapper>> IntVector;
-  HeapVector<IntVector>* vector = MakeGarbageCollected<HeapVector<IntVector>>();
+  GCedHeapVector<IntVector>* vector =
+      MakeGarbageCollected<GCedHeapVector<IntVector>>();
 
   vector->push_back(IntVector());
 
@@ -2235,7 +2236,7 @@ TEST_F(HeapTest, CollectionNesting3) {
   it->push_back(MakeGarbageCollected<IntWrapper>(42));
   EXPECT_EQ(1u, it->size());
 
-  Persistent<HeapVector<IntVector>> keep_alive(vector);
+  Persistent<GCedHeapVector<IntVector>> keep_alive(vector);
   PreciselyCollectGarbage();
   EXPECT_EQ(1u, it->size());
   EXPECT_EQ(0, IntWrapper::destructor_calls_);
@@ -2281,10 +2282,10 @@ TEST_F(HeapTest, EmbeddedInVector) {
   ClearOutOldGarbage();
   SimpleFinalizedObject::destructor_calls_ = 0;
   {
-    Persistent<HeapVector<VectorObject, 2>> inline_vector =
-        MakeGarbageCollected<HeapVector<VectorObject, 2>>();
-    Persistent<HeapVector<VectorObject>> outline_vector =
-        MakeGarbageCollected<HeapVector<VectorObject>>();
+    Persistent<GCedHeapVector<VectorObject, 2>> inline_vector =
+        MakeGarbageCollected<GCedHeapVector<VectorObject, 2>>();
+    Persistent<GCedHeapVector<VectorObject>> outline_vector =
+        MakeGarbageCollected<GCedHeapVector<VectorObject>>();
     VectorObject i1, i2;
     inline_vector->push_back(i1);
     inline_vector->push_back(i2);
@@ -2293,8 +2294,9 @@ TEST_F(HeapTest, EmbeddedInVector) {
     outline_vector->push_back(o1);
     outline_vector->push_back(o2);
 
-    Persistent<HeapVector<VectorObjectInheritedTrace>> vector_inherited_trace =
-        MakeGarbageCollected<HeapVector<VectorObjectInheritedTrace>>();
+    Persistent<GCedHeapVector<VectorObjectInheritedTrace>>
+        vector_inherited_trace =
+            MakeGarbageCollected<GCedHeapVector<VectorObjectInheritedTrace>>();
     VectorObjectInheritedTrace it1, it2;
     vector_inherited_trace->push_back(it1);
     vector_inherited_trace->push_back(it2);
@@ -2681,8 +2683,8 @@ TEST_F(HeapTest, EphemeronsInEphemerons) {
       Persistent<IntWrapper> deep = MakeGarbageCollected<IntWrapper>(42);
       Persistent<IntWrapper> home = MakeGarbageCollected<IntWrapper>(103);
       Persistent<IntWrapper> composite = MakeGarbageCollected<IntWrapper>(91);
-      Persistent<HeapVector<Member<IntWrapper>>> keep_alive =
-          MakeGarbageCollected<HeapVector<Member<IntWrapper>>>();
+      Persistent<GCedHeapVector<Member<IntWrapper>>> keep_alive =
+          MakeGarbageCollected<GCedHeapVector<Member<IntWrapper>>>();
       for (int i = 0; i < 10000; i++) {
         auto* value = MakeGarbageCollected<IntWrapper>(i);
         keep_alive->push_back(value);

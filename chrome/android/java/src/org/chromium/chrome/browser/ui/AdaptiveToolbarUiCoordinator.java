@@ -201,6 +201,7 @@ public class AdaptiveToolbarUiCoordinator {
                             mContext,
                             mActivityTabProvider,
                             mModalDialogManagerSupplier.get(),
+                            mBottomSheetController,
                             this::getCommerceBottomSheetContentController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.DISCOUNTS, discountsButtonController);

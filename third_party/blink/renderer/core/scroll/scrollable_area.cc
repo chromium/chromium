@@ -723,26 +723,6 @@ void ScrollableArea::RunScrollCompleteCallbacks(ScrollCompletionMode mode) {
   }
 }
 
-void ScrollableArea::ContentAreaWillPaint() const {
-  if (mac_scrollbar_animator_)
-    mac_scrollbar_animator_->ContentAreaWillPaint();
-}
-
-void ScrollableArea::MouseEnteredContentArea() const {
-  if (mac_scrollbar_animator_)
-    mac_scrollbar_animator_->MouseEnteredContentArea();
-}
-
-void ScrollableArea::MouseExitedContentArea() const {
-  if (mac_scrollbar_animator_)
-    mac_scrollbar_animator_->MouseExitedContentArea();
-}
-
-void ScrollableArea::MouseMovedInContentArea() const {
-  if (mac_scrollbar_animator_)
-    mac_scrollbar_animator_->MouseMovedInContentArea();
-}
-
 void ScrollableArea::MouseEnteredScrollbar(Scrollbar& scrollbar) {
   mouse_over_scrollbar_ = true;
 
@@ -799,11 +779,6 @@ void ScrollableArea::WillRemoveScrollbar(Scrollbar& scrollbar,
     else
       mac_scrollbar_animator_->WillRemoveHorizontalScrollbar(scrollbar);
   }
-}
-
-void ScrollableArea::ContentsResized() {
-  if (mac_scrollbar_animator_)
-    mac_scrollbar_animator_->ContentsResized();
 }
 
 bool ScrollableArea::HasOverlayScrollbars() const {

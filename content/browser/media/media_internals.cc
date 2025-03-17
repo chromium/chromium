@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/media/media_internals.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -643,8 +639,8 @@ MediaInternals::CreateAudioLogImpl(
     int render_frame_id) {
   base::AutoLock auto_lock(lock_);
   return std::make_unique<AudioLogImpl>(
-      owner_ids_[base::to_underlying(component)]++, component, this,
-      component_id, render_process_id, render_frame_id);
+      UNSAFE_TODO(owner_ids_[base::to_underlying(component)]++), component,
+      this, component_id, render_process_id, render_frame_id);
 }
 
 void MediaInternals::SendUpdate(const std::u16string& update) {

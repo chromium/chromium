@@ -446,11 +446,6 @@ void InputManager::NotifySiteIsMobileOptimized(
     return;
   }
   itr->second->input_router()->NotifySiteIsMobileOptimized(is_mobile_optimized);
-
-  auto metadata_itr = frame_sink_metadata_map_.find(frame_sink_id);
-  CHECK(metadata_itr != frame_sink_metadata_map_.end());
-  metadata_itr->second.rir_support->NotifySiteIsMobileOptimized(
-      is_mobile_optimized);
 }
 
 void InputManager::ForceEnableZoomStateChanged(

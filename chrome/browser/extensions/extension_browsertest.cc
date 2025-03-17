@@ -516,8 +516,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
       install_ui = std::make_unique<ExtensionInstallPrompt>(
           window_controller->GetActiveTab());
     }
-    installer =
-        CrxInstaller::Create(extension_service(), std::move(install_ui));
+    installer = CrxInstaller::Create(profile(), std::move(install_ui));
     installer->set_expected_id(id);
     installer->set_creation_flags(creation_flags);
     installer->set_install_source(install_source);

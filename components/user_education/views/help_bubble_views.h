@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_VIEWS_H_
 
 #include <concepts>
+#include <optional>
 
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
@@ -60,6 +61,9 @@ class HelpBubbleViews : public HelpBubble,
   HelpBubbleViews(views::BubbleDialogDelegateView* help_bubble_view,
                   ui::TrackedElement* anchor_element);
 
+  // HelpBubble:
+  void CloseBubbleImpl() override;
+
  private:
   friend class HelpBubbleFactoryViews;
   friend class HelpBubbleFactoryMac;
@@ -68,9 +72,6 @@ class HelpBubbleViews : public HelpBubble,
 
   // Clean up properties on the anchor view, if applicable.
   void MaybeResetAnchorView();
-
-  // HelpBubble:
-  void CloseBubbleImpl() override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -106,15 +107,47 @@ class HelpBubbleViews : public HelpBubble,
 // amount of boilerplate.
 class CustomHelpBubbleViews : public HelpBubbleViews, public CustomHelpBubble {
  public:
+  using UserAction = CustomHelpBubbleUi::UserAction;
+
+  // Create a help bubble from a custom Views-based help bubble dialog.
+  // Prefer `CreateCustomHelpBubbleViewFactoryCallback()`.
+  //
+  // NOTE: this hooks the `Widget::MakeCloseSynchronous` method and you should
+  // NOT call that yourself. ESC and (X) are always handled, and the dialog
+  // accept and cancel buttons (if present) will map to `accept_button_action`
+  // and `cancel_button_action` correspondingly if specified.
   template <typename T>
     requires(std::derived_from<T, views::BubbleDialogDelegateView> &&
              std::derived_from<T, CustomHelpBubbleUi>)
-  CustomHelpBubbleViews(T* bubble, ui::TrackedElement* anchor_element)
-      : HelpBubbleViews(bubble, anchor_element), CustomHelpBubble(*bubble) {
-    // Help bubbles should not close on deactivate.
-    bubble->set_close_on_deactivate(false);
-  }
-  ~CustomHelpBubbleViews() override = default;
+  CustomHelpBubbleViews(
+      std::unique_ptr<views::Widget> widget,
+      T* bubble,
+      ui::TrackedElement* anchor_element,
+      std::optional<UserAction> accept_button_action = std::nullopt,
+      std::optional<UserAction> cancel_button_action = std::nullopt)
+      : CustomHelpBubbleViews(std::move(widget),
+                              bubble,
+                              *bubble,
+                              anchor_element,
+                              accept_button_action,
+                              cancel_button_action) {}
+
+  ~CustomHelpBubbleViews() override;
+
+ protected:
+  CustomHelpBubbleViews(std::unique_ptr<views::Widget> widget,
+                        views::BubbleDialogDelegateView* bubble,
+                        CustomHelpBubbleUi& ui,
+                        ui::TrackedElement* anchor_element,
+                        std::optional<UserAction> accept_button_action,
+                        std::optional<UserAction> cancel_button_action);
+
+ private:
+  void OnHelpBubbleClosing(views::Widget::ClosedReason closed_reason);
+
+  std::unique_ptr<views::Widget> help_bubble_widget_;
+  std::optional<UserAction> accept_button_action_;
+  std::optional<UserAction> cancel_button_action_;
 };
 
 }  // namespace user_education

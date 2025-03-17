@@ -25,6 +25,8 @@ struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelAssetPaths {
 // execution.
 struct COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) ModelAssets {
   ModelAssets();
+  ModelAssets(const ModelAssets&);
+  ModelAssets& operator=(const ModelAssets&);
   ModelAssets(ModelAssets&&);
   ModelAssets& operator=(ModelAssets&&);
   ~ModelAssets();

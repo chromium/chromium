@@ -89,8 +89,6 @@ def method_definition(sb, cbn):
                  for p in cbn.params)
 
   with sb.block(after='\n'):
-    sb(f'jni_zero::CallNativeToJavaCallback("{java_class.full_name_with_slashes}", "{cbn.name}");\n'
-       )
     sb('static std::atomic<jmethodID> cached_method_id(nullptr);\n')
     class_accessor = header_common.class_accessor_expression(java_class)
     receiver_arg = 'clazz' if reciever_arg_is_class else 'obj.obj()'

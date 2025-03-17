@@ -199,10 +199,13 @@ struct AIPageContentMeta {
   string content;
 };
 
-// Data common to all frames (main and embedded).
+// Data common to frames (main and embedded).
 struct AIPageContentFrameData {
+  // Interaction information for the frame.
+  AIPageContentFrameInteractionInfo frame_interaction_info;
+
   // Meta elements which are direct children of the head element. Limited to
-  // max_meta_elements in AIPageContentOptions, default is 32.
+  // max_meta_elements in AIPageContentOptions, default is 0.
   array<AIPageContentMeta> meta_data;
 };
 
@@ -215,11 +218,7 @@ struct AIPageContentIframeData {
   // both the root ad frame and its descendants.
   bool likely_ad_frame;
 
-  // Interaction information for the iframe.
-  // TODO(gklassen): Move this to AIPageContentFrameData.
-  AIPageContentFrameInteractionInfo? frame_interaction_info;
-
-  // Frame data.  Only populated for local frames.
+  // Data common to all local frames (main and embedded).
   AIPageContentFrameData? local_frame_data;
 };
 
@@ -347,9 +346,6 @@ struct AIPageContent {
   // and embedded iframes.
   AIPageContentPageInteractionInfo? page_interaction_info;
 
-  // The interaction information for the main frame.
-  AIPageContentFrameInteractionInfo? main_frame_interaction_info;
-
   // frame_data is only populated for local frames.  If this is a remote frame,
   // this metadata will be part of the AIPageContent pulled from the local
   // frame's renderer.
@@ -373,7 +369,7 @@ struct AIPageContentOptions {
   bool include_hidden_searchable_content = true;
 
   // The maximum number of meta elements to include in the content.
-  int32 max_meta_elements = 32;
+  int32 max_meta_elements = 0;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

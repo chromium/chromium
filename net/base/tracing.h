@@ -8,9 +8,9 @@
 #include "build/build_config.h"
 #include "net/base/cronet_buildflags.h"
 
-#if BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(CRONET_BUILD)
 #include "net/base/trace_event_stub.h"  // IWYU pragma: export
-#endif  // BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_APPLE)
+#endif                                  // BUILDFLAG(CRONET_BUILD)
 
 #include "base/trace_event/base_tracing.h"  // IWYU pragma: export
 

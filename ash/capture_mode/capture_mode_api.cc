@@ -12,6 +12,7 @@
 #include "ash/scanner/scanner_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "base/feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -29,6 +30,12 @@ bool CanShowSunfishUi() {
 
   Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
   if (!shell) {
+    return false;
+  }
+
+  // Do not allow showing sunfish UI in pinned mode.
+  auto* screen_pinning_controller = shell->screen_pinning_controller();
+  if (!screen_pinning_controller || screen_pinning_controller->IsPinned()) {
     return false;
   }
 

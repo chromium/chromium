@@ -327,29 +327,25 @@ StatefulSSLHostStateDelegate::QueryPolicy(
 
 void StatefulSSLHostStateDelegate::HostRanInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
   switch (content_type) {
     case MIXED_CONTENT:
-      ran_mixed_content_hosts_.insert(BrokenHostEntry(host, child_id));
+      ran_mixed_content_hosts_.insert(host);
       return;
     case CERT_ERRORS_CONTENT:
-      ran_content_with_cert_errors_hosts_.insert(
-          BrokenHostEntry(host, child_id));
+      ran_content_with_cert_errors_hosts_.insert(host);
       return;
   }
 }
 
 bool StatefulSSLHostStateDelegate::DidHostRunInsecureContent(
     const std::string& host,
-    int child_id,
     InsecureContentType content_type) {
-  auto entry = BrokenHostEntry(host, child_id);
   switch (content_type) {
     case MIXED_CONTENT:
-      return base::Contains(ran_mixed_content_hosts_, entry);
+      return base::Contains(ran_mixed_content_hosts_, host);
     case CERT_ERRORS_CONTENT:
-      return base::Contains(ran_content_with_cert_errors_hosts_, entry);
+      return base::Contains(ran_content_with_cert_errors_hosts_, host);
   }
   NOTREACHED();
 }

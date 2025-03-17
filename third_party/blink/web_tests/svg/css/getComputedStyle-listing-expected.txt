@@ -168,7 +168,7 @@ d: none
 direction: ltr
 display: inline
 dominant-baseline: auto
-dynamic-range-limit: high
+dynamic-range-limit: no-limit
 empty-cells: show
 field-sizing: fixed
 fill: rgb(0, 128, 0)

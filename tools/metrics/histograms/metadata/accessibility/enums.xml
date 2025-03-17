@@ -997,6 +997,7 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Talkback"/>
   <int value="9" label="VoiceOver"/>
   <int value="10" label="ZoomText"/>
+  <int value="11" label="ZDSR"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/browser_accessibility_state.h:AssistiveTech) -->
@@ -1395,38 +1396,78 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Open new tab incognito"/>
   <int value="4" label="Open new window"/>
   <int value="5" label="Reload tab"/>
-  <int value="6" label="Close tab"/>
+  <int value="6" label="Reload tab, bypassing cache (not implemented)"/>
   <int value="7" label="Move to tab left"/>
   <int value="8" label="Move to tab right"/>
   <int value="9" label="Move to specific tab"/>
   <int value="10" label="Move to last tab"/>
-  <int value="11" label="Jump to omnibox"/>
-  <int value="12" label="Go back"/>
-  <int value="13" label="Go forward"/>
-  <int value="14" label="Open menu"/>
-  <int value="15" label="Open help"/>
-  <int value="16" label="Find in page"/>
-  <int value="17" label="Open bookmarks"/>
-  <int value="18" label="Bookmark page"/>
-  <int value="19" label="Open history"/>
-  <int value="20" label="Save page"/>
-  <int value="21" label="Print"/>
-  <int value="22" label="Zoom in"/>
-  <int value="23" label="Zoom out"/>
-  <int value="24" label="Zoom reset"/>
-  <int value="25" label="NOT_IMPLEMENTED_FOCUS_SEARCH"/>
-  <int value="26" label="NOT_IMPLEMENTED_RELOAD_BYPASSING_CACHE"/>
-  <int value="27" label="NOT_IMPLEMENTED_SHOW_DOWNLOADS"/>
-  <int value="28" label="NOT_IMPLEMENTED_TOGGLE_CARET_BROWSING"/>
-  <int value="29" label="NOT_IMPLEMENTED_MOVE_TO_SPECIFIC_TAB_VIA_NUMPAD"/>
-  <int value="30" label="NOT_IMPLEMENTED_MOVE_TO_LAST_TAB_VIA_NUMPAD"/>
-  <int value="31" label="NOT_IMPLEMENTED_HELP"/>
-  <int value="32" label="NOT_IMPLEMENTED_CLEAR_BROWSING_DATA"/>
-  <int value="33" label="NOT_IMPLEMENTED_CLOSE_WINDOW"/>
-  <int value="34" label="NOT_IMPLEMENTED_HOME"/>
+  <int value="11" label="Search currently-open tabs (not implemented)"/>
+  <int value="12" label="Toggle multi-task menu (not implemented)"/>
+  <int value="13" label="Close tab"/>
+  <int value="14" label="Close window (not implemented)"/>
+  <int value="15" label="Quit Chrome (not implemented)"/>
+  <int value="16" label="Jump to omnibox"/>
+  <int value="17" label="Jump to search (not implemented)"/>
+  <int value="18" label="Focus the next web contents pane (not implemented)"/>
+  <int value="19" label="Scroll down (not implemented)"/>
+  <int value="20" label="Scroll up (not implemented)"/>
+  <int value="21"
+      label="Place keyboard focus on the toolbar (not implemented)"/>
+  <int value="22"
+      label="Place keyboard focus on the bookmarks bar (not implemented)"/>
+  <int value="23"
+      label="Switch which row of the top controls (tab strip, toolbar,
+             bookmarks bar) is keyboard-focused (not implemented)"/>
+  <int value="24"
+      label="Open the context menu for the keyboard-focused tab strip item
+             (not implemented)"/>
+  <int value="25"
+      label="Reorder the keyboard-focused tab strip item to the left (not
+             implemented)"/>
+  <int value="26"
+      label="Reorder the keyboard-focused tab strip item to the right (not
+             implemented)"/>
+  <int value="27"
+      label="Reorder the currently-open tab to the left (not implemented)"/>
+  <int value="28"
+      label="Reorder the currently-open tab to the right (not implemented)"/>
+  <int value="29" label="Toggle caret browsing (not implemented)"/>
+  <int value="30" label="Focus on inactive dialogs (not implemented)"/>
+  <int value="31" label="Open bookmarks"/>
+  <int value="32" label="Bookmark page"/>
+  <int value="33" label="Bookmark all tabs (not implemented)"/>
+  <int value="34" label="Toggle showing bookmarks bar (not implemented)"/>
+  <int value="35" label="Toggle immersive mode (not implemented)"/>
+  <int value="36" label="Exit immersive mode (not implemented)"/>
+  <int value="37" label="Open developer tools (not implemented)"/>
+  <int value="38" label="Open developer tools console (not implemented)"/>
+  <int value="39"
+      label="Open developer tools element inspection (not implemented)"/>
+  <int value="40" label="Toggle showing developer tools (not implemented)"/>
+  <int value="41" label="View page source (not implemented)"/>
+  <int value="42" label="Open task manager (not implemented)"/>
+  <int value="43" label="Save page"/>
+  <int value="44" label="Show downloads (not implemented)"/>
+  <int value="45" label="Open history"/>
+  <int value="46" label="Go back in history"/>
+  <int value="47" label="Go forward in history"/>
+  <int value="48" label="Clear browsing data (not implemented)"/>
+  <int value="49" label="Print"/>
+  <int value="50" label="Basic print (not implemented)"/>
+  <int value="51" label="Zoom in"/>
+  <int value="52" label="Zoom out"/>
+  <int value="53" label="Zoom reset"/>
+  <int value="54" label="Show avatar menu (not implemented)"/>
+  <int value="55" label="Show feedback form (not implemented)"/>
+  <int value="56" label="Find in page"/>
+  <int value="57" label="Go to home page (not implemented)"/>
+  <int value="58" label="Open help"/>
+  <int value="59" label="Open menu"/>
+  <int value="60"
+      label="Use a custom keyboard shortcut registered by an extension"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning) -->
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning) -->
 
 <enum name="KeyCode">
   <int value="0" label="UNKNOWN"/>

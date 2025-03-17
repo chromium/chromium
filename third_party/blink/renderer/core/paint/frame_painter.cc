@@ -28,7 +28,6 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
   if (GetFrameView().ShouldThrottleRendering() || !document->IsActive())
     return;
 
-  GetFrameView().NotifyPageThatContentAreaWillPaint();
   ENTER_EMBEDDER_STATE(document->GetAgent().isolate(),
                        &GetFrameView().GetFrame(), BlinkState::PAINT);
   LayoutView* layout_view = GetFrameView().GetLayoutView();

@@ -11,7 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/browser/preloading/prefetcher.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
@@ -46,27 +46,6 @@ class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
 
  private:
   std::optional<GURL> target_;
-};
-
-class TestPrefetchService : public PrefetchService {
- public:
-  explicit TestPrefetchService(BrowserContext* browser_context)
-      : PrefetchService(browser_context) {}
-
-  void PrefetchUrl(
-      base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    prefetches_.push_back(prefetch_container);
-  }
-
-  void EvictPrefetch(size_t index) {
-    ASSERT_LT(index, prefetches_.size());
-    ASSERT_TRUE(prefetches_[index]);
-    base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
-    prefetches_.erase(prefetches_.begin() + index);
-    MayReleasePrefetch(prefetch_container);
-  }
-
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
 };
 
 class MockPrerenderer : public Prerenderer {

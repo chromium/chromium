@@ -45,6 +45,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace media {
+struct VideoEncoderInfo;
 class VideoEncoderMetricsProvider;
 class VideoFrame;
 }
@@ -209,6 +210,10 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
    protected:
     friend class VideoTrackRecorderTest;
 
+    // Subclasses ought to call this whenever they learn about the current
+    // video encoder details.
+    void OnVideoEncoderInfo(const media::VideoEncoderInfo& encoder_info);
+
     scoped_refptr<media::VideoFrame> MaybeProvideEncodableFrame(
         scoped_refptr<media::VideoFrame> video_frame);
     // Called shortly after wrapping the Encoder in a SequenceBound, on the
@@ -245,6 +250,19 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     // Number of frames that we keep the reference alive for encode.
     std::unique_ptr<Counter> num_frames_in_encode_;
+
+    // The maximum number of frames which we'll keep alive at a time during
+    // encoding. This guarantees that there is a limit on the number of frames
+    // in a FIFO queue that are being encoded, i.e., once this limit is
+    // reached, further incoming frames are dropped.
+    // This value can be updated by OnVideoEncoderInfo() so that it matches the
+    // encoder capabilities. Some encoders must accumulate a certain number of
+    // frames before they start producing output. Thus, it's also crucial that
+    // the maximum size of the device's video capture buffer pool can
+    // accommodate at least this many frames.
+    static constexpr size_t kMaxNumberOfFramesInEncoderMinValue = 10;
+    size_t max_number_of_frames_in_encode_ =
+        kMaxNumberOfFramesInEncoderMinValue;
 
     // Used to retrieve incoming opaque VideoFrames (i.e. VideoFrames backed by
     // textures).

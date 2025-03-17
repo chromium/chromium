@@ -18,7 +18,7 @@
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
@@ -71,7 +71,7 @@ enum class WindowState {
   NORMAL
 };
 
-class NotificationsApiTest : public extensions::ExtensionPlatformApiTest {
+class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
   NotificationsApiTest() = default;
   ~NotificationsApiTest() override = default;
@@ -140,7 +140,7 @@ class NotificationsApiTest : public extensions::ExtensionPlatformApiTest {
 
  protected:
   void SetUpOnMainThread() override {
-    extensions::ExtensionPlatformApiTest::SetUpOnMainThread();
+    extensions::ExtensionApiTest::SetUpOnMainThread();
 
     DCHECK(profile());
     display_service_tester_ =
@@ -149,7 +149,7 @@ class NotificationsApiTest : public extensions::ExtensionPlatformApiTest {
 
   void TearDownOnMainThread() override {
     display_service_tester_.reset();
-    extensions::ExtensionPlatformApiTest::TearDownOnMainThread();
+    extensions::ExtensionApiTest::TearDownOnMainThread();
   }
 
   // Returns the notification that's being displayed for |extension|, or nullptr

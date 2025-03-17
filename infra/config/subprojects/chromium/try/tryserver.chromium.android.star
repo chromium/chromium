@@ -427,8 +427,8 @@ try_.orchestrator_builder(
             "ci/android-pie-arm64-rel",
             "release_try_builder",
             "android_fastbuild",
+            "enable_android_secondary_abi",
             "fail_on_android_expectations",
-            "no_secondary_abi",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
         ],
@@ -698,6 +698,8 @@ try_.builder(
     gn_args = "ci/android-cronet-riscv64-dbg",
     contact_team_email = "cronet-team@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    # TODO(http://b/404125019): Enable this again.
+    siso_remote_linking = False,
 )
 
 try_.builder(
@@ -1177,6 +1179,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Android arm64 Builder (dbg)",
+            "enable_android_secondary_abi",
             "release_try_builder",
             "strip_debug_info",
             "webview_monochrome",
@@ -1195,6 +1198,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Android arm64 Builder (dbg)",
+            "enable_android_secondary_abi",
             "release_try_builder",
             "strip_debug_info",
             "webview_monochrome",
@@ -1321,6 +1325,7 @@ try_.builder(
         configs = [
             "android_builder",
             "debug_try_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "compile_only",
             "arm64",
@@ -1483,6 +1488,7 @@ try_.builder(
         configs = [
             "android_builder",
             "debug_try_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "compile_only",
             "arm64",

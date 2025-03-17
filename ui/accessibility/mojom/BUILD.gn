@@ -37,6 +37,7 @@ mojom("mojom") {
         {
           mojom = "ax.mojom.AXRelativeBounds"
           cpp = "::ui::AXRelativeBounds"
+          move_only = true
         },
       ]
       traits_headers = [ "ax_relative_bounds_mojom_traits.h" ]
@@ -162,6 +163,8 @@ mojom("mojom") {
         {
           mojom = "ax.mojom.AXTreeData"
           cpp = "::ui::AXTreeData"
+          forward_declaration = "namespace ui { struct AXTreeData; }"
+          move_only = true
         },
       ]
       traits_sources = [ "ax_tree_data_mojom_traits.cc" ]

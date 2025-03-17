@@ -47,3 +47,15 @@ message KAnonKeyProtos {
 message ListOfOrigins {
   repeated string origins = 1;
 }
+
+message ListOfTimestamps {
+  repeated int64 timestamps = 1;
+}
+
+message ListOfTimestampAndCounts {
+  message Entry {
+    optional int64 timestamp = 1;
+    optional int64 count = 2;
+  }
+  repeated Entry timestamp_and_counts = 1;
+}

@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_date_picker_table_view_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -105,8 +106,7 @@ TEST_F(ReminderNotificationsViewControllerTest,
 
   EXPECT_FALSE(viewController.showDismissBarButton);
   EXPECT_TRUE(viewController.topAlignedLayout);
-  EXPECT_FALSE(viewController.scrollEnabled);
-  EXPECT_FALSE(viewController.showsVerticalScrollIndicator);
+  EXPECT_TRUE(viewController.alwaysShowImage);
   EXPECT_TRUE(viewController.imageHasFixedSize);
   EXPECT_TRUE(viewController.imageEnclosedWithShadowWithoutBadge);
 
@@ -137,4 +137,34 @@ TEST_F(ReminderNotificationsViewControllerTest,
 
   EXPECT_NSEQ(viewController.imageViewAccessibilityLabel,
               @"ReminderNotificationsBellIconAccessibilityLabel");
+}
+
+// Tests the date picker table view cell configuration
+TEST_F(ReminderNotificationsViewControllerTest, DatePickerTableViewCellConfig) {
+  ReminderNotificationsDatePickerTableViewCell* cell =
+      [[ReminderNotificationsDatePickerTableViewCell alloc]
+            initWithStyle:UITableViewCellStyleDefault
+          reuseIdentifier:@"TestCell"];
+
+  [cell configureWithLabel:@"Test" value:@"Value"];
+
+  // Find the labels (would need to add helper methods or use OCMock for more
+  // complex verification)
+  UILabel* titleLabel = nil;
+  UILabel* valueLabel = nil;
+
+  for (UIView* subview in cell.contentView.subviews) {
+    if ([subview isKindOfClass:[UILabel class]]) {
+      UILabel* label = (UILabel*)subview;
+      if ([label.text isEqualToString:@"Test"]) {
+        titleLabel = label;
+      } else if ([label.text isEqualToString:@"Value"]) {
+        valueLabel = label;
+      }
+    }
+  }
+
+  EXPECT_NE(titleLabel, nil);
+  EXPECT_NE(valueLabel, nil);
+  EXPECT_NSEQ(cell.accessibilityIdentifier, @"ReminderNotificationsTestRow");
 }

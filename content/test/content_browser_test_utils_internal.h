@@ -832,6 +832,34 @@ void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
 // be called before starting `server`.
 void AddRedirectOnSecondNavigationHandler(net::EmbeddedTestServer* server);
 
+// Forwards DidStartLoading calls to the provided callback.
+class LoadingStartObserver : public WebContentsObserver {
+ public:
+  using Callback = base::RepeatingCallback<void()>;
+
+  LoadingStartObserver(WebContents* web_contents, Callback callback);
+  ~LoadingStartObserver() override;
+
+ private:
+  void DidStartLoading() override;
+
+  Callback callback_;
+};
+
+// Forwards DidStopLoading calls to the provided callback.
+class LoadingStopObserver : public WebContentsObserver {
+ public:
+  using Callback = base::RepeatingCallback<void()>;
+
+  LoadingStopObserver(WebContents* web_contents, Callback callback);
+  ~LoadingStopObserver() override;
+
+ private:
+  void DidStopLoading() override;
+
+  Callback callback_;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_TEST_CONTENT_BROWSER_TEST_UTILS_INTERNAL_H_

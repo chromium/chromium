@@ -447,6 +447,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2829172210806130158">Busca na pantalla</translation>
 <translation id="2834399722155632105">3. Toca Password Options (Opcións de contrasinais)</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Hora</translation>
 <translation id="284581348330507117">Crea contrasinais únicos</translation>
 <translation id="2856883624744451946">Ponlle un nome ao grupo</translation>
 <translation id="2858204748079866344">Para protexer a túa privacidade, Chrome non autocompletará o teu contrasinal neste campo.</translation>
@@ -649,7 +650,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3868495844258915202">Mostrar o URL completo</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
-<translation id="3876833929577368454">Preguntar sempre</translation>
 <translation id="3885587018298784481">Únete a un grupo familiar</translation>
 <translation id="3888863481921783344">Usarase para mostrarche posibles invitados ao teu evento.</translation>
 <translation id="3891414008432200754">Prezo</translation>
@@ -904,6 +904,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4896467949657706481">Pecháronse as pestanas e mais a túa sesión</translation>
 <translation id="4913626501929406101">Podes compartir de maneira segura unha copia do teu contrasinal con calquera persoa do teu grupo familiar. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Aceptar</translation>
+<translation id="4932733599132424254">Data</translation>
 <translation id="4936354130727646074">Non mover nunca</translation>
 <translation id="4937410517508563815">Garda os contrasinais na conta</translation>
 <translation id="4938338714234463591">Desta forma poderás usar a túa voz con certas funcións en sitios web.</translation>
@@ -1470,7 +1471,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento descargado</translation>
 <translation id="7346909386216857016">Entendido</translation>
 <translation id="7352651011704765696">Produciuse un erro</translation>
-<translation id="7359341089141286329">Facer automaticamente o seguimento de todos os paquetes detectados</translation>
 <translation id="7363349185727752629">Unha guía das túas opcións de privacidade</translation>
 <translation id="736564850024123010">Cambia a posición da barra de enderezos para desfrutar dunha experiencia personalizada.</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
@@ -1718,6 +1718,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
 <translation id="8307481894409578819">Non se puido cargar este ficheiro</translation>
 <translation id="8319076807703933069">Nova busca</translation>
+<translation id="8320212361750431956">Actividade recente</translation>
 <translation id="833647236762414178">Crea, garda e xestiona os teus contrasinais e claves de acceso para poder iniciar sesión facilmente nos sitios e nas aplicacións. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fai unha copia de seguranza dos teus datos e úsaos en calquera dispositivo.</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
@@ -1747,7 +1748,6 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
-<translation id="8453847087068411809">Non detectar nunca paquetes automaticamente</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>

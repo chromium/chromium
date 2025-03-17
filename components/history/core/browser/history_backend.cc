@@ -1512,13 +1512,9 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
   if (originator_opener_visit.has_value())
     visit_info.originator_opener_visit = *originator_opener_visit;
   if (visited_link_info.id) {
+    // TODO(crbug.com/40280017): any visit added via sync will not have a
+    // valid corresponding entry in the VisitedLinkDatabase.
     visit_info.visited_link_id = visited_link_info.id;
-  }
-
-  // TODO(crbug.com/40280017): any visit added via sync should not have a
-  // corresponding entry in the VisitedLinkDatabase.
-  if (visit_source == VisitSource::SOURCE_SYNCED) {
-    CHECK(visit_info.visited_link_id == kInvalidVisitedLinkID);
   }
 
   visit_info.is_known_to_sync = is_known_to_sync;

@@ -11,12 +11,14 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Reload button properties set. */
 class ReloadButtonProperties {
 
     public static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+    public static final WritableIntPropertyKey DRAWABLE_LEVEL = new WritableIntPropertyKey();
     public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> CLICK_LISTENER =
@@ -32,6 +34,8 @@ class ReloadButtonProperties {
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                ALPHA,
+                DRAWABLE_LEVEL,
                 KEY_LISTENER,
                 CLICK_LISTENER,
                 LONG_CLICK_LISTENER,

@@ -2206,6 +2206,7 @@ chromium-metrics-reviews@google.com.
   <int value="1341" label="ClassManagementNetworkRestrictionEnabled"/>
   <int value="1342" label="ClassManagementSendingContentEnabled"/>
   <int value="1343" label="ClassManagementViewScreenEnabled"/>
+  <int value="1344" label="KioskChromeAppsForceAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

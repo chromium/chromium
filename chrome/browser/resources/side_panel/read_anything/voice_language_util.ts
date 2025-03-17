@@ -127,7 +127,7 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
         availableVoices.filter(voice => !isGoogle(voice))
             .reduce((map, voice) => {
               map[voice.lang] = map[voice.lang] || [];
-              map[voice.lang].push(voice);
+              map[voice.lang]!.push(voice);
               return map;
             }, {} as {[language: string]: SpeechSynthesisVoice[]});
     // Only keep system voices that exactly match Google TTS supported locales,
@@ -140,9 +140,9 @@ export function getFilteredVoiceList(possibleVoices: SpeechSynthesisVoice[]):
             })
             .filter(
                 systemVoice => AVAILABLE_GOOGLE_TTS_LOCALES.has(
-                                   systemVoice.lang.toLowerCase()) ||
+                                   systemVoice!.lang.toLowerCase()) ||
                     convertLangOrLocaleToExactVoicePackLocale(
-                        systemVoice.lang.toLowerCase()) === undefined);
+                        systemVoice!.lang.toLowerCase()) === undefined);
 
     // Keep all Google voices and one system voice per language.
     availableVoices = availableVoices.filter(
@@ -165,7 +165,11 @@ export function isGoogle(voice: SpeechSynthesisVoice|undefined) {
 }
 
 export function getNaturalVoiceOrDefault(voices: SpeechSynthesisVoice[]):
-    SpeechSynthesisVoice {
+    SpeechSynthesisVoice|undefined {
+  if (voices.length === 0) {
+    return undefined;
+  }
+
   const naturalVoice = voices.find(v => isNatural(v));
   if (naturalVoice) {
     return naturalVoice;

@@ -52,6 +52,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:BlinkRequestDestination) -->
 
+<variants name="BlinkUpdateTimeSuffixes">
+  <variant name=".AggregatedPreFCP"
+      summary="All the time spent Pre First Contentful Paint in this
+               component"/>
+  <variant name=".PostFCP"
+      summary="Update occurred after First Contentful Paint."/>
+  <variant name=".PreFCP"
+      summary="Update occurred before First Contentful Paint."/>
+</variants>
+
 <variants name="PerAnimationFrameInteractionType">
   <variant name="All"
       summary="all animation frames overlapping with any interaction type"/>
@@ -133,10 +143,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Accessibility.UpdateTime"
+<histogram name="Blink.Accessibility.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>ikilpatrick@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -150,6 +158,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -190,11 +199,9 @@ chromium-metrics-reviews@google.com.
   <token key="orientation" variants="ScreenOrientation"/>
 </histogram>
 
-<histogram base="true"
-    name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"
+<histogram
+    name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -211,13 +218,12 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Animate.UpdateTime" units="microseconds"
-    expires_after="2025-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
+<histogram name="Blink.Animate.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="microseconds" expires_after="2025-06-01">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -231,6 +237,7 @@ chromium-metrics-reviews@google.com.
     Note that the histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes
     before 105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful
     when aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -691,10 +698,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.CompositingCommit.UpdateTime"
+<histogram name="Blink.CompositingCommit.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-17">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -709,13 +714,12 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.CompositingInputs.UpdateTime"
+<histogram name="Blink.CompositingInputs.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-07-27">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -729,6 +733,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -756,10 +761,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ContentDocumentUpdate.UpdateTime"
+<histogram
+    name="Blink.ContentDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-10">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -775,6 +779,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -1057,10 +1062,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.DisplayLockIntersectionObserver.UpdateTime"
+<histogram
+    name="Blink.DisplayLockIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -1076,6 +1080,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -1831,6 +1836,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.SegmentationPlatform.UserAction"
+    enum="FedCmUserAction" expires_after="2025-08-10">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    The action taken by the user. Recorded when the FedCM UI is destroyed, if
+    the UI shown uses segmentation platform's UI volume recommendation.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.SetLoginStatusIgnored"
     enum="FedCmSetLoginStatusIgnoredReason" expires_after="2025-08-12">
   <owner>cbiesinger@chromium.org</owner>
@@ -2409,10 +2424,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ForcedStyleAndLayout.UpdateTime"
+<histogram
+    name="Blink.ForcedStyleAndLayout.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-17">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2427,6 +2441,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -2443,10 +2458,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
+<histogram name="Blink.HandleInputEvents.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-03">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2460,6 +2473,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -2486,10 +2500,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.HitTestDocumentUpdate.UpdateTime"
+<histogram
+    name="Blink.HitTestDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-03">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2505,6 +2518,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -2869,10 +2883,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ImplCompositorCommit.UpdateTime"
+<histogram
+    name="Blink.ImplCompositorCommit.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2888,13 +2901,13 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.IntersectionObservation.UpdateTime"
+<histogram
+    name="Blink.IntersectionObservation.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2909,39 +2922,37 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Blink.IntersectionObservationInternalCount.UpdateTime" units="count"
-    expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
+<histogram
+    name="Blink.IntersectionObservationInternalCount.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="count" expires_after="2025-12-08">
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Number of IntersectionObserver computations for blink-internal consumers
     that were performed during the course of a single main frame.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Blink.IntersectionObservationJavascriptCount.UpdateTime"
+<histogram
+    name="Blink.IntersectionObservationJavascriptCount.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="count" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Number of IntersectionObserver computations for javascript consumers that
     were performed during the course of a single main frame.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.JavascriptDocumentUpdate.UpdateTime"
+<histogram
+    name="Blink.JavascriptDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-10">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2960,13 +2971,13 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.JavascriptIntersectionObserver.UpdateTime"
+<histogram
+    name="Blink.JavascriptIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -2982,6 +2993,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -3070,10 +3082,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Layout.UpdateTime" units="microseconds"
-    expires_after="2025-08-17">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
+<histogram name="Blink.Layout.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="microseconds" expires_after="2025-08-17">
   <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -3087,13 +3097,13 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.LazyLoadIntersectionObserver.UpdateTime"
+<histogram
+    name="Blink.LazyLoadIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -3110,6 +3120,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -3749,10 +3760,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.MainFrame.UpdateTime" units="microseconds"
-    expires_after="2025-08-17">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
+<histogram name="Blink.MainFrame.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="microseconds" expires_after="2025-08-17">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -3766,13 +3775,13 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.MediaIntersectionObserver.UpdateTime"
+<histogram
+    name="Blink.MediaIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -3789,6 +3798,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -4008,10 +4018,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Paint.UpdateTime" units="microseconds"
-    expires_after="2025-08-17">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
+<histogram name="Blink.Paint.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="microseconds" expires_after="2025-08-17">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -4025,13 +4033,12 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ParseStyleSheet.UpdateTime"
+<histogram name="Blink.ParseStyleSheet.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-07-13">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -4046,6 +4053,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -4071,11 +4079,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Blink.PermissionElementIntersectionObserver.UpdateTime"
+<histogram
+    name="Blink.PermissionElementIntersectionObserver.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-12-08">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>tungnh@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -4092,13 +4098,13 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.PossibleSynchronizedScrollCount2.UpdateTime"
+<histogram
+    name="Blink.PossibleSynchronizedScrollCount2.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="count" expires_after="2024-06-01">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>vollick@chromium.org</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -4112,6 +4118,7 @@ chromium-metrics-reviews@google.com.
 
     Note: PreFCP metrics will be recorded even if FCP is not reached, whereas
     AggregatedPreFCP metrics are only recorded if FCP is reached.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -4141,10 +4148,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.PrePaint.UpdateTime" units="microseconds"
-    expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
+<histogram name="Blink.PrePaint.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="microseconds" expires_after="2025-08-24">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -4159,6 +4164,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -4739,10 +4745,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ServiceDocumentUpdate.UpdateTime"
+<histogram
+    name="Blink.ServiceDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-10">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -4758,6 +4763,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -4922,10 +4928,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Style.UpdateTime" units="microseconds"
-    expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
+<histogram name="Blink.Style.UpdateTime{BlinkUpdateTimeSuffixes}"
+    units="microseconds" expires_after="2025-08-24">
   <owner>pdr@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -4939,6 +4943,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
@@ -4969,10 +4974,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.UpdateViewportIntersection.UpdateTime"
+<histogram
+    name="Blink.UpdateViewportIntersection.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-17">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -4988,7 +4992,11 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
+  <token key="BlinkUpdateTimeSuffixes" variants="BlinkUpdateTimeSuffixes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Blink.UseCounter.AnimatedCSSProperties"
@@ -5266,10 +5274,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.UserDrivenDocumentUpdate.UpdateTime"
+<histogram
+    name="Blink.UserDrivenDocumentUpdate.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-10">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -5287,13 +5294,12 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.VisualUpdateDelay.UpdateTime"
+<histogram name="Blink.VisualUpdateDelay.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-04-13">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -5302,13 +5308,12 @@ chromium-metrics-reviews@google.com.
     will send the updated visual state to the compositor.
 
     This histogram only records metrics on machines with high-resolution clocks.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.WaitForCommit.UpdateTime"
+<histogram name="Blink.WaitForCommit.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
-
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -5323,6 +5328,7 @@ chromium-metrics-reviews@google.com.
     Note: The histograms with PreFCP/PostFCP/AggregatedPreFCP suffixes before
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
+    {BlinkUpdateTimeSuffixes}
   </summary>
 </histogram>
 

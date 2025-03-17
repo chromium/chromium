@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -15,6 +16,8 @@
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,9 +51,24 @@ class MockAmountExtractionManager : public AmountExtractionManager {
 };
 
 class AmountExtractionManagerTest : public testing::Test {
+ public:
+  AmountExtractionManagerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillEnableAmountExtractionDesktop,
+                              features::kAutofillEnableBuyNowPayLaterSyncing,
+                              features::kAutofillEnableBuyNowPayLater},
+        /*disabled_features=*/{});
+  }
+
  protected:
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
+    autofill_client_->SetAutofillPaymentMethodsEnabled(true);
+    autofill_client_->GetPersonalDataManager()
+        .payments_data_manager()
+        .SetSyncingForTest(true);
+    autofill_client_->GetPersonalDataManager().SetPrefService(
+        autofill_client_->GetPrefs());
     mock_autofill_driver_ =
         std::make_unique<testing::NiceMock<MockAutofillDriver>>(
             autofill_client_.get());
@@ -58,10 +76,18 @@ class AmountExtractionManagerTest : public testing::Test {
         mock_autofill_driver_.get());
     amount_extraction_manager_ =
         std::make_unique<AmountExtractionManager>(autofill_manager_.get());
+
+    test_api(payments_data()).AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+
     ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
                 autofill_manager_->client().GetAutofillOptimizationGuide()),
             IsUrlEligibleForCheckoutAmountSearchForIssuerId)
         .WillByDefault(testing::Return(true));
+  }
+
+  TestPaymentsDataManager& payments_data() {
+    return autofill_client_->GetPersonalDataManager()
+        .test_payments_data_manager();
   }
 
   void FakeCheckoutAmountReceived(const std::string& extracted_amount) {
@@ -85,6 +111,7 @@ class AmountExtractionManagerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
   std::unique_ptr<testing::NiceMock<MockAutofillDriver>> mock_autofill_driver_;
   std::unique_ptr<TestBrowserAutofillManager> autofill_manager_;
@@ -95,9 +122,6 @@ class AmountExtractionManagerTest : public testing::Test {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenEligible) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
-
   SuggestionsContext context;
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
@@ -108,6 +132,12 @@ TEST_F(AmountExtractionManagerTest, ShouldTriggerWhenEligible) {
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFeatureIsNotEnabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater},
+      /*disabled_features=*/{features::kAutofillEnableAmountExtractionDesktop});
+
   SuggestionsContext context;
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
@@ -129,9 +159,6 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenSearchIsOngoing) {
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenAutofillUnavailable) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
-
   SuggestionsContext context;
   context.is_autofill_available = false;
   context.filling_product = FillingProduct::kCreditCard;
@@ -142,9 +169,6 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenAutofillUnavailable) {
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFormIsNotCreditCard) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
-
   SuggestionsContext context;
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kAddress;
@@ -156,9 +180,6 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenFormIsNotCreditCard) {
 
 TEST_F(AmountExtractionManagerTest,
        ShouldNotTriggerWhenSuggestionIsSuppressed) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
-
   SuggestionsContext context;
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
@@ -168,9 +189,6 @@ TEST_F(AmountExtractionManagerTest,
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
-
   SuggestionsContext context;
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
@@ -181,9 +199,6 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerWhenNoSuggestion) {
 }
 
 TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillEnableAmountExtractionDesktop};
-
   SuggestionsContext context;
   context.is_autofill_available = true;
   context.filling_product = FillingProduct::kCreditCard;
@@ -193,6 +208,19 @@ TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfUrlNotEligible) {
           IsUrlEligibleForCheckoutAmountSearchForIssuerId)
       .WillByDefault(testing::Return(false));
 
+  EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
+      context, /*should_suppress_suggestions=*/false,
+      /*has_suggestions=*/true));
+}
+
+TEST_F(AmountExtractionManagerTest, ShouldNotTriggerIfNoBnplIssuer) {
+  SuggestionsContext context;
+  context.is_autofill_available = true;
+  context.filling_product = FillingProduct::kCreditCard;
+  payments_data().ClearBnplIssuers();
+
+  EXPECT_FALSE(
+      amount_extraction_manager_->IsUrlEligibleForAmountExtractionForTesting());
   EXPECT_FALSE(amount_extraction_manager_->ShouldTriggerAmountExtraction(
       context, /*should_suppress_suggestions=*/false,
       /*has_suggestions=*/true));

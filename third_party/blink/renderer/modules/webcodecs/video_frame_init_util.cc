@@ -53,7 +53,8 @@ gfx::Size ParseAndValidateDisplaySizeImpl(T* init,
   // a texture large enough to render into. It may be impossible, for example,
   // to create an ImageBitmap without also scaling down.
   if (display_width > media::limits::kMaxDimension ||
-      display_height > media::limits::kMaxDimension) {
+      display_height > media::limits::kMaxDimension ||
+      display_width * display_height > media::limits::kMaxCanvas) {
     exception_state.ThrowTypeError(
         String::Format("Invalid display size (%u, %u); exceeds "
                        "implementation limit.",

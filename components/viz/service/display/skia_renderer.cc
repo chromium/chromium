@@ -643,7 +643,6 @@ class SkiaRenderer::ScopedSkImageBuilder {
                        ResourceId resource_id,
                        bool maybe_concurrent_reads,
                        SkAlphaType alpha_type = kPremul_SkAlphaType,
-                       GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin,
                        sk_sp<SkColorSpace> override_color_space = nullptr,
                        bool raw_draw_if_possible = false,
                        bool force_rgbx = false);
@@ -668,7 +667,6 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
     ResourceId resource_id,
     bool maybe_concurrent_reads,
     SkAlphaType alpha_type,
-    GrSurfaceOrigin origin,
     sk_sp<SkColorSpace> override_color_space,
     bool raw_draw_if_possible,
     bool force_rgbx) {
@@ -686,7 +684,6 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   // longer modified after |image| is set.
   if (!image_context->has_image()) {
     image_context->set_alpha_type(alpha_type);
-    image_context->set_origin(origin);
   }
 
   // We need the original TransferableResource.color_space for YUV => RGB
@@ -2709,8 +2706,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   ScopedSkImageBuilder builder(
       this, quad->resource_id, /*maybe_concurrent_reads=*/true,
       quad->premultiplied_alpha ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-      resource_provider()->GetOrigin(quad->resource_id), override_color_space,
-      false, quad->force_rgbx);
+      override_color_space, false, quad->force_rgbx);
   const SkImage* image = builder.sk_image();
   if (!image)
     return;
@@ -2823,7 +2819,6 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
   ScopedSkImageBuilder builder(
       this, quad->resource_id, /*maybe_concurrent_reads=*/false,
       quad->is_premultiplied ? kPremul_SkAlphaType : kUnpremul_SkAlphaType,
-      /*origin=*/kTopLeft_GrSurfaceOrigin,
       /*override_color_space=*/nullptr, raw_draw_if_possible);
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(

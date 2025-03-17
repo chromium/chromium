@@ -97,6 +97,7 @@ source_set("unit_tests") {
     "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/coral/public/mojom",
     "//components/app_constants",
     "//components/prefs:test_support",
     "//components/sync:test_support",
@@ -114,6 +115,7 @@ if (use_libfuzzer) {
     deps = [
       ":desks_storage",
       ":test_support",
+      "//chromeos/ash/services/coral/public/mojom",
       "//components/account_id",
       "//components/services/app_service",
       "//components/sync:test_support",

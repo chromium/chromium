@@ -175,6 +175,8 @@ NSData* ViewAsTIFF(NSView* view) {
   return [bitmap TIFFRepresentation];
 }
 
+}  // namespace
+
 class TestBubbleView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleView(Widget* parent) {
@@ -184,8 +186,6 @@ class TestBubbleView : public BubbleDialogDelegateView {
   TestBubbleView(const TestBubbleView&) = delete;
   TestBubbleView& operator=(const TestBubbleView&) = delete;
 };
-
-}  // namespace
 
 // Test that parent windows keep their traffic lights enabled when showing
 // dialogs.

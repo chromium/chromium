@@ -1122,7 +1122,16 @@ bool PrerenderHostRegistry::CancelNewTabHostInternal(
   std::unique_ptr<PrerenderNewTabHandle> handle = std::move(iter->second);
   prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
   NotifyCancel(frame_tree_node_id, reason);
-  handle->CancelPrerendering(reason);
+
+  if (reason.final_status() == PrerenderFinalStatus::kSpeculationRuleRemoved) {
+    auto& new_tab_registry = handle->GetPrerenderHostRegistry();
+    new_tab_registry.SchedulePendingDeletionPrerenderNewTabHandle(
+        std::move(handle));
+    new_tab_registry.CancelHost(frame_tree_node_id, reason);
+  } else {
+    handle->CancelPrerendering(reason);
+  }
+
   return true;
 }
 
@@ -1740,9 +1749,22 @@ bool PrerenderHostRegistry::CanNavigationActivateHost(
   return true;
 }
 
-void PrerenderHostRegistry::DeleteDelayedToBeDeletedHosts(
+void PrerenderHostRegistry::DeletePendingDeletionHosts(
     FrameTreeNodeId prerender_host_id) {
-  delayed_to_be_deleted_hosts_.erase(prerender_host_id);
+  pending_deletion_hosts_.erase(prerender_host_id);
+  if (pending_deletion_new_tab_prerender_handle_) {
+    // Delete the handle asynchronously to avoid delete `this`, as the handle
+    // owns the prerender WebContents, which indirectly owns this
+    // PrerenderHostRegistry.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(pending_deletion_new_tab_prerender_handle_));
+  }
+}
+
+void PrerenderHostRegistry::SchedulePendingDeletionPrerenderNewTabHandle(
+    std::unique_ptr<PrerenderNewTabHandle> handle) {
+  CHECK(!pending_deletion_new_tab_prerender_handle_);
+  pending_deletion_new_tab_prerender_handle_ = std::move(handle);
 }
 
 void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
@@ -1758,11 +1780,10 @@ void PrerenderHostRegistry::ScheduleToDeleteAbandonedHost(
       // Fire unload related events upon intended prerender cancellation.
       RenderFrameHostImpl* rfhi = prerender_host->GetPrerenderedMainFrameHost();
       FrameTreeNodeId prerender_host_id = prerender_host->frame_tree_node_id();
-      delayed_to_be_deleted_hosts_[prerender_host_id] =
-          std::move(prerender_host);
+      pending_deletion_hosts_[prerender_host_id] = std::move(prerender_host);
       rfhi->ClosePage(RenderFrameHostImpl::ClosePageSource::kPrerenderDiscard,
                       base::BindRepeating(
-                          &PrerenderHostRegistry::DeleteDelayedToBeDeletedHosts,
+                          &PrerenderHostRegistry::DeletePendingDeletionHosts,
                           weak_factory_.GetWeakPtr(), prerender_host_id));
       return;
     }

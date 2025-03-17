@@ -540,10 +540,10 @@ EXPORTS
     ??$GetDataImpl@V?$Span@I@absl@@@span_internal@absl@@YAPAIAAV?$Span@I@1@D@Z
     ??$GetDataImpl@V?$vector@PAVLogSink@absl@@V?$allocator@PAVLogSink@absl@@@__Cr@std@@@__Cr@std@@@span_internal@absl@@YAPAPAVLogSink@1@AAV?$vector@PAVLogSink@absl@@V?$allocator@PAVLogSink@absl@@@__Cr@std@@@__Cr@std@@D@Z
     ??$GetFlag@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@absl@@YA?AV?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@ABV?$Flag@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@flags_internal@0@@Z
-    ??$GrowFullSooTableToNextCapacity@$00$00@container_internal@absl@@YAXAAVCommonFields@01@IABUPolicyFunctions@01@@Z
-    ??$GrowFullSooTableToNextCapacity@$03$00@container_internal@absl@@YAXAAVCommonFields@01@IABUPolicyFunctions@01@@Z
-    ??$GrowFullSooTableToNextCapacity@$07$00@container_internal@absl@@YAXAAVCommonFields@01@IABUPolicyFunctions@01@@Z
-    ??$GrowFullSooTableToNextCapacity@$0A@$0A@@container_internal@absl@@YAXAAVCommonFields@01@IABUPolicyFunctions@01@@Z
+    ??$GrowFullSooTableToNextCapacity@$00$00@container_internal@absl@@YAXAAVCommonFields@01@ABUPolicyFunctions@01@I@Z
+    ??$GrowFullSooTableToNextCapacity@$03$00@container_internal@absl@@YAXAAVCommonFields@01@ABUPolicyFunctions@01@I@Z
+    ??$GrowFullSooTableToNextCapacity@$07$00@container_internal@absl@@YAXAAVCommonFields@01@ABUPolicyFunctions@01@I@Z
+    ??$GrowFullSooTableToNextCapacity@$0A@$0A@@container_internal@absl@@YAXAAVCommonFields@01@ABUPolicyFunctions@01@I@Z
     ??$HashOf@$S$$ZI@absl@@YAIABI@Z
     ??$HashOf@$S$$ZV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@H@absl@@YAIABV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@ABH@Z
     ??$HidePtr@$$CBX@base_internal@absl@@YAIPBX@Z
@@ -3734,7 +3734,7 @@ EXPORTS
     ?PrepareForSampling@HashtablezInfo@container_internal@absl@@QAEX_JIIIG@Z
     ?PrepareInsertAfterSoo@container_internal@absl@@YAIIIAAVCommonFields@12@@Z
     ?PrepareInsertCommon@container_internal@absl@@YAXAAVCommonFields@12@@Z
-    ?PrepareInsertNonSoo@container_internal@absl@@YAIAAVCommonFields@12@IABUPolicyFunctions@12@UFindInfo@12@@Z
+    ?PrepareInsertNonSoo@container_internal@absl@@YAIAAVCommonFields@12@ABUPolicyFunctions@12@IUFindInfo@12@@Z
     ?PrepareToDie@LogMessage@log_internal@absl@@AAEXXZ
     ?PrepareToModify@Status@absl@@CAPAVStatusRep@status_internal@2@I@Z
     ?Prepend@Cord@absl@@QAEXABV12@@Z
@@ -3820,7 +3820,7 @@ EXPORTS
     ?RegisterMutexProfiler@absl@@YAXP6AX_J@Z@Z
     ?RegisterMutexTracer@absl@@YAXP6AXPBDPBX_J@Z@Z
     ?RegisterSpinLockProfiler@base_internal@absl@@YAXP6AXPBX_J@Z@Z
-    ?Rehash@container_internal@absl@@YAXAAVCommonFields@12@IABUPolicyFunctions@12@@Z
+    ?Rehash@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@I@Z
     ?RehashProbabilityConstant@container_internal@absl@@YAIXZ
     ?RelaxedCopyFromAtomic@SequenceLock@flags_internal@absl@@CAXPAXPBU?$atomic@_K@__Cr@std@@I@Z
     ?RelaxedCopyToAtomic@SequenceLock@flags_internal@absl@@CAXPAU?$atomic@_K@__Cr@std@@PBXI@Z
@@ -3843,18 +3843,17 @@ EXPORTS
     ?RepToPointer@Status@absl@@CAPBVStatusRep@status_internal@2@I@Z
     ?ReportUnrecognizedFlags@absl@@YAXABV?$vector@UUnrecognizedFlag@absl@@V?$allocator@UUnrecognizedFlag@absl@@@__Cr@std@@@__Cr@std@@@Z
     ?ReportUsageError@flags_internal@absl@@YAXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@_N@Z
-    ?ReserveAllocatedTable@container_internal@absl@@YAXAAVCommonFields@12@IABUPolicyFunctions@12@@Z
-    ?ReserveEmptyNonAllocatedTableToFitBucketCount@container_internal@absl@@YAXAAVCommonFields@12@IABUPolicyFunctions@12@@Z
-    ?ReserveEmptyNonAllocatedTableToFitNewSize@container_internal@absl@@YAXAAVCommonFields@12@IABUPolicyFunctions@12@@Z
+    ?ReserveAllocatedTable@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@I@Z
+    ?ReserveEmptyNonAllocatedTableToFitBucketCount@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@I@Z
+    ?ReserveEmptyNonAllocatedTableToFitNewSize@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@I@Z
     ?Reset@?$AllocationTransaction@V?$allocator@PAUCordRep@cord_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@AAEXXZ
     ?Reset@?$AllocationTransaction@V?$allocator@PAVLogSink@absl@@@__Cr@std@@@inlined_vector_internal@absl@@AAEXXZ
     ?Reset@?$AllocationTransaction@V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@AAEXXZ
     ?ResetCtrl@container_internal@absl@@YAXAAVCommonFields@12@I@Z
-    ?ResetGrowthLeft@container_internal@absl@@YAXAAVCommonFields@12@@Z
     ?ResetToBuiltinUTC@TimeZoneInfo@cctz@time_internal@absl@@AAE_NABV?$duration@_JV?$ratio@$00$00@__Cr@std@@@chrono@__Cr@std@@@Z
     ?ResetToEmpty@InlineRep@Cord@absl@@AAEXXZ
     ?Resize@?$ResizeUninitializedTraits@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@X@strings_internal@absl@@SAXPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@I@Z
-    ?ResizeAllocatedTableWithSeedChange@container_internal@absl@@YAXAAVCommonFields@12@IABUPolicyFunctions@12@@Z
+    ?ResizeAllocatedTableWithSeedChange@container_internal@absl@@YAXAAVCommonFields@12@ABUPolicyFunctions@12@I@Z
     ?ResourceExhaustedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?Restore@FlagState@flags_internal@absl@@EBEXXZ
     ?RestoreState@FlagImpl@flags_internal@absl@@AAE_NABVFlagState@23@@Z

@@ -73,8 +73,10 @@ _PREF_MAPPING_FILE_PATTERN = re.escape(
     str(Path('components') / 'policy' / 'test' / 'data' / 'pref_mapping') +
     r'/') + r'.*\.json'
 
-TEST_FILE_NAME_REGEX = re.compile(r'(.*Test\.java)|(.*_[a-z]*test\.cc)' +
-                                  r'|(' + _PREF_MAPPING_FILE_PATTERN + r')')
+TEST_FILE_NAME_REGEX = re.compile(
+    r'(.*Test\.java)' +
+    r'|(.*_[a-z]*test(?:_win|_mac|_linux|_chromeos|_android)?\.cc)' + r'|(' +
+    _PREF_MAPPING_FILE_PATTERN + r')')
 
 # Some tests don't directly include gtest.h and instead include it via gmock.h
 # or a test_utils.h file, so make sure these cases are captured. Also include

@@ -814,7 +814,8 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
             // `CreateRequestHandler()` to simulate
             // `PrefetchURLLoaderInterceptor::OnGetPrefetchComplete()` behavior,
             // which is the primary non-test `GetPrefetchToServe()` code path.
-            auto request_handler = prefetch_to_serve.CreateRequestHandler();
+            auto request_handler =
+                prefetch_to_serve.CreateRequestHandler().first;
             CHECK(request_handler);
             // Keep-alive the PrefetchRequestHandler, because destructing
             // `request_handler` here can signal that the serving is finished,
@@ -1157,10 +1158,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
 };
 
 class PrefetchServiceTest : public PrefetchServiceTestBase {
- public:
-  void InitScopedFeatureList() override {
-    PrefetchServiceTestBase::InitScopedFeatureList();
-  }
 };
 
 TEST_F(PrefetchServiceTest, SuccessCase) {
@@ -3149,21 +3146,8 @@ TEST_F(PrefetchServiceTest, NonDefaultStoragePartition) {
       /*required_private_prefetch_proxy=*/false);
 }
 
-class PrefetchServiceStreamingURLLoaderTest : public PrefetchServiceTestBase {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchUseContentRefactor,
-          {{"ineligible_decoy_request_probability", "0"},
-           {"prefetch_container_lifetime_s", "-1"},
-           {"use_streaming_url_loader", "true"}}}},
-        {});
-  }
-};
-
 // TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_F(PrefetchServiceStreamingURLLoaderTest,
-       DISABLED_CHROMEOS(StreamingURLLoaderSuccessCase)) {
+TEST_F(PrefetchServiceTest, DISABLED_CHROMEOS(StreamingURLLoaderSuccessCase)) {
   base::HistogramTester histogram_tester;
 
   MakePrefetchService(
@@ -3836,23 +3820,8 @@ TEST_F(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 2, 1);
 }
 
-class PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest
-    : public PrefetchServiceTestBase {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchUseContentRefactor,
-          {{"ineligible_decoy_request_probability", "0"},
-           {"prefetch_container_lifetime_s", "-1"},
-           {"block_until_head_eager_prefetch", "true"},
-           {"block_until_head_moderate_prefetch", "true"},
-           {"block_until_head_conservative_prefetch", "true"}}}},
-        {});
-  }
-};
-
 // TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
+TEST_F(PrefetchServiceTest,
        DISABLED_CHROMEOS(RedirectNetworkContextTransitionBlockUntilHead)) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/referrer"));
@@ -3978,70 +3947,6 @@ TEST_F(PrefetchServiceTest,
       "PrefetchProxy.AfterClick.RedirectChainSize", 0);
 }
 
-class PrefetchServiceNeverBlockUntilHeadTest : public PrefetchServiceTestBase {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kPrefetchUseContentRefactor,
-             {{"ineligible_decoy_request_probability", "0"},
-              {"prefetch_container_lifetime_s", "-1"},
-              {"block_until_head_eager_prefetch", "false"},
-              {"block_until_head_moderate_prefetch", "false"},
-              {"block_until_head_conservative_prefetch", "false"}}},
-        },
-        {});
-  }
-};
-
-// TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_F(PrefetchServiceNeverBlockUntilHeadTest,
-       DISABLED_CHROMEOS(HeadNotReceived)) {
-  base::HistogramTester histogram_tester;
-
-  MakePrefetchService(
-      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
-
-  MakePrefetchOnMainFrame(
-      GURL("https://example.com"),
-      PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                   /*use_prefetch_proxy=*/true,
-                   blink::mojom::SpeculationEagerness::kEager));
-  task_environment()->RunUntilIdle();
-
-  VerifyCommonRequestState(GURL("https://example.com"),
-                           {.use_prefetch_proxy = true});
-
-  // Navigate to the URL before the head of the prefetch response is received.
-  NavigateInitiatedByRenderer(GURL("https://example.com"));
-
-  // Since PrefetchService cannot block until headers for this prefetch, it
-  // should immediately return null.
-  EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
-
-  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.RespCode",
-                                    0);
-  histogram_tester.ExpectTotalCount("PrefetchProxy.Prefetch.Mainframe.NetError",
-                                    0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.Prefetch.Mainframe.BodyLength", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.Prefetch.Mainframe.TotalTime", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
-
-  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
-      PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
-  EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
-  EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
-  EXPECT_EQ(referring_page_metrics->prefetch_successful_count, 0);
-
-  ExpectCorrectUkmLogs(
-      {.outcome = PreloadingTriggeringOutcome::kRunning, .is_accurate = true});
-
-  ExpectServingMetrics(PrefetchStatus::kPrefetchNotFinishedInTime);
-}
-
 class PrefetchServiceAlwaysBlockUntilHeadTest
     : public PrefetchServiceTestBase,
       public ::testing::WithParamInterface<blink::mojom::SpeculationEagerness> {
@@ -4055,9 +3960,6 @@ class PrefetchServiceAlwaysBlockUntilHeadTest
               {"ineligible_decoy_request_probability", "0"},
               {"prefetch_container_lifetime_s", "-1"},
               {"prefetch_timeout_ms", "10000"},
-              {"block_until_head_eager_prefetch", "true"},
-              {"block_until_head_moderate_prefetch", "true"},
-              {"block_until_head_conservative_prefetch", "true"},
               // Initialize timeouts > 0ms for testing purposes.
               {"block_until_head_timeout_eager_prefetch", "1000"},
               {"block_until_head_timeout_moderate_prefetch", "1000"},
@@ -5211,35 +5113,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(blink::mojom::SpeculationEagerness::kModerate,
                     blink::mojom::SpeculationEagerness::kConservative));
 
-class PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest
-    : public PrefetchServiceTestBase,
-      public ::testing::WithParamInterface<blink::mojom::SpeculationEagerness> {
- public:
-  void InitScopedFeatureList() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kPrefetchUseContentRefactor,
-          {
-              {"ineligible_decoy_request_probability", "0"},
-              {"prefetch_container_lifetime_s", "-1"},
-              {"prefetch_timeout_ms", "10000"},
-              {"block_until_head_eager_prefetch", "true"},
-              {"block_until_head_moderate_prefetch", "true"},
-              {"block_until_head_conservative_prefetch", "true"},
-              {"block_until_head_timeout_eager_prefetch", "1000"},
-              {"block_until_head_timeout_moderate_prefetch", "1000"},
-              {"block_until_head_timeout_conservative_prefetch", "1000"},
-          }}},
-        {});
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ParametrizedTests,
-    PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
-    testing::Values(blink::mojom::SpeculationEagerness::kModerate,
-                    blink::mojom::SpeculationEagerness::kConservative));
-
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(BlockUntilHeadTimedout)) {
   base::HistogramTester histogram_tester;
 
@@ -5311,7 +5185,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
       true, 1);
 }
 
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(HeadReceivedBeforeTimeout)) {
   base::HistogramTester histogram_tester;
 
@@ -5384,7 +5258,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
 }
 
 // TODO(crbug.com/40249481): Test flaky on trybots.
-TEST_P(PrefetchServiceAlwaysBlockUntilHeadWithTimeoutTest,
+TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
        DISABLED_CHROMEOS(MultipleGetPrefetchToServe)) {
   base::HistogramTester histogram_tester;
 

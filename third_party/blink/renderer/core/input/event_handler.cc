@@ -1016,13 +1016,6 @@ WebInputEventResult EventHandler::HandleMouseMoveEvent(
   if (!page)
     return result;
 
-  if (PaintLayer* layer =
-          event_handling_util::LayerForNode(hovered_node_result.InnerNode())) {
-    if (ScrollableArea* layer_scrollable_area =
-            event_handling_util::AssociatedScrollableArea(layer))
-      layer_scrollable_area->MouseMovedInContentArea();
-  }
-
   // Should not convert the hit shadow element to its shadow host, so that
   // tooltips in the shadow tree appear correctly.
   if (!HasTitleAndNotSVGUseElement(hovered_node_result)) {

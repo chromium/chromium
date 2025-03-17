@@ -15,15 +15,16 @@ import type {Origin} from '//resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {BrowserProxy} from '../browser_proxy.js';
-import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
+import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
+import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
-import type {DraggableArea, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
-import {CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, DraggableArea, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
+import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
+import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
 import {ErrorWithReasonImpl, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -195,6 +196,7 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           patch: chromeVersion[3] || 0,
         },
         scrollToEnabled: loadTimeData.getBoolean('enableScrollTo'),
+        actInFocusedTabEnabled: loadTimeData.getBoolean('enableActInFocusedTab'),
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
       }),
     };
@@ -264,98 +266,45 @@ class HostMessageHandler implements HostMessageHandlerInterface {
       Promise<{tabContextResult: TabContextResultPrivate}> {
     const {
       result: {errorReason, tabContext},
-    } = await this.handler.getContextFromFocusedTab({
-      includeInnerText: request.options.innerText ?? false,
-      innerTextBytesLimit:
-          request.options.innerTextBytesLimit ?? DEFAULT_INNER_TEXT_BYTES_LIMIT,
-      includeViewportScreenshot: request.options.viewportScreenshot ?? false,
-      includePdf: request.options.pdfData ?? false,
-      includeAnnotatedPageContent:
-          request.options.annotatedPageContent ?? false,
-      pdfSizeLimit: request.options.pdfSizeLimit === undefined ?
-          DEFAULT_PDF_SIZE_LIMIT :
-          Math.min(Number.MAX_SAFE_INTEGER, request.options.pdfSizeLimit),
-    });
+    } =
+        await this.handler.getContextFromFocusedTab(
+            tabContextOptionsFromClient(request.options));
     if (!tabContext) {
       throw new ErrorWithReasonImpl(
           'tabContext',
           (errorReason as GetTabContextErrorReason | undefined) ??
               GetTabContextErrorReason.UNKNOWN);
     }
-    const tabData = tabContext.tabData;
-    let favicon: RgbaImage|undefined = undefined;
-    if (tabData.favicon) {
-      favicon = bitmapN32ToRGBAImage(tabData.favicon);
-      if (favicon) {
-        extras.addTransfer(favicon.dataRGBA);
-      }
-    }
-
-    const tabDataResult: TabDataPrivate = {
-      tabId: tabIdToClient(tabData.tabId),
-      windowId: windowIdToClient(tabData.windowId),
-      url: urlToClient(tabData.url),
-      title: optionalToClient(tabData.title),
-      favicon,
-    };
-    const webPageData = tabContext.webPageData;
-    let webPageDataResult: WebPageData|undefined = undefined;
-    if (webPageData) {
-      webPageDataResult = {
-        mainDocument: {
-          origin: originToClient(webPageData.mainDocument.origin),
-          innerText: webPageData.mainDocument.innerText,
-          innerTextTruncated: webPageData.mainDocument.innerTextTruncated,
-        },
-      };
-    }
-    const viewportScreenshot = tabContext.viewportScreenshot;
-    let viewportScreenshotResult: Screenshot|undefined = undefined;
-    if (viewportScreenshot) {
-      const screenshotArray = new Uint8Array(viewportScreenshot.data);
-      viewportScreenshotResult = {
-        widthPixels: viewportScreenshot.widthPixels,
-        heightPixels: viewportScreenshot.heightPixels,
-        data: screenshotArray.buffer,
-        mimeType: viewportScreenshot.mimeType,
-        originAnnotations: {},
-      };
-      extras.addTransfer(screenshotArray.buffer);
-    }
-    let pdfDocumentData: PdfDocumentDataPrivate|undefined = undefined;
-    if (tabContext.pdfDocumentData) {
-      const pdfData = tabContext.pdfDocumentData.pdfData ?
-          new Uint8Array(tabContext.pdfDocumentData.pdfData).buffer :
-          undefined;
-      if (pdfData) {
-        extras.addTransfer(pdfData);
-      }
-      pdfDocumentData = {
-        origin: originToClient(tabContext.pdfDocumentData.origin),
-        pdfSizeLimitExceeded: tabContext.pdfDocumentData.sizeLimitExceeded,
-        pdfData,
-      };
-    }
-    let annotatedPageData: AnnotatedPageDataPrivate|undefined = undefined;
-    if (tabContext.annotatedPageData) {
-      const annotatedPageContent =
-          tabContext.annotatedPageData.annotatedPageContent ?
-          getArrayBufferFromBigBuffer(
-              tabContext.annotatedPageData.annotatedPageContent.smuggled) :
-          undefined;
-      if (annotatedPageContent) {
-        extras.addTransfer(annotatedPageContent);
-      }
-      annotatedPageData = {annotatedPageContent};
-    }
+    const tabContextResult = tabContextToClient(tabContext, extras);
 
     return {
-      tabContextResult: {
-        tabData: tabDataResult,
-        webPageData: webPageDataResult,
-        viewportScreenshot: viewportScreenshotResult,
-        pdfDocumentData,
-        annotatedPageData,
+      tabContextResult: tabContextResult,
+    };
+  }
+
+  async glicBrowserActInFocusedTab(
+      request: {actInFocusedTabParams: ActInFocusedTabParams},
+      extras: ResponseExtras):
+      Promise<{actInFocusedTabResult: ActInFocusedTabResultPrivate}> {
+    const {
+      result: {errorReason, actInFocusedTabResponse},
+    } =
+        await this.handler.actInFocusedTab(
+          byteArrayFromClient(request.actInFocusedTabParams.actionProto),
+            tabContextOptionsFromClient(
+                request.actInFocusedTabParams.tabContextOptions));
+    if (!actInFocusedTabResponse) {
+      throw new ErrorWithReasonImpl(
+          'actInFocusedTab',
+          (errorReason as ActInFocusedTabErrorReason | undefined) ??
+              ActInFocusedTabErrorReason.UNKNOWN);
+    }
+
+    const tabContextResult =
+        tabContextToClient(actInFocusedTabResponse.tabContext, extras);
+    return {
+      actInFocusedTabResult: {
+        tabContextResult: tabContextResult,
       },
     };
   }
@@ -395,6 +344,12 @@ class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserSetWindowDraggableAreas(request: {areas: DraggableArea[]}) {
     return this.handler.setPanelDraggableAreas(request.areas);
+  }
+
+  glicBrowserSetMinimumWidgetSize(request: {
+    size: {width: number, height: number},
+  }) {
+    return this.handler.setMinimumPanelSize(request.size);
   }
 
   glicBrowserSetMicrophonePermissionState(request: {enabled: boolean}) {
@@ -499,6 +454,18 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }) {
     return this.handler.setSyntheticExperimentState(
         request.trialName, request.groupName);
+  }
+
+  glicBrowserOpenOsPermissionSettingsMenu(request: {permission: string}) {
+    switch (request.permission) {
+      case 'media':
+        return this.handler.openOsPermissionSettingsMenu(
+            ContentSettingsType.MEDIASTREAM_MIC);
+      case 'geolocation':
+        return this.handler.openOsPermissionSettingsMenu(
+            ContentSettingsType.GEOLOCATION);
+    }
+    return Promise.resolve();
   }
 }
 
@@ -688,6 +655,15 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   async openLinkInNewTab(url: string) {
     await this.handler.createTab(urlFromClient(url), false, null);
+  }
+
+  async shouldAllowMediaPermissionRequest(): Promise<boolean> {
+    return (await this.handler.shouldAllowMediaPermissionRequest()).isAllowed;
+  }
+
+  async shouldAllowGeolocationPermissionRequest(): Promise<boolean> {
+    return (await this.handler.shouldAllowGeolocationPermissionRequest())
+        .isAllowed;
   }
 
   // PostMessageRequestHandler implementation.
@@ -934,4 +910,103 @@ function timeDeltaFromClient(durationMs: number = 0): TimeDelta {
     throw new Error('Invalid duration value: ' + durationMs);
   }
   return {microseconds: BigInt(Math.floor(durationMs * 1000))};
+}
+
+function tabContextToClient(
+    tabContext: TabContextMojo,
+    extras: ResponseExtras): TabContextResultPrivate {
+  const tabData = tabContext.tabData;
+  let favicon: RgbaImage|undefined = undefined;
+  if (tabData.favicon) {
+    favicon = bitmapN32ToRGBAImage(tabData.favicon);
+    if (favicon) {
+      extras.addTransfer(favicon.dataRGBA);
+    }
+  }
+
+  const tabDataResult: TabDataPrivate = {
+    tabId: tabIdToClient(tabData.tabId),
+    windowId: windowIdToClient(tabData.windowId),
+    url: urlToClient(tabData.url),
+    title: optionalToClient(tabData.title),
+    favicon,
+  };
+  const webPageData = tabContext.webPageData;
+  let webPageDataResult: WebPageData|undefined = undefined;
+  if (webPageData) {
+    webPageDataResult = {
+      mainDocument: {
+        origin: originToClient(webPageData.mainDocument.origin),
+        innerText: webPageData.mainDocument.innerText,
+        innerTextTruncated: webPageData.mainDocument.innerTextTruncated,
+      },
+    };
+  }
+  const viewportScreenshot = tabContext.viewportScreenshot;
+  let viewportScreenshotResult: Screenshot|undefined = undefined;
+  if (viewportScreenshot) {
+    const screenshotArray = new Uint8Array(viewportScreenshot.data);
+    viewportScreenshotResult = {
+      widthPixels: viewportScreenshot.widthPixels,
+      heightPixels: viewportScreenshot.heightPixels,
+      data: screenshotArray.buffer,
+      mimeType: viewportScreenshot.mimeType,
+      originAnnotations: {},
+    };
+    extras.addTransfer(screenshotArray.buffer);
+  }
+  let pdfDocumentData: PdfDocumentDataPrivate|undefined = undefined;
+  if (tabContext.pdfDocumentData) {
+    const pdfData = tabContext.pdfDocumentData.pdfData ?
+        new Uint8Array(tabContext.pdfDocumentData.pdfData).buffer :
+        undefined;
+    if (pdfData) {
+      extras.addTransfer(pdfData);
+    }
+    pdfDocumentData = {
+      origin: originToClient(tabContext.pdfDocumentData.origin),
+      pdfSizeLimitExceeded: tabContext.pdfDocumentData.sizeLimitExceeded,
+      pdfData,
+    };
+  }
+  let annotatedPageData: AnnotatedPageDataPrivate|undefined = undefined;
+  if (tabContext.annotatedPageData) {
+    const annotatedPageContent =
+        tabContext.annotatedPageData.annotatedPageContent ?
+        getArrayBufferFromBigBuffer(
+            tabContext.annotatedPageData.annotatedPageContent.smuggled) :
+        undefined;
+    if (annotatedPageContent) {
+      extras.addTransfer(annotatedPageContent);
+    }
+    annotatedPageData = {annotatedPageContent};
+  }
+
+  return {
+    tabData: tabDataResult,
+    webPageData: webPageDataResult,
+    viewportScreenshot: viewportScreenshotResult,
+    pdfDocumentData,
+    annotatedPageData,
+  };
+}
+
+function tabContextOptionsFromClient(options: TabContextOptions):
+    TabContextOptionsMojo {
+  return {
+    includeInnerText: options.innerText ?? false,
+    innerTextBytesLimit:
+        options.innerTextBytesLimit ?? DEFAULT_INNER_TEXT_BYTES_LIMIT,
+    includeViewportScreenshot: options.viewportScreenshot ?? false,
+    includePdf: options.pdfData ?? false,
+    includeAnnotatedPageContent: options.annotatedPageContent ?? false,
+    pdfSizeLimit: options.pdfSizeLimit === undefined ?
+        DEFAULT_PDF_SIZE_LIMIT :
+        Math.min(Number.MAX_SAFE_INTEGER, options.pdfSizeLimit),
+  };
+}
+
+function byteArrayFromClient(buffer: ArrayBuffer): number[] {
+  const byteArray = new Uint8Array(buffer);
+  return Array.from(byteArray);
 }

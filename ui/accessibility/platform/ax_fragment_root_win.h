@@ -6,7 +6,9 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 
@@ -56,6 +58,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
   // If a child node is available, return its delegate.
   AXPlatformNodeDelegate* GetChildNodeDelegate() const;
 
+  void OnEventListenerAdded(int event_id, base::span<const int> property_ids);
+  void OnEventListenerRemoved(int event_id, base::span<const int> property_ids);
+
+  bool HasEventListenerForEvent(int event_id);
+  bool HasEventListenerForProperty(int property_id);
+
  private:
   // AXPlatformNodeDelegate overrides.
   gfx::NativeViewAccessible GetParent() const override;
@@ -83,6 +91,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
   const raw_ptr<AXFragmentRootDelegateWin> delegate_;
   const AXUniqueId unique_id_{AXUniqueId::Create()};
   AXPlatformNode::Pointer platform_node_;
+
+  // Track the listeners count for each event and property ID in maps, so that
+  // we can retrieve it quickly to decide whether to raise a UIA event.
+  absl::flat_hash_map<int, int> event_listener_count_;
+  absl::flat_hash_map<int, int> property_listener_count_;
 };
 
 }  // namespace ui

@@ -71,7 +71,7 @@ void WebUIBundledCodeCacheFetcher::Start() {
     return;
   }
 
-  base::RefCountedMemory* buffer_data =
+  scoped_refptr<base::RefCountedMemory> buffer_data =
       Platform::Current()->GetDataResourceBytes(resource_id_);
   host_task_runner_->PostTask(
       FROM_HERE,

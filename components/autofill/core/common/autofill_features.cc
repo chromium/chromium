@@ -51,6 +51,12 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, no GeoIp requirements are imposed for AutfillAi. Intended for
+// Dogfood and testing only.
+BASE_FEATURE(kAutofillAiIgnoreGeoIp,
+             "AutofillAiIgnoreGeoIp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the client may trigger the server model for AutofillAI type
 // predictions.
 BASE_FEATURE(kAutofillAiServerModel,
@@ -262,7 +268,7 @@ BASE_FEATURE(kAutofillOptimizeFormExtraction,
 // TODO: crbug.com/40227496 - Clean up when launched.
 BASE_FEATURE(kAutofillFixValueSemantics,
              "AutofillFixValueSemantics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, AutofillField::value(kInitial) for <select> fields returns the
 // initial values. Otherwise, it is identical to AutofillField::value(kCurrent).
@@ -270,7 +276,7 @@ BASE_FEATURE(kAutofillFixValueSemantics,
 // TODO: crbug.com/40227496 - Clean up when launched.
 BASE_FEATURE(kAutofillFixInitialValueOfSelect,
              "AutofillFixInitialValueOfSelect",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, AutofillField::value(kCurrent) is not reset for form import.
 // Otherwise, AutofillField::value(kCurrent) is reset to the empty string for
@@ -281,7 +287,7 @@ BASE_FEATURE(kAutofillFixInitialValueOfSelect,
 // TODO: crbug.com/40227496 - Clean up when launched.
 BASE_FEATURE(kAutofillFixCurrentValueInImport,
              "AutofillFixCurrentValueInImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, focusing on a credit card number field that was traditionally
 // autofilled will yield all credit card suggestions.

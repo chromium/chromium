@@ -25,7 +25,8 @@ class TestTabModel : public TabModel {
                  bool select) override;
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
-  content::WebContents* CreateNewTabForDevTools(const GURL& url) override;
+  content::WebContents* CreateNewTabForDevTools(const GURL& url,
+                                                bool new_window) override;
   bool IsSessionRestoreInProgress() const override;
 
   bool IsActiveModel() const override;

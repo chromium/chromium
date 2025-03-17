@@ -761,6 +761,30 @@ void FedCmMetrics::RecordMultipleRequestsFromDifferentIdPs(
                             from_different_idps);
 }
 
+void FedCmMetrics::RecordRpUrlHasPath(bool rp_url_has_path) {
+  DCHECK_GT(session_id_, 0);
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetRpUrlHasPath(rp_url_has_path);
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+}
+
+void FedCmMetrics::RecordAccountSelectionScrollPosition(
+    const gfx::Point& scroll_position) {
+  DCHECK_GT(session_id_, 0);
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetAccountSelectionScrollPosition(ukm::GetExponentialBucketMin(
+        scroll_position.y(), /*bucket_spacing=*/1.15));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+}
+
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
   auto it = provider_source_ids_.find(provider);
   if (it != provider_source_ids_.end()) {

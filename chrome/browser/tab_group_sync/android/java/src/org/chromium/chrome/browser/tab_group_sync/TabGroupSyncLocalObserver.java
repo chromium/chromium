@@ -248,7 +248,8 @@ public final class TabGroupSyncLocalObserver {
                                 Locale.getDefault(),
                                 "movedTab positionInGroup %d out of %d",
                                 positionInGroup,
-                                mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)));
+                                mTabGroupModelFilter.getTabCountForGroup(
+                                        movedTab.getTabGroupId())));
                 mRemoteTabGroupMutationHelper.moveTab(
                         tabGroupId, movedTab.getId(), positionInGroup);
             }

@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/manifest_check_level.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -40,9 +39,13 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+namespace content {
+class BrowserContext;
+}
+
 namespace extensions {
 class CrxInstallError;
-class ExtensionService;
+class ExtensionRegistrar;
 class ExtensionUpdaterTest;
 struct InstallApproval;
 enum class InstallationStage;
@@ -98,20 +101,21 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   CrxInstaller(const CrxInstaller&) = delete;
   CrxInstaller& operator=(const CrxInstaller&) = delete;
 
-  // Extensions will be installed into service->install_directory(), then
-  // registered with |service|. This does a silent install - see below for
-  // other options.
-  static scoped_refptr<CrxInstaller> CreateSilent(ExtensionService* service);
+  // Extensions will be installed into the default install directory, then
+  // registered with the extensions system. This does a silent install - see
+  // below for other options.
+  static scoped_refptr<CrxInstaller> CreateSilent(
+      content::BrowserContext* context);
 
   // Same as above, but use |client| to generate a confirmation prompt.
   static scoped_refptr<CrxInstaller> Create(
-      ExtensionService* service,
+      content::BrowserContext* context,
       std::unique_ptr<ExtensionInstallPrompt> client);
 
   // Same as the previous method, except use the |approval| to bypass the
   // prompt. Note that the caller retains ownership of |approval|.
   static scoped_refptr<CrxInstaller> Create(
-      ExtensionService* service,
+      content::BrowserContext* context,
       std::unique_ptr<ExtensionInstallPrompt> client,
       const InstallApproval* approval);
 
@@ -275,7 +279,7 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   friend class FakeCrxInstaller;
   friend class MockCrxInstaller;
 
-  CrxInstaller(ExtensionService* service,
+  CrxInstaller(content::BrowserContext* context,
                std::unique_ptr<ExtensionInstallPrompt> client,
                const InstallApproval* approval);
   ~CrxInstaller() override;
@@ -386,6 +390,14 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // Called when the browser is terminating.
   void OnBrowserTerminating();
 
+  // Get the effective update URL for the extension. Normally this URL comes
+  // from the extension manifest, but may be overridden by policies.
+  GURL GetEffectiveUpdateURL(const Extension& extension);
+
+  // Returns true if this extension's update URL is from webstore, including any
+  // policy overrides.
+  bool UpdatesFromWebstore(const Extension& extension);
+
   // The Profile the extension is being installed in.
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
@@ -478,9 +490,6 @@ class CrxInstaller : public SandboxedUnpackerClient, public ProfileObserver {
   // The temp directory extension resources were unpacked to. We own this and
   // must delete it when we are done with it.
   base::FilePath temp_dir_;
-
-  // The frontend we will report results back to.
-  raw_ptr<ExtensionService> service_ = nullptr;
 
   // The client we will work with to do the installation. This can be NULL, in
   // which case the install is silent.

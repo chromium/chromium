@@ -4,7 +4,7 @@
 
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 
 namespace extensions {
@@ -13,10 +13,10 @@ namespace {
 
 using ContextType = extensions::browser_test_util::ContextType;
 
-class ExtensionModuleApiTest : public ExtensionPlatformApiTest,
+class ExtensionModuleApiTest : public ExtensionApiTest,
                                public testing::WithParamInterface<ContextType> {
  public:
-  ExtensionModuleApiTest() : ExtensionPlatformApiTest(GetParam()) {}
+  ExtensionModuleApiTest() : ExtensionApiTest(GetParam()) {}
   ~ExtensionModuleApiTest() override = default;
   ExtensionModuleApiTest(const ExtensionModuleApiTest&) = delete;
   ExtensionModuleApiTest& operator=(const ExtensionModuleApiTest&) = delete;

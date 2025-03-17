@@ -4,8 +4,13 @@
 
 #import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_view_controller.h"
 
+#import "base/notreached.h"
+#import "ios/chrome/browser/reminder_notifications/ui/constants.h"
+#import "ios/chrome/browser/reminder_notifications/ui/reminder_notifications_date_picker_table_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -29,7 +34,15 @@ NSString* const kBellIconAccessibilityLabel =
 
 }  // namespace
 
-@implementation ReminderNotificationsViewController
+@interface ReminderNotificationsViewController () <
+    UIAdaptivePresentationControllerDelegate,
+    UIPopoverPresentationControllerDelegate>
+@end
+
+@implementation ReminderNotificationsViewController {
+  UIViewController* _presentingPickerViewController;
+  ReminderNotificationsDatePickerTableView* _tableView;
+}
 
 #pragma mark - UIViewController
 
@@ -39,6 +52,11 @@ NSString* const kBellIconAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_REMINDER_NOTIFICATIONS_SHEET_TITLE);
   self.subtitleString =
       l10n_util::GetNSString(IDS_IOS_REMINDER_NOTIFICATIONS_DESCRIPTION);
+
+  // Set up date/time picker.
+  _tableView = [[ReminderNotificationsDatePickerTableView alloc]
+      initWithInteractionHandler:self];
+  self.underTitleView = _tableView;
 
   // Set up action buttons.
   self.primaryActionString = l10n_util::GetNSString(
@@ -60,16 +78,168 @@ NSString* const kBellIconAccessibilityLabel =
   self.imageHasFixedSize = YES;
   self.imageEnclosedWithShadowWithoutBadge = YES;
   self.customFaviconSideLength = kCustomFaviconSideLength;
+  self.alwaysShowImage = YES;
 
   // Configure layout preferences.
   self.showDismissBarButton = NO;
   self.topAlignedLayout = YES;
 
-  // Since this is a half-sheet with minimal content, disable scrolling.
-  self.scrollEnabled = NO;
-  self.showsVerticalScrollIndicator = NO;
-
   [super viewDidLoad];
+
+  [self.underTitleView.widthAnchor
+      constraintEqualToAnchor:self.primaryActionButton.widthAnchor]
+      .active = YES;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+// Ensures the picker is always displayed in popover overlay, instead of falling
+// back to a form sheet.
+- (UIModalPresentationStyle)
+    adaptivePresentationStyleForPresentationController:
+        (UIPresentationController*)controller
+                                       traitCollection:
+                                           (UITraitCollection*)traitCollection {
+  return UIModalPresentationNone;
+}
+
+#pragma mark - UIPopoverPresentationControllerDelegate
+
+- (void)popoverPresentationController:
+            (UIPopoverPresentationController*)popoverPresentationController
+          willRepositionPopoverToRect:(inout CGRect*)rect
+                               inView:(inout UIView**)view {
+  // On devices with limited vertical space (compact height), position the
+  // popover to the right of the row.
+  popoverPresentationController.permittedArrowDirections =
+      !IsCompactHeight(self.traitCollection) ? UIPopoverArrowDirectionDown
+                                             : UIPopoverArrowDirectionLeft;
+
+  // Popover moved to a different location, there might be more space available
+  // now so a new layout pass is needed.
+  [self.view setNeedsLayout];
+}
+
+- (void)popoverPresentationControllerDidDismissPopover:
+    (UIPopoverPresentationController*)popoverPresentationController {
+  _presentingPickerViewController = nil;
+}
+
+#pragma mark - ReminderNotificationsDatePickerInteractionHandler
+
+// Presents a date/time picker as a popover from the specified view.
+// Configures picker appearance and behavior based on mode (date or time)
+// with appropriate visual styling and blur effect background.
+- (void)showDatePickerFromOriginView:(UIView*)view
+                  withDatePickerMode:(UIDatePickerMode)mode {
+  if (_presentingPickerViewController) {
+    return;
+  }
+
+  // Create and configure the date picker
+  UIDatePicker* datePicker = [[UIDatePicker alloc] init];
+  datePicker.datePickerMode = mode;
+  datePicker.minimumDate = [NSDate date];
+  // TODO(crbug.com/401882233): Control the initial date/time for the tab
+  // reminder via Finch parameters, starting with 24hr from now.
+  datePicker.date = _tableView.date;
+
+  [datePicker addTarget:self
+                 action:@selector(datePickerValueChanged:)
+       forControlEvents:UIControlEventValueChanged];
+
+  // Set the preferred style based on the mode
+  switch (mode) {
+    case UIDatePickerModeDate:
+      datePicker.preferredDatePickerStyle = UIDatePickerStyleInline;
+      break;
+    case UIDatePickerModeTime:
+      datePicker.preferredDatePickerStyle = UIDatePickerStyleWheels;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  // Create a view controller to contain the date picker
+  CHECK(_presentingPickerViewController == nil);
+  _presentingPickerViewController = [[UIViewController alloc] init];
+
+  // Create blur effect
+  UIBlurEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterial];
+  UIVisualEffectView* blurEffectView =
+      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  blurEffectView.frame = CGRectZero;
+  blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // Add blur view to the view controller's view
+  [_presentingPickerViewController.view addSubview:blurEffectView];
+  AddSameConstraints(blurEffectView, _presentingPickerViewController.view);
+
+  // Add the date picker to the blur effect view's content view
+  [blurEffectView.contentView addSubview:datePicker];
+  datePicker.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraintsWithInset(datePicker, blurEffectView.contentView,
+                              kReminderNotificationsDatePickerPadding);
+
+  // Set appropriate size for the popover based on picker mode
+  CGFloat height;
+  switch (mode) {
+    case UIDatePickerModeDate:
+      height = kReminderNotificationsDatePickerHeightDate;
+      break;
+    case UIDatePickerModeTime:
+      height = kReminderNotificationsDatePickerHeightTime;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  _presentingPickerViewController.preferredContentSize =
+      CGSizeMake(kReminderNotificationsDatePickerWidth, height);
+
+  // Configure as a popover
+  _presentingPickerViewController.modalPresentationStyle =
+      UIModalPresentationPopover;
+
+  // Create a presentation controller delegate to prevent adaptive presentation
+  _presentingPickerViewController.presentationController.delegate = self;
+
+  // Configure the popover position
+  UIPopoverPresentationController* popoverController =
+      _presentingPickerViewController.popoverPresentationController;
+  popoverController.delegate = self;
+  popoverController.canOverlapSourceViewRect = YES;
+  popoverController.permittedArrowDirections =
+      !IsCompactHeight(self.traitCollection) ? UIPopoverArrowDirectionDown
+                                             : UIPopoverArrowDirectionLeft;
+
+  // Use nil for default transparent background to let blur effect show through
+  popoverController.backgroundColor = nil;
+  popoverController.sourceView = view;
+
+  // Present the popover
+  [self presentViewController:_presentingPickerViewController
+                     animated:YES
+                   completion:nil];
+}
+
+#pragma mark - Private
+
+- (void)datePickerValueChanged:(UIDatePicker*)picker {
+  _tableView.date = picker.date;
+
+  [_tableView reloadData];
+
+  // Automatically dismisses the date picker (but not time picker) because date
+  // selection has natural UX friction against accidental taps, while time
+  // picker requires wheel scrolling where auto-dismissal would disrupt the
+  // selection experience.
+  if (picker.datePickerMode == UIDatePickerModeDate) {
+    [_presentingPickerViewController dismissViewControllerAnimated:YES
+                                                        completion:nil];
+    _presentingPickerViewController = nil;
+  }
 }
 
 @end

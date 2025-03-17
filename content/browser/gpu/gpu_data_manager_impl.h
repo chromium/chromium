@@ -86,6 +86,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void RemoveObserver(GpuDataManagerObserver* observer) override;
   void DisableHardwareAcceleration() override;
   bool HardwareAccelerationEnabled() override;
+  bool IsGpuRasterizationForUIEnabled() override;
   void AppendGpuCommandLine(base::CommandLine* command_line,
                             GpuProcessKind kind) override;
   void BlocklistWebGLForTesting() override;

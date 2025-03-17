@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
@@ -191,22 +192,30 @@ TEST_F(ManageSyncSettingsMediatorTest,
   NSArray* items = [mediator_.consumer.tableViewModel
       itemsInSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
+  ASSERT_GE([items count], 2u);
   EXPECT_EQ(ManageGoogleAccountItemType,
             base::apple::ObjCCastStrict<TableViewItem>(items[0]).type);
   EXPECT_EQ(ManageAccountsItemType,
             base::apple::ObjCCastStrict<TableViewItem>(items[1]).type);
-  EXPECT_EQ(SignOutItemType,
-            base::apple::ObjCCastStrict<TableViewItem>(items[2]).type);
-
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM),
               base::apple::ObjCCastStrict<TableViewTextItem>(items[0]).text);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM),
               base::apple::ObjCCastStrict<TableViewTextItem>(items[1]).text);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM),
-      base::apple::ObjCCastStrict<TableViewTextItem>(items[2]).text);
+
+  // The "Sign out" item only exists in this section if
+  // kSeparateProfilesForManagedAccounts is disabled.
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    ASSERT_EQ([items count], 3u);
+    EXPECT_EQ(SignOutItemType,
+              base::apple::ObjCCastStrict<TableViewItem>(items[2]).type);
+    EXPECT_NSEQ(
+        l10n_util::GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM),
+        base::apple::ObjCCastStrict<TableViewTextItem>(items[2]).text);
+  } else {
+    ASSERT_EQ([items count], 2u);
+  }
 }
 
 // Tests that Sync errors display as a text button at the top of the page for a
@@ -256,7 +265,10 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
       hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
                                          ManageAndSignOutSectionIdentifier]);
   // Verify the number of section shown in the kSignedIn state.
-  ASSERT_EQ(3, [mediator_.consumer.tableViewModel numberOfSections]);
+  const int expected_num_sections =
+      AreSeparateProfilesForManagedAccountsEnabled() ? 4 : 3;
+  ASSERT_EQ(expected_num_sections,
+            [mediator_.consumer.tableViewModel numberOfSections]);
 
   // Set sign out expectation with empty account info.
   ON_CALL(*sync_service_mock_, GetAccountInfo())
@@ -272,7 +284,8 @@ TEST_F(ManageSyncSettingsMediatorTest, TestAccountStateTransitionOnSignOut) {
 
   // Expected sections from the previous kSignedIn state should be showing and
   // no new sections are added in the kSignedOut state.
-  EXPECT_EQ(3, [mediator_.consumer.tableViewModel numberOfSections]);
+  EXPECT_EQ(expected_num_sections,
+            [mediator_.consumer.tableViewModel numberOfSections]);
 }
 
 // Test that the GoogleActivityControlsItem is visible when the

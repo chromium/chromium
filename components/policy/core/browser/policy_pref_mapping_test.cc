@@ -250,11 +250,12 @@ class PolicyPrefMappingTest {
 class SimplePolicyPrefMappingTest {
  public:
   SimplePolicyPrefMappingTest(const std::string& policy_name,
-                              const base::Value::Dict& test) {
+                              const base::Value::Dict& test,
+                              const bool is_os_supported) {
     const std::string* pref_name = test.FindString("pref_name");
     if (!pref_name) {
       ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'pref_name'";
+                    << " is missing a 'pref_name'";
       return;
     }
 
@@ -262,32 +263,51 @@ class SimplePolicyPrefMappingTest {
     const base::Value::Dict* policy_settings = test.FindDict("policy_settings");
 
     const base::Value* default_value = test.Find("default_value");
-    if (!default_value) {
-      ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'default_value'";
+    const base::Value* default_for_enterprise_users = nullptr;
+#if BUILDFLAG(IS_CHROMEOS)
+    default_for_enterprise_users = test.Find("default_for_enterprise_users");
+    if (!default_value && !default_for_enterprise_users) {
+      ADD_FAILURE()
+          << "Simple test for " << policy_name
+          << " is missing a 'default_value' (or alternatively a "
+             "'default_for_enterprise_users' if the policy defines one)";
       return;
     }
+#else   // BUILDFLAG(IS_CHROMEOS)
+    if (!default_value && is_os_supported) {
+      ADD_FAILURE() << "Simple test for " << policy_name
+                    << " is missing a 'default_value'";
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     const base::Value::List* values_to_test = test.FindList("values_to_test");
     if (!values_to_test || values_to_test->empty()) {
       ADD_FAILURE() << "Simple test for " << policy_name
-                    << "is missing a 'values_to_test' or is empty";
+                    << " is missing a 'values_to_test' or is empty";
       return;
     }
 
     // Build test case for default value.
-    base::Value::Dict default_value_test_dict;
-    base::Value::Dict default_value_prefs_dict;
-    base::Value::Dict default_value_pref_dict;
-    default_value_pref_dict.Set("default_value", default_value->Clone());
-    if (location) {
-      default_value_pref_dict.Set("location", *location);
+    if (default_value || default_for_enterprise_users) {
+      base::Value::Dict default_value_test_dict;
+      base::Value::Dict default_value_prefs_dict;
+      base::Value::Dict default_value_pref_dict;
+      if (default_for_enterprise_users) {
+        default_value_pref_dict.Set("value",
+                                    default_for_enterprise_users->Clone());
+      } else {
+        default_value_pref_dict.Set("default_value", default_value->Clone());
+      }
+      if (location) {
+        default_value_pref_dict.Set("location", *location);
+      }
+      default_value_prefs_dict.Set(*pref_name,
+                                   std::move(default_value_pref_dict));
+      default_value_test_dict.Set("prefs", std::move(default_value_prefs_dict));
+      policy_pref_mapping_test_dicts_.push_back(
+          std::move(default_value_test_dict));
     }
-    default_value_prefs_dict.Set(*pref_name,
-                                 std::move(default_value_pref_dict));
-    default_value_test_dict.Set("prefs", std::move(default_value_prefs_dict));
-    policy_pref_mapping_test_dicts_.push_back(
-        std::move(default_value_test_dict));
 
     // Build test case for each `value_to_test`.
     for (const base::Value& value_to_test : *values_to_test) {
@@ -381,7 +401,7 @@ class PolicyTestCase {
         test_case.FindDict("simple_policy_pref_mapping_test");
     if (simple_policy_pref_mapping_test_dict) {
       const SimplePolicyPrefMappingTest simple_policy_pref_mapping_test(
-          policy_name, *simple_policy_pref_mapping_test_dict);
+          policy_name, *simple_policy_pref_mapping_test_dict, IsOsSupported());
       for (const base::Value::Dict& policy_pref_mapping_test_dict :
            simple_policy_pref_mapping_test.policy_pref_mapping_test_dicts()) {
         AddPolicyPrefMappingTest(policy_pref_mapping_test_dict);

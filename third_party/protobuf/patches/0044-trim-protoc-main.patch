@@ -1,7 +1,7 @@
-diff --git a/third_party/protobuf/src/google/protobuf/compiler/main.cc b/third_party/protobuf/src/google/protobuf/compiler/main.cc
+diff --git a/src/google/protobuf/compiler/main.cc b/src/google/protobuf/compiler/main.cc
 index babede8faa8c4..02085bb887478 100644
---- a/third_party/protobuf/src/google/protobuf/compiler/main.cc
-+++ b/third_party/protobuf/src/google/protobuf/compiler/main.cc
+--- a/src/google/protobuf/compiler/main.cc
++++ b/src/google/protobuf/compiler/main.cc
 @@ -8,15 +8,9 @@
  #include "absl/log/initialize.h"
  #include "google/protobuf/compiler/command_line_interface.h"

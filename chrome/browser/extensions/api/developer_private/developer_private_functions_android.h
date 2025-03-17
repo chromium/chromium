@@ -8,74 +8,63 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "extensions/browser/extension_function.h"
 
-#define DECLARE_EMPTY_FUNC(class_name, api_name, histogram_value) \
-  class class_name : public ExtensionFunction {                   \
-   public:                                                        \
-    DECLARE_EXTENSION_FUNCTION(api_name, histogram_value)         \
-   protected:                                                     \
-    ~class_name() override;                                       \
-    ResponseAction Run() override;                                \
-  }
-
-DECLARE_EMPTY_FUNC(DeveloperPrivateAutoUpdateFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateAutoUpdateFunction,
                    "developerPrivate.autoUpdate",
                    DEVELOPERPRIVATE_AUTOUPDATE);
-DECLARE_EMPTY_FUNC(DeveloperPrivateGetExtensionSizeFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateGetExtensionSizeFunction,
                    "developerPrivate.getExtensionSize",
                    DEVELOPERPRIVATE_GETEXTENSIONSIZE);
-DECLARE_EMPTY_FUNC(DeveloperPrivateReloadFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateReloadFunction,
                    "developerPrivate.reload",
                    DEVELOPERPRIVATE_RELOAD);
-DECLARE_EMPTY_FUNC(DeveloperPrivateLoadUnpackedFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadUnpackedFunction,
                    "developerPrivate.loadUnpacked",
                    DEVELOPERPRIVATE_LOADUNPACKED);
-DECLARE_EMPTY_FUNC(DeveloperPrivateInstallDroppedFileFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateInstallDroppedFileFunction,
                    "developerPrivate.installDroppedFile",
                    DEVELOPERPRIVATE_INSTALLDROPPEDFILE);
-DECLARE_EMPTY_FUNC(DeveloperPrivateNotifyDragInstallInProgressFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateNotifyDragInstallInProgressFunction,
                    "developerPrivate.notifyDragInstallInProgress",
                    DEVELOPERPRIVATE_NOTIFYDRAGINSTALLINPROGRESS);
-DECLARE_EMPTY_FUNC(DeveloperPrivateChoosePathFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateChoosePathFunction,
                    "developerPrivate.choosePath",
                    DEVELOPERPRIVATE_CHOOSEPATH);
-DECLARE_EMPTY_FUNC(DeveloperPrivatePackDirectoryFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivatePackDirectoryFunction,
                    "developerPrivate.packDirectory",
                    DEVELOPERPRIVATE_PACKDIRECTORY);
-DECLARE_EMPTY_FUNC(DeveloperPrivateLoadDirectoryFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
                    "developerPrivate.loadDirectory",
                    DEVELOPERPRIVATE_LOADUNPACKEDCROS);
-DECLARE_EMPTY_FUNC(DeveloperPrivateRequestFileSourceFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateRequestFileSourceFunction,
                    "developerPrivate.requestFileSource",
                    DEVELOPERPRIVATE_REQUESTFILESOURCE);
-DECLARE_EMPTY_FUNC(DeveloperPrivateOpenDevToolsFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateOpenDevToolsFunction,
                    "developerPrivate.openDevTools",
                    DEVELOPERPRIVATE_OPENDEVTOOLS);
-DECLARE_EMPTY_FUNC(DeveloperPrivateRepairExtensionFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateRepairExtensionFunction,
                    "developerPrivate.repairExtension",
                    DEVELOPERPRIVATE_REPAIREXTENSION);
-DECLARE_EMPTY_FUNC(DeveloperPrivateShowOptionsFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowOptionsFunction,
                    "developerPrivate.showOptions",
                    DEVELOPERPRIVATE_SHOWOPTIONS);
-DECLARE_EMPTY_FUNC(DeveloperPrivateShowPathFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateShowPathFunction,
                    "developerPrivate.showPath",
                    DEVELOPERPRIVATE_SHOWPATH);
-DECLARE_EMPTY_FUNC(DeveloperPrivateSetShortcutHandlingSuspendedFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateSetShortcutHandlingSuspendedFunction,
                    "developerPrivate.setShortcutHandlingSuspended",
                    DEVELOPERPRIVATE_SETSHORTCUTHANDLINGSUSPENDED);
-DECLARE_EMPTY_FUNC(DeveloperPrivateUpdateExtensionCommandFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateUpdateExtensionCommandFunction,
                    "developerPrivate.updateExtensionCommand",
                    DEVELOPERPRIVATE_UPDATEEXTENSIONCOMMAND);
-DECLARE_EMPTY_FUNC(DeveloperPrivateRemoveMultipleExtensionsFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateRemoveMultipleExtensionsFunction,
                    "developerPrivate.removeMultipleExtensions",
                    DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS);
-DECLARE_EMPTY_FUNC(
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(
     DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
     "developerPrivate.dismissMv2DeprecationNoticeForExtension",
     DEVELOPERPRIVATE_DISMISSMV2DEPRECATIONNOTICEFOREXTENSION);
-DECLARE_EMPTY_FUNC(DeveloperPrivateUploadExtensionToAccountFunction,
+DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateUploadExtensionToAccountFunction,
                    "developerPrivate.uploadExtensionToAccount",
                    DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT);
-
-#undef DECLARE_EMPTY_FUNC
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_ANDROID_H_

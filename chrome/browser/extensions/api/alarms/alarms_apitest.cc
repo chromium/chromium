@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
@@ -17,7 +17,7 @@ namespace extensions {
 
 using extensions::ResultCatcher;
 
-class AlarmsApiTest : public ExtensionPlatformApiTest {
+class AlarmsApiTest : public ExtensionApiTest {
  public:
   AlarmsApiTest() = default;
   ~AlarmsApiTest() override = default;
@@ -26,16 +26,16 @@ class AlarmsApiTest : public ExtensionPlatformApiTest {
 
   void SetUp() override {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
-    ExtensionPlatformApiTest::SetUp();
+    ExtensionApiTest::SetUp();
   }
 
   void TearDown() override {
     histogram_tester_.release();
-    ExtensionPlatformApiTest::TearDown();
+    ExtensionApiTest::TearDown();
   }
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -103,13 +103,7 @@ IN_PROC_BROWSER_TEST_F(AlarmsApiTest, IncognitoSpanning) {
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-using AlarmsPlatformApiTest = ExtensionPlatformApiTest;
-#else
-using AlarmsPlatformApiTest = ExtensionApiTest;
-#endif
-
-IN_PROC_BROWSER_TEST_F(AlarmsPlatformApiTest, Count) {
+IN_PROC_BROWSER_TEST_F(AlarmsApiTest, Count) {
   EXPECT_TRUE(RunExtensionTest("alarms/count")) << message_;
 }
 

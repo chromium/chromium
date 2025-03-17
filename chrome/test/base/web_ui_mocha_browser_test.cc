@@ -47,8 +47,7 @@ bool WaitForTestToFinish(content::WebContents* web_contents) {
 
 WebUIMochaBrowserTest::WebUIMochaBrowserTest()
     : test_loader_host_(chrome::kChromeUIWebUITestHost),
-      test_loader_scheme_(content::kChromeUIScheme),
-      test_loader_redirect_(std::nullopt) {}
+      test_loader_scheme_(content::kChromeUIScheme) {}
 
 WebUIMochaBrowserTest::~WebUIMochaBrowserTest() = default;
 
@@ -61,10 +60,6 @@ void WebUIMochaBrowserTest::set_test_loader_scheme(const std::string& scheme) {
   CHECK(scheme == content::kChromeUIScheme ||
         scheme == content::kChromeUIUntrustedScheme);
   test_loader_scheme_ = scheme;
-}
-
-void WebUIMochaBrowserTest::set_test_loader_redirect(const std::string& path) {
-  test_loader_redirect_ = path;
 }
 
 Profile* WebUIMochaBrowserTest::GetProfileForSetup() {
@@ -128,16 +123,11 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
                 test_loader_scheme_ + "://" + test_loader_host_ +
                 "/test_loader.html?adapter=mocha_adapter_simple.js&module=") +
                 file);
-  GURL expected_commit_url =
-      test_loader_redirect_.has_value()
-          ? GURL(std::string(test_loader_scheme_ + "://" + test_loader_host_ +
-                             *test_loader_redirect_))
-          : url;
 
 #if BUILDFLAG(IS_ANDROID)
   android_ui_test_utils::OpenUrlInNewTab(
       chrome_test_utils::GetProfile(this),
-      chrome_test_utils::GetActiveWebContents(this), url, expected_commit_url);
+      chrome_test_utils::GetActiveWebContents(this), url);
 #else
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 #endif

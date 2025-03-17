@@ -49,6 +49,7 @@
 #import "ios/chrome/app/blocking_scene_commands.h"
 #import "ios/chrome/app/change_profile_animator.h"
 #import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/enterprise_app_agent.h"
@@ -1612,11 +1613,9 @@ void DeleteProfileContinuation(base::OnceClosure done_closure,
       base::apple::ObjCCast<SceneDelegate>(scene.delegate);
   CHECK(sceneDelegate);
 
-  UIWindow* window = sceneDelegate.window;
-  UIViewController* rootViewController = window.rootViewController;
-
-  ChangeProfileAnimator* animator =
-      [[ChangeProfileAnimator alloc] initWithViewController:rootViewController];
+  ChangeProfileAnimator* animator = [[ChangeProfileAnimator alloc]
+      initWithWindow:base::apple::ObjCCast<ChromeOverlayWindow>(
+                         sceneDelegate.window)];
 
   ProfileAttributesStorageIOS* storage = manager->GetProfileAttributesStorage();
   const std::string sceneIdentifier =

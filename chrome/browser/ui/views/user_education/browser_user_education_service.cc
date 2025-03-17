@@ -136,29 +136,6 @@ class IfView : public user_education::TutorialDescription::If {
                std::move(if_condition))) {}
 };
 
-class ScopedSavedTabGroupTutorialState
-    : public user_education::ScopedTutorialState {
- public:
-  explicit ScopedSavedTabGroupTutorialState(ui::ElementContext ctx)
-      : user_education::ScopedTutorialState(ctx) {
-    auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-    CHECK(browser);
-    browser_ = browser->AsWeakPtr();
-    browser_->SetForceShowBookmarkBarFlag(
-        Browser::ForceShowBookmarkBarFlag::kTabGroupsTutorialActive);
-  }
-
-  ~ScopedSavedTabGroupTutorialState() override {
-    if (browser_ && !browser_->IsBrowserClosing()) {
-      browser_->ClearForceShowBookmarkBarFlag(
-          Browser::ForceShowBookmarkBarFlag::kTabGroupsTutorialActive);
-    }
-  }
-
- private:
-  base::WeakPtr<Browser> browser_;
-};
-
 bool HasTabGroups(const BrowserView* browser_view) {
   return !browser_view->browser()
               ->tab_strip_model()
@@ -265,13 +242,13 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(115, "vykochko@chromium.org",
                                  "Triggered after autofill popup appears.")));
 
-  // kIPHAutofillPredictionImprovementsFeature:
+  // kIPHAutofillAiOptInFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHAutofillPredictionImprovementsFeature,
-          autofill::PopupViewViews::kAutofillPredictionImprovementsIphElementId,
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY,
-          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS,
+          feature_engagement::kIPHAutofillAiOptInFeature,
+          autofill::PopupViewViews::kAutofillAiOptInIphElementId,
+          IDS_AUTOFILL_AI_OPT_IN_IPH_BODY,
+          IDS_AUTOFILL_AI_OPT_IN_IPH_GO_TO_SETTINGS,
           base::BindRepeating(
               [](ui::ElementContext ctx,
                  user_education::FeaturePromoHandle promo_handle) {
@@ -282,14 +259,14 @@ void MaybeRegisterChromeFeaturePromos(
                 chrome::ShowSettingsSubPage(browser,
                                             chrome::kAutofillAiSubPage);
               }))
-          .SetBubbleTitleText(IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE)
+          .SetBubbleTitleText(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-          .SetMetadata(131, "brunobraga@google.com",
+          .SetMetadata(136, "brunobraga@google.com",
                        "Displayed on input fields that are eligible for "
-                       "improved predictions. These can be input fields on any "
-                       "website, as long as the page and field supports the "
-                       "feature. The IPH is displayed when the user clicks on "
-                       "such input field and is anchored against it.")));
+                       "AutofillAI. These can be input fields on any website "
+                       "as long as the field has AutofillAI predictions. "
+                       "The IPH is displayed when the user clicks on such an "
+                       "input field and is anchored against it.")));
 
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(
@@ -850,37 +827,35 @@ void MaybeRegisterChromeFeaturePromos(
                 return nullptr;
               }))));
 
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    registry.RegisterFeature(std::move(
-        FeaturePromoSpecification::CreateForToastPromo(
-            feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature,
-            kToolbarAppMenuButtonElementId,
-            IDS_SAVED_TAB_GROUPS_V2_INTRO_IPH_APP_MENU_NOT_SYNCED_BODY,
-            IDS_SAVED_TAB_GROUPS_V2_INTRO_DEFAULT_BODY_A11Y,
-            FeaturePromoSpecification::AcceleratorInfo())
-            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-            .SetAnchorElementFilter(
-                base::BindRepeating(&tab_groups::SavedTabGroupUtils::
-                                        GetAnchorElementForTabGroupsV2IPH))
-            .SetMetadata(127, "dpenning@chromium.org",
-                         "triggered on startup when the saved tab groups are "
-                         "defaulted to saved for the first time.")));
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature,
+          kToolbarAppMenuButtonElementId,
+          IDS_SAVED_TAB_GROUPS_V2_INTRO_IPH_APP_MENU_NOT_SYNCED_BODY,
+          IDS_SAVED_TAB_GROUPS_V2_INTRO_DEFAULT_BODY_A11Y,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetAnchorElementFilter(
+              base::BindRepeating(&tab_groups::SavedTabGroupUtils::
+                                      GetAnchorElementForTabGroupsV2IPH))
+          .SetMetadata(127, "dpenning@chromium.org",
+                       "triggered on startup when the saved tab groups are "
+                       "defaulted to saved for the first time.")));
 
-    registry.RegisterFeature(std::move(
-        FeaturePromoSpecification::CreateForCustomAction(
-            feature_engagement::kIPHTabGroupsSaveV2IntroFeature,
-            kToolbarAppMenuButtonElementId,
-            IDS_WILDCARD,  // Replaced by caller with the correct IDS string.
-            IDS_LEARN_MORE,
-            CreateNavigationAction(GURL(chrome::kTabGroupsLearnMoreURL)))
-            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-            .SetAnchorElementFilter(
-                base::BindRepeating(&tab_groups::SavedTabGroupUtils::
-                                        GetAnchorElementForTabGroupsV2IPH))
-            .SetMetadata(127, "dpenning@chromium.org",
-                         "triggered on startup when the saved tab groups are "
-                         "defaulted to saved for the first time.")));
-  }
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHTabGroupsSaveV2IntroFeature,
+          kToolbarAppMenuButtonElementId,
+          IDS_WILDCARD,  // Replaced by caller with the correct IDS string.
+          IDS_LEARN_MORE,
+          CreateNavigationAction(GURL(chrome::kTabGroupsLearnMoreURL)))
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetAnchorElementFilter(
+              base::BindRepeating(&tab_groups::SavedTabGroupUtils::
+                                      GetAnchorElementForTabGroupsV2IPH))
+          .SetMetadata(127, "dpenning@chromium.org",
+                       "triggered on startup when the saved tab groups are "
+                       "defaulted to saved for the first time.")));
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
     registry.RegisterFeature(std::move(
@@ -1382,90 +1357,6 @@ void MaybeRegisterChromeTutorials(
 
     tutorial_registry.AddTutorial(kTabGroupTutorialId,
                                   std::move(tab_group_tutorial));
-  }
-
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {  // Saved Tab Group tutorial.
-    auto saved_tab_group_tutorial =
-        TutorialDescription::Create<kSavedTabGroupTutorialMetricPrefix>(
-            IfView(kBrowserViewElementId, base::BindRepeating(&HasTabGroups))
-                .Then(
-                    // Point at the tab group header and say rick-click on
-                    // group name to open the editor bubble.
-                    BubbleStep(kTabGroupHeaderElementId)
-                        .SetBubbleBodyText(
-                            IDS_TUTORIAL_SAVED_TAB_GROUP_OPEN_EDITOR)
-                        .SetBubbleArrow(HelpBubbleArrow::kTopCenter))
-                .Else(
-                    // Point at the tab strip and say right-click a tab and
-                    // choose "Add tab to new group".
-                    BubbleStep(kTabStripRegionElementId)
-                        .SetBubbleBodyText(
-                            IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP),
-
-                    // Wait for the tab group to be created.
-                    HiddenStep::WaitForShowEvent(kTabGroupHeaderElementId)),
-
-            // Wait for the editor bubble to appear.
-            HiddenStep::WaitForShowEvent(kTabGroupEditorBubbleId),
-
-            // Point at editor bubble "Name your group, turn on save".
-            BubbleStep(kTabGroupEditorBubbleSaveToggleId)
-                .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP)
-                .SetBubbleArrow(HelpBubbleArrow::kLeftCenter),
-
-            // Wait for save group sync to be enabled.
-            EventStep(kTabGroupSavedCustomEventId).AbortIfVisibilityLost(true),
-
-            // Point at editor bubble "Hide group" to save it for later in the
-            // bookmarks bar.
-            BubbleStep(kTabGroupEditorBubbleCloseGroupButtonId)
-                .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP)
-                .SetBubbleArrow(HelpBubbleArrow::kLeftCenter),
-
-            // Wait for the hide group to be pressed.
-            HiddenStep::WaitForActivated(
-                kTabGroupEditorBubbleCloseGroupButtonId),
-
-            // Wait for the bookmarks bar to show.
-            HiddenStep::WaitForShown(kBookmarkBarElementId),
-
-            // Point at bookmark bar with message to open the previously
-            // closed saved tab group.
-            BubbleStep(kSavedTabGroupButtonElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_SAVED_TAB_GROUP_REOPEN_GROUP)
-                .SetBubbleArrow(HelpBubbleArrow::kTopLeft),
-
-            // Wait for the saved tab groups button in bookmarks bar to be
-            // activated.
-            HiddenStep::WaitForActivated(kSavedTabGroupButtonElementId),
-
-            // Wait for saved tabs groups to be reopened.
-            HiddenStep::WaitForShowEvent(kTabGroupHeaderElementId)
-                .NameElement(kTabGroupHeaderElementName),
-
-            // Point at tab group header and show the success message for the
-            // tutorial.
-            BubbleStep(kTabGroupHeaderElementName)
-                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_SAVED_TAB_GROUP_SUCCESS_DESCRIPTION)
-                .SetBubbleArrow(HelpBubbleArrow::kTopCenter));
-    // Attach a temporary state callback to force show bookmarks bar
-    // during the lifetime of the tutorial.
-    saved_tab_group_tutorial.temporary_state_callback = base::BindRepeating(
-        [](ui::ElementContext context)
-            -> std::unique_ptr<user_education::ScopedTutorialState> {
-          return base::WrapUnique(
-              new ScopedSavedTabGroupTutorialState(context));
-        });
-
-    saved_tab_group_tutorial.metadata.additional_description =
-        "Tutorial for saving tab groups.";
-    saved_tab_group_tutorial.metadata.launch_milestone = 122;
-    saved_tab_group_tutorial.metadata.owners = "dpenning@chromium.org";
-
-    tutorial_registry.AddTutorial(kSavedTabGroupTutorialId,
-                                  std::move(saved_tab_group_tutorial));
   }
 
   {  // Side panel customize chrome

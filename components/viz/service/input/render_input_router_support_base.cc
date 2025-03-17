@@ -30,11 +30,6 @@ RenderInputRouterSupportBase::RenderInputRouterSupportBase(
   rir_->SetView(this);
 }
 
-void RenderInputRouterSupportBase::NotifySiteIsMobileOptimized(
-    bool is_mobile_optimized) {
-  NOTREACHED();
-}
-
 bool RenderInputRouterSupportBase::ShouldInitiateStylusWriting() {
   // Stylus input events are not going to be handled on VizCompositor thread
   // with the current scope of InputVizard.

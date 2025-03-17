@@ -89,8 +89,7 @@ ShortcutId GenerateShortcutId(const std::string& host_app_id,
   // that is generated in the web app system, so that we can keep
   // all the launcher and shelf locations without needing to migrate the sync
   // data.
-  if (host_app_id == app_constants::kChromeAppId ||
-      host_app_id == app_constants::kLacrosAppId) {
+  if (host_app_id == app_constants::kChromeAppId) {
     return ShortcutId(local_id);
   }
   const std::string input = base::StrCat({host_app_id, "#", local_id});

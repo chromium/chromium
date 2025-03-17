@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActInFocusedTabErrorReason) -->
+
+<enum name="ActInFocusedTabErrorReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Get context failed"/>
+  <int value="2" label="Invalid action proto"/>
+  <int value="3" label="Target not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:ActInFocusedTabErrorReason) -->
+
 <!-- LINT.IfChange(GlicEntryPointImpression) -->
 
 <enum name="GlicEntryPointImpression">
@@ -46,6 +57,17 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:EntryPointImpression) -->
+
+<!-- LINT.IfChange(GlicInputModesUsed) -->
+
+<enum name="GlicInputModesUsed">
+  <int value="0" label="No input submitted"/>
+  <int value="1" label="Only text input submitted"/>
+  <int value="2" label="Only audio input submitted"/>
+  <int value="3" label="Text and Audio input submitted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicInputModesUsed) -->
 
 <!-- LINT.IfChange(GlicInvocationSource) -->
 

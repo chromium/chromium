@@ -2242,7 +2242,6 @@
 <translation id="2530166226437958497">Пошук і выпраўленне непаладак</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Нешта пайшло не так. Не ўдалося ўсталяваць <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Дадатковую інфармацыю шукайце на старонцы g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Дадатковая інфармацыя</translation>
 <translation id="2532144599248877204">Падаўжае тэрмін службы акумулятара, падтрымліваючы 80-працэнтны ўзровень зарадкі. К таму моманту, калі вы звычайна адключаеце тэлефон ад сілкавання, акумулятар будзе зараджаны поўнасцю.</translation>
 <translation id="2532146950330687938">Прылада падрыхтоўваецца...</translation>
 <translation id="2532198298278778531">Кіраванне абароненай DNS у наладах Chrome OS Flex</translation>
@@ -2798,7 +2797,6 @@
 <translation id="2921081876747860777">Стварыце пароль, каб абараніць лакальныя даныя.</translation>
 <translation id="2923006468155067296">Ваша прылада <ph name="DEVICE_TYPE" /> зараз будзе заблакіравана.
 Па правілах дамена <ph name="DOMAIN" /> разумная картка павінна быць устаўлена.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задача ў гэтай групе задач: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задачы ў гэтай групе задач: <ph name="OTHER_TASKS" />}many{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задач у гэтай групе задач: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Яшчэ <ph name="OTHER_TASK_NUM" /> задачы ў гэтай групе задач: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Выдаліць гэты ўліковы запіс</translation>
 <translation id="2923644930701689793">Доступ да галерэі камеры тэлефона</translation>
 <translation id="292371311537977079">Налады Chrome</translation>
@@ -6901,6 +6899,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> хутка прыпыніцца</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> працуе з вобраза дыска. Калі ўсталяваць праграму на камп’ютар, вы зможаце запускаць яе без вобраза, і яна будзе рэгулярна абнаўляцца.</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
+<translation id="5866363217037791319">Завяршыць задачу</translation>
 <translation id="5868434909835797817">Мікрафон выключаны на гэтай прыладзе</translation>
 <translation id="5868479397518301468">Перавышаны час чакання ўваходу</translation>
 <translation id="5868822853313956582">Выкарыстоўваць колеравую схему прылады</translation>
@@ -10631,7 +10630,6 @@
 <translation id="8524841856047224176">Персаналізуйце фоны для камеры, якія выкарыстоўваюцца падчас відэавыклікаў і не толькі</translation>
 <translation id="8525306231823319788">Поўнаэкранны рэжым</translation>
 <translation id="8525461909394569609">У гэтай праграме ёсць вэб-змесціва з іншых крыніц:</translation>
-<translation id="8526313996927074827">Устаўляйце спасылкі, эмодзі і іншае змесціва, а таксама пішыце тэксты з дапамогай AI ад Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Дынамікі</translation>
 <translation id="8527257351549797148">Для доступу да праграм, пашырэнняў і іншага ваша арганізацыя можа патрабаваць зарэгістравацца. Рэгістрацыя таксама дазваляе арганізацыі кіраваць такімі функцыямі, як налады бяспекі і прылады.</translation>
@@ -11090,6 +11088,7 @@
 <translation id="883924185304953854">Пошук па відарысе</translation>
 <translation id="8841786407272321022">Пароль захаваны толькі на гэтай прыладзе. Каб захоўваць новыя паролі ва Уліковым запісе Google, абнавіце сэрвісы Google Play.</translation>
 <translation id="8841843049738266382">Чытанне і змяненне даных карыстальнікаў з белага спіса</translation>
+<translation id="8841884135319684422">Завяршыць задачу</translation>
 <translation id="8842594465773264717">Выдаліць гэты адбітак пальца</translation>
 <translation id="8845001906332463065">Атрымаць даведку</translation>
 <translation id="8846132060409673887">Чытаць даныя пра вытворцу і мадэль гэтага камп’ютара</translation>

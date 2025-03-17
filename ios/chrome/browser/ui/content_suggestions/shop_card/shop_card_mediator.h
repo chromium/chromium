@@ -13,6 +13,7 @@ namespace commerce {
 class ShoppingService;
 }
 
+@protocol ShopCardActionDelegate;
 @class ShopCardItem;
 @class ShopCardData;
 
@@ -39,6 +40,9 @@ class ShoppingService;
 
 // Delegate used to communicate events back to the owner of this class.
 @property(nonatomic, weak) id<ShopCardMediatorDelegate> delegate;
+
+// Delegate to communicate events back to the ContentSuggestionsCoordinator.
+@property(nonatomic, weak) id<ShopCardActionDelegate> shopCardActionDelegate;
 
 @end
 

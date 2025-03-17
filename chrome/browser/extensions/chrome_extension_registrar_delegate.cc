@@ -294,7 +294,7 @@ bool ChromeExtensionRegistrarDelegate::CanAddExtension(
   // is set (http://crbug.com/29067).
   std::set<std::string> disable_flag_exempted_extensions =
       extension_service_->disable_flag_exempted_extensions();
-  if (!extension_service_->extensions_enabled() &&
+  if (!extension_registrar_->extensions_enabled() &&
       !Manifest::ShouldAlwaysLoadExtension(extension->location(),
                                            extension->is_theme()) &&
       disable_flag_exempted_extensions.count(extension->id()) == 0) {

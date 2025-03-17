@@ -46,8 +46,12 @@ StorageInterestGroup MakeInterestGroup(blink::InterestGroup interest_group) {
   StorageInterestGroup storage_group;
   storage_group.interest_group = std::move(interest_group);
   storage_group.bidding_browser_signals =
-      blink::mojom::BiddingBrowserSignals::New(3, 5, std::move(previous_wins),
-                                               false);
+      blink::mojom::BiddingBrowserSignals::New(
+          3, 5, std::move(previous_wins), false,
+          /*click_and_view_counts=*/
+          blink::mojom::ViewAndClickCounts::New(
+              /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+              /*click_counts=*/blink::mojom::ViewOrClickCounts::New()));
   storage_group.joining_origin = storage_group.interest_group.owner;
   return storage_group;
 }

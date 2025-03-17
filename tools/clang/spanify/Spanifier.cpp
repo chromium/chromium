@@ -927,13 +927,22 @@ void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
 
     // Ready the second replacement; advance the replacement range to
     // the closing bracket (beyond the offset expression).
-    const auto& container_subscript =
-        *GetNodeOrCrash<clang::CXXOperatorCallExpr>(
-            result, "container_subscript",
-            "`container_buff_address` implies `container_subscript`");
-    replacement_range = {
-        container_subscript.getRParenLoc(),
-        container_subscript.getRParenLoc().getLocWithOffset(1)};
+    if (const auto* container_subscript =
+            result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
+                "container_subscript")) {
+      replacement_range = {
+          container_subscript->getRParenLoc(),
+          container_subscript->getRParenLoc().getLocWithOffset(1)};
+    } else {
+      // This is a C-style array.
+      const auto& c_style_array_with_subscript =
+          *GetNodeOrCrash<clang::ArraySubscriptExpr>(
+              result, "c_style_array_with_subscript",
+              "expected when `container_subscript` is not bound");
+      replacement_range = {
+          c_style_array_with_subscript.getEndLoc(),
+          c_style_array_with_subscript.getEndLoc().getLocWithOffset(1)};
+    }
     // Close the call to `.subspan()`.
     replacement_text = ")";
   }
@@ -2108,11 +2117,11 @@ class Spanifier {
                                memberExpr(member(lhs_field)), lhs_call_expr));
 
     // Matches statements of the form: &buf[n] where buf is a container type
-    // (span, vector, array,...).
+    // (span, std::vector, std::array, C-style array...).
     auto buff_address_from_container =
         unaryOperator(
             hasOperatorName("&"),
-            hasUnaryOperand(
+            hasUnaryOperand(anyOf(
                 cxxOperatorCallExpr(
                     callee(functionDecl(
                         hasName("operator[]"),
@@ -2127,7 +2136,16 @@ class Spanifier {
                     optionally(
                         hasDescendant(integerLiteral(equals(0u))
                                           .bind("zero_container_offset"))))
-                    .bind("container_subscript")))
+                    .bind("container_subscript"),
+                arraySubscriptExpr(
+                    hasBase(
+                        declRefExpr(to(varDecl(hasType(arrayType(hasElementType(
+                                        qualType().bind("contained_type")))))))
+                            .bind("container_decl_ref")),
+                    hasIndex(expr()),
+                    optionally(hasIndex(integerLiteral(equals(0u))
+                                            .bind("zero_container_offset"))))
+                    .bind("c_style_array_with_subscript"))))
             .bind("container_buff_address");
 
     // T* a = buf.data();
@@ -2260,14 +2278,15 @@ class Spanifier {
             .bind("deref_expr"));
     Match(deref_expression, DecaySpanToPointer);
 
-    auto rhs_expr_variations_ignoring_non_spelled_nodes = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource, expr(rhs_expr_variations));
+    auto rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 expr(rhs_exprs_without_size_nodes));
     auto raw_ptr_op_bool = cxxMemberCallExpr(
         on(expr().bind("boolean_op_operand")),
         callee(cxxMethodDecl(hasName("operator bool"),
                              ofClass(hasName("raw_ptr")))),
         has(memberExpr(has(expr(ignoringParenCasts(
-            rhs_expr_variations_ignoring_non_spelled_nodes))))));
+            rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes))))));
     // Handles boolean operations that need to be adapted after a span rewrite.
     //   if(expr) => if(!expr.empty())
     //   if(!expr) => if(expr.empty())
@@ -2278,15 +2297,17 @@ class Spanifier {
     // `clang::TK_IgnoreUnlessSpelledInSource`, while very useful in simplifying
     // the matchers, wouldn't detect boolean operations on pointers hence the
     // need for a hybrid traversal mode in this matcher.
-    auto boolean_op =
-        expr(anyOf(implicitCastExpr(
-                       hasCastKind(clang::CastKind::CK_PointerToBoolean),
-                       hasSourceExpression(
-                           expr(rhs_expr_variations_ignoring_non_spelled_nodes)
-                               .bind("boolean_op_operand"))),
-                   raw_ptr_op_bool),
-             optionally(hasParent(
-                 unaryOperator(hasOperatorName("!")).bind("logical_not_op"))));
+    auto boolean_op = expr(
+        anyOf(
+            implicitCastExpr(
+                hasCastKind(clang::CastKind::CK_PointerToBoolean),
+                hasSourceExpression(
+                    expr(
+                        rhs_exprs_without_size_nodes_ignoring_non_spelled_nodes)
+                        .bind("boolean_op_operand"))),
+            raw_ptr_op_bool),
+        optionally(hasParent(
+            unaryOperator(hasOperatorName("!")).bind("logical_not_op"))));
     Match(boolean_op, DecaySpanToBooleanOp);
 
     // This is needed to remove the `.get()` call on raw_ptr from rewritten

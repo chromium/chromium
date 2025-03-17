@@ -23,6 +23,7 @@
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/capture_mode/search_results_panel.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -38,6 +39,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
@@ -46,9 +48,11 @@
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -79,7 +83,11 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/env.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -170,6 +178,41 @@ constexpr char kQueryParamStartTimeName[] = "st";
 // An invalid IDS value used as a placeholder to not show a message in a
 // notification.
 constexpr int kNoMessage = -1;
+
+// The default HTTP status code we set if the response header does not contain
+// a successful status code.
+constexpr int kHttpPostFailNoConnection = -1;
+
+// TODO: crbug.com/399425007 - Properly define this annotation.
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("chromeos_lens_web_image_search",
+                                        R"(
+        semantics {
+          sender: "..."
+          description: "..."
+          trigger: "..."
+          internal {
+            contacts {
+                email: "chromeos-wm@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: IMAGE
+            type: USAGE_AND_PERFORMANCE_METRICS
+          }
+          data: "..."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2025-03-13"
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "..."
+          setting: "..."
+          chrome_policy {}
+        }
+        comments: "..."
+      )");
 
 // The screenshot notification button index.
 enum ScreenshotNotificationButtonIndex {
@@ -683,6 +726,7 @@ CaptureModeController::CaptureModeController(
 
   Shell::Get()->session_controller()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+  shell_observation_.Observe(Shell::Get());
 }
 
 CaptureModeController::~CaptureModeController() {
@@ -1542,6 +1586,24 @@ void CaptureModeController::StopAllScreenShare() {
   // the stop recording button, so this does nothing.
 }
 
+void CaptureModeController::OnPinnedStateChanged(aura::Window* pinned_window) {
+  // This can change whether sunfish/scanner can be used. Update the
+  auto* shell = Shell::Get();
+  if (auto* feature_watcher = shell->sunfish_scanner_feature_watcher()) {
+    feature_watcher->UpdateFeatureStates();
+  }
+
+  if (!shell->screen_pinning_controller()->IsPinned()) {
+    return;
+  }
+
+  if (IsActive() && capture_mode_session_->active_behavior()->behavior_type() ==
+                        BehaviorType::kSunfish) {
+    Stop();
+  }
+  CloseSearchResultsPanel();
+}
+
 void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   DCHECK(IsActive());
   DCHECK_EQ(type_, CaptureModeType::kVideo);
@@ -2159,12 +2221,64 @@ void CaptureModeController::OnPrimaryAccountAccessTokenAvailable(
 
   resource_request->url = search_url;
 
-  // TODO: crbug.com/395939382 - Create a `SimpleURLLoader` and dispatch the
-  // POST request to get the SRP URL.
+  // Create a `SimpleURLLoader` to upload the image data and send the resource
+  // request.
+  std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+      network::SimpleURLLoader::Create(std::move(resource_request),
+                                       kTrafficAnnotation);
+  network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
+  simple_url_loader->AttachStringForUpload(post_content.second,
+                                           post_content.first);
+  uploads_in_progress_.insert(uploads_in_progress_.begin(),
+                              std::move(simple_url_loader));
 
-  // TODO: crbug.com/395939382 - Navigate to the proper URL once it has been
-  // returned by the Lens Web API.
-  ShowSearchResultsPanel(gfx::ImageSkia(), GURL("https://lens.google.com/"));
+  if (!url_loader_factory_) {
+    // Lazily create the URLLoaderFactory.
+    url_loader_factory_ = delegate_->GetSharedURLLoaderFactory();
+    CHECK(url_loader_factory_);
+  }
+
+  simple_url_loader_ptr->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&CaptureModeController::OnDispatchComplete,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     simple_url_loader_ptr->GetWeakPtr(), image_search_token));
+}
+
+void CaptureModeController::OnDispatchComplete(
+    base::WeakPtr<const network::SimpleURLLoader> url_loader,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    std::unique_ptr<std::string> response_body) {
+  absl::Cleanup deferred_runner = [this, url_loader]() {
+    uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
+  };
+
+  // If the image search token is no longer valid, delete the `SimpleURLLoader`
+  // and return early.
+  if (!image_search_token) {
+    return;
+  }
+
+  const network::SimpleURLLoader* simple_url_loader = url_loader.get();
+  CHECK(simple_url_loader);
+
+  // We only consider the request a success if we both get a response and the
+  // header is present, otherwise it's a failure.
+  int response_code = kHttpPostFailNoConnection;
+  if (simple_url_loader->ResponseInfo() &&
+      simple_url_loader->ResponseInfo()->headers) {
+    response_code = simple_url_loader->ResponseInfo()->headers->response_code();
+  }
+
+  // TODO: crbug.com/394648704 - Implement error handling when the response code
+  // is not a redirect.
+  if (!network::IsSuccessfulStatus(response_code)) {
+    return;
+  }
+
+  // Pass in an empty image, as the Lens Web API uses its own thumbnail from the
+  // image we uploaded previously.
+  ShowSearchResultsPanel(gfx::ImageSkia(), simple_url_loader->GetFinalURL());
 }
 
 void CaptureModeController::OnTextDetectionComplete(
@@ -2253,7 +2367,15 @@ void CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup(
                          : base::BindRepeating(&CaptureModeController::Stop,
                                                weak_ptr_factory_.GetWeakPtr());
   capture_mode_session_->MaybeShowScannerDisclaimer(
-      /*accept_callback=*/base::DoNothing(), decline_callback);
+      ScannerEntryPoint::kSunfishSession,
+      /*accept_callback=*/base::BindRepeating([]() {
+        // Start a session after the disclaimer to ensure that it is started
+        // correctly if the user has just consented.
+        if (auto* scanner_controller = Shell::Get()->scanner_controller()) {
+          scanner_controller->StartNewSession();
+        }
+      }),
+      decline_callback);
 }
 
 void CaptureModeController::OnScannerActionsFetched(

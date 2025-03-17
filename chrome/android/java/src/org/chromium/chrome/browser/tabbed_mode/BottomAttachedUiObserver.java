@@ -288,13 +288,7 @@ public class BottomAttachedUiObserver
         if (isBottomToolbarVisible && mUseBottomControlsColor && isOverlayPanelUnexpanded) {
             return mBottomControlsColor;
         }
-        // If drawing edge-to-edge only match the bottom sheet color if the bottom sheet extends
-        // across the full width. Since the bottom sheet shows in the front, if it doesn't extend
-        // across the entire width, it looks nicer to match the color of other components behind /
-        // to the side of the bottom sheet.
-        if (mBottomSheetVisible
-                && (mBottomSheetController.isFullWidth()
-                        || !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled())) {
+        if (shouldMatchBottomSheetColor()) {
             // This can cause a null return intentionally to indicate that a bottom sheet is showing
             // a page preview / web content.
             return mBottomSheetColor;
@@ -317,9 +311,8 @@ public class BottomAttachedUiObserver
 
     /** The divider should be visible for partial width bottom-attached UI. */
     private boolean shouldShowDivider() {
-        if (mBottomSheetVisible) {
-            return !mBottomSheetController.isFullWidth()
-                    && !EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled();
+        if (shouldMatchBottomSheetColor()) {
+            return !mBottomSheetController.isFullWidth();
         }
         if (mOverlayPanelVisible && !EdgeToEdgeUtils.isEnabled()) {
             return !mOverlayPanelStateProvider.isFullWidthSizePanel();
@@ -383,6 +376,24 @@ public class BottomAttachedUiObserver
         }
 
         return false;
+    }
+
+    private boolean shouldMatchBottomSheetColor() {
+        if (!mBottomSheetVisible) return false;
+
+        if (mBottomSheetController.isAnchoredToBottomControls()) {
+            // As long as the bottom sheet is anchored to the browser controls, match the sheet's
+            // color when there's no other browser controls layer other than the bottom chin.
+            // Bottom sheet's width setting does not matter in this case.
+            return !mBottomControlsStacker.hasVisibleLayersOtherThan(LayerType.BOTTOM_CHIN);
+        } else {
+            // When using bottom chin, the chin is covered by the sheet so sheet color could should
+            // not be used in partial width. When sheet is in full width, it covers the chin. So the
+            // chin's color is not impacted by the bottom sheet in any width setting. When the
+            // bottom chin is not in use, the sheet is attached to the nav bar directly, so bottom
+            // sheet color should be used.
+            return !mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_CHIN);
+        }
     }
 
     // Browser Controls (Tab group UI, Read Aloud)

@@ -12,4 +12,9 @@ void LogBnplPrefToggled(bool enabled) {
   base::UmaHistogramBoolean("Autofill.SettingsPage.BnplToggled", enabled);
 }
 
+void LogBnplIssuersSyncedCountAtStartup(int count) {
+  base::UmaHistogramCounts100("Autofill.Bnpl.IssuersSyncedCount.Startup",
+                              count);
+}
+
 }  // namespace autofill::autofill_metrics

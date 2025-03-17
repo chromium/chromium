@@ -187,10 +187,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabletMode" summary="Tablet Mode Enabled"/>
 </variants>
 
-<histogram name="AppManagement.AppDetailViews" enum="AppManagementUserAction"
-    expires_after="2025-08-10">
-<!-- Name completed by histogram_suffixes name="AppType" -->
-
+<histogram name="AppManagement.AppDetailViews{AppType}"
+    enum="AppManagementUserAction" expires_after="2025-08-10">
   <owner>sharminzaman@google.com</owner>
   <owner>ovn@google.com</owner>
   <owner>cros-web-apps-team@google.com</owner>
@@ -199,8 +197,15 @@ chromium-metrics-reviews@google.com.
     The actions taken by the user when they are viewing the app details of an
     app in App Management (chrome://os-settings/app-management). On
     Windows/Linux/MacOS AppManagement.AppDetailViews.WebApp is the view on
-    chrome://app-settings page.
+    chrome://app-settings page. {AppType}
   </summary>
+  <token key="AppType">
+    <variant name=""/>
+    <variant name=".ArcApp" summary="Android app"/>
+    <variant name=".ChromeApp" summary="Chrome app"/>
+    <variant name=".PluginVmApp" summary="Plugin VM app"/>
+    <variant name=".WebApp" summary="Web app"/>
+  </token>
 </histogram>
 
 <histogram name="AppManagement.EntryPoints" enum="AppManagementEntryPoint"

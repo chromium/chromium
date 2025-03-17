@@ -184,8 +184,11 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
   // Mock model and associated placeholder data.
   testing::NiceMock<MockPageActionModel> mock_model_;
-  ui::ImageModel mock_image_;
-  std::u16string mock_string_;
+  const ui::ImageModel mock_image_ =
+      ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
+                                     ui::kColorSysPrimary,
+                                     kDefaultIconSize);
+  std::u16string mock_string_ = kTestText;
 
   const int view_icon_size_ = kDefaultIconSize;
 };
@@ -270,7 +273,7 @@ TEST_F(PageActionViewTest, LabelVisibility) {
   EXPECT_FALSE(page_action_view()->IsChipVisible());
 }
 
-TEST_F(PageActionViewTest, UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
+TEST_F(PageActionViewTest, ChipStateUpdatesBackgroundColor) {
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
@@ -285,6 +288,21 @@ TEST_F(PageActionViewTest, UpdateStyleSetsTonalColorsAndBackgroundVisibility) {
   page_action_view()->OnPageActionModelChanged(*model());
 
   EXPECT_EQ(page_action_view()->GetBackground(), nullptr);
+}
+
+TEST_F(PageActionViewTest, ChipStateUpdatesForegroundColor) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  ASSERT_TRUE(page_action_view()->GetVisible());
+  ASSERT_TRUE(page_action_view()->IsChipVisible());
+
+  const SkColor expected_color =
+      page_action_view()->GetColorProvider()->GetColor(
+          kColorOmniboxIconForegroundTonal);
+  EXPECT_EQ(page_action_view()->GetCurrentTextColor(), expected_color);
 }
 
 TEST_F(PageActionViewTest, SuggestionText) {

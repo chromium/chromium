@@ -83,8 +83,10 @@ void OverviewUiTaskPool::Flush() {
   }
 }
 
-void OverviewUiTaskPool::OnBeginFrame(base::TimeTicks frame_begin_time,
-                                      base::TimeDelta frame_interval) {
+void OverviewUiTaskPool::OnBeginFrame(
+    base::TimeTicks frame_begin_time,
+    base::TimeDelta frame_interval,
+    std::optional<base::TimeTicks> first_coalesced_frame_begin_time) {
   if (base::TimeTicks::Now() - construction_time_ <= initial_blackout_period_) {
     return;
   }

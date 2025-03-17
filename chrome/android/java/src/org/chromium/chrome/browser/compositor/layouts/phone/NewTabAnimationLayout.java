@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -98,7 +99,7 @@ public class NewTabAnimationLayout extends Layout {
     private ObjectAnimator mFadeAnimator;
     private ShrinkExpandImageView mRectView;
     private Runnable mAnimationRunnable;
-    private int mNextTabId = Tab.INVALID_TAB_ID;
+    private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
 
     /**
      * Creates an instance of the {@link NewTabAnimationLayout}.
@@ -206,7 +207,7 @@ public class NewTabAnimationLayout extends Layout {
     }
 
     @Override
-    public void onTabCreating(int sourceTabId) {
+    public void onTabCreating(@TabId int sourceTabId) {
         reset();
 
         ensureSourceTabCreated(sourceTabId);
@@ -216,9 +217,9 @@ public class NewTabAnimationLayout extends Layout {
     @Override
     public void onTabCreated(
             long time,
-            int id,
+            @TabId int id,
             int index,
-            int sourceId,
+            @TabId int sourceId,
             boolean newIsIncognito,
             boolean background,
             float originX,
@@ -304,7 +305,7 @@ public class NewTabAnimationLayout extends Layout {
         mSceneLayer.setTabContentManager(mTabContentManager);
     }
 
-    private void ensureSourceTabCreated(int sourceTabId) {
+    private void ensureSourceTabCreated(@TabId int sourceTabId) {
         if (hasLayoutTab() && mLayoutTabs[0].getId() == sourceTabId) return;
 
         @Nullable Tab tab = mTabModelSelector.getTabById(sourceTabId);
@@ -315,7 +316,7 @@ public class NewTabAnimationLayout extends Layout {
         updateCacheVisibleIds(Collections.singletonList(sourceTabId));
     }
 
-    private void updateAnimationHostViewSensitivity(int sourceTabId) {
+    private void updateAnimationHostViewSensitivity(@TabId int sourceTabId) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
                 || !ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
                 || !ChromeFeatureList.isEnabled(
@@ -412,7 +413,7 @@ public class NewTabAnimationLayout extends Layout {
      * @param newIsIncognito true if the new tab is an incognito tab.
      */
     private void tabCreatedInForeground(
-            int id, int sourceId, boolean newIsIncognito, @RectStart int rectStart) {
+            @TabId int id, @TabId int sourceId, boolean newIsIncognito, @RectStart int rectStart) {
         LayoutTab newLayoutTab = createLayoutTab(id, newIsIncognito);
         assert mLayoutTabs.length == 1;
         mLayoutTabs = new LayoutTab[] {mLayoutTabs[0], newLayoutTab};
@@ -531,7 +532,7 @@ public class NewTabAnimationLayout extends Layout {
         mHandler.post(mAnimationRunnable);
     }
 
-    protected void setNextTabIdForTesting(int nextTabId) {
+    protected void setNextTabIdForTesting(@TabId int nextTabId) {
         mNextTabId = nextTabId;
     }
 }

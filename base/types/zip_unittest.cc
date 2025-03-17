@@ -214,7 +214,7 @@ TEST(ZipTest, CheckForIterationPastTheEnd) {
   auto ranges = zip(a, b);
   auto it = ranges.begin();
   std::advance(it, 2);
-  EXPECT_DCHECK_DEATH(std::advance(it, 1));
+  EXPECT_CHECK_DEATH(std::advance(it, 1));
 }
 
 }  // namespace base

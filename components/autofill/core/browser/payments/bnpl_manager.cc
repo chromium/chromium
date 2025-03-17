@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "base/barrier_callback.h"
 #include "base/check_deref.h"
@@ -140,6 +141,21 @@ void BnplManager::FetchVcnDetails() {
   request_details.redirect_url = ongoing_flow_state_->redirect_url;
   request_details.issuer_id = ongoing_flow_state_->issuer_id;
 
+  payments_autofill_client().ShowAutofillProgressDialog(
+      AutofillProgressDialogType::kBnplFetchVcnProgressDialog,
+      /*cancel_callback=*/base::BindOnce(
+          [](base::WeakPtr<BnplManager> manager) {
+            if (manager) {
+              // TODO(crbug.com/400528473): Log cancel metrics.
+
+              // Note: Does not call
+              // `PaymentsAutofillClient::CloseAutofillProgressDialog()` as this
+              // is expected to be handled by dialog UI code.
+              manager->Reset();
+            }
+          },
+          weak_factory_.GetWeakPtr()));
+
   payments_autofill_client()
       .GetPaymentsNetworkInterface()
       ->GetBnplPaymentInstrumentForFetchingVcn(
@@ -148,10 +164,23 @@ void BnplManager::FetchVcnDetails() {
                          weak_factory_.GetWeakPtr()));
 }
 
+void BnplManager::Reset() {
+  payments_autofill_client().GetPaymentsNetworkInterface()->CancelRequest();
+  ongoing_flow_state_.reset();
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void BnplManager::OnVcnDetailsFetched(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const BnplFetchVcnResponseDetails& response_details) {
-  if (result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+  bool successful =
+      result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
+
+  payments_autofill_client().CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/successful,
+      /*no_interactive_authentication_callback=*/base::OnceClosure());
+
+  if (successful) {
     CHECK(ongoing_flow_state_);
     CreditCard credit_card;
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
@@ -418,9 +447,24 @@ void BnplManager::CreateBnplPaymentInstrument() {
       .GetPaymentsNetworkInterface()
       ->CreateBnplPaymentInstrument(
           std::move(request_details),
-          // TODO(crbug.com/378518488): Integrate with the future
-          // GetBnplPaymentInstrumentForFetchingUrlRequest.
-          base::DoNothing());
+          base::BindOnce(&BnplManager::OnBnplPaymentInstrumentCreated,
+                         weak_factory_.GetWeakPtr()));
+}
+
+void BnplManager::OnBnplPaymentInstrumentCreated(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    std::string instrument_id) {
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
+    ongoing_flow_state_->instrument_id = std::move(instrument_id);
+    FetchRedirectUrl();
+  } else {
+    payments_autofill_client().ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+            /*is_permanent_error=*/result ==
+            PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure));
+
+    Reset();
+  }
 }
 
 }  // namespace autofill::payments

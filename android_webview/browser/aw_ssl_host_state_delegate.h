@@ -68,12 +68,10 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
 
   // Records that a host has run insecure content.
   void HostRanInsecureContent(const std::string& host,
-                              int child_id,
                               InsecureContentType content_type) override;
 
   // Returns whether the specified host ran insecure content.
   bool DidHostRunInsecureContent(const std::string& host,
-                                 int child_id,
                                  InsecureContentType content_type) override;
 
   // HTTPS-First Mode is not implemented in Android Webview.

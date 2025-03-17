@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/public/test/preloading_test_util.h"
@@ -32,8 +33,6 @@ class RunLoop;
 }  // namespace base
 
 namespace content {
-
-class PrefetchContainer;
 
 enum class PrefetchReusableForTests { kDisabled, kEnabled };
 std::ostream& operator<<(std::ostream& ostream, PrefetchReusableForTests);
@@ -166,6 +165,18 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
 
  private:
   raw_ptr<ContentBrowserClient> old_browser_client_;
+};
+
+class TestPrefetchService final : public PrefetchService {
+ public:
+  explicit TestPrefetchService(BrowserContext* browser_context);
+  ~TestPrefetchService() override;
+
+  void PrefetchUrl(
+      base::WeakPtr<PrefetchContainer> prefetch_container) override;
+  void EvictPrefetch(size_t index);
+
+  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
 };
 
 // Helper for testing prefetching-side (i.e. not serving-side) metrics including

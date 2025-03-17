@@ -258,11 +258,6 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
 
   FullBrowserTransitionManager::Get()->OnProfileDestroyed(this);
 
-  // Records the number of active KeyedServices for SystemProfile right before
-  // shutting them down.
-  if (IsSystemProfile())
-    ProfileMetrics::LogSystemProfileKeyedServicesCount(this);
-
   // The SimpleDependencyManager should always be passed after the
   // BrowserContextDependencyManager. This is because the KeyedService instances
   // in the BrowserContextDependencyManager's dependency graph can depend on the

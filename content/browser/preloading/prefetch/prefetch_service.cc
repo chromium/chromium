@@ -103,14 +103,6 @@ std::optional<PreloadingEligibility>& GetForceIneligibilityForTesting() {
   return prefetch_force_ineligibility_for_testing;
 }
 
-PrefetchService::PrefetchResponseCompletedCallbackForTesting&
-GetPrefetchResponseCompletedCallbackForTesting() {
-  static base::NoDestructor<
-      PrefetchService::PrefetchResponseCompletedCallbackForTesting>
-      prefetch_response_completed_callback_for_testing;
-  return *prefetch_response_completed_callback_for_testing;
-}
-
 bool ShouldConsiderDecoyRequestForStatus(PreloadingEligibility eligibility) {
   switch (eligibility) {
     case PreloadingEligibility::kUserHasCookies:
@@ -782,6 +774,45 @@ void PrefetchService::CheckHasServiceWorker(
   CHECK(prefetch_container);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "loading", "PrefetchService::CheckHasServiceWorker", this);
+
+  if (redirect_data) {
+    switch (prefetch_container->service_worker_state()) {
+      case PrefetchServiceWorkerState::kDisallowed:
+        break;
+
+      case PrefetchServiceWorkerState::kAllowed:
+        // Should have been transitioned out already.
+        NOTREACHED();
+
+      case PrefetchServiceWorkerState::kControlled:
+        // Currently we disallow redirects for ServiceWorker-controlled
+        // prefetches.
+        // TODO(https://crbug.com/40947546): Supply an appropriate eligibility
+        // value if needed.
+        OnGotEligibility(std::move(prefetch_container),
+                         std::move(redirect_data),
+                         PreloadingEligibility::kUserHasServiceWorker);
+        return;
+    }
+  } else {
+    switch (prefetch_container->service_worker_state()) {
+      case PrefetchServiceWorkerState::kDisallowed:
+        break;
+
+      case PrefetchServiceWorkerState::kAllowed:
+        // The controlling ServiceWorker will be checked by
+        // `ServiceWorkerMainResourceLoaderInterceptor` from
+        // `PrefetchStreamingURLLoader`, not here during eligibility check.
+        OnGotServiceWorkerResult(std::move(prefetch_container), url,
+                                 std::move(redirect_data), base::Time::Now(),
+                                 ServiceWorkerCapability::NO_SERVICE_WORKER);
+        return;
+
+      case PrefetchServiceWorkerState::kControlled:
+        NOTREACHED();
+    }
+  }
+
   // This service worker check assumes that the prefetch will only ever be
   // performed in a first-party context (main frame prefetch). At the moment
   // that is true but if it ever changes then the StorageKey will need to be
@@ -1454,7 +1485,10 @@ void PrefetchService::SendPrefetchRequest(
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,
                           base::Unretained(this), prefetch_container),
       base::BindOnce(&PrefetchContainer::OnDeterminedHead, prefetch_container),
-      prefetch_container->GetResponseReaderForCurrentPrefetch());
+      prefetch_container->GetResponseReaderForCurrentPrefetch(),
+      prefetch_container->service_worker_state(), browser_context_,
+      base::BindOnce(&PrefetchContainer::OnServiceWorkerStateDetermined,
+                     prefetch_container));
   prefetch_container->SetStreamingURLLoader(std::move(streaming_loader));
 
   DVLOG(1) << *prefetch_container << ": PrefetchStreamingURLLoader is created.";
@@ -1625,11 +1659,6 @@ void PrefetchService::OnPrefetchResponseCompleted(
 
   prefetch_container->OnPrefetchComplete(completion_status);
 
-  if (GetPrefetchResponseCompletedCallbackForTesting()) {
-    GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
-        prefetch_container);
-  }
-
   Prefetch();
 }
 
@@ -1759,13 +1788,6 @@ void PrefetchService::SetForceIneligibilityForTesting(
     PreloadingEligibility eligibility) {
   GetForceIneligibilityForTesting() =  // IN-TEST
       eligibility;
-}
-
-// static
-void PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
-    PrefetchResponseCompletedCallbackForTesting callback) {
-  GetPrefetchResponseCompletedCallbackForTesting() =  // IN-TEST
-      std::move(callback);
 }
 
 base::WeakPtr<PrefetchService> PrefetchService::GetWeakPtr() {

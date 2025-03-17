@@ -34,6 +34,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1478370723027452770">Fá hjálp með Chrome for Testing</translation>
 <translation id="1497802159252041924">Uppsetningarvilla: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Deila Chromium flipa</translation>
+<translation id="1547469039832541117">Lýkur völdu verkefni.</translation>
 <translation id="1553461853655228091">Chromium þarf leyfi til að nota myndavélina til að búa til þrívíddarkort af umhverfinu</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Þessi viðbót er ekki lengur studd. Chromium mælir með að þú fjarlægir hana.}one{Þessi viðbót er ekki lengur studd. Chromium mælir með að þú fjarlægir hana.}other{Þessar viðbætur eru ekki lengur studdar. Chromium mælir með að þú fjarlægir þær.}}</translation>
 <translation id="1574377791422810894">Öryggisverkfæri Chromium</translation>
@@ -226,6 +227,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4148957013307229264">Setur upp...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – innskráning á net – Chromium</translation>
 <translation id="421369550622382712">Uppgötvaðu frábær forrit, leiki, viðbætur og þemu fyrir Chromium.</translation>
+<translation id="4217080900579554343">Skráðu þig inn í Chromium til að fá þessa viðbót og fleira í öllum tölvunum þínum</translation>
 <translation id="4217972271355023382">Til að vera öruggari á netinu með vali foreldra þinna skaltu skipta yfir í Chromium-prófílinn þinn þar sem þú ert þegar innskráð(ur) sem <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Hættir við...</translation>
 <translation id="4224210481850767180">Hætt hefur verið við uppsetninguna.</translation>

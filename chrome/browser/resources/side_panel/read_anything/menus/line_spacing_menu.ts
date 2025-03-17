@@ -8,17 +8,18 @@ import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mix
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {SettingsPrefs} from '../common.js';
 import {ReadAnythingSettingsChange} from '../metrics_browser_proxy.js';
 import {ReadAnythingLogger} from '../read_anything_logger.js';
 
 import {getHtml} from './line_spacing_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
 import type {MenuStateItem} from './menu_util.js';
-import type {SimpleActionMenu} from './simple_action_menu.js';
+import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export interface LineSpacingMenuElement {
   $: {
-    menu: SimpleActionMenu,
+    menu: SimpleActionMenuElement,
   };
 }
 
@@ -26,6 +27,27 @@ const LineSpacingMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
 // Stores and propagates the data for the line spacing menu.
 export class LineSpacingMenuElement extends LineSpacingMenuElementBase {
+  static get is() {
+    return 'line-spacing-menu';
+  }
+
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {settingsPrefs: {type: Object}};
+  }
+
+  settingsPrefs: SettingsPrefs = {
+    letterSpacing: 0,
+    lineSpacing: 0,
+    theme: 0,
+    speechRate: 0,
+    font: '',
+    highlightGranularity: 0,
+  };
+
   protected options_: Array<MenuStateItem<number>> = [
     {
       title: loadTimeData.getString('lineSpacingStandardTitle'),
@@ -46,20 +68,12 @@ export class LineSpacingMenuElement extends LineSpacingMenuElementBase {
 
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
-  static get is() {
-    return 'line-spacing-menu';
-  }
-
-  override render() {
-    return getHtml.bind(this)();
-  }
-
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
   }
 
   protected restoredLineSpacingIndex_(): number {
-    return getIndexOfSetting(this.options_, chrome.readingMode.lineSpacing);
+    return getIndexOfSetting(this.options_, this.settingsPrefs['lineSpacing']);
   }
 
   protected onLineSpacingChange_(event: CustomEvent<{data: number}>) {

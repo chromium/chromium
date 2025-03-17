@@ -236,20 +236,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVote());
 }
 
-class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2
+class TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup
     : public TabGroupEditorBubbleViewDialogBrowserTest {
  public:
-  TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2() {
-    scoped_feature_list_.InitWithFeatures({tab_groups::kTabGroupsSaveV2}, {});
-  }
+  TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup() = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(
-    TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2,
-    UngroupSavedGroupShowsDialog) {
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
+                       UngroupSavedGroupShowsDialog) {
   base::HistogramTester histogram_tester;
 
   ShowUi("SetUp");
@@ -296,9 +293,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, tsm->count());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2,
-    CloseGroupedTab) {
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
+                       CloseGroupedTab) {
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   InProcessBrowserTest::AddBlankTabAndShow(browser());
   InProcessBrowserTest::AddBlankTabAndShow(browser());
@@ -320,9 +316,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, tsm->count());
 }
 
-IN_PROC_BROWSER_TEST_F(
-    TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroupV2,
-    CloseGroupedTabWithPreventShowDialog) {
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTestWithSavedGroup,
+                       CloseGroupedTabWithPreventShowDialog) {
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   InProcessBrowserTest::AddBlankTabAndShow(browser());
   InProcessBrowserTest::AddBlankTabAndShow(browser());

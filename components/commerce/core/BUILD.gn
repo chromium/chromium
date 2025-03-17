@@ -201,8 +201,6 @@ static_library("shopping_service") {
   sources = [
     "bookmark_update_manager.cc",
     "bookmark_update_manager.h",
-    "discounts_storage.cc",
-    "discounts_storage.h",
     "metrics/scheduled_metrics_manager.cc",
     "metrics/scheduled_metrics_manager.h",
     "price_tracking_utils.cc",
@@ -282,8 +280,6 @@ source_set("shopping_service_test_support") {
   sources = [
     "mock_cluster_manager.cc",
     "mock_cluster_manager.h",
-    "mock_discounts_storage.cc",
-    "mock_discounts_storage.h",
     "mock_shopping_service.cc",
     "mock_shopping_service.h",
     "mock_tab_restore_service.cc",
@@ -334,7 +330,6 @@ source_set("shopping_service_unit_tests") {
   sources = [
     "bookmark_update_manager_unittest.cc",
     "commerce_info_cache_unittest.cc",
-    "discounts_storage_unittest.cc",
     "feature_utils_unittest.cc",
     "metrics/scheduled_metrics_manager_unittest.cc",
     "pdp_metrics_unittest.cc",

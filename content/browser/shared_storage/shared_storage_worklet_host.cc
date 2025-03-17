@@ -321,6 +321,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
     const GURL& script_source_url,
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::SharedStorageWorkletCreationMethod creation_method,
+    int worklet_id,
     const std::vector<blink::mojom::OriginTrialFeature>& origin_trial_features,
     mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
         worklet_host,
@@ -353,6 +354,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       saved_queries_enabled_(base::FeatureList::IsEnabled(
           blink::features::kSharedStorageSelectURLSavedQueries)),
       source_id_(page_->GetMainDocument().GetPageUkmSourceId()),
+      worklet_id_(worklet_id),
       creation_time_(base::TimeTicks::Now()) {
   GetContentClient()->browser()->OnSharedStorageWorkletHostCreated(
       &(document_service.render_frame_host()));
@@ -421,7 +423,8 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessScope::kWindow, AccessMethod::kAddModule,
       document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-      SharedStorageEventParams::CreateForAddModule(script_source_url));
+      SharedStorageEventParams::CreateForAddModule(script_source_url,
+                                                   worklet_id_));
 
   create_worklet_finished_callback_ = std::move(callback);
 
@@ -788,8 +791,8 @@ void SharedStorageWorkletHost::SelectURL(
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessScope::kWindow, AccessMethod::kSelectURL,
       document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-      SharedStorageEventParams::CreateForSelectURL(name, serialized_data,
-                                                   std::move(converted_urls)));
+      SharedStorageEventParams::CreateForSelectURL(
+          name, serialized_data, std::move(converted_urls), worklet_id_));
 
   if (saved_queries_enabled_ && !saved_query_name.empty()) {
     auto saved_query_callback = base::BindOnce(
@@ -941,7 +944,8 @@ void SharedStorageWorkletHost::Run(
   shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessScope::kWindow, AccessMethod::kRun,
       document_service_->main_frame_id(), shared_storage_origin_.Serialize(),
-      SharedStorageEventParams::CreateForRun(name, serialized_data));
+      SharedStorageEventParams::CreateForRun(name, serialized_data,
+                                             worklet_id_));
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
       name, std::move(serialized_data),

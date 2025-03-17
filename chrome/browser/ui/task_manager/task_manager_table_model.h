@@ -99,6 +99,9 @@ class TaskManagerTableModel : public TaskManagerObserver,
       size_t row,
       const std::vector<int>& visible_column_ids) override;
 
+  static std::u16string FormatListToString(
+      base::span<const std::u16string> items);
+
   void FilterTaskList(TaskIdList& tasks);
 
   // task_manager::TaskManagerObserver:

@@ -1424,6 +1424,12 @@ void LocalFrameMojoHandler::AddResourceTimingEntryForFailedSubframeNavigation(
   subframe->Owner()->AddResourceTiming(std::move(info));
 }
 
+void LocalFrameMojoHandler::GetScrollPosition(
+    GetScrollPositionCallback callback) {
+  std::move(callback).Run(gfx::ToFlooredPoint(
+      frame_->LocalFrameRoot().View()->LayoutViewport()->ScrollPosition()));
+}
+
 void LocalFrameMojoHandler::RequestFullscreenVideoElement() {
   // Find the first video element of the frame.
   for (auto* child = frame_->GetDocument()->documentElement(); child;

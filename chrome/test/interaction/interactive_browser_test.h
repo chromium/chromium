@@ -458,11 +458,26 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // does not e.g. trigger navigation when clicking a link, so in all these
   // cases, vanilla click events are sent, which should be handled normally for
   // backwards-compatibility reasons.
+  //
+  // Note that if your WebUI will close in response to this action, you should
+  // set `execute_mode` to `kFireAndForget` to avoid failure to receive
+  // confirmation.
   [[nodiscard]] StepBuilder ClickElement(
       ui::ElementIdentifier web_contents,
       const DeepQuery& where,
       ui_controls::MouseButton button = ui_controls::LEFT,
-      ui_controls::AcceleratorState modifiers = ui_controls::kNoAccelerator);
+      ui_controls::AcceleratorState modifiers = ui_controls::kNoAccelerator,
+      ExecuteJsMode execute_mode = ExecuteJsMode::kWaitForCompletion);
+
+  // Convenience version of `ClickElement()` (see above) for
+  // default-left-clicking when you need to specify the execution mode.
+  [[nodiscard]] inline StepBuilder ClickElement(
+      ui::ElementIdentifier web_contents,
+      const DeepQuery& where,
+      ExecuteJsMode execute_mode) {
+    return ClickElement(web_contents, where, ui_controls::LEFT,
+                        ui_controls::kNoAccelerator, execute_mode);
+  }
 
  protected:
   explicit InteractiveBrowserTestApi(

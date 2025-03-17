@@ -73,6 +73,7 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/commerce/product_specifications:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",
     "//chrome/test/data/webui/cr_components/cr_shortcut_input:build_ts",
+    "//chrome/test/data/webui/cr_components/custom_help_bubble:build_ts",
     "//chrome/test/data/webui/cr_components/help_bubble:build_ts",
     "//chrome/test/data/webui/cr_components/history_clusters:build_ts",
     "//chrome/test/data/webui/cr_elements:build_ts",

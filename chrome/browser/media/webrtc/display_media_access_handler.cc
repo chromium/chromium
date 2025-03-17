@@ -329,8 +329,14 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  CHECK_EQ(web_contents->GetLastCommittedURL().scheme(),
-           content::kChromeUIScheme);
+  if (web_contents->GetLastCommittedURL().scheme() !=
+      content::kChromeUIScheme) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+        /*ui=*/nullptr);
+    return;
+  }
 
   content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
                                    content::DesktopMediaID::kNullId,

@@ -316,6 +316,20 @@ void FakeOnDeviceModelService::LoadModel(
   std::move(callback).Run(mojom::LoadModelResult::kSuccess);
 }
 
+void FakeOnDeviceModelService::GetCapabilities(
+    ModelAssets assets,
+    GetCapabilitiesCallback callback) {
+  std::string contents = ReadFile(assets.weights);
+  Capabilities capabilities;
+  if (contents.find("image") != std::string::npos) {
+    capabilities.Put(CapabilityFlags::kImageInput);
+  }
+  if (contents.find("audio") != std::string::npos) {
+    capabilities.Put(CapabilityFlags::kAudioInput);
+  }
+  std::move(callback).Run(capabilities);
+}
+
 void FakeOnDeviceModelService::LoadTextSafetyModel(
     mojom::TextSafetyModelParamsPtr params,
     mojo::PendingReceiver<mojom::TextSafetyModel> model) {

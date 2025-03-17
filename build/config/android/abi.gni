@@ -26,10 +26,11 @@ declare_args() {
   # Build additional browser splits with HWASAN instrumentation enabled.
   build_hwasan_splits = false
 
-  # This configuration has minimal coverage.
-  # Forces all APKs/bundles to be 64-bit only to improve build speed
-  # (no need to also build 32-bit library).
-  skip_secondary_abi_for_cq = false
+  # Enable (webview) APKs that support multiple architectures. Generally
+  # needed only for release builds or for webview testing. Slows down "gn gen"
+  # and ninja parse time due to having to write rules for most native targets
+  # a second time. Applicable only when target_cpu is 64-bit.
+  enable_android_secondary_abi = is_official_build
 }
 
 assert(!devtools_instrumentation_dumping || use_order_profiling,
@@ -92,7 +93,7 @@ android_64bit_current_cpu =
 # target_cpu's that are 32-bit-only or 64-bit-only, as they are not used. The
 # presence of this variable may be used in conjunction with android_64bit_target_cpu
 # to identify target_cpu's that are 32-bit-only or 64-bit-only.
-if (!skip_secondary_abi_for_cq) {
+if (enable_android_secondary_abi) {
   if (target_cpu == "arm64") {
     android_secondary_abi_cpu = "arm"
     android_app_secondary_abi = "armeabi-v7a"

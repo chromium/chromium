@@ -2151,50 +2151,54 @@ auto btree_iterator<N, R, P>::distance_slow(const_iterator other) const
 
 template <typename N, typename R, typename P>
 void btree_iterator<N, R, P>::increment_slow() {
-  if (node_->is_leaf()) {
-    assert(position_ >= node_->finish());
-    btree_iterator save(*this);
-    while (position_ == node_->finish() && !node_->is_root()) {
-      assert(node_->parent()->child(node_->position()) == node_);
-      position_ = node_->position();
-      node_ = node_->parent();
+  N* node = node_;
+  int position = position_;
+  if (node->is_leaf()) {
+    assert(position >= node->finish());
+    while (position == node->finish() && !node->is_root()) {
+      assert(node->parent()->child(node->position()) == node);
+      position = node->position();
+      node = node->parent();
     }
     // TODO(ezb): assert we aren't incrementing end() instead of handling.
-    if (position_ == node_->finish()) {
-      *this = save;
+    if (position == node->finish()) {
+      return;
     }
   } else {
-    assert(position_ < node_->finish());
-    node_ = node_->child(static_cast<field_type>(position_ + 1));
-    while (node_->is_internal()) {
-      node_ = node_->start_child();
+    assert(position < node->finish());
+    node = node->child(static_cast<field_type>(position + 1));
+    while (node->is_internal()) {
+      node = node->start_child();
     }
-    position_ = node_->start();
+    position = node->start();
   }
+  *this = {node, position};
 }
 
 template <typename N, typename R, typename P>
 void btree_iterator<N, R, P>::decrement_slow() {
-  if (node_->is_leaf()) {
-    assert(position_ <= -1);
-    btree_iterator save(*this);
-    while (position_ < node_->start() && !node_->is_root()) {
-      assert(node_->parent()->child(node_->position()) == node_);
-      position_ = node_->position() - 1;
-      node_ = node_->parent();
+  N* node = node_;
+  int position = position_;
+  if (node->is_leaf()) {
+    assert(position <= -1);
+    while (position < node->start() && !node->is_root()) {
+      assert(node->parent()->child(node->position()) == node);
+      position = node->position() - 1;
+      node = node->parent();
     }
     // TODO(ezb): assert we aren't decrementing begin() instead of handling.
-    if (position_ < node_->start()) {
-      *this = save;
+    if (position < node->start()) {
+      return;
     }
   } else {
-    assert(position_ >= node_->start());
-    node_ = node_->child(static_cast<field_type>(position_));
-    while (node_->is_internal()) {
-      node_ = node_->child(node_->finish());
+    assert(position >= node->start());
+    node = node->child(static_cast<field_type>(position));
+    while (node->is_internal()) {
+      node = node->child(node->finish());
     }
-    position_ = node_->finish() - 1;
+    position = node->finish() - 1;
   }
+  *this = {node, position};
 }
 
 template <typename N, typename R, typename P>

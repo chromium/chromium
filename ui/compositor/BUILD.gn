@@ -231,6 +231,7 @@ test("compositor_unittests") {
     "compositor_lock_unittest.cc",
     "compositor_metrics_tracker_unittest.cc",
     "compositor_unittest.cc",
+    "host_begin_frame_observer_unittest.cc",
     "layer_animation_element_unittest.cc",
     "layer_animation_sequence_unittest.cc",
     "layer_animator_unittest.cc",

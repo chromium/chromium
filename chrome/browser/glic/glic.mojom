@@ -4,6 +4,7 @@
 
 module glic.mojom;
 
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
 import "mojo/public/mojom/base/version.mojom";
 import "skia/public/mojom/bitmap.mojom";
@@ -98,6 +99,21 @@ enum GetTabContextErrorReason {
   [ MinVersion=1 ] kNoFocusableTabs = 4,
 };
 
+// Reason for failure while acting in a focused tab. This MUST be kept in
+// sync with the glic_api.ts enum.
+// LINT.IfChange(ActInFocusedTabErrorReason)
+[Stable, Extensible]
+enum ActInFocusedTabErrorReason {
+  [Default] kUnknown = 0,
+  // Capturing Context after acting failed.
+  kGetContextFailed = 1,
+  // The action proto is invalid.
+  kInvalidActionProto = 2,
+  // Action target is not found.
+  kTargetNotFound = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActInFocusedTabErrorReason)
+
 // Reason why a focused tab candidate is not valid for focus.
 [Stable, Extensible]
 enum InvalidCandidateError {
@@ -136,6 +152,11 @@ union GetContextResult {
 union CaptureScreenshotResult {
   CaptureScreenshotErrorReason error_reason;
   Screenshot screenshot;
+};
+
+union ActInFocusedTabResult {
+  ActInFocusedTabErrorReason error_reason;
+  ActInFocusedTabResponse act_in_focused_tab_response;
 };
 
 // Information about the user profile.
@@ -291,6 +312,11 @@ interface WebClientHandler {
   GetContextFromFocusedTab(GetTabContextOptions options)
       => (GetContextResult result);
 
+  // Returns the result of acting in the currently active tab.
+  // Action proto is a serialized proto of type .....
+  ActInFocusedTab(array<uint8> action_proto, GetTabContextOptions options)
+      => (ActInFocusedTabResult result);
+
   // Resize the widget hosting the WebUI to the given size.
   // If `duration` is 0 or less, instantly resize, otherwise run an animation.
   // If the widget doesn't exist yet, `size` will be used as its initial size
@@ -319,6 +345,10 @@ interface WebClientHandler {
   // like <h1> should have style 'user-select: none'.
   SetPanelDraggableAreas(array<gfx.mojom.Rect> draggable_areas) => ();
 
+  // Sets the minimum possible size that a user can manually resize to for the
+  // widget hosting the WebUI.
+  SetMinimumPanelSize(gfx.mojom.Size size);
+
   // Set the state of the Microphone permission pref:
   // prefs::kGlicMicrophoneEnabled. Returns when the browser has stored the new
   // pref value.
@@ -333,6 +363,14 @@ interface WebClientHandler {
   // prefs::kGlicTabContextEnabled. Returns when the browser has stored the new
   // pref value.
   SetTabContextPermissionState(bool enabled) => ();
+
+  // Returns whether a media permission request from the guest should be granted
+  // or denied.
+  ShouldAllowMediaPermissionRequest() => (bool is_allowed);
+
+  // Returns whether a geolocation permission request from the guest should be
+  // granted or denied.
+  ShouldAllowGeolocationPermissionRequest() => (bool is_allowed);
 
   // Set the state of the context access indicator UI effect on the focused tab.
   SetContextAccessIndicator(bool enabled);
@@ -372,6 +410,8 @@ interface WebClientHandler {
   SetSyntheticExperimentState(string trial_name,
                               string group_name);
 
+  // Attempts to open the OS permission settings page.  No return value.
+  OpenOsPermissionSettingsMenu(content_settings.mojom.ContentSettingsType type);
 };
 
 // Data sent from the browser to the web client with panel opening information.
@@ -527,6 +567,11 @@ struct TabContext {
   // Information about the annotated page content. Provided if the document is
   // a web page and annotated page content was requested.
   AnnotatedPageData? annotated_page_data;
+};
+
+struct ActInFocusedTabResponse {
+  // The context of the focused tab after the action was completed.
+  TabContext tab_context;
 };
 
 // Information about a web page being rendered in a tab.

@@ -76,6 +76,11 @@ class IpProtectionProxyDelegate : public net::ProxyDelegate {
   friend class IpProtectionProxyDelegateTest;
   FRIEND_TEST_ALL_PREFIXES(IpProtectionProxyDelegateTest, MergeProxyRules);
 
+  // Note: the order of the return values must match the order of the enum
+  // values in ProxyResolutionResult so that existing metric data is not
+  // affected when we add a new enum value.
+  // TODO(crbug.com/403156545): Refactor this so that we can make calls more
+  // efficiently.
   ProxyResolutionResult ClassifyRequest(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,

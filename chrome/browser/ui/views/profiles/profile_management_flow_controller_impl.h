@@ -32,12 +32,6 @@ class ProfileManagementFlowControllerImpl
   ~ProfileManagementFlowControllerImpl() override;
 
  protected:
-  void SwitchToIdentityStepsFromPostSignIn(
-      Profile* signed_in_profile,
-      const CoreAccountInfo& account_info,
-      std::unique_ptr<content::WebContents> contents,
-      StepSwitchFinishedCallback step_switch_finished_callback);
-
   virtual std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(
       Profile* signed_in_profile,

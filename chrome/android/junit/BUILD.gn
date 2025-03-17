@@ -59,7 +59,6 @@ if (is_android) {
     "//chrome/android:system_ai_service_proto_java",
     "//chrome/android:usage_stats_proto_java",
     "//chrome/android/features/keyboard_accessory:internal_java",
-    "//chrome/android/features/keyboard_accessory/public:public_java",
     "//chrome/android/features/tab_ui:java_resources",
     "//chrome/android/features/tab_ui/public:java",
     "//chrome/android/features/tab_ui/public:ui_java_resources",
@@ -122,6 +121,7 @@ if (is_android) {
     "//chrome/browser/hub/internal:java",
     "//chrome/browser/image_descriptions:java",
     "//chrome/browser/incognito:java",
+    "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/lens:java",
     "//chrome/browser/locale:java",
@@ -520,6 +520,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
+      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSettingProviderTest.java",
       "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
     ]
 

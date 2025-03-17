@@ -112,10 +112,6 @@ class SupervisedUserService : public KeyedService {
   std::optional<Custodian> GetCustodian() const;
   std::optional<Custodian> GetSecondCustodian() const;
 
-  // Returns true if there is a custodian for the child.  A child can have
-  // up to 2 custodians, and this returns true if they have at least 1.
-  bool HasACustodian() const;
-
   // Returns true if the url is blocked due to supervision restrictions on the
   // primary account user.
   bool IsBlockedURL(const GURL& url) const;

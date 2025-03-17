@@ -79,11 +79,11 @@ TEST_F(CreateBnplPaymentInstrumentRequestTest,
   base::Value::Dict response = base::Value::Dict().Set(
       "buy_now_pay_later_info",
       base::Value::Dict().Set("instrument_id",
-                              base::Value(u"some instrument id")));
+                              base::Value("some instrument id")));
 
   ParseResponse(response);
 
-  EXPECT_EQ(test_api(*GetRequest()).get_instrument_id(), u"some instrument id");
+  EXPECT_EQ(test_api(*GetRequest()).get_instrument_id(), "some instrument id");
   EXPECT_TRUE(IsResponseComplete());
 }
 

@@ -22,6 +22,28 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AccountInvestigationReportingType">
+  <variant name="_OnChange"
+      summary="Driven from a change in signin status or change in content
+               area GAIA accounts."/>
+  <variant name="_Periodic" summary="Emitted once per 24 hours."/>
+</variants>
+
+<variants name="SigninAccountStatus">
+  <variant name=".NewAccountExistingAccount"
+      summary="Using a new account, in the sign-in promo, while Chrome knows
+               about other accounts."/>
+  <variant name=".NewAccountNoExistingAccount"
+      summary="Using a new account, in the sign-in promo, while Chrome does
+               not know about other accounts."/>
+  <variant name=".NewAccountPreDice"
+      summary="Using a new account on Desktop, pre-Dice."/>
+  <variant name=".NotDefault"
+      summary="Using not the default account, in the sign-in promo."/>
+  <variant name=".WithDefault"
+      summary="Using the default account, in the sign-in promo."/>
+</variants>
+
 <!-- LINT.IfChange(SigninPromoAccessPoint) -->
 
 <variants name="SigninPromoAccessPoint">
@@ -637,13 +659,18 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.AndroidGetAccountsTime" units="ms"
-    expires_after="2026-01-10">
+<histogram name="Signin.AndroidGetAccountsTime{AndroidGetAccountsTypes}"
+    units="ms" expires_after="2026-01-10">
   <owner>bsazonov@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to retrieve the list of accounts from the system.
+    {AndroidGetAccountsTypes}
   </summary>
+  <token key="AndroidGetAccountsTypes">
+    <variant name="_AccountManager" summary="Using Android AccountManager API"/>
+    <variant name="_GoogleAuthUtil" summary="Using GoogleAuthUtil API"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
@@ -1083,82 +1110,95 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
-<histogram base="true" name="Signin.CookieJar.ChromeAccountRelation"
+<histogram
+    name="Signin.CookieJar.ChromeAccountRelation{AccountInvestigationReportingType}"
     enum="AccountRelation" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
-
-<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
 
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
     The relation between the account signed into chrome, and the account(s) in
     the cookie jar. This metric is never recorded when not signed into chrome.
+    {AccountInvestigationReportingType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.CookieJar.SignedInCount" units="accounts"
-    expires_after="never">
-<!-- expires-never: this histogram gives important user information about user
-  signin behavior, and is often used in UX design decisions -->
-
-<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
-
-  <owner>droger@chromium.org</owner>
-  <owner>skym@chromium.org</owner>
-  <summary>The number of signed in accounts in the cookie jar.</summary>
-</histogram>
-
-<histogram base="true" name="Signin.CookieJar.SignedInCountWithPrimary"
+<histogram
+    name="Signin.CookieJar.SignedInCountWithPrimary{UnconsentedPrimaryAccountType}"
     units="accounts" expires_after="2025-08-31">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
-<!-- Name completed by histogram_suffixes name="UnconsentedPrimaryAccountType" -->
-
   <summary>
     The number of signed in accounts in the cookie jar for users that have a
     (possibly unconsented) primary account. Reported at most every 24 hours
     (using a persistent timer). Reporting is split based on the type of the
-    primary account.
+    primary account. {UnconsentedPrimaryAccountType}
+  </summary>
+  <token key="UnconsentedPrimaryAccountType">
+    <variant name=".NoSyncConsumer" summary="A consumer account, no sync."/>
+    <variant name=".NoSyncEnterprise"
+        summary="An enterprise account, no sync."/>
+    <variant name=".SyncConsumer" summary="A consumer account, syncing."/>
+    <variant name=".SyncEnterprise" summary="An enterprise account, syncing."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Signin.CookieJar.SignedInCount{AccountInvestigationReportingType}"
+    units="accounts" expires_after="never">
+<!-- expires-never: this histogram gives important user information about user
+  signin behavior, and is often used in UX design decisions -->
+
+  <owner>droger@chromium.org</owner>
+  <owner>skym@chromium.org</owner>
+  <summary>
+    The number of signed in accounts in the cookie jar.
+    {AccountInvestigationReportingType}
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.CookieJar.SignedOutCount" units="accounts"
-    expires_after="never">
+<histogram
+    name="Signin.CookieJar.SignedOutCount{AccountInvestigationReportingType}"
+    units="accounts" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
 
-<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
-
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
-  <summary>The number of signed out accounts in the cookie jar.</summary>
+  <summary>
+    The number of signed out accounts in the cookie jar.
+    {AccountInvestigationReportingType}
+  </summary>
 </histogram>
 
-<histogram base="true" name="Signin.CookieJar.StableAge" units="seconds"
-    expires_after="never">
+<histogram name="Signin.CookieJar.StableAge{AccountInvestigationReportingType}"
+    units="seconds" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
 
-<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
-
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
-  <summary>The amount of time since the cookie jar last changed.</summary>
+  <summary>
+    The amount of time since the cookie jar last changed.
+    {AccountInvestigationReportingType}
+  </summary>
 </histogram>
 
-<histogram base="true" name="Signin.CookieJar.TotalCount" units="accounts"
-    expires_after="never">
+<histogram
+    name="Signin.CookieJar.TotalCount{AccountInvestigationReportingType}"
+    units="accounts" expires_after="never">
 <!-- expires-never: this histogram gives important user information about user
   signin behavior, and is often used in UX design decisions -->
 
-<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
-
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
-  <summary>The total number of accounts in the cookie jar.</summary>
+  <summary>
+    The total number of accounts in the cookie jar.
+    {AccountInvestigationReportingType}
+  </summary>
 </histogram>
 
 <histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"
@@ -1258,17 +1298,22 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.Extensions.GetAuthTokenResult"
+<histogram name="Signin.Extensions.GetAuthTokenResult{GetAuthTokenType}"
     enum="GetAuthTokenResult" expires_after="2025-07-13">
-<!-- Name completed by histogram_suffixes name="GetAuthTokenType" -->
-
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Result of the chrome.identity.getAuthToken() extension API call. Recorded
     right before returning the result to an extension. Desktop only.
+    {GetAuthTokenType}
   </summary>
+  <token key="GetAuthTokenType">
+    <variant name=""/>
+    <variant name=".RemoteConsentApproved"
+        summary="The remote consent has been approved for the getAuthToken()
+                 call."/>
+  </token>
 </histogram>
 
 <histogram name="Signin.Extensions.LaunchWebAuthFlowResult"
@@ -1820,14 +1865,13 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.IsShared" enum="BooleanIsShared"
-    expires_after="2024-08-18">
-<!-- Name completed by histogram_suffixes name="AccountInvestigationReportingType" -->
-
+<histogram name="Signin.IsShared{AccountInvestigationReportingType}"
+    enum="BooleanIsShared" expires_after="2024-08-18">
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
     Current best guess if this device is shared between multiple users.
+    {AccountInvestigationReportingType}
   </summary>
 </histogram>
 
@@ -2150,16 +2194,21 @@ should be kept to monitor/debug signin Multilogin issues-->
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.Reconciler.Duration.UpTo3mins" units="ms"
-    expires_after="never">
+<histogram
+    name="Signin.Reconciler.Duration.UpTo3mins{Signin_Reconciler_Duration_UpTo3mins}"
+    units="ms" expires_after="never">
 <!-- expires-never: used to detect and debug signin issues -->
 
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
     Records the execution time of the account reconciler using 100 buckets, up
-    to 3 minutes.
+    to 3 minutes. {Signin_Reconciler_Duration_UpTo3mins}
   </summary>
+  <token key="Signin_Reconciler_Duration_UpTo3mins">
+    <variant name=".Failure" summary="Failed execution of reconciler"/>
+    <variant name=".Success" summary="Successful execution of reconciler"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.Reconciler.ExternalCcResultTime.Completed" units="ms"
@@ -2466,13 +2515,19 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SigninCompletedAccessPoint" enum="SigninAccessPoint"
-    expires_after="2025-07-13">
+<histogram name="Signin.SigninCompletedAccessPoint{SigninAccountStatus}"
+    enum="SigninAccessPoint" expires_after="2025-07-13">
   <owner>msarda@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
-  <summary>Logs the original access point of each completed sign in.</summary>
+  <summary>
+    Logs the original access point of each completed sign in.
+    {SigninAccountStatus}
+  </summary>
+  <token key="SigninAccountStatus" variants="SigninAccountStatus">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Signin.SigninDisabledNotificationShown"
@@ -2567,16 +2622,19 @@ OAuth Multilogin call. -->
   </token>
 </histogram>
 
-<histogram name="Signin.SigninStartedAccessPoint" enum="SigninAccessPoint"
-    expires_after="2025-07-13">
+<histogram name="Signin.SigninStartedAccessPoint{SigninAccountStatus}"
+    enum="SigninAccessPoint" expires_after="2025-07-13">
   <owner>msarda@chromium.org</owner>
   <owner>bsazonov@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Logs the original access point that displayed the signin or reauth Gaia
-    page, before the page is displayed.
+    page, before the page is displayed. {SigninAccountStatus}
   </summary>
+  <token key="SigninAccountStatus" variants="SigninAccountStatus">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Signin.SignOut.Completed" enum="SigninSignoutProfile"
@@ -2631,29 +2689,45 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
-<histogram base="true" name="Signin.SSOIdentityListRequest.CacheState"
+<histogram
+    name="Signin.SSOIdentityListRequest.CacheState{SigninSSOIdentityListRequestCacheRequestState}"
     enum="SigninSSOIdentityListRequestCacheState" expires_after="2026-03-02">
-<!-- Name completed by histogram_suffixes name="SigninSSOIdentityListRequestCacheRequestState" -->
-
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the SSO identity cache state before calling -[GCRSSOService
     identitiesWithError:] or -[GCRSSOService identitiesForDisplay]. See:
-    https://crbug.com/897470.
+    https://crbug.com/897470. {SigninSSOIdentityListRequestCacheRequestState}
   </summary>
+  <token key="SigninSSOIdentityListRequestCacheRequestState">
+    <variant name=".BackgroundRequest"
+        summary="Request fetched in background."/>
+    <variant name=".FirstRequest"
+        summary="First identity request since the application start."/>
+    <variant name=".FirstRequestForeground"
+        summary="First identity request after coming back to foreground."/>
+    <variant name=".ForegroundRequest"
+        summary="Request fetched in foreground. Excludes the first request in
+                 the current foreground session."/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Signin.SSOIdentityListRequest.Duration" units="ms"
-    expires_after="2026-03-02">
-<!-- Name completed by histogram_suffixes name="SigninSSOIdentityListRequestDurationCacheState" -->
-
+<histogram
+    name="Signin.SSOIdentityListRequest.Duration{SigninSSOIdentityListRequestDurationCacheState}"
+    units="ms" expires_after="2026-03-02">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the time it takes to call -[GCRSSOService identitiesWithError:] or
     -[GCRSSOService identitiesForDisplay]. See: https://crbug.com/897470.
+    {SigninSSOIdentityListRequestDurationCacheState}
   </summary>
+  <token key="SigninSSOIdentityListRequestDurationCacheState">
+    <variant name=".NotPopulated"
+        summary="The SSOAuth identity list is not populated."/>
+    <variant name=".Stale" summary="The SSOAuth identity list is stale."/>
+    <variant name=".Valid" summary="The SSOAuth identity list is valid."/>
+  </token>
 </histogram>
 
 <histogram

@@ -228,6 +228,11 @@ TEST_P(AutofillAiPermissionUtilsTest, OffTheRecord) {
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
+TEST_P(AutofillAiPermissionUtilsTest, CountryCode) {
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+}
+
 TEST_P(AutofillAiPermissionUtilsTest, AppLocale) {
   client().set_app_locale("de-DE");
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));

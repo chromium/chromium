@@ -481,9 +481,9 @@ void ViewTransition::ProcessCurrentState() {
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateCapture(
             transition_token_, MaybeCrossFrameSink(),
             style_tracker_->TakeCaptureResourceIds(),
-            ConvertToBaseOnceCallback(
-                CrossThreadBindOnce(&ViewTransition::NotifyCaptureFinished,
-                                    MakeUnwrappingCrossThreadHandle(this)))));
+            ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                &ViewTransition::NotifyCaptureFinished,
+                MakeUnwrappingCrossThreadWeakHandle(this)))));
 
         if (document_->GetFrame()->IsLocalRoot()) {
           // We need to ensure commits aren't deferred since we rely on commits

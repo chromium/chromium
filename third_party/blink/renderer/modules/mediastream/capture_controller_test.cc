@@ -882,194 +882,6 @@ class CaptureControllerScrollTest : public CaptureControllerBaseTest {
   ~CaptureControllerScrollTest() override = default;
 };
 
-TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCaptureControllerNotBound) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  // Test avoids calling CaptureController::SetIsBound().
-
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kInvalidStateError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "getDisplayMedia() not called yet.");
-}
-
-TEST_F(CaptureControllerScrollTest,
-       SendWheelFailsIfCaptureControllerBoundButNoVideoTrack) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  // Test avoids calling CaptureController::SetVideoTrack().
-
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kInvalidStateError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Capture-session not started.");
-}
-
-TEST_F(CaptureControllerScrollTest, SendWheelFailsIfVideoTrackEnded) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
-  controller->SetVideoTrack(track, "descriptor");
-  track->stopTrack(v8_scope.GetExecutionContext());  // Ends the track.
-
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kInvalidStateError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Video track ended.");
-}
-
-TEST_F(CaptureControllerScrollTest, SendWheelSuccess) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
-  controller->SetVideoTrack(track, "descriptor");
-  SimulateFrameArrival(track);
-
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
-      .WillOnce(RunOnceCallback<2>(CscResult::kSuccess));
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsFulfilled());
-}
-
-// Note that the setup differs from that of SendWheelSuccess only in the
-// SurfaceType provided to MakeTrack().
-TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCapturingWindow) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::WINDOW);
-  controller->SetVideoTrack(track, "descriptor");
-
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kNotSupportedError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Action only supported for tab-capture.");
-}
-
-// Note that the setup differs from that of SendWheelSuccess only in the
-// SurfaceType provided to MakeTrack().
-TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCapturingMonitor) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::MONITOR);
-  controller->SetVideoTrack(track, "descriptor");
-
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kNotSupportedError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Action only supported for tab-capture.");
-}
-
-// Note that the setup differs from that of SendWheelSuccess only in the
-// simulated result from the browser process.
-TEST_F(CaptureControllerScrollTest, SimulatedFailureFromDispatcherHost) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
-  controller->SetVideoTrack(track, "descriptor");
-  SimulateFrameArrival(track);
-
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
-      .WillOnce(RunOnceCallback<2>(CscResult::kUnknownError));
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kUnknownError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Unknown error.");
-}
-
-// Note that the setup differs from that of SendWheelSuccess only in the
-// absence of a call to SimulateFrameArrival().
-TEST_F(CaptureControllerScrollTest, SendWheelFailsBeforeReceivingFrames) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
-  controller->SetVideoTrack(track, "descriptor");
-  // Intentionally avoid calling SimulateFrameArrival().
-
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kInvalidStateError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "No frames observed yet.");
-}
-
 // This test:
 // * Simulates the arrival of a frame of a given size.
 // * Simulates a call to sendWheel() at a specific point.
@@ -1093,7 +905,7 @@ TEST_F(CaptureControllerScrollTest, SendWheelScalesCorrectly) {
   EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
       .WillOnce(DoAll(SaveArgPointee<1>(&dispatcher_action),
                       RunOnceCallbackRepeatedly<2>(CscResult::kSuccess)));
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(), action);
+  const auto promise = controller->SendWheel(v8_scope.GetScriptState(), action);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsFulfilled());
@@ -1103,37 +915,13 @@ TEST_F(CaptureControllerScrollTest, SendWheelScalesCorrectly) {
   EXPECT_EQ(dispatcher_action.wheel_delta_y, 222);
 }
 
-TEST_F(CaptureControllerScrollTest, SendWheelFailsWithoutSessionId) {
-  V8TestingScope v8_scope;
-  CaptureController* controller =
-      MakeController(v8_scope.GetExecutionContext());
-  controller->SetIsBound(true);
-  MediaStreamTrack* track =
-      MakeTrack(v8_scope, SurfaceType::BROWSER,
-                CaptureController::getSupportedZoomLevelsForTabs()[0],
-                /*use_session_id=*/false);
-  controller->SetVideoTrack(track, "descriptor");
-  SimulateFrameArrival(track);
-
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
-                                             CapturedWheelAction::Create());
-  ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsRejected());
-  EXPECT_TRUE(IsDOMException(v8_scope, promise_tester.Value(),
-                             DOMExceptionCode::kUnknownError));
-
-  // Avoid false-positives through different error paths terminating in
-  // exception with the same code.
-  EXPECT_EQ(GetDOMExceptionMessage(v8_scope, promise_tester.Value()),
-            "Invalid capture");
-}
-
-class CaptureConstrollerForwardWheelTest : public PageTestBase,
-                                           public CaptureControllerTestSupport {
+class CaptureControllerForwardWheelTest : public PageTestBase,
+                                          public CaptureControllerTestSupport {
+ public:
+  ~CaptureControllerForwardWheelTest() override = default;
 };
 
-TEST_F(CaptureConstrollerForwardWheelTest, Success) {
+TEST_F(CaptureControllerForwardWheelTest, Success) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1177,7 +965,7 @@ TEST_F(CaptureConstrollerForwardWheelTest, Success) {
   run_loop2.Run();
 }
 
-TEST_F(CaptureConstrollerForwardWheelTest, DropUntrustedEvent) {
+TEST_F(CaptureControllerForwardWheelTest, DropUntrustedEvent) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1205,7 +993,7 @@ TEST_F(CaptureConstrollerForwardWheelTest, DropUntrustedEvent) {
   task_environment().RunUntilIdle();
 }
 
-TEST_F(CaptureConstrollerForwardWheelTest, SuccessWithNoElement) {
+TEST_F(CaptureControllerForwardWheelTest, SuccessWithNoElement) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1224,47 +1012,7 @@ TEST_F(CaptureConstrollerForwardWheelTest, SuccessWithNoElement) {
   EXPECT_TRUE(promise_tester.IsFulfilled());
 }
 
-TEST_F(CaptureConstrollerForwardWheelTest, BackendError) {
-  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
-  CaptureController* controller = MakeController(execution_context);
-  controller->SetIsBound(true);
-  MediaStreamTrack* track =
-      MakeTrack(GetDocument().GetExecutionContext(), SurfaceType::BROWSER);
-  controller->SetVideoTrack(track, "descriptor");
-
-  HTMLDivElement* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
-
-  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _)).Times(0);
-
-  ScriptState::Scope scope(script_state);
-  for (CscResult csc_error_result :
-       {CscResult::kUnknownError, CscResult::kNoPermissionError,
-        CscResult::kCapturerNotFoundError,
-        CscResult::kCapturedSurfaceNotFoundError,
-        CscResult::kDisallowedForSelfCaptureError,
-        CscResult::kCapturerNotFocusedError}) {
-    EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
-        .WillOnce(RunOnceCallback<1>(csc_error_result));
-    const auto promise = controller->forwardWheel(script_state, element);
-
-    ScriptPromiseTester promise_tester(script_state, promise);
-    promise_tester.WaitUntilSettled();
-    EXPECT_TRUE(promise_tester.IsRejected());
-
-    auto* mock_listener = MakeGarbageCollected<MockEventListener>();
-    element->addEventListener(event_type_names::kWheel, mock_listener);
-    base::RunLoop run_loop;
-
-    EXPECT_CALL(*mock_listener, Invoke)
-        .WillRepeatedly(Invoke(&run_loop, &base::RunLoop::Quit));
-    element->DispatchEvent(*WheelEvent::Create(event_type_names::kWheel,
-                                               WheelEventInit::Create()));
-    run_loop.Run();
-  }
-}
-
-TEST_F(CaptureConstrollerForwardWheelTest, NoSessionId) {
+TEST_F(CaptureControllerForwardWheelTest, NoSessionId) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1288,7 +1036,7 @@ TEST_F(CaptureConstrollerForwardWheelTest, NoSessionId) {
             "Invalid capture.");
 }
 
-TEST_F(CaptureConstrollerForwardWheelTest, NoTrack) {
+TEST_F(CaptureControllerForwardWheelTest, NoTrack) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1312,7 +1060,7 @@ TEST_F(CaptureConstrollerForwardWheelTest, NoTrack) {
             "Invalid capture.");
 }
 
-TEST_F(CaptureConstrollerForwardWheelTest, StoppedTrack) {
+TEST_F(CaptureControllerForwardWheelTest, StoppedTrack) {
   CaptureController* controller =
       MakeController(GetDocument().GetExecutionContext());
   controller->SetIsBound(true);
@@ -1337,9 +1085,106 @@ TEST_F(CaptureConstrollerForwardWheelTest, StoppedTrack) {
             "Invalid capture.");
 }
 
-// Test the validation of sendWheel() parameters.
+class CaptureControllerForwardWheelBackendErrorTest
+    : public CaptureControllerForwardWheelTest,
+      public WithParamInterface<CscResult> {
+ public:
+  CaptureControllerForwardWheelBackendErrorTest() : error_(GetParam()) {}
+  ~CaptureControllerForwardWheelBackendErrorTest() override = default;
+
+ protected:
+  const CscResult error_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CaptureControllerForwardWheelBackendErrorTest,
+                         Values(CscResult::kUnknownError,
+                                CscResult::kNoPermissionError,
+                                CscResult::kCapturerNotFoundError,
+                                CscResult::kCapturedSurfaceNotFoundError,
+                                CscResult::kDisallowedForSelfCaptureError,
+                                CscResult::kCapturerNotFocusedError));
+
+TEST_P(CaptureControllerForwardWheelBackendErrorTest, Test) {
+  ExecutionContext* execution_context = GetDocument().GetExecutionContext();
+  CaptureController* controller = MakeController(execution_context);
+  controller->SetIsBound(true);
+  MediaStreamTrack* track =
+      MakeTrack(GetDocument().GetExecutionContext(), SurfaceType::BROWSER);
+  controller->SetVideoTrack(track, "descriptor");
+
+  HTMLDivElement* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+
+  EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _)).Times(0);
+
+  ScriptState::Scope scope(script_state);
+  EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
+      .WillOnce(RunOnceCallback<1>(error_));
+  const auto promise = controller->forwardWheel(script_state, element);
+
+  ScriptPromiseTester promise_tester(script_state, promise);
+  promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(promise_tester.IsRejected());
+
+  auto* mock_listener = MakeGarbageCollected<MockEventListener>();
+  element->addEventListener(event_type_names::kWheel, mock_listener);
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(*mock_listener, Invoke)
+      .WillRepeatedly(Invoke(&run_loop, &base::RunLoop::Quit));
+  element->DispatchEvent(
+      *WheelEvent::Create(event_type_names::kWheel, WheelEventInit::Create()));
+  run_loop.Run();
+}
+
+class CaptureControllerForwardWheelUnsupportedSurfacesTest
+    : public CaptureControllerForwardWheelTest,
+      public WithParamInterface<SurfaceType> {
+ public:
+  CaptureControllerForwardWheelUnsupportedSurfacesTest()
+      : surface_type_(GetParam()) {}
+  ~CaptureControllerForwardWheelUnsupportedSurfacesTest() override = default;
+
+ protected:
+  const SurfaceType surface_type_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CaptureControllerForwardWheelUnsupportedSurfacesTest,
+                         Values(SurfaceType::WINDOW, SurfaceType::MONITOR));
+
+TEST_P(CaptureControllerForwardWheelUnsupportedSurfacesTest, Fails) {
+  CaptureController* controller =
+      MakeController(GetDocument().GetExecutionContext());
+  controller->SetIsBound(true);
+  MediaStreamTrack* track =
+      MakeTrack(GetDocument().GetExecutionContext(), surface_type_);
+  controller->SetVideoTrack(track, "descriptor");
+
+  HTMLDivElement* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+
+  ScriptState::Scope scope(script_state);
+  ON_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
+      .WillByDefault(RunOnceCallback<1>(CscResult::kSuccess));
+  auto promise = controller->forwardWheel(script_state, element);
+
+  ScriptPromiseTester promise_tester(script_state, promise);
+  promise_tester.WaitUntilSettled();
+  EXPECT_TRUE(promise_tester.IsRejected());
+  EXPECT_TRUE(IsDOMException(script_state, promise_tester.Value(),
+                             DOMExceptionCode::kNotSupportedError));
+
+  // Avoid false-positives through different error paths terminating in
+  // exception with the same code.
+  EXPECT_EQ(GetDOMExceptionMessage(script_state, promise_tester.Value()),
+            "Action only supported for tab-capture.");
+}
+
+// Test the validation of forwarded wheel parameters.
 class CaptureControllerScrollParametersValidationTest
-    : public CaptureControllerScrollTest,
+    : public CaptureControllerBaseTest,
       public WithParamInterface<
           std::tuple<std::tuple<ScrollDirection, ScrollDirection>,
                      std::tuple<gfx::Point, bool>>> {
@@ -1441,7 +1286,7 @@ TEST_P(CaptureControllerScrollParametersValidationTest, ValidateCoordinates) {
   action->setY(scroll_coordinates_.y());
   action->setWheelDeltaX(wheel_deltax_x());
   action->setWheelDeltaY(wheel_deltax_y());
-  const auto promise = controller->sendWheel(v8_scope.GetScriptState(), action);
+  const auto promise = controller->SendWheel(v8_scope.GetScriptState(), action);
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();

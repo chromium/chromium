@@ -332,6 +332,8 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediator.java:LoadPoint) -->
 
+<!-- LINT.IfChange(MobileDefaultBrowserState) -->
+
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
   <int value="1"
@@ -343,7 +345,10 @@ chromium-metrics-reviews@google.com.
   <int value="4"
       label="Other app currently default; that app not in original system
              image"/>
+  <int value="5" label="Other Chrome channel default"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/DefaultBrowserInfoUmaRecorder.java:MobileDefaultBrowserState) -->
 
 <!-- LINT.IfChange(MobileFreProgress) -->
 

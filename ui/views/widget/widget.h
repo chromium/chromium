@@ -18,7 +18,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -1434,6 +1434,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   GetDisableActivationChangeHandling() {
     return g_disable_activation_change_handling_;
   }
+
+  // Helper for Init() to handle accessibility-specific work.
+  void InitAccessibility();
 
   // Persists the window's restored position and "show" state using the
   // window delegate.

@@ -587,18 +587,11 @@ constexpr uint64_t StringToUint64WithBase(std::string_view str, uint8_t base) {
 // Implementations of Windows' int-to-string conversions
 COMPONENT_EXPORT(URL)
 int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix);
-COMPONENT_EXPORT(URL)
-int _itow_s(int value, char16_t* buffer, size_t size_in_chars, int radix);
 
 // Secure template overloads for these functions
 template <size_t N>
 inline int _itoa_s(int value, char (&buffer)[N], int radix) {
   return _itoa_s(value, buffer, N, radix);
-}
-
-template <size_t N>
-inline int _itow_s(int value, char16_t (&buffer)[N], int radix) {
-  return _itow_s(value, buffer, N, radix);
 }
 
 #endif  // WIN32

@@ -22,6 +22,7 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/blocklist_check.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
@@ -79,36 +80,40 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_management.h"
+#endif
+
 using content::BrowserThread;
 
 namespace extensions {
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::CreateSilent(
-    ExtensionService* frontend) {
-  return new CrxInstaller(frontend, std::unique_ptr<ExtensionInstallPrompt>(),
+    content::BrowserContext* context) {
+  return new CrxInstaller(context, std::unique_ptr<ExtensionInstallPrompt>(),
                           nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
-    ExtensionService* frontend,
+    content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPrompt> client) {
-  return new CrxInstaller(frontend, std::move(client), nullptr);
+  return new CrxInstaller(context, std::move(client), nullptr);
 }
 
 // static
 scoped_refptr<CrxInstaller> CrxInstaller::Create(
-    ExtensionService* service,
+    content::BrowserContext* context,
     std::unique_ptr<ExtensionInstallPrompt> client,
     const InstallApproval* approval) {
-  return new CrxInstaller(service, std::move(client), approval);
+  return new CrxInstaller(context, std::move(client), approval);
 }
 
-CrxInstaller::CrxInstaller(ExtensionService* service,
+CrxInstaller::CrxInstaller(content::BrowserContext* context,
                            std::unique_ptr<ExtensionInstallPrompt> client,
                            const InstallApproval* approval)
-    : profile_(service->profile()),
+    : profile_(Profile::FromBrowserContext(context)),
       registrar_(ExtensionRegistrar::Get(profile_)),
       install_directory_(registrar_->install_directory()),
       install_source_(mojom::ManifestLocation::kInternal),
@@ -116,7 +121,6 @@ CrxInstaller::CrxInstaller(ExtensionService* service,
       fail_install_if_unexpected_version_(false),
       extensions_enabled_(registrar_->extensions_enabled()),
       delete_source_(false),
-      service_(service),
       // See header file comment on |client_| for why we use a raw pointer here.
       client_(client.release()),
       apps_require_extension_mime_type_(false),
@@ -131,6 +135,7 @@ CrxInstaller::CrxInstaller(ExtensionService* service,
       update_from_settings_page_(false),
       install_flags_(kInstallFlagNone) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(!profile_->IsOffTheRecord());
   profile_observation_.Observe(profile_);
 
   // Observe for browser shutdown. Unretained is safe because the callback
@@ -432,9 +437,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
       // For apps with a gallery update URL, require that they be installed
       // from the gallery.
       // TODO(erikkay) Apply this rule for paid extensions and themes as well.
-      ExtensionManagement* extension_management =
-          ExtensionManagementFactory::GetForBrowserContext(profile_);
-      if (extension_management->UpdatesFromWebstore(*extension)) {
+      if (UpdatesFromWebstore(*extension)) {
         return CrxInstallError(
             CrxInstallErrorType::OTHER,
             CrxInstallErrorDetail::NOT_INSTALLED_FROM_GALLERY,
@@ -611,8 +614,7 @@ void CrxInstaller::OnProfileWillBeDestroyed(Profile* profile) {
   profile_keep_alive_.reset();
   profile_observation_.Reset();
   profile_ = nullptr;
-  // The service will be deleted shortly.
-  service_ = nullptr;
+  // The registrar will be deleted shortly.
   registrar_ = nullptr;
 }
 
@@ -874,10 +876,7 @@ void CrxInstaller::InitializeCreationFlagsForUpdate(const Extension* extension,
   // which are newer. We need to check whether the update URL is from webstore
   // or not from |ExtensionManagement| because the extension update URL might be
   // overriden by policy.
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-  if (extension->from_webstore() ||
-      extension_management->UpdatesFromWebstore(*extension)) {
+  if (extension->from_webstore() || UpdatesFromWebstore(*extension)) {
     creation_flags_ |= Extension::FROM_WEBSTORE;
   }
 
@@ -899,10 +898,7 @@ void CrxInstaller::UpdateCreationFlagsAndCompleteInstall(
   if (withholding_behavior == WithholdingBehavior::kWithholdPermissions)
     set_withhold_permissions();
 
-  ExtensionManagement* extension_management =
-      ExtensionManagementFactory::GetForBrowserContext(profile());
-  const GURL update_url =
-      extension_management->GetEffectiveUpdateURL(*(extension()));
+  const GURL update_url = GetEffectiveUpdateURL(*(extension()));
   const bool updates_from_webstore_or_empty_update_url =
       update_url.is_empty() || extension_urls::IsWebstoreUpdateUrl(update_url);
   if (!shared_file_task_runner_->PostTask(
@@ -1051,8 +1047,10 @@ void CrxInstaller::ReportSuccessFromUIThread() {
     }
   }
 
-  service_->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
-                                 std::move(ruleset_install_prefs_));
+  ExtensionService* service =
+      ExtensionSystem::Get(profile_)->extension_service();
+  service->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
+                                std::move(ruleset_install_prefs_));
   NotifyCrxInstallComplete(std::nullopt);
 }
 
@@ -1248,6 +1246,30 @@ void CrxInstaller::set_expectations_verified_callback(
 
 void CrxInstaller::OnBrowserTerminating() {
   browser_terminating_ = true;
+}
+
+GURL CrxInstaller::GetEffectiveUpdateURL(const Extension& extension) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/394876083): Use ExtensionManagement when it
+  // is ported to desktop Android.
+  return ManifestURL::GetUpdateURL(&extension);
+#else
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return extension_management->GetEffectiveUpdateURL(extension);
+#endif
+}
+
+bool CrxInstaller::UpdatesFromWebstore(const Extension& extension) {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/394876083): Use ExtensionManagement when it
+  // is ported to desktop Android.
+  return true;
+#else
+  ExtensionManagement* extension_management =
+      ExtensionManagementFactory::GetForBrowserContext(profile_);
+  return extension_management->UpdatesFromWebstore(extension);
+#endif
 }
 
 }  // namespace extensions

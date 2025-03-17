@@ -23,7 +23,8 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -46,6 +47,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/ad_auction/event_record.h"
 #include "services/network/public/cpp/features.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -69,7 +71,19 @@ namespace {
 using PassKey = base::PassKey<InterestGroupStorage>;
 using blink::mojom::BiddingBrowserSignalsPtr;
 using blink::mojom::PreviousWinPtr;
+using blink::mojom::ViewAndClickCountsPtr;
+using blink::mojom::ViewOrClickCountsPtr;
 using SellerCapabilitiesType = blink::SellerCapabilitiesType;
+using network::AdAuctionEventRecord;
+
+// The raw view and click data for a given (provider_origin, eligible_origin)
+// tuple.
+struct ViewClickCountsForProviderAndEligible {
+  ListOfTimestamps uncompacted_view_events;
+  ListOfTimestampAndCounts compacted_view_events;
+  ListOfTimestamps uncompacted_click_events;
+  ListOfTimestampAndCounts compacted_click_events;
+};
 
 const base::FilePath::CharType kDatabasePath[] =
     FILE_PATH_LITERAL("InterestGroups");
@@ -107,6 +121,7 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 31 - 2025/01 - crrev.com/c/6084483
 // Version 32 - 2025/02 - crrev.com/c/6239846
 // Version 33 - 2025/02 - crrev.com/c/6248184
+// Version 34 - 2025/02 - crrev.com/c/6256880
 //
 // Version 1 adds a table for interest groups.
 // Version 2 adds a column for rate limiting interest group updates.
@@ -151,8 +166,9 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 32 adds duration column to the debug report lockout table, and
 //  renames its last_report_sent_time column to starting_time.
 // Version 33 adds view_and_click_counts_providers interest_groups field.
+// Version 34 adds view_and_click_events table.
 
-const int kCurrentVersionNumber = 33;
+const int kCurrentVersionNumber = 34;
 
 // Earliest version of the code which can use a |kCurrentVersionNumber| database
 // without failing.
@@ -163,9 +179,8 @@ const int kCompatibleVersionNumber = 33;
 const int kDeprecatedVersionNumber = 5;
 
 std::string Serialize(base::ValueView value_view) {
-  std::string json_output;
-  JSONStringValueSerializer serializer(&json_output);
-  if (serializer.Serialize(value_view)) {
+  std::optional<std::string> json_output = base::WriteJson(value_view);
+  if (json_output.has_value()) {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.JSONSerializationResult",
         InterestGroupStorageJSONSerializationResult::kSucceeded);
@@ -175,17 +190,14 @@ std::string Serialize(base::ValueView value_view) {
         InterestGroupStorageJSONSerializationResult::kFailed);
     // TODO(crbug.com/355010821): Consider bubbling out the failure.
   }
-  return json_output;
+  return std::move(json_output).value_or(std::string());
 }
-std::unique_ptr<base::Value> DeserializeValue(
-    const std::string& serialized_value) {
+
+std::optional<base::Value> DeserializeValue(std::string_view serialized_value) {
   if (serialized_value.empty()) {
     return {};
   }
-  JSONStringValueDeserializer deserializer(serialized_value);
-  std::unique_ptr<base::Value> result =
-      deserializer.Deserialize(/*error_code=*/nullptr,
-                               /*error_message=*/nullptr);
+  std::optional<base::Value> result = base::JSONReader::Read(serialized_value);
   if (result) {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.JSONDeserializationResult",
@@ -203,7 +215,7 @@ std::unique_ptr<base::Value> DeserializeValue(
 std::string Serialize(const url::Origin& origin) {
   return origin.Serialize();
 }
-url::Origin DeserializeOrigin(const std::string& serialized_origin) {
+url::Origin DeserializeOrigin(std::string_view serialized_origin) {
   return url::Origin::Create(GURL(serialized_origin));
 }
 
@@ -213,7 +225,7 @@ std::string Serialize(const std::optional<GURL>& url) {
   }
   return url->spec();
 }
-std::optional<GURL> DeserializeURL(const std::string& serialized_url) {
+std::optional<GURL> DeserializeURL(std::string_view serialized_url) {
   GURL result(serialized_url);
   if (result.is_empty()) {
     return std::nullopt;
@@ -251,6 +263,10 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(const PassKey& passkey,
     if (maybe_selectable_buyer_and_seller_reporting_ids) {
       std::vector<std::string> selectable_buyer_and_seller_reporting_ids;
       for (const auto& id : *maybe_selectable_buyer_and_seller_reporting_ids) {
+        // TODO: `base::Value::GetString()` will crash if this value is not a
+        // string, but this data originates from a potentially untrusted
+        // database. Operations like this, including `DCHECK`s, should be
+        // audited throughout this file.
         selectable_buyer_and_seller_reporting_ids.emplace_back(id.GetString());
       }
       result.selectable_buyer_and_seller_reporting_ids =
@@ -291,11 +307,11 @@ std::string Serialize(
   for (const auto& key_value_pair : *flat_map) {
     dict.Set(key_value_pair.first, key_value_pair.second);
   }
-  return Serialize(base::Value(std::move(dict)));
+  return Serialize(dict);
 }
 std::optional<base::flat_map<std::string, double>> DeserializeStringDoubleMap(
-    const std::string& serialized_flat_map) {
-  std::unique_ptr<base::Value> flat_map_value =
+    std::string_view serialized_flat_map) {
+  std::optional<base::Value> flat_map_value =
       DeserializeValue(serialized_flat_map);
   if (!flat_map_value || !flat_map_value->is_dict()) {
     return std::nullopt;
@@ -313,9 +329,9 @@ std::optional<base::flat_map<std::string, double>> DeserializeStringDoubleMap(
   return base::flat_map<std::string, double>(std::move(pairs));
 }
 
-AdProtos GetAdProtosFromAds(std::vector<blink::InterestGroup::Ad> ads) {
+AdProtos GetAdProtosFromAds(const std::vector<blink::InterestGroup::Ad>& ads) {
   AdProtos ad_protos;
-  for (blink::InterestGroup::Ad ad : ads) {
+  for (const blink::InterestGroup::Ad& ad : ads) {
     AdProtos_AdProto* ad_proto = ad_protos.add_ads();
     ad_proto->set_render_url(ad.render_url());
     if (ad.size_group.has_value()) {
@@ -399,9 +415,9 @@ std::string Serialize(
 
 std::optional<std::vector<blink::InterestGroup::Ad>>
 DeserializeInterestGroupAdVectorJson(const PassKey& passkey,
-                                     const std::string& serialized_ads,
+                                     std::string_view serialized_ads,
                                      bool for_components) {
-  std::unique_ptr<base::Value> ads_value = DeserializeValue(serialized_ads);
+  std::optional<base::Value> ads_value = DeserializeValue(serialized_ads);
   if (!ads_value || !ads_value->is_list()) {
     return std::nullopt;
   }
@@ -420,7 +436,7 @@ DeserializeInterestGroupAdVectorJson(const PassKey& passkey,
 // DecompressAndDeserializeInterestGroupAdVectorProto() is used.
 std::optional<std::vector<blink::InterestGroup::Ad>>
 DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
-                                      const std::string& serialized_ads) {
+                                      std::string_view serialized_ads) {
   base::TimeTicks start = base::TimeTicks::Now();
   AdProtos ad_protos;
 
@@ -437,7 +453,7 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
     // TODO(crbug.com/355010821): Consider bubbling out the failure.
   }
 
-  if (not success || ad_protos.ads().empty()) {
+  if (!success || ad_protos.ads().empty()) {
     return std::nullopt;
   }
 
@@ -498,7 +514,7 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
 std::optional<std::vector<blink::InterestGroup::Ad>>
 DecompressAndDeserializeInterestGroupAdVectorProto(
     const PassKey& passkey,
-    const std::string& compressed) {
+    std::string_view compressed) {
   std::string serialized_ads;
   base::TimeTicks start = base::TimeTicks::Now();
   if (!snappy::Uncompress(compressed.data(), compressed.size(),
@@ -529,20 +545,19 @@ std::string Serialize(
     size_dict.Set("height", key_value_pair.second.height);
     size_dict.Set("height_units",
                   static_cast<int>(key_value_pair.second.height_units));
-    dict.Set(key_value_pair.first,
-             Serialize(base::Value(std::move(size_dict))));
+    dict.Set(key_value_pair.first, Serialize(size_dict));
   }
-  return Serialize(base::Value(std::move(dict)));
+  return Serialize(dict);
 }
 std::optional<base::flat_map<std::string, blink::AdSize>>
-DeserializeStringSizeMap(const std::string& serialized_sizes) {
-  std::unique_ptr<base::Value> dict = DeserializeValue(serialized_sizes);
+DeserializeStringSizeMap(std::string_view serialized_sizes) {
+  std::optional<base::Value> dict = DeserializeValue(serialized_sizes);
   if (!dict || !dict->is_dict()) {
     return std::nullopt;
   }
   std::vector<std::pair<std::string, blink::AdSize>> result;
   for (std::pair<const std::string&, base::Value&> entry : dict->GetDict()) {
-    std::unique_ptr<base::Value> ads_size =
+    std::optional<base::Value> ads_size =
         DeserializeValue(entry.second.GetString());
     const base::Value::Dict* size_dict = ads_size->GetIfDict();
     DCHECK(size_dict);
@@ -578,17 +593,17 @@ std::string Serialize(
     }
     dict.Set(key_value_pair.first, Serialize(list));
   }
-  return Serialize(base::Value(std::move(dict)));
+  return Serialize(dict);
 }
 std::optional<base::flat_map<std::string, std::vector<std::string>>>
-DeserializeStringStringVectorMap(const std::string& serialized_groups) {
-  std::unique_ptr<base::Value> dict = DeserializeValue(serialized_groups);
+DeserializeStringStringVectorMap(std::string_view serialized_groups) {
+  std::optional<base::Value> dict = DeserializeValue(serialized_groups);
   if (!dict || !dict->is_dict()) {
     return std::nullopt;
   }
   std::vector<std::pair<std::string, std::vector<std::string>>> result;
   for (std::pair<const std::string&, base::Value&> entry : dict->GetDict()) {
-    std::unique_ptr<base::Value> list =
+    std::optional<base::Value> list =
         DeserializeValue(entry.second.GetString());
     DCHECK(list && list->is_list());
     std::vector<std::string> result_sizes;
@@ -612,8 +627,8 @@ std::string Serialize(const std::optional<std::vector<std::string>>& strings) {
 }
 
 std::optional<std::vector<std::string>> DeserializeStringVector(
-    const std::string& serialized_vector) {
-  std::unique_ptr<base::Value> list = DeserializeValue(serialized_vector);
+    std::string_view serialized_vector) {
+  std::optional<base::Value> list = DeserializeValue(serialized_vector);
   if (!list || !list->is_list()) {
     return std::nullopt;
   }
@@ -647,7 +662,7 @@ std::string Serialize(const std::optional<std::vector<url::Origin>>& origins) {
 }
 
 std::optional<std::vector<url::Origin>> DeserializeOriginVector(
-    const std::string& serialized_vector) {
+    std::string_view serialized_vector) {
   ListOfOrigins list_of_origins;
 
   bool success = list_of_origins.ParseFromString(serialized_vector);
@@ -697,11 +712,11 @@ std::string Serialize(
     dict.Set(Serialize(key_value_pair.first),
              base::NumberToString(Serialize(key_value_pair.second)));
   }
-  return Serialize(base::Value(std::move(dict)));
+  return Serialize(dict);
 }
 std::optional<base::flat_map<url::Origin, SellerCapabilitiesType>>
-DeserializeSellerCapabilitiesMap(const std::string& serialized) {
-  std::unique_ptr<base::Value> dict = DeserializeValue(serialized);
+DeserializeSellerCapabilitiesMap(std::string_view serialized) {
+  std::optional<base::Value> dict = DeserializeValue(serialized);
   if (!dict || !dict->is_dict()) {
     return std::nullopt;
   }
@@ -733,14 +748,14 @@ blink::AuctionServerRequestFlags DeserializeAuctionServerRequestFlags(
 }
 
 std::vector<uint8_t> Serialize(
-    std::optional<blink::InterestGroup::AdditionalBidKey> key) {
+    const std::optional<blink::InterestGroup::AdditionalBidKey>& key) {
   if (!key || key->empty()) {
     return std::vector<uint8_t>();
   }
   return std::vector<uint8_t>(key->begin(), key->end());
 }
 std::optional<blink::InterestGroup::AdditionalBidKey>
-DeserializeAdditionalBidKey(const base::span<const uint8_t>& serialized) {
+DeserializeAdditionalBidKey(base::span<const uint8_t> serialized) {
   if (serialized.size() != ED25519_PUBLIC_KEY_LEN) {
     return std::nullopt;
   }
@@ -799,7 +814,7 @@ enum KAnonKeyType {
   kUnknown = 3
 };
 
-KAnonKeyType GetKAnonType(const std::string& unhashed_key) {
+KAnonKeyType GetKAnonType(std::string_view unhashed_key) {
   if (unhashed_key.starts_with(blink::kKAnonKeyForAdBidPrefix)) {
     return KAnonKeyType::kAdBid;
   } else if (unhashed_key.starts_with(
@@ -1169,12 +1184,56 @@ bool CreateCurrentSchema(sql::Database& db) {
   if (!db.Execute(kBAKeysTableSql)) {
     return false;
   }
+
+  DCHECK(!db.DoesTableExist("view_and_click_events"));
+  static const char kViewAndClickEventsSql[] =
+      // clang-format off
+      "CREATE TABLE view_and_click_events("
+        "provider_origin TEXT NOT NULL,"
+        "eligible_origin TEXT NOT NULL,"
+        "uncompacted_view_events BLOB NOT NULL,"
+        "compacted_view_events BLOB NOT NULL,"
+        "uncompacted_click_events BLOB NOT NULL,"
+        "compacted_click_events BLOB NOT NULL,"
+      "PRIMARY KEY(provider_origin, eligible_origin))";
+  // clang-format on
+  if (!db.Execute(kViewAndClickEventsSql)) {
+    DLOG(ERROR)
+        << "view_and_click_events CREATE SQL statement did not compile: "
+        << db.GetErrorMessage();
+    return false;
+  }
+
   return true;
 }
 
 bool VacuumDB(sql::Database& db) {
   static const char kVacuum[] = "VACUUM";
   return db.Execute(kVacuum);
+}
+
+bool UpgradeV33SchemaToV34(sql::Database& db, sql::MetaTable& meta_table) {
+  // Make `view_and_click_events` table.
+  DCHECK(!db.DoesTableExist("view_and_click_events"));
+  static const char kViewAndClickEventsSql[] =
+      // clang-format off
+      "CREATE TABLE view_and_click_events("
+        "provider_origin TEXT NOT NULL,"
+        "eligible_origin TEXT NOT NULL,"
+        "uncompacted_view_events BLOB NOT NULL,"
+        "compacted_view_events BLOB NOT NULL,"
+        "uncompacted_click_events BLOB NOT NULL,"
+        "compacted_click_events BLOB NOT NULL,"
+      "PRIMARY KEY(provider_origin, eligible_origin))";
+  // clang-format on
+  if (!db.Execute(kViewAndClickEventsSql)) {
+    DLOG(ERROR) << "view_and_click_counts_providers upgrade CREATE SQL "
+                   "statement did not compile: "
+                << db.GetErrorMessage();
+    return false;
+  }
+
+  return true;
 }
 
 bool UpgradeV32SchemaToV33(sql::Database& db, sql::MetaTable& meta_table) {
@@ -1404,8 +1463,8 @@ bool UpgradeV29SchemaToV30(sql::Database& db, sql::MetaTable& meta_table) {
     UMA_HISTOGRAM_COUNTS_1M("Storage.InterestGroup.AdProtoSizeCompressed",
                             compressed_ad_components_pb.size());
 
-    update_group.BindString(2, select_prev_groups.ColumnString(0));
-    update_group.BindString(3, select_prev_groups.ColumnString(1));
+    update_group.BindString(2, select_prev_groups.ColumnStringView(0));
+    update_group.BindString(3, select_prev_groups.ColumnStringView(1));
 
     if (!update_group.Run()) {
       return false;
@@ -1674,7 +1733,8 @@ bool UpgradeV26SchemaToV27(sql::Database& db, sql::MetaTable& meta_table) {
     std::string owner = get_positive_keys.ColumnString(0);
     std::string name = get_positive_keys.ColumnString(1);
     std::string hashed_key = get_positive_keys.ColumnString(2);
-    positive_keys[std::make_pair(owner, name)].add_keys(hashed_key);
+    positive_keys[std::make_pair(std::move(owner), std::move(name))].add_keys(
+        std::move(hashed_key));
   }
   sql::Statement move_positive_kanon_keys(
       db.GetCachedStatement(SQL_FROM_HERE,
@@ -1786,14 +1846,17 @@ bool UpgradeV24SchemaToV25(sql::Database& db, sql::MetaTable& meta_table) {
 
     // Copy over the existing columns.
     insert_entry.BindTime(0, select_previous_k_anon_values.ColumnTime(0));
-    insert_entry.BindString(1, select_previous_k_anon_values.ColumnString(1));
-    insert_entry.BindString(2, select_previous_k_anon_values.ColumnString(2));
+    insert_entry.BindString(1,
+                            select_previous_k_anon_values.ColumnStringView(1));
+    insert_entry.BindString(2,
+                            select_previous_k_anon_values.ColumnStringView(2));
     insert_entry.BindBool(3, select_previous_k_anon_values.ColumnBool(3));
     insert_entry.BindTime(4, select_previous_k_anon_values.ColumnTime(4));
     insert_entry.BindTime(5, select_previous_k_anon_values.ColumnTime(5));
 
     // Create the new columns.
-    std::string unhashed_key = select_previous_k_anon_values.ColumnString(6);
+    std::string_view unhashed_key =
+        select_previous_k_anon_values.ColumnStringView(6);
     insert_entry.BindBlob(6, crypto::SHA256HashString(unhashed_key));
     insert_entry.BindInt(7, GetKAnonType(unhashed_key));
 
@@ -2261,15 +2324,15 @@ bool UpgradeV16SchemaToV17(sql::Database& db,
   base::Time now = base::Time::Now();
   while (select_igs_with_ads_and_bidding_url.Step()) {
     blink::InterestGroup ig;
-    ig.owner =
-        DeserializeOrigin(select_igs_with_ads_and_bidding_url.ColumnString(0));
+    ig.owner = DeserializeOrigin(
+        select_igs_with_ads_and_bidding_url.ColumnStringView(0));
     ig.name = select_igs_with_ads_and_bidding_url.ColumnString(1);
     ig.ads = DeserializeInterestGroupAdVectorProto(
-        passkey, select_igs_with_ads_and_bidding_url.ColumnString(2));
+        passkey, select_igs_with_ads_and_bidding_url.ColumnStringView(2));
     ig.ad_components = DeserializeInterestGroupAdVectorProto(
-        passkey, select_igs_with_ads_and_bidding_url.ColumnString(3));
+        passkey, select_igs_with_ads_and_bidding_url.ColumnStringView(3));
     ig.bidding_url =
-        DeserializeURL(select_igs_with_ads_and_bidding_url.ColumnString(4));
+        DeserializeURL(select_igs_with_ads_and_bidding_url.ColumnStringView(4));
 
     // Insert k-anon keys for the interest group's ads.
     blink::InterestGroupKey interest_group_key(ig.owner, ig.name);
@@ -2413,13 +2476,13 @@ bool UpgradeV15SchemaToV16(sql::Database& db,
     std::string owner = kSelectIGsWithAds.ColumnString(0);
     std::string name = kSelectIGsWithAds.ColumnString(1);
     std::optional<std::vector<blink::InterestGroup::Ad>> ads =
-        DeserializeInterestGroupAdVectorJson(passkey,
-                                             kSelectIGsWithAds.ColumnString(2),
-                                             /*for_components=*/false);
+        DeserializeInterestGroupAdVectorJson(
+            passkey, kSelectIGsWithAds.ColumnStringView(2),
+            /*for_components=*/false);
     std::optional<std::vector<blink::InterestGroup::Ad>> ad_components =
-        DeserializeInterestGroupAdVectorJson(passkey,
-                                             kSelectIGsWithAds.ColumnString(3),
-                                             /*for_components=*/true);
+        DeserializeInterestGroupAdVectorJson(
+            passkey, kSelectIGsWithAds.ColumnStringView(3),
+            /*for_components=*/true);
 
     std::string serialized_ads = SerializeUncompressed(ads);
     std::string serialized_ad_components = SerializeUncompressed(ad_components);
@@ -3200,6 +3263,11 @@ bool UpgradeDB(sql::Database& db,
       if (!UpgradeV32SchemaToV33(db, meta_table)) {
         return false;
       }
+      [[fallthrough]];
+    case 33:
+      if (!UpgradeV33SchemaToV34(db, meta_table)) {
+        return false;
+      }
       if (!meta_table.SetVersionNumber(kCurrentVersionNumber)) {
         return false;
       }
@@ -3305,8 +3373,8 @@ bool DoRemoveInterestGroup(sql::Database& db,
 }
 
 bool DoClearClusteredBiddingGroups(sql::Database& db,
-                                   const url::Origin owner,
-                                   const url::Origin main_frame) {
+                                   const url::Origin& owner,
+                                   const url::Origin& main_frame) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
     return false;
@@ -3346,9 +3414,9 @@ bool DoClearClusteredBiddingGroups(sql::Database& db,
 // empty) list of left interest groups on success.
 std::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
     sql::Database& db,
-    const url::Origin owner,
+    const url::Origin& owner,
     const std::set<std::string>& interest_groups_to_keep,
-    const url::Origin joining_origin) {
+    const url::Origin& joining_origin) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
     return std::nullopt;
@@ -3378,7 +3446,7 @@ std::optional<std::vector<std::string>> DoClearOriginJoinedInterestGroups(
 
   while (same_cluster_groups.Step()) {
     std::string name = same_cluster_groups.ColumnString(0);
-    if (interest_groups_to_keep.find(name) != interest_groups_to_keep.end()) {
+    if (interest_groups_to_keep.contains(name)) {
       continue;
     }
     if (!DoRemoveInterestGroup(db, blink::InterestGroupKey(owner, name))) {
@@ -3432,7 +3500,7 @@ void PopulateInterestGroupFromQueryResult(sql::Statement& load,
                                           const PassKey& passkey,
                                           StorageInterestGroup& group) {
   group.interest_group.expiry = load.ColumnTime(0);
-  group.joining_origin = DeserializeOrigin(load.ColumnString(1));
+  group.joining_origin = DeserializeOrigin(load.ColumnStringView(1));
 
   group.join_time = load.ColumnTime(2);
   group.last_updated = load.ColumnTime(3);
@@ -3441,23 +3509,23 @@ void PopulateInterestGroupFromQueryResult(sql::Statement& load,
   group.interest_group.enable_bidding_signals_prioritization =
       load.ColumnBool(6);
   group.interest_group.priority_vector =
-      DeserializeStringDoubleMap(load.ColumnString(7));
+      DeserializeStringDoubleMap(load.ColumnStringView(7));
   group.interest_group.priority_signals_overrides =
-      DeserializeStringDoubleMap(load.ColumnString(8));
+      DeserializeStringDoubleMap(load.ColumnStringView(8));
   group.interest_group.seller_capabilities =
-      DeserializeSellerCapabilitiesMap(load.ColumnString(9));
+      DeserializeSellerCapabilitiesMap(load.ColumnStringView(9));
   group.interest_group.all_sellers_capabilities =
       DeserializeSellerCapabilities(load.ColumnInt64(10));
   group.interest_group.execution_mode =
       static_cast<blink::InterestGroup::ExecutionMode>(load.ColumnInt(11));
-  group.interest_group.bidding_url = DeserializeURL(load.ColumnString(12));
+  group.interest_group.bidding_url = DeserializeURL(load.ColumnStringView(12));
   group.interest_group.bidding_wasm_helper_url =
-      DeserializeURL(load.ColumnString(13));
-  group.interest_group.update_url = DeserializeURL(load.ColumnString(14));
+      DeserializeURL(load.ColumnStringView(13));
+  group.interest_group.update_url = DeserializeURL(load.ColumnStringView(14));
   group.interest_group.trusted_bidding_signals_url =
-      DeserializeURL(load.ColumnString(15));
+      DeserializeURL(load.ColumnStringView(15));
   group.interest_group.trusted_bidding_signals_keys =
-      DeserializeStringVector(load.ColumnString(16));
+      DeserializeStringVector(load.ColumnStringView(16));
   group.interest_group.trusted_bidding_signals_slot_size_mode =
       static_cast<blink::InterestGroup::TrustedBiddingSignalsSlotSizeMode>(
           load.ColumnInt(17));
@@ -3465,35 +3533,35 @@ void PopulateInterestGroupFromQueryResult(sql::Statement& load,
       load.ColumnInt(18);
   if (load.GetColumnType(19) != sql::ColumnType::kNull) {
     group.interest_group.trusted_bidding_signals_coordinator =
-        DeserializeOrigin(load.ColumnString(19));
+        DeserializeOrigin(load.ColumnStringView(19));
   }
   if (load.GetColumnType(20) != sql::ColumnType::kNull) {
     group.interest_group.view_and_click_counts_providers =
-        DeserializeOriginVector(load.ColumnString(20));
+        DeserializeOriginVector(load.ColumnStringView(20));
   }
   if (load.GetColumnType(21) != sql::ColumnType::kNull) {
     group.interest_group.user_bidding_signals = load.ColumnString(21);
   }
   group.interest_group.ads = DecompressAndDeserializeInterestGroupAdVectorProto(
-      passkey, load.ColumnString(22));
+      passkey, load.ColumnStringView(22));
   group.interest_group.ad_components =
-      DecompressAndDeserializeInterestGroupAdVectorProto(passkey,
-                                                         load.ColumnString(23));
+      DecompressAndDeserializeInterestGroupAdVectorProto(
+          passkey, load.ColumnStringView(23));
   group.interest_group.ad_sizes =
-      DeserializeStringSizeMap(load.ColumnString(24));
+      DeserializeStringSizeMap(load.ColumnStringView(24));
   group.interest_group.size_groups =
-      DeserializeStringStringVectorMap(load.ColumnString(25));
+      DeserializeStringStringVectorMap(load.ColumnStringView(25));
   group.interest_group.auction_server_request_flags =
       DeserializeAuctionServerRequestFlags(load.ColumnInt64(26));
   group.interest_group.additional_bid_key =
       DeserializeAdditionalBidKey(load.ColumnBlob(27));
   if (load.GetColumnType(28) != sql::ColumnType::kNull) {
     group.interest_group.aggregation_coordinator_origin =
-        DeserializeOrigin(load.ColumnString(28));
+        DeserializeOrigin(load.ColumnStringView(28));
   }
   group.last_k_anon_updated = load.ColumnTime(29);
   KAnonKeyProtos keys_proto;
-  if (keys_proto.ParseFromString(load.ColumnString(30))) {
+  if (keys_proto.ParseFromString(load.ColumnStringView(30))) {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.ProtoDeserializationResult.KAnonKeyProtos",
         InterestGroupStorageProtoDeserializationResult::kSucceeded);
@@ -4380,8 +4448,7 @@ bool DoUpdateKAnonymity(sql::Database& db,
       // DO NOT perform an update if the existing keys are newer.
       return false;
     }
-    std::string k_anon_keys_str = get_existing_keys.ColumnString(1);
-    if (keys_to_insert.ParseFromString(k_anon_keys_str)) {
+    if (keys_to_insert.ParseFromString(get_existing_keys.ColumnStringView(1))) {
       base::UmaHistogramEnumeration(
           "Storage.InterestGroup.ProtoDeserializationResult.KAnonKeyProtos",
           InterestGroupStorageProtoDeserializationResult::kSucceeded);
@@ -4487,6 +4554,304 @@ void DoUpdateLastKAnonymityReported(sql::Database& db,
   transaction.Commit();
 }
 
+// Loads the view and click data for `provider_origin`, `eligible_origin`.
+// Returns std::nullopt on failure, and an empty
+// `ViewClickCountsForProviderAndEligible` if no counts are stored for the given
+// (`provider_origin`, `eligible_origin`) tuple.
+std::optional<ViewClickCountsForProviderAndEligible>
+DoGetViewClickCountsForProviderAndEligible(sql::Database& db,
+                                           const url::Origin& provider_origin,
+                                           const url::Origin& eligible_origin) {
+  ViewClickCountsForProviderAndEligible result;
+  sql::Statement get_counts(
+      db.GetCachedStatement(SQL_FROM_HERE,
+                            "SELECT uncompacted_view_events,"
+                            "compacted_view_events,"
+                            "uncompacted_click_events,"
+                            "compacted_click_events "
+                            "FROM view_and_click_events "
+                            "WHERE provider_origin=? AND eligible_origin=?"));
+  if (!get_counts.is_valid()) {
+    DLOG(ERROR) << "GetViewClickCountsForProviderAndEligible SQL statement did "
+                   "not compile: "
+                << db.GetErrorMessage();
+    return std::nullopt;
+  }
+  get_counts.Reset(true);
+  get_counts.BindString(0, provider_origin.Serialize());
+  get_counts.BindString(1, eligible_origin.Serialize());
+  if (!get_counts.Step()) {
+    // No counts stored, return empty counts lists.
+    return result;
+  }
+  if (!get_counts.Succeeded()) {
+    return std::nullopt;
+  }
+  if (!result.uncompacted_view_events.ParseFromString(
+          get_counts.ColumnString(0)) ||
+      !result.compacted_view_events.ParseFromString(
+          get_counts.ColumnString(1)) ||
+      !result.uncompacted_click_events.ParseFromString(
+          get_counts.ColumnString(2)) ||
+      !result.compacted_click_events.ParseFromString(
+          get_counts.ColumnString(3))) {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+        InterestGroupStorageProtoSerializationResult::kFailed);
+    return std::nullopt;
+  } else {
+    base::UmaHistogramEnumeration(
+        "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+        InterestGroupStorageProtoSerializationResult::kSucceeded);
+  }
+  return result;
+}
+
+void DoIncrementViewClickCounts(base::Time now,
+                                ViewOrClickCountsPtr& view_or_click_counts,
+                                base::TimeDelta max_window,
+                                int64_t int_timestamp,
+                                int32_t count) {
+  base::TimeDelta event_age = now - base::Time::FromDeltaSinceWindowsEpoch(
+                                        base::Microseconds(int_timestamp));
+
+  if (max_window >= base::Hours(1) && event_age <= base::Hours(1)) {
+    view_or_click_counts->past_hour += count;
+  }
+  if (max_window >= base::Days(1) && event_age <= base::Days(1)) {
+    view_or_click_counts->past_day += count;
+  }
+  if (max_window >= base::Days(7) && event_age <= base::Days(7)) {
+    view_or_click_counts->past_week += count;
+  }
+  if (max_window >= base::Days(30) && event_age <= base::Days(30)) {
+    view_or_click_counts->past_30_days += count;
+  }
+  if (max_window >= base::Days(90) && event_age <= base::Days(90)) {
+    view_or_click_counts->past_90_days += count;
+  }
+  // Older expired events may exist -- maintenance will eventually remove them.
+  // TODO(crbug.com/394108643): Implement click / view removal logic.
+}
+
+// Mutates `group`'s browser signals, filling in loaded view and click counts.
+// Returns true on success, and false on failure.
+[[nodiscard]] bool DoGetViewAndClickCountsForGroup(
+    sql::Database& db,
+    base::Time now,
+    StorageInterestGroup& group) {
+  ViewAndClickCountsPtr& view_and_click_counts =
+      group.bidding_browser_signals->view_and_click_counts;
+  view_and_click_counts = blink::mojom::ViewAndClickCounts::New(
+      /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+      /*click_counts=*/blink::mojom::ViewOrClickCounts::New());
+
+  if (!group.interest_group.view_and_click_counts_providers) {
+    return true;
+  }
+
+  const base::TimeDelta max_window = blink::MaxInterestGroupLifetime();
+
+  for (const url::Origin& provider_origin :
+       *group.interest_group.view_and_click_counts_providers) {
+    std::optional<ViewClickCountsForProviderAndEligible> partial_counts =
+        DoGetViewClickCountsForProviderAndEligible(
+            /*db=*/db,
+            /*provider_origin=*/provider_origin,
+            /*eligible_origin=*/group.interest_group.owner);
+    if (!partial_counts) {
+      return false;
+    }
+
+    for (int64_t timestamp :
+         partial_counts->uncompacted_view_events.timestamps()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->view_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp, /*count=*/1);
+    }
+    for (ListOfTimestampAndCounts_Entry timestamp_and_count :
+         partial_counts->compacted_view_events.timestamp_and_counts()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->view_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp_and_count.timestamp(),
+          /*count=*/timestamp_and_count.count());
+    }
+    for (int64_t timestamp :
+         partial_counts->uncompacted_click_events.timestamps()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->click_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp, /*count=*/1);
+    }
+    for (ListOfTimestampAndCounts_Entry timestamp_and_count :
+         partial_counts->compacted_click_events.timestamp_and_counts()) {
+      DoIncrementViewClickCounts(
+          /*now=*/now,
+          /*view_or_click_counts=*/view_and_click_counts->click_counts,
+          /*max_window=*/max_window,
+          /*int_timestamp=*/timestamp_and_count.timestamp(),
+          /*count=*/timestamp_and_count.count());
+    }
+  }
+  return true;
+}
+
+void DoRecordViewClick(sql::Database& db,
+                       const network::AdAuctionEventRecord& record,
+                       base::Time now) {
+  sql::Transaction transaction(&db);
+  if (!transaction.Begin()) {
+    return;
+  }
+
+  const std::vector<url::Origin>* eligible_origins = nullptr;
+  std::vector<url::Origin> default_eligible_origin;
+  if (record.eligible_origins.empty()) {
+    default_eligible_origin.emplace_back(record.providing_origin);
+    eligible_origins = &default_eligible_origin;
+  } else {
+    eligible_origins = &record.eligible_origins;
+  }
+
+  for (const url::Origin& eligible_origin : *eligible_origins) {
+    sql::Statement get_counts(
+        db.GetCachedStatement(SQL_FROM_HERE,
+                              "SELECT uncompacted_view_events,"
+                              "uncompacted_click_events "
+                              "FROM view_and_click_events "
+                              "WHERE provider_origin=? AND eligible_origin=?"));
+    if (!get_counts.is_valid()) {
+      DLOG(ERROR) << "DoRecordViewClick SELECT SQL statement did not compile: "
+                  << db.GetErrorMessage();
+      return;
+    }
+    get_counts.Reset(true);
+    get_counts.BindString(0, record.providing_origin.Serialize());
+    get_counts.BindString(1, eligible_origin.Serialize());
+
+    bool row_exists = false;
+    ListOfTimestamps uncompacted_view_events;
+    ListOfTimestamps uncompacted_click_events;
+    if (get_counts.Step()) {
+      row_exists = true;
+      if (!uncompacted_view_events.ParseFromString(
+              get_counts.ColumnString(0)) ||
+          !uncompacted_click_events.ParseFromString(
+              get_counts.ColumnString(1))) {
+        // TODO(crbug.com/355010821): Consider bubbling out the failure.
+        base::UmaHistogramEnumeration(
+            "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+            InterestGroupStorageProtoSerializationResult::kFailed);
+        return;
+      } else {
+        base::UmaHistogramEnumeration(
+            "Storage.InterestGroup.ProtoDeserializationResult.ListOfTimestamps",
+            InterestGroupStorageProtoSerializationResult::kSucceeded);
+      }
+    } else if (!get_counts.Succeeded()) {
+      return;
+    }
+
+    // TODO(crbug.com/394108643): enforce rate limit.
+
+    const int64_t int_now = now.ToDeltaSinceWindowsEpoch().InMicroseconds();
+    switch (record.type) {
+      case AdAuctionEventRecord::Type::kUninitialized:
+        NOTREACHED();
+      case AdAuctionEventRecord::Type::kView:
+        uncompacted_view_events.add_timestamps(int_now);
+        break;
+      case AdAuctionEventRecord::Type::kClick:
+        uncompacted_click_events.add_timestamps(int_now);
+        break;
+    }
+
+    std::string uncompacted_view_events_str;
+    std::string uncompacted_click_events_str;
+    if (!uncompacted_view_events.SerializeToString(
+            &uncompacted_view_events_str) ||
+        !uncompacted_click_events.SerializeToString(
+            &uncompacted_click_events_str)) {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoSerializationResult.ListOfTimestamps",
+          InterestGroupStorageProtoSerializationResult::kFailed);
+      // TODO(crbug.com/355010821): Consider bubbling out the failure.
+      return;
+    } else {
+      base::UmaHistogramEnumeration(
+          "Storage.InterestGroup.ProtoSerializationResult.ListOfTimestamps",
+          InterestGroupStorageProtoSerializationResult::kSucceeded);
+    }
+
+    if (!row_exists) {
+      // clang-format off
+      sql::Statement insert_counts(
+        db.GetCachedStatement(SQL_FROM_HERE,
+          "INSERT INTO view_and_click_events("
+          "provider_origin,"
+          "eligible_origin,"
+          "uncompacted_view_events,"
+          "compacted_view_events,"
+          "uncompacted_click_events,"
+          "compacted_click_events) "
+          "VALUES(?,?,?,?,?,?)"));
+      // clang-format on
+
+      if (!insert_counts.is_valid()) {
+        DLOG(ERROR)
+            << "DoRecordViewClick INSERT SQL statement did not compile: "
+            << db.GetErrorMessage();
+        return;
+      }
+
+      insert_counts.Reset(true);
+      insert_counts.BindString(0, record.providing_origin.Serialize());
+      insert_counts.BindString(1, eligible_origin.Serialize());
+      insert_counts.BindString(2, uncompacted_view_events_str);
+      insert_counts.BindString(3, "");
+      insert_counts.BindString(4, uncompacted_click_events_str);
+      insert_counts.BindString(5, "");
+
+      if (!insert_counts.Run()) {
+        return;
+      }
+    } else {
+      // clang-format off
+      sql::Statement update_counts(
+        db.GetCachedStatement(SQL_FROM_HERE,
+          "UPDATE view_and_click_events "
+          "SET uncompacted_view_events=?,"
+          "uncompacted_click_events=? "
+          "WHERE provider_origin=? AND eligible_origin=?"));
+      // clang-format on
+
+      if (!update_counts.is_valid()) {
+        DLOG(ERROR)
+            << "DoRecordViewClick UPDATE SQL statement did not compile: "
+            << db.GetErrorMessage();
+        return;
+      }
+
+      update_counts.Reset(true);
+      update_counts.BindString(0, uncompacted_view_events_str);
+      update_counts.BindString(1, uncompacted_click_events_str);
+      update_counts.BindString(2, record.providing_origin.Serialize());
+      update_counts.BindString(3, eligible_origin.Serialize());
+
+      if (!update_counts.Run()) {
+        return;
+      }
+    }
+  }
+
+  transaction.Commit();
+}
+
 std::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
     sql::Database& db,
     base::Time expiring_after) {
@@ -4504,7 +4869,7 @@ std::optional<std::vector<url::Origin>> DoGetAllInterestGroupOwners(
   load.Reset(true);
   load.BindTime(0, expiring_after);
   while (load.Step()) {
-    result.push_back(DeserializeOrigin(load.ColumnString(0)));
+    result.push_back(DeserializeOrigin(load.ColumnStringView(0)));
   }
   if (!load.Succeeded()) {
     return std::nullopt;
@@ -4529,7 +4894,7 @@ std::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
   load.Reset(true);
   load.BindTime(0, expiring_after);
   while (load.Step()) {
-    result.push_back(DeserializeOrigin(load.ColumnString(0)));
+    result.push_back(DeserializeOrigin(load.ColumnStringView(0)));
   }
   if (!load.Succeeded()) {
     return std::nullopt;
@@ -4537,10 +4902,11 @@ std::optional<std::vector<url::Origin>> DoGetAllInterestGroupJoiningOrigins(
   return result;
 }
 
-bool DoRemoveInterestGroupsMatchingOwnerAndJoiner(sql::Database& db,
-                                                  url::Origin owner,
-                                                  url::Origin joining_origin,
-                                                  base::Time expiring_after) {
+bool DoRemoveInterestGroupsMatchingOwnerAndJoiner(
+    sql::Database& db,
+    const url::Origin& owner,
+    const url::Origin& joining_origin,
+    base::Time expiring_after) {
   sql::Transaction transaction(&db);
   if (!transaction.Begin()) {
     return false;
@@ -4566,8 +4932,9 @@ bool DoRemoveInterestGroupsMatchingOwnerAndJoiner(sql::Database& db,
     owner_joiner_names.emplace_back(load.ColumnString(0));
   }
 
-  for (const auto& name : owner_joiner_names) {
-    if (!DoRemoveInterestGroup(db, blink::InterestGroupKey{owner, name})) {
+  for (auto& name : owner_joiner_names) {
+    if (!DoRemoveInterestGroup(
+            db, blink::InterestGroupKey{owner, std::move(name)})) {
       return false;
     }
   }
@@ -4593,8 +4960,8 @@ DoGetAllInterestGroupOwnerJoinerPairs(sql::Database& db,
   load.Reset(true);
   load.BindTime(0, expiring_after);
   while (load.Step()) {
-    result.emplace_back(DeserializeOrigin(load.ColumnString(0)),
-                        DeserializeOrigin(load.ColumnString(1)));
+    result.emplace_back(DeserializeOrigin(load.ColumnStringView(0)),
+                        DeserializeOrigin(load.ColumnStringView(1)));
   }
   if (!load.Succeeded()) {
     return std::nullopt;
@@ -4896,9 +5263,15 @@ bool DoGetStoredInterestGroup(sql::Database& db,
                    db_interest_group.bidding_browser_signals)) {
     return false;
   }
-  return GetPreviousWins(db, group_key,
-                         now - blink::MaxInterestGroupLifetimeForMetadata(),
-                         db_interest_group.bidding_browser_signals);
+  if (!GetPreviousWins(db, group_key,
+                       now - blink::MaxInterestGroupLifetimeForMetadata(),
+                       db_interest_group.bidding_browser_signals)) {
+    return false;
+  }
+  if (!DoGetViewAndClickCountsForGroup(db, now, db_interest_group)) {
+    return false;
+  }
+  return true;
 }
 
 std::optional<std::vector<InterestGroupUpdateParameter>>
@@ -4933,8 +5306,8 @@ DoGetInterestGroupsForUpdate(sql::Database& db,
   get_interest_group_update_parameters.BindInt64(3, groups_limit);
 
   while (get_interest_group_update_parameters.Step()) {
-    std::optional<GURL> update_url =
-        DeserializeURL(get_interest_group_update_parameters.ColumnString(1));
+    std::optional<GURL> update_url = DeserializeURL(
+        get_interest_group_update_parameters.ColumnStringView(1));
     if (!update_url.has_value()) {
       continue;
     }
@@ -4944,7 +5317,7 @@ DoGetInterestGroupsForUpdate(sql::Database& db,
             owner, get_interest_group_update_parameters.ColumnString(0)),
         update_url.value(),
         DeserializeOrigin(
-            get_interest_group_update_parameters.ColumnString(2)));
+            get_interest_group_update_parameters.ColumnStringView(2)));
   }
   if (!get_interest_group_update_parameters.Succeeded()) {
     return std::nullopt;
@@ -4964,7 +5337,14 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     return std::nullopt;
   }
 
-  std::unordered_map<std::string, StorageInterestGroup> interest_group_by_name;
+  // Allow lookups using `std::string_view`.
+  struct StringViewHasher : public std::hash<std::string_view> {
+    using is_transparent = void;
+  };
+
+  std::unordered_map<std::string, StorageInterestGroup, StringViewHasher,
+                     std::equal_to<>>
+      interest_group_by_name;
   {
     TRACE_EVENT("fledge", "load_from_interest_groups_table");
 
@@ -4991,7 +5371,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
           blink::mojom::BiddingBrowserSignals::New();
 
       db_interest_group.interest_group.owner = owner;
-      db_interest_group.interest_group.name = name;
+      db_interest_group.interest_group.name = std::move(name);
 
       PopulateInterestGroupFromQueryResult(load, passkey, db_interest_group);
     }
@@ -5016,9 +5396,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     join_count.BindTime(1, now - blink::MaxInterestGroupLifetimeForMetadata());
 
     while (join_count.Step()) {
-      std::string name = join_count.ColumnString(0);
-
-      auto it = interest_group_by_name.find(name);
+      auto it = interest_group_by_name.find(join_count.ColumnStringView(0));
       if (it == interest_group_by_name.end()) {
         // TODO(yaoxia): Return std::nullopt?
         continue;
@@ -5050,9 +5428,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     bid_count.BindTime(1, now - blink::MaxInterestGroupLifetimeForMetadata());
 
     while (bid_count.Step()) {
-      std::string name = bid_count.ColumnString(0);
-
-      auto it = interest_group_by_name.find(name);
+      auto it = interest_group_by_name.find(bid_count.ColumnStringView(0));
       if (it == interest_group_by_name.end()) {
         // TODO(yaoxia): Return std::nullopt?
         continue;
@@ -5084,9 +5460,7 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
     prev_wins.BindTime(1, now - blink::MaxInterestGroupLifetimeForMetadata());
 
     while (prev_wins.Step()) {
-      std::string name = prev_wins.ColumnString(0);
-
-      auto it = interest_group_by_name.find(name);
+      auto it = interest_group_by_name.find(prev_wins.ColumnStringView(0));
       if (it == interest_group_by_name.end()) {
         // TODO(yaoxia): Return std::nullopt?
         continue;
@@ -5103,6 +5477,20 @@ std::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
 
     if (!prev_wins.Succeeded()) {
       return std::nullopt;
+    }
+  }
+  {
+    TRACE_EVENT("fledge", "load_from_clicks_views_table");
+    // TODO(crbug.com/394108643): For performance, consider loading all of the
+    // view_and_click_counts for a given providing_origin/eligible_origin pair,
+    // and then aggregating across all of the providing_origins for each
+    // interest group with a matching eligible_origin. This prevents having to
+    // load the same records again and again for each interest group of a given
+    // IG owner.
+    for (auto& [unused_name, storage_group] : interest_group_by_name) {
+      if (!DoGetViewAndClickCountsForGroup(db, now, storage_group)) {
+        return std::nullopt;
+      }
     }
   }
   if (!transaction.Commit()) {
@@ -5149,7 +5537,7 @@ DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
   load.BindTime(1, now);
 
   while (load.Step()) {
-    result.emplace_back(DeserializeOrigin(load.ColumnString(0)),
+    result.emplace_back(DeserializeOrigin(load.ColumnStringView(0)),
                         load.ColumnString(1));
   }
   if (!load.Succeeded()) {
@@ -5389,7 +5777,7 @@ bool ClearExpiredInterestGroups(sql::Database& db,
   std::vector<blink::InterestGroupKey> expired_groups;
   while (expired_interest_group.Step()) {
     expired_groups.emplace_back(
-        DeserializeOrigin(expired_interest_group.ColumnString(0)),
+        DeserializeOrigin(expired_interest_group.ColumnStringView(0)),
         expired_interest_group.ColumnString(1));
   }
   if (!expired_interest_group.Succeeded()) {
@@ -5433,7 +5821,7 @@ bool ClearExcessiveStorage(sql::Database& db, size_t max_owner_storage_size) {
   size_t cum_size;
   while (excessive_storage_groups.Step()) {
     url::Origin group_owner =
-        DeserializeOrigin(excessive_storage_groups.ColumnString(0));
+        DeserializeOrigin(excessive_storage_groups.ColumnStringView(0));
     std::string group_name = excessive_storage_groups.ColumnString(1);
     size_t group_size = excessive_storage_groups.ColumnInt64(2);
 
@@ -5532,7 +5920,7 @@ bool ClearExpiredBiddingAndAuctionKeys(sql::Database& db, base::Time now) {
 
 bool DoSetBiddingAndAuctionServerKeys(sql::Database& db,
                                       const url::Origin& coordinator,
-                                      std::string serialized_keys,
+                                      std::string_view serialized_keys,
                                       base::Time expiration) {
   sql::Statement insert_keys_statement(db.GetCachedStatement(
       SQL_FROM_HERE,
@@ -5569,7 +5957,7 @@ std::pair<base::Time, std::string> DoGetBiddingAndAuctionServerKeys(
   if (keys_statement.Step()) {
     base::Time expiration = keys_statement.ColumnTime(0);
     std::string key_blob = keys_statement.ColumnString(1);
-    return {expiration, key_blob};
+    return {expiration, std::move(key_blob)};
   }
   return {base::Time::Min(), {}};
 }
@@ -5957,7 +6345,7 @@ InterestGroupStorage::GetDebugReportLockout() {
 
 std::optional<DebugReportLockoutAndCooldowns>
 InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
-    base::flat_set<url::Origin> origins) {
+    const base::flat_set<url::Origin>& origins) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return std::nullopt;
@@ -5969,7 +6357,7 @@ InterestGroupStorage::GetDebugReportLockoutAndCooldowns(
   std::optional<base::Time> ignore_before = GetSampleDebugReportStartingFrom();
   debug_report_lockout_and_cooldowns.lockout =
       DoGetDebugReportLockout(*db_, ignore_before);
-  DoGetDebugReportCooldowns(*db_, std::move(origins), ignore_before,
+  DoGetDebugReportCooldowns(*db_, origins, ignore_before,
                             debug_report_lockout_and_cooldowns);
   return debug_report_lockout_and_cooldowns;
 }
@@ -6128,6 +6516,16 @@ void InterestGroupStorage::UpdateLastKAnonymityReported(
   DoUpdateLastKAnonymityReported(*db_, hashed_key, base::Time::Now());
 }
 
+void InterestGroupStorage::RecordViewClick(
+    const network::AdAuctionEventRecord& record) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized()) {
+    return;
+  }
+
+  DoRecordViewClick(*db_, record, base::Time::Now());
+}
+
 std::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(
     const blink::InterestGroupKey& group_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -6233,8 +6631,8 @@ void InterestGroupStorage::SetDebugReportLockoutUntilIGExpires() {
 }
 
 void InterestGroupStorage::RemoveInterestGroupsMatchingOwnerAndJoiner(
-    url::Origin owner,
-    url::Origin joining_origin) {
+    const url::Origin& owner,
+    const url::Origin& joining_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
@@ -6362,14 +6760,14 @@ InterestGroupStorage::GetAllInterestGroupsUnfilteredForTesting() {
 
 void InterestGroupStorage::SetBiddingAndAuctionServerKeys(
     const url::Origin& coordinator,
-    std::string serialized_keys,
+    std::string_view serialized_keys,
     base::Time expiration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
   }
-  DoSetBiddingAndAuctionServerKeys(*db_, coordinator,
-                                   std::move(serialized_keys), expiration);
+  DoSetBiddingAndAuctionServerKeys(*db_, coordinator, serialized_keys,
+                                   expiration);
 }
 
 std::pair<base::Time, std::string>

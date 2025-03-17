@@ -135,7 +135,7 @@ public class TabSwitcherPaneMediatorUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.indexOf(mUngroupedTab)).thenReturn(0);
         when(mTabGroupModelFilter.indexOf(mGroupedTab1)).thenReturn(1);
-        when(mTabGroupModelFilter.indexOf(mGroupedTab2)).thenReturn(2);
+        when(mTabGroupModelFilter.indexOf(mGroupedTab2)).thenReturn(1);
 
         when(mTabGridDialogController.getHandleBackPressChangedSupplier())
                 .thenReturn(mDialogBackPressChangedSupplier);

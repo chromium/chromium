@@ -23,7 +23,11 @@
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args = {"--disable-field-trial-config"};
+  // TODO(crbug.com/371171846): Make the test not read directly from Local
+  // State and add --force-fieldtrials for the other groups.
+  config.additional_args = {"--disable-field-trial-config",
+                            "--disable-variations-seed-fetch",
+                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
   return config;
 }
 
@@ -35,7 +39,11 @@
 - (AppLaunchConfiguration)appConfigurationForCrashing {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByKilling;
-  config.additional_args = {"--disable-field-trial-config"};
+  // TODO(crbug.com/371171846): Make the test not read directly from Local
+  // State and add --force-fieldtrials for the other groups.
+  config.additional_args = {"--disable-field-trial-config",
+                            "--disable-variations-seed-fetch",
+                            "--force-fieldtrials=SeedFileTrial/Control_V7"};
   return config;
 }
 
@@ -118,14 +126,7 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.ThreeCrashesTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-// TODO(crbug.com/40073772): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testThreeCrashesTriggerSafeMode \
-  DISABLED_testThreeCrashesTriggerSafeMode
-#else
-#define MAYBE_testThreeCrashesTriggerSafeMode testThreeCrashesTriggerSafeMode
-#endif
-- (void)MAYBE_testThreeCrashesTriggerSafeMode {
+- (void)testThreeCrashesTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
 
   // Persist the local state pref changes made above and in setUp().
@@ -202,13 +203,7 @@
 //
 // Corresponds to VariationsSafeModeBrowserTest.DoNotTriggerSafeMode in
 // variations_safe_mode_browsertest.cc.
-// TODO(crbug.com/40073772): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testDoNotTriggerSafeMode DISABLED_testDoNotTriggerSafeMode
-#else
-#define MAYBE_testDoNotTriggerSafeMode testDoNotTriggerSafeMode
-#endif
-- (void)MAYBE_testDoNotTriggerSafeMode {
+- (void)testDoNotTriggerSafeMode {
   [VariationsAppInterface setTestSafeSeedAndSignature];
   // Neither a crash streak of 2 nor a fetch failure streak of 24 will trigger
   // variations safe mode in the next session.

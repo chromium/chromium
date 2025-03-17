@@ -419,7 +419,8 @@ NET_EXPORT extern const base::FeatureParam<std::string>
 NET_EXPORT extern const base::FeatureParam<bool> kIpPrivacyDirectOnly;
 
 // If true, pass OAuth token to Phosphor in GetProxyConfig API for IP
-// Protection.
+// Protection. This is used by E2E tests to ensure a stable geo for tokens
+// and proxy config.
 NET_EXPORT extern const base::FeatureParam<bool>
     kIpPrivacyIncludeOAuthTokenInGetProxyConfig;
 

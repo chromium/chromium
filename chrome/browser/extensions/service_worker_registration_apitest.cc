@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
     // This also mimics update behavior if a user clicks "Update" in the
     // chrome://extensions page.
     scoped_refptr<CrxInstaller> crx_installer =
-        CrxInstaller::Create(extension_service(), /*prompt=*/nullptr);
+        CrxInstaller::Create(profile(), /*client=*/nullptr);
     crx_installer->set_error_on_unsupported_requirements(true);
     crx_installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedFromSettingsPage);

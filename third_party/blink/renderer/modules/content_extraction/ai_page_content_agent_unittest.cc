@@ -2155,7 +2155,8 @@ TEST_F(AIPageContentAgentTest, Selection) {
   EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
             6);
 
-  const auto& frame_interaction_info = content->main_frame_interaction_info;
+  const auto& frame_interaction_info =
+      content->frame_data->frame_interaction_info;
   ASSERT_TRUE(frame_interaction_info->selection);
   const auto& selection = *frame_interaction_info->selection;
   EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
@@ -2223,12 +2224,13 @@ TEST_F(AIPageContentAgentTest, SelectionInIframe) {
   EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
             7);
 
-  const auto& main_frame_interaction_info =
-      content->main_frame_interaction_info;
-  ASSERT_FALSE(main_frame_interaction_info->selection);
+  const auto& frame_interaction_info =
+      content->frame_data->frame_interaction_info;
+  ASSERT_FALSE(frame_interaction_info->selection);
 
   const auto& iframe_interaction_info =
-      iframe.content_attributes->iframe_data->frame_interaction_info;
+      iframe.content_attributes->iframe_data->local_frame_data
+          ->frame_interaction_info;
   ASSERT_TRUE(iframe_interaction_info->selection);
   const auto& selection = *iframe_interaction_info->selection;
   EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
@@ -2331,7 +2333,9 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
   document.getElementById(AtomicString("nullcontent"))
       ->setAttribute(html_names::kContentAttr, WTF::g_null_atom);
 
-  auto content = GetAIPageContent();
+  mojom::blink::AIPageContentOptions options;
+  options.max_meta_elements = 32;
+  auto content = GetAIPageContent(options);
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 

@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector.h"
-#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_language_detector_capabilities.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -38,10 +37,6 @@ class AILanguageDetectorFactory final : public ScriptWrappable,
   ScriptPromise<AILanguageDetector> create(
       ScriptState* script_state,
       AILanguageDetectorCreateOptions* options,
-      ExceptionState& exception_state);
-
-  ScriptPromise<AILanguageDetectorCapabilities> capabilities(
-      ScriptState* script_state,
       ExceptionState& exception_state);
 
   HeapMojoRemote<

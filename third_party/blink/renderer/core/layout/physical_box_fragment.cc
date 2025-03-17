@@ -822,6 +822,20 @@ PhysicalBoxFragment::GetMutableForContainerLayout() const {
                                    const_cast<PhysicalBoxFragment&>(*this));
 }
 
+void PhysicalBoxFragment::MutableForCloning::ReplaceChildren(
+    const PhysicalBoxFragment& new_fragment) {
+  // Replacing children that establish an inline formatting context is not
+  // supported. An anonymous wrapper block should have been created.
+  DCHECK(!new_fragment.HasItems());
+  DCHECK(!fragment_.HasItems());
+
+  fragment_.children_.clear();
+  fragment_.children_.AppendVector(new_fragment.children_);
+
+  // Replace propagated data.
+  fragment_.propagated_data_ = new_fragment.propagated_data_;
+}
+
 void PhysicalBoxFragment::MutableForOofFragmentation::AddChildFragmentainer(
     const PhysicalBoxFragment& child_fragment,
     LogicalOffset child_offset) {

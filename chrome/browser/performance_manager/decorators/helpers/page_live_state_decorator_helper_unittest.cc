@@ -303,6 +303,28 @@ TEST_F(PageLiveStateDecoratorHelperTabsTest, IsPinnedTab) {
       contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsPinnedTab, false);
 }
+
+TEST_F(PageLiveStateDecoratorHelperTabsTest, ReplacePinnedTab) {
+  AddTab(browser(), GURL("http://foo/1"));
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetWebContentsAt(0);
+
+  // Pin tab. Check status.
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+  testing::TestPageNodeProperty(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsPinnedTab, true);
+
+  // Replace with new contents.
+  browser()->tab_strip_model()->DiscardWebContentsAt(
+      0, content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  // Check pinned status of replaced contents.
+  contents = browser()->tab_strip_model()->GetWebContentsAt(0);
+  testing::TestPageNodeProperty(
+      contents, &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsPinnedTab, true);
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace performance_manager

@@ -2255,7 +2255,6 @@
 <translation id="2530166226437958497">Отстранување грешки</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Нешто тргна наопаку и <ph name="DEVICE_OS" /> не можеше да се инсталира.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако ви треба уште помош, одете на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Добијте повеќе детали</translation>
 <translation id="2532144599248877204">Го продолжува траењето на батеријата така што ја одржува батеријата на околу 80 %. Обично батеријата е целосно полна пред да ја исклучите од полначот.</translation>
 <translation id="2532146950330687938">Уредот се подготвува…</translation>
 <translation id="2532198298278778531">Управувајте со „Безбеден DNS“ во поставките за ChromeOS Flex</translation>
@@ -2811,7 +2810,6 @@
 <translation id="2921081876747860777">Создајте лозинка за да ги заштитите локалните податоци.</translation>
 <translation id="2923006468155067296">Вашиот <ph name="DEVICE_TYPE" /> ќе се заклучи сега.
 <ph name="DOMAIN" /> бара паметната картичка да ви остане вметната.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Уште <ph name="OTHER_TASK_NUM" /> задача во истата група задачи: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Уште <ph name="OTHER_TASK_NUM" /> задачи во истата група задачи: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Отстранете ја сметкава</translation>
 <translation id="2923644930701689793">Пристапете до лентата на камерата на телефонот</translation>
 <translation id="292371311537977079">Поставки за Chrome</translation>
@@ -6917,6 +6915,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ќе се паузира наскоро</translation>
 <translation id="586567932979200359">Го активиравте производот <ph name="PRODUCT_NAME" /> од неговата слика на дискот. Со негово инсталирање на компјутер, може да го активирате без сликата на диск и се обезбедува дека ќе биде ажурен.</translation>
 <translation id="5865733239029070421">Автоматски испраќа статистика на користењето и извештаи за падовите до Google.</translation>
+<translation id="5866363217037791319">Заврши ја задачата</translation>
 <translation id="5868434909835797817">Микрофонот е исклучен на уредот</translation>
 <translation id="5868479397518301468">Времето за најавување истече</translation>
 <translation id="5868822853313956582">Следи ги боите на системот</translation>
@@ -10646,7 +10645,6 @@
 <translation id="8524841856047224176">Персонализирајте ги заднините на вашата камера за видеоповици и друго</translation>
 <translation id="8525306231823319788">Цел екран</translation>
 <translation id="8525461909394569609">Апликацијава опфаќа интернет-содржини од</translation>
-<translation id="8526313996927074827">Вметнувајте линкови, емоџија и друго. Со Google AI, може да добиете помош и при пишување.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527257351549797148">Вашата организација може да бара регистрација за да може да пристапувате до апликации, екстензии и друго. Ова ѝ овозможува на организацијата да управува со работи како безбедноста и поставките на уредот.</translation>
@@ -11103,6 +11101,7 @@
 <translation id="883924185304953854">Пребарување со слика</translation>
 <translation id="8841786407272321022">Лозинката е зачувана само на овој уред. За да ги зачувувате новите лозинки во вашата сметка на Google, ажурирајте ги „Услугите на Google Play“.</translation>
 <translation id="8841843049738266382">да ги чита и менува корисниците во списокот со дозволени</translation>
+<translation id="8841884135319684422">Заврши ја задачата</translation>
 <translation id="8842594465773264717">Избришете го отпечатоков</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8846132060409673887">Прочитај ги производителот и моделот на овој компјутер</translation>

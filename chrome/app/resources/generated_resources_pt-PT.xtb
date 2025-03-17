@@ -2241,7 +2241,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2530166226437958497">Resolução de problemas</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Algo correu mal e não foi possível instalar o <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para obter mais ajuda, visite: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Ver mais informações</translation>
 <translation id="2532144599248877204">Prolonga a autonomia da bateria ao manter a bateria a cerca de 80%. A bateria vai ser totalmente carregada antes da hora à qual costuma desligar o dispositivo da corrente.</translation>
 <translation id="2532146950330687938">A preparar o dispositivo…</translation>
 <translation id="2532198298278778531">Gerir DNS seguro nas definições do ChromeOS Flex</translation>
@@ -2797,7 +2796,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2921081876747860777">Crie uma palavra-passe para proteger os seus dados locais.</translation>
 <translation id="2923006468155067296">O dispositivo <ph name="DEVICE_TYPE" /> será bloqueado agora.
 <ph name="DOMAIN" /> requer que mantenha o seu cartão inteligente inserido.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Mais <ph name="OTHER_TASK_NUM" /> tarefas no mesmo grupo de tarefas: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Remover esta conta</translation>
 <translation id="2923644930701689793">Aceda ao rolo da câmara do seu telemóvel</translation>
 <translation id="292371311537977079">Definições do Chrome</translation>
@@ -6905,6 +6903,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5865508026715185451">A app <ph name="APP_NAME" /> será colocada em pausa em breve</translation>
 <translation id="586567932979200359">Está a executar o <ph name="PRODUCT_NAME" /> a partir da respectiva imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e assegura que o mesmo é mantido atualizado.</translation>
 <translation id="5865733239029070421">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
+<translation id="5866363217037791319">Terminar tarefa</translation>
 <translation id="5868434909835797817">O microfone está desativado no dispositivo</translation>
 <translation id="5868479397518301468">O início de sessão excedeu o tempo limite</translation>
 <translation id="5868822853313956582">Seguir as cores do dispositivo</translation>
@@ -10631,7 +10630,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8524841856047224176">Personalize os fundos da câmara para videochamadas e muito mais</translation>
 <translation id="8525306231823319788">Ecrã inteiro</translation>
 <translation id="8525461909394569609">Esta app inclui conteúdo da Web de</translation>
-<translation id="8526313996927074827">Insira links, emojis e muito mais. Também pode obter ajuda para escrever com a IA da Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altifalantes</translation>
 <translation id="8527257351549797148">A sua organização pode exigir a inscrição para que possa aceder a apps, extensões e muito mais. Isto também permite à sua organização gerir aspetos como definições de segurança e do dispositivo.</translation>
@@ -11087,6 +11085,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="883924185304953854">Pesquisa por imagem</translation>
 <translation id="8841786407272321022">Palavra-passe guardada apenas neste dispositivo. Para guardar novas palavras-passe na sua Conta Google, atualize os Serviços do Google Play.</translation>
 <translation id="8841843049738266382">Ler e alterar utilizadores na lista de autorizações</translation>
+<translation id="8841884135319684422">Terminar tarefa</translation>
 <translation id="8842594465773264717">Eliminar esta impressão digital</translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8846132060409673887">Consultar o fabricante e modelo deste computador</translation>

@@ -251,7 +251,7 @@ TEST_F(ViewAccessibilityTest, AccessibleURL) {
             test_url);
 
   // Setting the root view URL is only supported on the root view.
-  EXPECT_DCHECK_DEATH(
+  EXPECT_CHECK_DEATH(
       child_view()->GetViewAccessibility().SetRootViewURL(test_url));
 }
 

@@ -167,6 +167,7 @@ android_library("hooks_java") {
   ]
   deps = [
     "//base:base_java",
+    "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//third_party/android_deps:guava_android_java",

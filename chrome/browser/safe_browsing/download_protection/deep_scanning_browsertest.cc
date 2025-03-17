@@ -131,7 +131,7 @@ bool GetResumableUploadMetadata(
 }  // namespace
 
 // Integration tests for download deep scanning behavior, only mocking network
-// traffic and FCM dependencies.
+// traffic.
 class DownloadDeepScanningBrowserTestBase
     : public enterprise_connectors::test::DeepScanningBrowserTestBase,
       public content::DownloadManager::Observer,
@@ -432,10 +432,10 @@ class DownloadDeepScanningBrowserTestBase
   std::unique_ptr<KeyedService> CreateBinaryUploadService(
       content::BrowserContext* browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);
-      return std::make_unique<safe_browsing::CloudBinaryUploadService>(
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-              profile),
-          profile, /*binary_fcm_service=*/nullptr);
+    return std::make_unique<safe_browsing::CloudBinaryUploadService>(
+        g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
+            profile),
+        profile);
   }
 
   std::string GetDataPipeUploadData(const network::ResourceRequest& request) {
@@ -637,8 +637,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   dlp_result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
-  // When FCM service is not present, the malware scan finishes synchronously,
-  // and doesn't find anything.
+  // The malware scan finishes synchronously, and doesn't find anything.
   auto* malware_result = sync_response.add_results();
   malware_result->set_tag("malware");
   malware_result->set_status(
@@ -686,8 +685,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
   dlp_result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
-  // When FCM service is not present, the malware scan finishes synchronously,
-  // and fails
+  // The malware scan finishes synchronously, and fails.
   auto* malware_result = sync_response.add_results();
   malware_result->set_tag("malware");
   malware_result->set_status(
@@ -735,8 +733,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   dlp_result->set_status(
       enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
-  // When FCM service is not present, the malware scan finishes synchronously,
-  // and finds malware.
+  // The malware scan finishes synchronously, and finds malware.
   auto* malware_result = sync_response.add_results();
   malware_result->set_tag("malware");
   malware_result->set_status(
@@ -790,8 +787,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   auto* dlp_rule = dlp_result->add_triggered_rules();
   dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
 
-  // When FCM service is not present, the malware scan finishes synchronously,
-  // and fails.
+  // The malware scan finishes synchronously, and fails.
   auto* malware_result = sync_response.add_results();
   malware_result->set_tag("malware");
   malware_result->set_status(
@@ -1198,7 +1194,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
   ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-  // When FCM service is not present, the scan runs synchronously.
   ExpectContentAnalysisResumableContentResponse(response);
 
   base::RunLoop run_loop;
@@ -1248,7 +1243,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   dlp_verdict->set_action(enterprise_connectors::TriggeredRule::BLOCK);
 
   ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-  // When FCM service is not present, the scan runs synchronously.
   ExpectContentAnalysisResumableContentResponse(response);
 
   base::RunLoop run_loop;
@@ -1319,7 +1313,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   dlp_verdict->set_action(enterprise_connectors::TriggeredRule::WARN);
 
   ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-  // When FCM service is not present, the scan runs synchronously.
   ExpectContentAnalysisResumableContentResponse(response);
 
   base::RunLoop save_package_run_loop;
@@ -1433,7 +1426,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
   dlp_verdict->set_action(enterprise_connectors::TriggeredRule::WARN);
 
   ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-  // When FCM service is not present, the scan runs synchronously.
   ExpectContentAnalysisResumableContentResponse(response);
 
   base::RunLoop save_package_run_loop;
@@ -1523,7 +1515,6 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   std::set<std::string> mimetypes = {"text/plain"};
 
   ExpectContentAnalysisResumableMetadataResponse({"dlp"});
-  // When FCM service is not present, the scan runs synchronously.
   ExpectContentAnalysisResumableContentResponse(response);
 
   base::RunLoop save_package_run_loop;

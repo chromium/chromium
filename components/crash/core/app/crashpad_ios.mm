@@ -67,8 +67,10 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
 }  // namespace
 
 void ProcessIntermediateDumps(
-    const std::map<std::string, std::string>& annotations) {
-  GetCrashpadClient().ProcessIntermediateDumps(annotations);
+    const std::map<std::string, std::string>& annotations,
+    const crashpad::UserStreamDataSources* user_stream_sources) {
+  GetCrashpadClient().ProcessIntermediateDumps(annotations,
+                                               user_stream_sources);
 }
 
 void ProcessIntermediateDump(

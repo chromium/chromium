@@ -635,6 +635,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillUseITAddressModel,
       features::kAutofillUseNLAddressModel,
       features::kAutofillUsePLAddressModel,
+      features::kAutofillUseINAddressModel,
       features::kAutofillSupportPhoneticNameForJP,
       features::kAutofillEnableExpirationDateImprovements,
       features::kAutofillSupportLastNamePrefix,
@@ -658,14 +659,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       disabled_features.push_back(feature);
     }
   };
-
-  // If you start the test with
-  // `--enable-features=AutofillEnableAddressFieldParserNG` the new autofill
-  // parser is used.
-  const bool kEnableAddressFieldParserNG = base::FeatureList::IsEnabled(
-      features::kAutofillEnableAddressFieldParserNG);
-  init_feature_to_value(features::kAutofillUseINAddressModel,
-                        kEnableAddressFieldParserNG);
 
   std::vector<std::string> structured_fields_disable_address_lines = {
       "BR", "MX", "IN"};

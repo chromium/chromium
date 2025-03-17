@@ -1103,7 +1103,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="ContentSuggestions.Feed.LoadStepLatency"
+<histogram name="ContentSuggestions.Feed.LoadStepLatency{FeedLoadLatencyStep}"
     units="ms" expires_after="2024-07-21">
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>
@@ -1113,8 +1113,22 @@ chromium-metrics-reviews@google.com.
     that ends with the Feed showing up on the UI. All steps added together tally
     to the total time taken.
 
-    Feed v2 only.
+    Feed v2 only. {FeedLoadLatencyStep}
   </summary>
+  <token key="FeedLoadLatencyStep">
+    <variant name=".ActionUpload"
+        summary="Time taken read stored actions and upload them if necessary."/>
+    <variant name=".LoadFromStore"
+        summary="Time taken to load the feed content from local storage."/>
+    <variant name=".QueryRequest"
+        summary="Time taken to request fresh feed content from the network."/>
+    <variant name=".StreamView"
+        summary="Time taken to receive feedback that a Feed item was shown.
+                 Time begins after feed data is loaded from the network or
+                 local storage"/>
+    <variant name=".TaskStart"
+        summary="Time taken to begin executing the load stream task."/>
+  </token>
 </histogram>
 
 <histogram name="ContentSuggestions.Feed.LoadStreamStatus.LoadMore"

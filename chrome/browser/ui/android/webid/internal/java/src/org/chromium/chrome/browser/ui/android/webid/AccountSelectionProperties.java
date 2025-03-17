@@ -67,10 +67,12 @@ class AccountSelectionProperties {
                 new WritableObjectPropertyKey<>("avatar");
         static final ReadableObjectPropertyKey<Account> ACCOUNT =
                 new ReadableObjectPropertyKey<>("account");
+        static final ReadableBooleanPropertyKey SHOW_IDP =
+                new ReadableBooleanPropertyKey("show_idp");
         static final ReadableObjectPropertyKey<Callback<ButtonData>> ON_CLICK_LISTENER =
                 new ReadableObjectPropertyKey<>("on_click_listener");
 
-        static final PropertyKey[] ALL_KEYS = {AVATAR, ACCOUNT, ON_CLICK_LISTENER};
+        static final PropertyKey[] ALL_KEYS = {AVATAR, ACCOUNT, SHOW_IDP, ON_CLICK_LISTENER};
 
         private AccountProperties() {}
     }

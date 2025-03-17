@@ -37,6 +37,11 @@
 #include "chrome/browser/offline_pages/offline_page_bookmark_observer.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 class ShoppingCollectionProvider
@@ -123,6 +128,23 @@ void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
       offline_page_observer_.get());
   model_observation_->Observe(model);
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Ensure `BookmarkMergedSurfaceService` is created all the time when
+  // `BookmarkModel` is created and before the `BookmarkModel` completes loading
+  // to catch if `ids_reassigned`. Posting a task is required as
+  // `BookmarkMergedSurfaceServiceFactory` will invoke the factory for the
+  // `BookmarkModel`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<Profile> profile) {
+            if (profile) {
+              BookmarkMergedSurfaceServiceFactory::GetForProfile(profile.get());
+            }
+          },
+          profile_->GetWeakPtr()));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::CancelableTaskTracker::TaskId

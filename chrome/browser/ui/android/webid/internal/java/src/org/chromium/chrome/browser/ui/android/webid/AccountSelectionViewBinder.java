@@ -126,45 +126,57 @@ class AccountSelectionViewBinder {
         return new BitmapDrawable(resources, output);
     }
 
+    static void updateAccountViewAvatar(PropertyModel model, View view) {
+        AccountProperties.Avatar avatarData = model.get(AccountProperties.AVATAR);
+        if (avatarData == null) return;
+        int avatarSize = avatarData.mAvatarSize;
+        Bitmap avatar = avatarData.mAvatar;
+        ImageView avatarView = view.findViewById(R.id.start_icon);
+        Resources resources = view.getContext().getResources();
+        if (model.get(AccountProperties.SHOW_IDP)) {
+            // In this case, we expect the image to be badged and cropped, so we set the image
+            // directly instead of using the monogram and invoking AvatarGenerator.makeRoundAvatar.
+            Bitmap output = Bitmap.createBitmap(avatarSize, avatarSize, Config.ARGB_8888);
+            Canvas canvas = new Canvas(output);
+            Paint paint = new Paint();
+            paint.setAntiAlias(true);
+            canvas.drawBitmap(avatar, null, new Rect(0, 0, avatarSize, avatarSize), paint);
+            avatarView.setImageDrawable(new BitmapDrawable(resources, output));
+            return;
+        }
+
+        // Prepare avatar or its fallback monogram.
+        if (avatar == null) {
+            int avatarMonogramTextSize =
+                    view.getResources()
+                            .getDimensionPixelSize(
+                                    R.dimen.account_selection_account_avatar_monogram_text_size);
+            // TODO(crbug.com/40214151): Consult UI team to determine the background color we
+            // need to use here.
+            RoundedIconGenerator roundedIconGenerator =
+                    new RoundedIconGenerator(
+                            resources,
+                            /* iconWidthDp= */ avatarSize,
+                            /* iconHeightDp= */ avatarSize,
+                            /* cornerRadiusDp= */ avatarSize / 2,
+                            /* backgroundColor= */ Color.GRAY,
+                            avatarMonogramTextSize);
+            avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
+        }
+        Drawable croppedAvatar = AvatarGenerator.makeRoundAvatar(resources, avatar, avatarSize);
+        avatarView.setImageDrawable(croppedAvatar);
+    }
+
     /**
      * Called whenever an account is bound to this view.
+     *
      * @param model The model containing the data for the view.
      * @param view The view to be bound.
      * @param key The key of the property to be bound.
      */
     static void bindAccountView(PropertyModel model, View view, PropertyKey key) {
         Account account = model.get(AccountProperties.ACCOUNT);
-        if (key == AccountProperties.AVATAR) {
-            AccountProperties.Avatar avatarData = model.get(AccountProperties.AVATAR);
-            int avatarSize = avatarData.mAvatarSize;
-            Bitmap avatar = avatarData.mAvatar;
-
-            Resources resources = view.getContext().getResources();
-
-            // Prepare avatar or its fallback monogram.
-            if (avatar == null) {
-                int avatarMonogramTextSize =
-                        view.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen
-                                                .account_selection_account_avatar_monogram_text_size);
-                // TODO(crbug.com/40214151): Consult UI team to determine the background color we
-                // need to use here.
-                RoundedIconGenerator roundedIconGenerator =
-                        new RoundedIconGenerator(
-                                resources,
-                                /* iconWidthDp= */ avatarSize,
-                                /* iconHeightDp= */ avatarSize,
-                                /* cornerRadiusDp= */ avatarSize / 2,
-                                /* backgroundColor= */ Color.GRAY,
-                                avatarMonogramTextSize);
-                avatar = roundedIconGenerator.generateIconForText(avatarData.mName);
-            }
-            Drawable croppedAvatar = AvatarGenerator.makeRoundAvatar(resources, avatar, avatarSize);
-
-            ImageView avatarView = view.findViewById(R.id.start_icon);
-            avatarView.setImageDrawable(croppedAvatar);
-        } else if (key == AccountProperties.ON_CLICK_LISTENER) {
+        if (key == AccountProperties.ON_CLICK_LISTENER) {
             Callback<ButtonData> clickCallback = model.get(AccountProperties.ON_CLICK_LISTENER);
             if (clickCallback == null) {
                 view.setOnClickListener(null);
@@ -175,6 +187,10 @@ class AccountSelectionViewBinder {
                                     new ButtonData(account, /* idpMetadata= */ null));
                         });
             }
+            return;
+        }
+        if (key == AccountProperties.AVATAR) {
+            updateAccountViewAvatar(model, view);
         } else if (key == AccountProperties.ACCOUNT) {
             if (account.isFilteredOut()) {
                 view.setAlpha(DISABLED_OPACITY);
@@ -190,7 +206,8 @@ class AccountSelectionViewBinder {
                     account.isFilteredOut()
                             ? view.getContext().getString(R.string.filtered_account_message)
                             : account.getEmail());
-            if (account.getSecondaryDescription() != null) {
+            if (model.get(AccountProperties.SHOW_IDP)
+                    && account.getSecondaryDescription() != null) {
                 TextView secondaryDescription = view.findViewById(R.id.secondary_description);
                 // The secondary description is not shown in the account chip of active mode's
                 // request permission dialog. In this case, the view is not present.
@@ -199,7 +216,7 @@ class AccountSelectionViewBinder {
                     secondaryDescription.setVisibility(View.VISIBLE);
                 }
             }
-        } else {
+        } else if (key != AccountProperties.SHOW_IDP) {
             assert false : "Unhandled update to property:" + key;
         }
     }

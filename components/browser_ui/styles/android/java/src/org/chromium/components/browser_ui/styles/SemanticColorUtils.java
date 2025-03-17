@@ -151,7 +151,7 @@ public class SemanticColorUtils {
 
     /** Returns the surface color value of the conceptual dialog_bg_color. */
     public static @ColorInt int getDialogBgColor(Context context) {
-        return resolveSurfaceColorElev(R.dimen.dialog_bg_color_elev, context);
+        return ContextCompat.getColor(context, R.color.dialog_bg_color);
     }
 
     /** Returns the surface color value of the conceptual sheet_bg_color. */
@@ -192,5 +192,10 @@ public class SemanticColorUtils {
 
     public static @ColorInt int getColorOnSecondaryContainer(Context context) {
         return resolve(R.attr.colorOnSecondaryContainer, context);
+    }
+
+    /** Returns the semantic color values that correspond to colorSurfaceContainerLow. */
+    public static @ColorInt int getColorSurfaceContainerLow(Context context) {
+        return resolve(R.attr.colorSurfaceContainerLow, context);
     }
 }

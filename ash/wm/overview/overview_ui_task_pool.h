@@ -60,8 +60,10 @@ class ASH_EXPORT OverviewUiTaskPool
 
  private:
   // ui::HostBeginFrameObserver::SimpleBeginFrameObserver:
-  void OnBeginFrame(base::TimeTicks frame_begin_time,
-                    base::TimeDelta frame_interval) override;
+  void OnBeginFrame(
+      base::TimeTicks frame_begin_time,
+      base::TimeDelta frame_interval,
+      std::optional<base::TimeTicks> first_coalesced_frame_begin_time) override;
   void OnBeginFrameSourceShuttingDown() override {}
 
   // ui::CompositorObserver:

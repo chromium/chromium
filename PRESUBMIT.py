@@ -2085,6 +2085,17 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         treat_as_error=False,
     ),
     BanRule(
+        pattern='CreateBrowserWithTestWindowForParams',
+        explanation=
+         ('Do not use CreateBrowserWithTestWindowForParams. See '
+          'docs/chrome_browser_design_principles.md for details. If you want '
+          'to write a test that has a Browser, create a browser_test and use '
+          'Browser::Browser. If you want to write a unit_test, your code must '
+          'not reference Browser*.',
+         ),
+        treat_as_error=False,
+    ),
+    BanRule(
         pattern='RunUntilIdle',
         explanation=
         ('Do not RunUntilIdle. If possible, explicitly quit the run loop using '

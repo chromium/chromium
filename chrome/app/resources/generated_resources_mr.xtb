@@ -2253,7 +2253,6 @@
 <translation id="2530166226437958497">ट्रबलशूटिंग</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />काहीतरी चूक झाली आणि <ph name="DEVICE_OS" /> इंस्टॉल करता आले नाही.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />अधिक मदत मिळवण्यासाठी, पुढील लिंकला भेट द्या: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">अधिक माहिती मिळवा</translation>
 <translation id="2532144599248877204">तुमची बॅटरी ८०% च्या आसपास ठेवून बॅटरी लाइफ वाढवते. तुम्ही सामान्यतः पॉवरमधून डिस्कनेक्ट करण्यापूर्वी बॅटरी पूर्णपणे चार्ज होईल.</translation>
 <translation id="2532146950330687938">डिव्हाइस तयार केले जात आहे...</translation>
 <translation id="2532198298278778531">ChromeOS Flex सेटिंग्जमध्ये सुरक्षित DNS व्यवस्थापित करा</translation>
@@ -2809,7 +2808,6 @@
 <translation id="2921081876747860777">कृपया तुमचा स्थानिक डेटा संरक्षित करण्‍यासाठी एक पासवर्ड तयार करा.</translation>
 <translation id="2923006468155067296">तुमचे <ph name="DEVICE_TYPE" /> आता लॉक केले जाईल.
 <ph name="DOMAIN" /> ला तुम्ही तुमचे स्मार्ट कार्ड घालून ठेवणे आवश्यक आहे.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. एकाच टास्क गटामधील इतर <ph name="OTHER_TASK_NUM" /> टास्क: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">हे खाते काढून टाका</translation>
 <translation id="2923644930701689793">तुमच्या फोनचा कॅमेरा रोल अ‍ॅक्सेस करा</translation>
 <translation id="292371311537977079">Chrome सेटिंग्ज</translation>
@@ -6913,6 +6911,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> लवकरच थांबेल</translation>
 <translation id="586567932979200359">तुम्ही <ph name="PRODUCT_NAME" /> त्याच्या डिस्क प्रतिमेवरून चालवत आहात. तुमच्या कॉंप्युटरवर ते इंस्टॉल केल्यामुळे तुम्हाला ते डिस्क प्रतिमेशिवाय चालवू देते आणि ते अपडेट ठेवले जाईल हे निश्चित करते.</translation>
 <translation id="5865733239029070421">Google ला वापरविषयक आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते</translation>
+<translation id="5866363217037791319">टास्क संपवा</translation>
 <translation id="5868434909835797817">तुमच्या डिव्हाइसवर मायक्रोफोन बंद आहे</translation>
 <translation id="5868479397518301468">साइन इन टाइम आउट झाले आहे</translation>
 <translation id="5868822853313956582">डिव्हाइसचे रंग फॉलो करा</translation>
@@ -10640,7 +10639,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8524841856047224176">व्हिडिओ कॉल आणि आणखी बऱ्याच गोष्टींसाठी तुमच्या कॅमेराच्या बॅकग्राउंड पर्सनलाइझ करा</translation>
 <translation id="8525306231823319788">फुल स्क्रीन</translation>
 <translation id="8525461909394569609">या अ‍ॅपमध्ये यावरील वेब आशय आहे</translation>
-<translation id="8526313996927074827">लिंक, इमोजी आणि आणखी बरेच काही घाला. तुम्ही Google AI वापरून लिहिण्यातदेखील मदत मिळवू शकता.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527257351549797148">तुमच्या संस्थेला नोंदणी आवश्यक असू शकते, जेणेकरून तुम्ही ॲप्स, एक्स्टेंशन आणि आणखी बरेच काही ॲक्सेस करू शकता. हे तुमच्या संस्थेला सुरक्षा आणि डिव्हाइस सेटिंग्ज यांसारख्या गोष्टी व्यवस्थापित करण्याची अनुमती देते.</translation>
@@ -11097,6 +11095,7 @@ I feel - विटांची इमारत</translation>
 <translation id="883924185304953854">इमेजनुसार शोधा</translation>
 <translation id="8841786407272321022">पासवर्ड फक्त या डिव्हाइसवर सेव्ह केला आहे. तुमच्या Google खाते मध्ये नवीन पासवर्ड सेव्ह करण्यासाठी, Google Play सेवा अपडेट करा.</translation>
 <translation id="8841843049738266382">अनुमती दिलेल्या सूची मधील वापरकर्ते पहा आणि बदला</translation>
+<translation id="8841884135319684422">टास्क संपवा</translation>
 <translation id="8842594465773264717">हे फिंगरप्रिंट हटवा</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8846132060409673887">या कॉंप्युटरची उत्पादक आणि मॉडेल माहिती वाचा</translation>

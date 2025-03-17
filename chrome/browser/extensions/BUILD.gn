@@ -80,10 +80,16 @@ source_set("extensions") {
     "api/developer_private/profile_info_generator.h",
     "api/identity/extension_token_key.cc",
     "api/identity/extension_token_key.h",
+    "api/identity/identity_api.cc",
+    "api/identity/identity_api.h",
     "api/identity/identity_constants.cc",
     "api/identity/identity_constants.h",
+    "api/identity/identity_get_accounts_function.cc",
+    "api/identity/identity_get_accounts_function.h",
     "api/identity/identity_get_auth_token_error.cc",
     "api/identity/identity_get_auth_token_error.h",
+    "api/identity/identity_get_profile_user_info_function.cc",
+    "api/identity/identity_get_profile_user_info_function.h",
     "api/identity/identity_mint_queue.cc",
     "api/identity/identity_mint_queue.h",
     "api/identity/identity_token_cache.cc",
@@ -342,6 +348,8 @@ source_set("extensions") {
       "api/developer_private/developer_private_functions_android.cc",
       "api/developer_private/developer_private_functions_android.h",
       "api/developer_private/extension_info_generator_android.h",
+      "api/identity/identity_unimplemented_functions_android.cc",
+      "api/identity/identity_unimplemented_functions_android.h",
       "extension_error_ui_android.cc",
       "extension_error_ui_android.h",
     ]
@@ -402,16 +410,10 @@ source_set("extensions") {
       "api/history/history_api.h",
       "api/identity/gaia_remote_consent_flow.cc",
       "api/identity/gaia_remote_consent_flow.h",
-      "api/identity/identity_api.cc",
-      "api/identity/identity_api.h",
       "api/identity/identity_clear_all_cached_auth_tokens_function.cc",
       "api/identity/identity_clear_all_cached_auth_tokens_function.h",
-      "api/identity/identity_get_accounts_function.cc",
-      "api/identity/identity_get_accounts_function.h",
       "api/identity/identity_get_auth_token_function.cc",
       "api/identity/identity_get_auth_token_function.h",
-      "api/identity/identity_get_profile_user_info_function.cc",
-      "api/identity/identity_get_profile_user_info_function.h",
       "api/identity/identity_launch_web_auth_flow_function.cc",
       "api/identity/identity_launch_web_auth_flow_function.h",
       "api/identity/identity_remove_cached_auth_token_function.cc",
@@ -556,8 +558,6 @@ source_set("extensions") {
       "chrome_extension_system_factory.h",
       "chrome_extension_web_contents_observer.cc",
       "chrome_extension_web_contents_observer.h",
-      "chrome_extensions_browser_client.cc",
-      "chrome_extensions_browser_client.h",
       "chrome_extensions_browser_interface_binders.cc",
       "chrome_extensions_browser_interface_binders.h",
       "chrome_kiosk_delegate.h",
@@ -1597,5 +1597,40 @@ if (enable_extensions) {
       # Pull test-specific stubs for symbols needed by //c/b.
       "//chrome/test:test_support",
     ]
+  }
+
+  # ChromeExtensionsBrowserClient.
+  source_set("chrome_extensions_browser_client") {
+    sources = [
+      "chrome_extensions_browser_client.cc",
+      "chrome_extensions_browser_client.h",
+    ]
+
+    public_deps = [ "//chrome/browser/safe_browsing" ]
+
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/browser/prefetch",
+      "//chrome/browser/ui",
+      "//chrome/browser/web_applications",
+      "//components/embedder_support:user_agent",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//components/proxy_config",
+      "//components/safe_browsing/core/common:features",
+      "//components/update_client",
+      "//extensions/browser/updater",
+      "//extensions/browser/updater:keepalive",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/login/demo_mode",
+        "//chrome/browser/ash/profiles",
+        "//chrome/browser/chromeos/policy/dlp",
+        "//chromeos/components/mgs",
+      ]
+    }
   }
 }  # if (enable_extensions)

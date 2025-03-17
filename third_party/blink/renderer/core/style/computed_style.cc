@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -1080,31 +1081,11 @@ bool ComputedStyle::DiffNeedsNormalPaintInvalidation(
     // NOTE: This is also handled to some degree by
     // LayoutObject::AdjustStyleDifference. We should probably re-distribute
     // the responsibilities between these two locations.
-    //
-    // TODO: There are more properties that contain <color> values than this.
-    if (GetCurrentColor() != other.GetCurrentColor() ||
-        GetInternalVisitedCurrentColor() !=
-            other.GetInternalVisitedCurrentColor()) {
-      if (BackgroundInternal().AnyLayerUsesCurrentColor() ||
-          BackgroundColor().IsUnresolvedColorFunction() ||
-          InternalVisitedBackgroundColor().IsUnresolvedColorFunction()) {
-        return true;
-      }
-      if (FillPaint().HasColor() &&
-          FillPaint().GetColor().IsUnresolvedColorFunction()) {
-        return true;
-      }
-      if (StrokePaint().HasColor() &&
-          StrokePaint().GetColor().IsUnresolvedColorFunction()) {
-        return true;
-      }
-      if ((!HasAutoColumnCount() || !HasAutoColumnWidth()) &&
-          ColumnRuleColor().MaybeDependsOnCurrentColor()) {
-        // Repaint only if we are multicol and the column rule maybe depends on
-        // currentcolor.
-        // See https://drafts.csswg.org/css-multicol/#the-multi-column-model
-        return true;
-      }
+    if ((GetCurrentColor() != other.GetCurrentColor() ||
+         GetInternalVisitedCurrentColor() !=
+             other.GetInternalVisitedCurrentColor()) &&
+        HasPropertyDependingOnCurrentColor()) {
+      return true;
     }
   }
 
@@ -2248,6 +2229,18 @@ const StyleNonInheritedVariables* ComputedStyle::NonInheritedVariables() const {
   return NonInheritedVariablesInternal().Get();
 }
 
+bool ComputedStyle::HasPropertyDependingOnCurrentColor() const {
+  for (CSSPropertyID property_id : kCSSIncludesCurrentColorProperties) {
+    auto& property = CSSProperty::Get(property_id);
+    DCHECK(property.IsLonghand());
+    if (static_cast<const Longhand&>(property).IsAffectedByCurrentColor(
+            *this)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 namespace {
 
 template <typename T>
@@ -2692,7 +2685,7 @@ bool ComputedStyle::ShadowListHasCurrentColor(const ShadowList* shadow_list) {
   return shadow_list &&
          std::ranges::any_of(shadow_list->Shadows(),
                              [](const ShadowData& shadow) {
-                               return shadow.GetColor().IsCurrentColor();
+                               return shadow.GetColor().DependsOnCurrentColor();
                              });
 }
 

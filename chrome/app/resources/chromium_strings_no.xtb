@@ -32,6 +32,7 @@
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
 <translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
+<translation id="1547469039832541117">Avslutter den fremhevede oppgaven.</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen støttes ikke lenger. Chromium anbefaler at du fjerner den.}other{Disse utvidelsene støttes ikke lenger. Chromium anbefaler at du fjerner dem.}}</translation>
 <translation id="1574377791422810894">Sikkerhetsverktøyene i Chromium</translation>
@@ -224,6 +225,7 @@
 <translation id="4148957013307229264">Installerer …</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – nettverkspålogging – Chromium</translation>
 <translation id="421369550622382712">Oppdag flotte apper, spill, utvidelser og temaer for Chromium.</translation>
+<translation id="4217080900579554343">For å få denne utvidelsen med flere på alle datamaskinene dine, logg på Chromium</translation>
 <translation id="4217972271355023382">For å holde deg tryggere på nettet med innstillingene som forelderen din har valgt, bytt til Chromium-profilen din der du allerede er logget på som <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Avbryter …</translation>
 <translation id="4224210481850767180">Installasjonen er avbrutt.</translation>

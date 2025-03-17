@@ -145,12 +145,6 @@
     <option value="kHighestQuality">Highest Quality</option>
     <option value="kFastestInference">Fastest Inference</option>
   </select>
-  <cr-checkbox slot="suffix" checked="{{enableImageInput_}}">
-    Enable images
-  </cr-checkbox>
-  <cr-checkbox slot="suffix" checked="{{enableAudioInput_}}">
-    Enable audio
-  </cr-checkbox>
 </div>
 <div class="model-text">
   [[getModelText_(modelPath_, loadModelDuration_, loadedPerformanceHint_)]]
@@ -188,7 +182,7 @@
     value="{{text_}}">
 </cr-textarea>
 <div class="multimodal-buttons" >
-  <div class="image-buttons" hidden$="[[!imagesEnabled_(model_, baseModel_)]]">
+  <div class="image-buttons" hidden$="[[!imagesEnabled_(capabilities_)]]">
     <div class="image-error">[[imageError_]]</div>
     <div hidden$="[[imageFile_]]">
       <cr-button class="floating-button"
@@ -205,7 +199,7 @@
       [[imageFile_.name]]
     </cr-button>
   </div>
-  <div class="audio-buttons" hidden$="[[!audioEnabled_(model_, baseModel_)]]">
+  <div class="audio-buttons" hidden$="[[!audioEnabled_(capabilities_)]]">
     <div class="audio-error">[[audioError_]]</div>
     <div hidden$="[[audioFile_]]">
       <cr-button class="floating-button"

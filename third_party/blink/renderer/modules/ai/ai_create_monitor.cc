@@ -38,8 +38,11 @@ ExecutionContext* AICreateMonitor::GetExecutionContext() const {
 
 void AICreateMonitor::OnDownloadProgressUpdate(uint64_t downloaded_bytes,
                                                uint64_t total_bytes) {
+  CHECK_EQ(total_bytes, 0x10000u);
+  double normalized_downloaded_bytes =
+      downloaded_bytes / static_cast<double>(total_bytes);
   DispatchEvent(*ProgressEvent::Create(event_type_names::kDownloadprogress,
-                                       true, downloaded_bytes, total_bytes));
+                                       true, normalized_downloaded_bytes, 1));
 }
 
 mojo::PendingRemote<mojom::blink::ModelDownloadProgressObserver>

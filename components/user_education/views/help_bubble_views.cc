@@ -5,6 +5,7 @@
 #include "components/user_education/views/help_bubble_views.h"
 
 #include "base/functional/bind.h"
+#include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/common/user_education_events.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -235,6 +236,85 @@ void HelpBubbleViews::OnElementBoundsChanged(ui::TrackedElement* element) {
     }
     OnAnchorBoundsChanged();
   }
+}
+
+CustomHelpBubbleViews::CustomHelpBubbleViews(
+    std::unique_ptr<views::Widget> widget,
+    views::BubbleDialogDelegateView* bubble,
+    CustomHelpBubbleUi& ui,
+    ui::TrackedElement* anchor_element,
+    std::optional<UserAction> accept_button_action,
+    std::optional<UserAction> cancel_button_action)
+    : HelpBubbleViews(bubble, anchor_element),
+      CustomHelpBubble(ui),
+      help_bubble_widget_(std::move(widget)),
+      accept_button_action_(accept_button_action),
+      cancel_button_action_(cancel_button_action) {
+  CHECK(help_bubble_widget_);
+
+  // Help bubbles should not close on deactivate.
+  bubble->set_close_on_deactivate(false);
+
+  // Help bubbles should always send "ESC Pressed" on escape key, not cancel.
+  bubble->set_esc_should_cancel_dialog_override(false);
+
+  bubble->GetWidget()->MakeCloseSynchronous(base::BindOnce(
+      &CustomHelpBubbleViews::OnHelpBubbleClosing, base::Unretained(this)));
+}
+
+CustomHelpBubbleViews::~CustomHelpBubbleViews() {
+  // Ensure that all closing of help bubbles goes through the same logic path.
+  //
+  // Due to upstream logic in HelpBubbleViews, `OnHelpBubbleClosing()` ends up
+  // getting called in a state where the widget cannot correctly be destroyed,
+  // leading to a CHECK().
+  //
+  // This will be unnecessary when HelpBubbleViews is migrated to ownership mode
+  // CLIENT_OWNS_WIDGET.
+  if (help_bubble_widget_) {
+    help_bubble_widget_->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
+}
+
+void CustomHelpBubbleViews::OnHelpBubbleClosing(
+    views::Widget::ClosedReason reason) {
+  // The calls below could also destroy `this`, so save off widget in a local.
+  // This both guarantees that the widget will get properly destroyed at the end
+  // of this method (as is required by `MakeCloseSynchronous()`) and also
+  // prevents re-entrancy in the destructor as `help_bubble_widget_` will be
+  // null.
+  std::unique_ptr<views::Widget> widget = std::move(help_bubble_widget_);
+
+  if (auto* const ui = custom_bubble_ui()) {
+    switch (reason) {
+      case views::Widget::ClosedReason::kAcceptButtonClicked:
+        if (accept_button_action_) {
+          ui->NotifyUserAction(*accept_button_action_);
+        }
+        break;
+
+      case views::Widget::ClosedReason::kCancelButtonClicked:
+        if (cancel_button_action_) {
+          ui->NotifyUserAction(*cancel_button_action_);
+        }
+        break;
+
+      case views::Widget::ClosedReason::kCloseButtonClicked:
+      case views::Widget::ClosedReason::kEscKeyPressed:
+        ui->NotifyUserAction(UserAction::kCancel);
+        break;
+
+      case views::Widget::ClosedReason::kLostFocus:
+      case views::Widget::ClosedReason::kUnspecified:
+        // Do nothing.
+        break;
+    }
+  }
+
+  // This is required when responding to `OnHelpBubbleClosing()`; the widget
+  // must be destroyed before this method returns.
+  widget.reset();
 }
 
 }  // namespace user_education

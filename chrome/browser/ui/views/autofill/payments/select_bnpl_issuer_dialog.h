@@ -15,6 +15,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace autofill::payments {
 
 class SelectBnplIssuerDialogController;
@@ -36,10 +40,16 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void DisplayThrobber();
+
   // DialogDelegateView:
   bool Accept() override;
 
+  // View:
+  void AddedToWidget() override;
+
  private:
+  raw_ptr<views::View> container_view_ = nullptr;
   raw_ptr<BnplIssuerView> bnpl_issuer_view_ = nullptr;
   raw_ptr<BnplDialogFootnote> bnpl_footnote_view_ = nullptr;
 
@@ -47,6 +57,11 @@ class SelectBnplIssuerDialog : public views::DialogDelegateView {
 
   // The web contents used to open the settings footer link.
   base::WeakPtr<content::WebContents> web_contents_;
+
+  // Called when the user clicks the "payment settings" link in the dialog.
+  // Opens the Chrome Payment settings page, to allow the user to manage their
+  // saved payment methods.
+  void OnSettingsLinkClicked();
 
   base::WeakPtrFactory<SelectBnplIssuerDialog> weak_ptr_factory_{this};
 };

@@ -45,6 +45,24 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary=""/>
 </variants>
 
+<variants name="AndroidFeatureModuleName">
+  <variant name=".ar" summary="Augmented Reality Module"/>
+  <variant name=".cablev2_authenticator"
+      summary="caBLEv2 Authenticator Module"/>
+  <variant name=".chime" summary="Chime Notification Module"/>
+  <variant name=".chrome" summary="Chrome Module"/>
+  <variant name=".dev_ui" summary="Developer UI Module"/>
+  <variant name=".feedv2" summary="Feed V2 Module"/>
+  <variant name=".google3" summary="Google3 Module"/>
+  <variant name=".image_editor" summary="Image Editor Module"/>
+  <variant name=".read_aloud_playback" summary="Read Aloud Playback Module"/>
+  <variant name=".stack_unwinder" summary="Stack Unwinder Module"/>
+  <variant name=".survey" summary="Survey Module"/>
+  <variant name=".tab_ui" summary="Tab Management Module"/>
+  <variant name=".test_dummy" summary="Test Dummy Module"/>
+  <variant name=".vr" summary="Virtual Reality Module"/>
+</variants>
+
 <variants name="AndroidFrameTimelineJankScenario">
   <variant name=".FeedScrolling" summary=""/>
   <variant name=".NewTabPage" summary=""/>
@@ -245,13 +263,18 @@ chromium-metrics-reviews@google.com.
   <variant name="NewIncognitoTab"
       summary="tabs opened by an external application launching a new Chrome
                incognito tab"/>
+  <variant name="Omnibox" summary="tabs opened from omnibox"/>
   <variant name="ReadingList" summary="tabs opened from the reading list"/>
   <variant name="RecentTabs"
       summary="tabs opened in background from recent tabs"/>
   <variant name="RecentTabsForeground"
       summary="tabs opened in foreground from recent tabs"/>
-  <variant name="Reparenting" summary="tabs opened from changing windows"/>
+  <variant name="Reparenting"
+      summary="tabs opened in foreground from changing windows"/>
+  <variant name="ReparentingBackground"
+      summary="tabs opened in background from changing windows"/>
   <variant name="Restore" summary="tabs opened from restores"/>
+  <variant name="RestoreTabsUI" summary="tabs opened from restore tabs UI"/>
   <variant name="SpeculativeBackgroundCreation"
       summary="tabs opened from CCT in the background"/>
   <variant name="StartSurface" summary="tabs opened from the start surface"/>
@@ -2490,35 +2513,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.IsolatedSplits.ClassLoaderReplaced"
+<histogram
+    name="Android.IsolatedSplits.ClassLoaderReplaced{AndroidFeatureModuleName}"
     enum="BooleanYesNo" expires_after="2023-06-26">
-<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
-
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <summary>
     Whether a split Context has had its ClassLoader replaced due to b/172602571.
     This is recorded every time a split Context is created.
+    {AndroidFeatureModuleName}
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.IsolatedSplits.ContextCreateTime"
-    units="ms" expires_after="2025-04-27">
-<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
-
-  <owner>cduvall@chromium.org</owner>
-  <owner>agrieve@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
-  <summary>
-    Amount of time it takes to create a new Context for a split. This will only
-    be recorded if isolated splits are enabled.
-  </summary>
-</histogram>
-
-<histogram base="true" name="Android.IsolatedSplits.ContextCreateTime2"
+<histogram
+    name="Android.IsolatedSplits.ContextCreateTime2{AndroidFeatureModuleName}"
     units="ms" expires_after="2026-01-14">
-<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
-
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
@@ -2526,47 +2535,58 @@ chromium-metrics-reviews@google.com.
     Amount of time it takes to create a new Context for a split. This will only
     be recorded if isolated splits are enabled. Different from ContextCreateTime
     as only the first load of a split will be counted.
+    {AndroidFeatureModuleName}
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.IsolatedSplits.ContextCreateTime3"
+<histogram
+    name="Android.IsolatedSplits.ContextCreateTime3{AndroidFeatureModuleName}"
     units="ms" expires_after="2026-01-14">
-<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
-
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
   <summary>
     Amount of time it takes to create a new Context and load a class for a
     split. This is simply ContextCreateTime2 + LoadFirstClassTime.
+    {AndroidFeatureModuleName}
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.IsolatedSplits.LoadFirstClassTime"
-    units="ms" expires_after="2026-01-14">
-<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
+<histogram
+    name="Android.IsolatedSplits.ContextCreateTime{AndroidFeatureModuleName}"
+    units="ms" expires_after="2025-04-27">
+  <owner>cduvall@chromium.org</owner>
+  <owner>agrieve@chromium.org</owner>
+  <owner>smaier@chromium.org</owner>
+  <summary>
+    Amount of time it takes to create a new Context for a split. This will only
+    be recorded if isolated splits are enabled. {AndroidFeatureModuleName}
+  </summary>
+</histogram>
 
+<histogram
+    name="Android.IsolatedSplits.LoadFirstClassTime{AndroidFeatureModuleName}"
+    units="ms" expires_after="2026-01-14">
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
   <summary>
     Amount of time it takes to load the first class in a split. This will only
     be recorded if there is a hardcoded class to load in SplitChromeApplication.
-    Happens right after the Context is created.
+    Happens right after the Context is created. {AndroidFeatureModuleName}
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.IsolatedSplits.PreloadWaitTime" units="ms"
-    expires_after="2025-08-06">
-<!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
-
+<histogram
+    name="Android.IsolatedSplits.PreloadWaitTime{AndroidFeatureModuleName}"
+    units="ms" expires_after="2025-08-06">
   <owner>cduvall@chromium.org</owner>
   <owner>agrieve@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
   <summary>
     Amount of time spent waiting for a split preload task to finish. This will
     only be recorded if isolated splits are enabled. This histogram was expired
-    between 2023-11-12 and 2024-08-23.
+    between 2023-11-12 and 2024-08-23. {AndroidFeatureModuleName}
   </summary>
 </histogram>
 
@@ -6170,16 +6190,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Android.WebView.DevUi.SessionDuration2" units="ms"
-    expires_after="2026-01-15">
-<!-- Name completed by histogram_suffixes
-     name="AndroidWebViewFragments" -->
-
+<histogram
+    name="Android.WebView.DevUi.SessionDuration2.{AndroidWebViewFragment}"
+    units="ms" expires_after="2026-01-15">
+  <owner>hazems@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Records the time spent using a specific tool, from creation to destruction.
+    {AndroidWebViewFragment}
   </summary>
+  <token key="AndroidWebViewFragment">
+    <variant name="ComponentsListFragment"
+        summary="This is for the components list tool"/>
+    <variant name="CrashesListFragment"
+        summary="This is for the crash list tool."/>
+    <variant name="FlagsFragment"
+        summary="This is for the flag modification tool."/>
+    <variant name="HomeFragment"
+        summary="This is for the home (default) page."/>
+    <variant name="SafeModeFragment" summary="This is for the safe mode tool."/>
+    <variant name="Unknown"
+        summary="Unknown Fragment (the histogram may need to be updated)."/>
+  </token>
 </histogram>
 
 <histogram name="Android.WebView.DevUi.ToggledFlagCount" units="flags"
@@ -7034,21 +7067,6 @@ chromium-metrics-reviews@google.com.
     Measures the count of distinct http and https origins visited per day in
     WebView. The purpose of this metric is to slice it by package name to help
     characterize the usage of that package.
-  </summary>
-</histogram>
-
-<histogram name="Android.WebView.PartitionedCookiesExcluded"
-    enum="BooleanEnabled" expires_after="2025-08-01">
-  <owner>avvall@chromium.org</owner>
-  <owner>bewise@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records whether or not partitioned cookies are omitted from the current
-    site. This means that there are cookies in the cookie jar with separate
-    partition keys.
-
-    This is recorded when Android developers get cookies using the CookieManager
-    API if the WebViewPartitionedCookiesExcluded flag is enabled.
   </summary>
 </histogram>
 

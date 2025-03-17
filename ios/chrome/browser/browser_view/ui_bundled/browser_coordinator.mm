@@ -586,6 +586,10 @@ enum class ToolbarKind {
 // The webState of the active tab.
 @property(nonatomic, readonly) web::WebState* activeWebState;
 
+// The handler used to manage the infobar workflow for saving an address.
+@property(nonatomic, strong)
+    InfobarAutofillEditProfileBottomSheetHandler* editProfileBottomSheetHandler;
+
 @end
 
 @implementation BrowserCoordinator {
@@ -1994,14 +1998,15 @@ enum class ToolbarKind {
 }
 
 - (void)showEditAddressBottomSheet {
-  InfobarAutofillEditProfileBottomSheetHandler* editHandler =
-      [[InfobarAutofillEditProfileBottomSheetHandler alloc] init];
+  self.editProfileBottomSheetHandler =
+      [[InfobarAutofillEditProfileBottomSheetHandler alloc]
+          initWithWebState:self.activeWebState];
 
   self.autofillEditProfileBottomSheetCoordinator =
       [[AutofillEditProfileBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser
-                             handler:editHandler];
+                             handler:self.editProfileBottomSheetHandler];
   [self.autofillEditProfileBottomSheetCoordinator start];
 }
 
@@ -2011,6 +2016,7 @@ enum class ToolbarKind {
   }
 
   self.autofillEditProfileBottomSheetCoordinator = nil;
+  self.editProfileBottomSheetHandler = nil;
 }
 
 - (void)showAutofillErrorDialog:

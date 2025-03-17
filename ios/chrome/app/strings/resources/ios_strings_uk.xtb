@@ -440,6 +440,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Пароль збережено у вашому обліковому записі Google ({EMAIL})}one{Паролі збережено у вашому обліковому записі Google ({EMAIL})}few{Паролі збережено у вашому обліковому записі Google ({EMAIL})}many{Паролі збережено у вашому обліковому записі Google ({EMAIL})}other{Паролі збережено у вашому обліковому записі Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Додати пароль…</translation>
 <translation id="2797302972324086597">Код країни</translation>
+<translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файли}many{{COUNT} файлів}other{{COUNT} файлу}}</translation>
 <translation id="2816489851009559785">Меню → Налаштування → Вебпереглядач за умовчанням</translation>
 <translation id="2818821771744632548">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPhone. Щоб увійти знову, натисніть "Продовжити" нижче.</translation>
 <translation id="2819667972867209401">Коли цей параметр увімкнено, дані зберігаються в обліковому записі Google. Якщо його вимкнути, дані зберігатимуться лише на пристрої і видалятимуться, коли ви вийдете з облікового запису.</translation>
@@ -447,6 +448,7 @@
 <translation id="2829172210806130158">Шукайте об’єкти на екрані</translation>
 <translation id="2834399722155632105">3. Натисніть "Параметри паролів"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Час</translation>
 <translation id="284581348330507117">Створіть унікальні паролі</translation>
 <translation id="2856883624744451946">Введіть назву групи</translation>
 <translation id="2858204748079866344">Щоб захистити вашу конфіденційність, Chrome не буде автоматично заповнювати пароль у цьому полі.</translation>
@@ -649,7 +651,6 @@
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3868495844258915202">Показати повну URL-адресу</translation>
 <translation id="3875783148670536197">Докладніше</translation>
-<translation id="3876833929577368454">Запитувати щоразу</translation>
 <translation id="3885587018298784481">Приєднайтеся до сімейної групи</translation>
 <translation id="3888863481921783344">Ці дані застосовуватимуться, щоб показувати вам користувачів, яких можна запросити на подію.</translation>
 <translation id="3891414008432200754">Ціна</translation>
@@ -904,6 +905,7 @@
 <translation id="4896467949657706481">Ви вийшли з облікового запису, а вкладки було закрито</translation>
 <translation id="4913626501929406101">Ви можете безпечно надіслати копію пароля учасникам сімейної групи. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Прийняти</translation>
+<translation id="4932733599132424254">Дата</translation>
 <translation id="4936354130727646074">Ніколи не переміщувати</translation>
 <translation id="4937410517508563815">Зберегти паролі в обліковому записі</translation>
 <translation id="4938338714234463591">Так ви зможете застосовувати голосові команди для певних функцій на веб-сайтах.</translation>
@@ -1470,7 +1472,6 @@
 <translation id="7336264872878993241">Завантажено <ph name="PERCENT" />%</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
-<translation id="7359341089141286329">Автоматично відстежувати всі виявлені відправлення</translation>
 <translation id="7363349185727752629">Посібник щодо конфіденційності</translation>
 <translation id="736564850024123010">Щоб персоналізувати головний екран, змініть положення адресного рядка.</translation>
 <translation id="7366909168761621528">Дані вебперегляду</translation>
@@ -1718,6 +1719,7 @@
 <translation id="8299417921174340354">Щоб використовувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="8307481894409578819">Не вдалося завантажити цей файл</translation>
 <translation id="8319076807703933069">Новий пошук</translation>
+<translation id="8320212361750431956">Останні дії</translation>
 <translation id="833647236762414178">Створюйте й зберігайте паролі та ключі доступу, а також керуйте ними, щоб простіше входити у свої облікові записи на сайтах і в додатках. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Створюйте резервні копії даних і використовуйте їх на будь-якому пристрої.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
@@ -1747,7 +1749,6 @@
 <translation id="8438566539970814960">Покращувати пошук і вебперегляд</translation>
 <translation id="8439758443371991593">Сховати опцію "Додати в список читання"</translation>
 <translation id="8449869326050867919">Пароль надіслано</translation>
-<translation id="8453847087068411809">Ніколи не визначати відправлення автоматично</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8474378002946546633">Дозволити сповіщення</translation>
 <translation id="8477178913400731244">Видалити дані</translation>

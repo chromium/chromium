@@ -197,6 +197,14 @@ class ReadAnythingAppModel {
   bool IsDocs() const;
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
+
+  // Inserts `id` into `non_ignored_ids` if it corresponds to a node that should
+  // not be ignored during content distillation. Nodes may be ignored for
+  // various reasons, such as being synthetic markers of some type or (some
+  // kinds of) interactive elements.
+  void InsertIdIfNotIgnored(ui::AXNodeID id,
+                            std::set<ui::AXNodeID>& non_ignored_ids);
+
   bool NodeIsContentNode(const ui::AXNodeID& ax_node_id) const;
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
@@ -270,9 +278,7 @@ class ReadAnythingAppModel {
  private:
   void EraseTree(const ui::AXTreeID& tree_id);
 
-  void InsertDisplayNode(const ui::AXNodeID& node);
   void ResetSelection();
-  void InsertSelectionNode(const ui::AXNodeID& node);
   void UpdateSelection();
   void ComputeSelectionNodeIds();
   bool IsCurrentSelectionEmpty();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/signals/context_info_fetcher.h"
 
 #include <algorithm>
@@ -125,9 +120,10 @@ SettingValue GetWinOSFirewall() {
   constexpr NET_FW_PROFILE_TYPE2 kProfileTypes[] = {
       NET_FW_PROFILE2_PUBLIC, NET_FW_PROFILE2_PRIVATE, NET_FW_PROFILE2_DOMAIN};
   for (size_t i = 0; i < std::size(kProfileTypes); ++i) {
-    if ((profile_types & kProfileTypes[i]) != 0) {
+    if ((profile_types & UNSAFE_TODO(kProfileTypes[i])) != 0) {
       VARIANT_BOOL enabled = VARIANT_TRUE;
-      hr = firewall_policy->get_FirewallEnabled(kProfileTypes[i], &enabled);
+      hr = firewall_policy->get_FirewallEnabled(UNSAFE_TODO(kProfileTypes[i]),
+                                                &enabled);
       if (FAILED(hr))
         return SettingValue::UNKNOWN;
       if (enabled == VARIANT_TRUE)

@@ -166,8 +166,7 @@ class ModuleBlocklistCacheUpdater : public ModuleDatabaseObserver {
   ~ModuleBlocklistCacheUpdater() override;
 
   // Returns true if the blocking of third-party modules is enabled. Can be
-  // called on any thread. Notably does not check the ThirdPartyBlockingEnabled
-  // group policy.
+  // called on any thread.
   static bool IsBlockingEnabled();
 
   // Returns the path to the module blocklist cache.

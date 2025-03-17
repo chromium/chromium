@@ -2006,7 +2006,7 @@ void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
     uint32_t length = engine_->GetLoadedByteSize();
     if (IsSaveDataSizeValid(length)) {
       base::Value::BlobStorage data(length);
-      if (engine_->ReadLoadedBytes(length, data.data())) {
+      if (engine_->ReadLoadedBytes(data)) {
         data_to_save = base::Value(std::move(data));
       }
     }

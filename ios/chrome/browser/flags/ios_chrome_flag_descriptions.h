@@ -54,6 +54,9 @@ extern const char kAutofillEnableCardBenefitsForBmoDescription[];
 extern const char kAutofillEnableCardBenefitsSyncName[];
 extern const char kAutofillEnableCardBenefitsSyncDescription[];
 
+extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
+extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
+
 // Title and description for the flag to enable dynamically loading the fields
 // for address input based on the country value.
 extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];
@@ -279,6 +282,9 @@ extern const char kEnhancedSafeBrowsingPromoDescription[];
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
 
+extern const char kFeedSwipeInProductHelpName[];
+extern const char kFeedSwipeInProductHelpDescription[];
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
@@ -413,6 +419,9 @@ extern const char kLensClearcutBackgroundUploadEnabledDescription[];
 extern const char kLensClearcutLoggerFastQosEnabledName[];
 extern const char kLensClearcutLoggerFastQosEnabledDescription[];
 
+extern const char kLensFetchSrpApiEnabledName[];
+extern const char kLensFetchSrpApiEnabledDescription[];
+
 extern const char kLensFiltersAblationModeEnabledName[];
 extern const char kLensFiltersAblationModeEnabledDescription[];
 
@@ -457,6 +466,9 @@ extern const char kLensPrewarmHardStickinessInInputSelectionDescription[];
 
 extern const char kLensPrewarmHardStickinessInQueryFormulationName[];
 extern const char kLensPrewarmHardStickinessInQueryFormulationDescription[];
+
+extern const char kLensQRCodeParsingFixName[];
+extern const char kLensQRCodeParsingFixDescription[];
 
 extern const char kLensSingleTapTextSelectionDisabledName[];
 extern const char kLensSingleTapTextSelectionDisabledDescription[];
@@ -767,15 +779,6 @@ extern const char kTabGroupsIPadDescription[];
 
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
-
-extern const char kTabResumption1_5Name[];
-extern const char kTabResumption1_5Description[];
-
-extern const char kTabResumption2Name[];
-extern const char kTabResumption2Description[];
-
-extern const char kTabResumption2ReasonName[];
-extern const char kTabResumption2ReasonDescription[];
 
 extern const char kTabResumptionImagesName[];
 extern const char kTabResumptionImagesDescription[];

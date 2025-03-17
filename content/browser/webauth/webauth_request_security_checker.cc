@@ -123,6 +123,7 @@ WebAuthRequestSecurityChecker::RemoteValidation::Create(
 
   auto network_request = std::make_unique<network::ResourceRequest>();
   network_request->url = well_known_url;
+  network_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   std::unique_ptr<RemoteValidation> validation(
       new RemoteValidation(caller_origin, std::move(callback)));

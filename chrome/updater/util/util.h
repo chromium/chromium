@@ -184,12 +184,16 @@ bool ConfirmFilePermissions(const base::FilePath& root_path,
 // Returns the versioned task name prefix in the following format:
 // "{ProductName}Task{System/User}{UpdaterVersion}".
 // For instance: "ChromiumUpdaterTaskSystem92.0.0.1".
-std::wstring GetTaskNamePrefix(UpdaterScope scope);
+std::wstring GetTaskNamePrefix(
+    UpdaterScope scope,
+    const base::Version& version = base::Version(kUpdaterVersion));
 
 // Returns the versioned task display name in the following format:
 // "{ProductName} Task {System/User} {UpdaterVersion}".
 // For instance: "ChromiumUpdater Task System 92.0.0.1".
-std::wstring GetTaskDisplayName(UpdaterScope scope);
+std::wstring GetTaskDisplayName(
+    UpdaterScope scope,
+    const base::Version& version = base::Version(kUpdaterVersion));
 
 // Parses the command line string in legacy format into `base::CommandLine`.
 // The string must be in format like:

@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 
 import java.util.List;
 
-/** The view containing {@link NtpCardsListItemView} on the "New tab page cards" bottom sheet. */
+/** The view containing {@link NtpCardsListItemView} in the "New tab page cards" bottom sheet. */
 public class NtpCardsContainerView extends LinearLayout {
     public NtpCardsContainerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -53,6 +53,14 @@ public class NtpCardsContainerView extends LinearLayout {
         view.setBackground(getBackground(size, index));
     }
 
+    /**
+     * Every list in ntp customization bottom sheets should use this function to get the background
+     * of their list items.
+     *
+     * @param size The number of the list items to be displayed in the container view.
+     * @param index The index of the currently iterated list item.
+     * @return The background of the list item at the index.
+     */
     @VisibleForTesting
     int getBackground(int size, int index) {
         if (size == 1) {

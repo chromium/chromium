@@ -168,4 +168,19 @@ TEST_F(AutoDeletionServiceTest, DeleteAllFilesScheduledForDeletion) {
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 0u);
 }
 
+// Tests that the auto deletion service untracks the scheduled file.
+TEST_F(AutoDeletionServiceTest, UntrackScheduledFileWhenServiceIsDisabled) {
+  // Create web::DownloadTask & schedule download for auto deletion.
+  std::unique_ptr<web::DownloadTask> task = CreateTask(directory());
+  web::DownloadTask* task_ptr = task.get();
+  service()->ScheduleFileForDeletion(std::move(task_ptr));
+  // Check that the pref has one value.
+  ASSERT_EQ(GetNumberOfFilesScheduledForDeletion(), 1u);
+
+  // This function is invoked when the Auto-deletion feature is disabled.
+  service()->Clear();
+
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 0u);
+}
+
 }  // namespace auto_deletion

@@ -138,7 +138,6 @@ bool IsAutofillCustomCommandId(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
-      IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE,
   });
   return kAutofillCommands.contains(command_id.value());
@@ -254,12 +253,6 @@ void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   }
   CHECK(IsAutofillCustomCommandId(CommandId(command_id)));
 
-  if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) {
-    ExecuteAutofillAiCommand(autofill_driver->GetFrameToken(),
-                             *autofill_driver);
-    return;
-  }
-
   if (command_id == IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) {
     ExecuteAutofillFeedbackCommand(autofill_driver->GetFrameToken(),
                                    autofill_driver->GetAutofillManager());
@@ -342,16 +335,10 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
 
   bool add_plus_address_fallback = false;
   bool add_passwords_fallback = false;
-  bool add_autofill_ai = false;
 
   // Do not show autofill context menu options for input fields that cannot be
   // filled by the driver. See crbug.com/1367547.
   if (autofill_driver && autofill_driver->CanShowAutofillUi()) {
-    auto* web_contents = content::WebContents::FromRenderFrameHost(
-        autofill_driver->render_frame_host());
-    add_autofill_ai = ShouldAddAutofillAiItem(
-        autofill_driver->GetAutofillClient().GetAutofillAiDelegate(),
-        web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
     add_plus_address_fallback =
         ShouldAddPlusAddressManualFallbackItem(*autofill_driver);
   }
@@ -363,8 +350,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
         ShouldAddPasswordsManualFallbackItem(*password_manager_driver);
   }
 
-  if (!add_plus_address_fallback && !add_passwords_fallback &&
-      !add_autofill_ai) {
+  if (!add_plus_address_fallback && !add_passwords_fallback) {
     return;
   }
 
@@ -377,14 +363,6 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
       LogSelectPasswordManualFallbackContextMenuEntryShown(
           CHECK_DEREF(password_manager_driver));
     }
-  }
-  if (add_autofill_ai) {
-    menu_model_->AddItemWithStringIdAndIcon(
-        IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
-        IDS_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
-        ui::ImageModel::FromVectorIcon(
-            vector_icons::kLocationOnChromeRefreshIcon, ui::kColorIcon,
-            kContextMenuIconSize));
   }
   if (add_plus_address_fallback) {
     menu_model_->AddItemWithStringIdAndIcon(
@@ -419,13 +397,6 @@ bool AutofillContextMenuManager::ShouldAddPlusAddressManualFallbackItem(
              client.IsOffTheRecord()) &&
          base::FeatureList::IsEnabled(
              plus_addresses::features::kPlusAddressFallbackFromContextMenu);
-}
-
-bool AutofillContextMenuManager::ShouldAddAutofillAiItem(
-    AutofillAiDelegate* delegate,
-    const GURL& url) {
-  // TODO(crbug.com/372158654): Remove everything related to Autofill AI.
-  return false;
 }
 
 bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
@@ -509,14 +480,6 @@ void AutofillContextMenuManager::
                                   IsPasswordFormField(*password_manager_driver,
                                                       params_));
   }
-}
-
-void AutofillContextMenuManager::ExecuteAutofillAiCommand(
-    const LocalFrameToken& frame_token,
-    ContentAutofillDriver& autofill_driver) {
-  autofill_driver.browser_events().RendererShouldTriggerSuggestions(
-      FieldGlobalId(frame_token, FieldRendererId(params_.field_renderer_id)),
-      AutofillSuggestionTriggerSource::kAutofillAi);
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(

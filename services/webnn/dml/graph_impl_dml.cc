@@ -3853,6 +3853,30 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
     IdToNodeOutputMap& id_to_node_output_map,
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
+  mojom::Operation::Tag op_tag;
+  std::optional<uint64_t> initial_hidden_state_operand_id;
+  bool return_sequence;
+  mojom::RecurrentNetworkDirection direction;
+  if constexpr (std::is_same_v<GruType, mojom::GruPtr>) {
+    CHECK(context_properties.data_type_limits.gru_input.SupportsAll(
+        {id_to_operand_map.at(gru->input_operand_id)->descriptor,
+         id_to_operand_map.at(gru->weight_operand_id)->descriptor,
+         id_to_operand_map.at(gru->recurrent_weight_operand_id)->descriptor}));
+    op_tag = mojom::Operation::Tag::kGru;
+    initial_hidden_state_operand_id = gru->initial_hidden_state_operand_id;
+    return_sequence = gru->return_sequence;
+    direction = gru->direction;
+  } else /* GruType is mojom::GruCellPtr */ {
+    CHECK(context_properties.data_type_limits.gru_cell_input.SupportsAll(
+        {id_to_operand_map.at(gru->input_operand_id)->descriptor,
+         id_to_operand_map.at(gru->weight_operand_id)->descriptor,
+         id_to_operand_map.at(gru->recurrent_weight_operand_id)->descriptor}));
+    op_tag = mojom::Operation::Tag::kGruCell;
+    initial_hidden_state_operand_id = gru->hidden_state_operand_id;
+    return_sequence = false;
+    direction = mojom::RecurrentNetworkDirection::kForward;
+  }
+
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, gru->input_operand_id);
   // Since the InputTensor doesn't support the DML_TENSOR_FLAG_OWNED_BY_DML
@@ -3860,29 +3884,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
   // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc
   input = AppendIdentityToConstantOperand(graph_builder, input);
   TensorDesc input_tensor_desc = input->GetTensorDesc();
-  const OperandDataType input_data_type =
-      DmlDataTypeToOperand(input_tensor_desc.GetDataType());
-
-  mojom::Operation::Tag op_tag;
-  std::optional<uint64_t> initial_hidden_state_operand_id;
-  bool return_sequence;
-  mojom::RecurrentNetworkDirection direction;
-  if constexpr (std::is_same_v<GruType, mojom::GruPtr>) {
-    CHECK(context_properties.data_type_limits.gru_input.Has(input_data_type));
-    op_tag = mojom::Operation::Tag::kGru;
-    initial_hidden_state_operand_id = gru->initial_hidden_state_operand_id;
-    return_sequence = gru->return_sequence;
-    direction = gru->direction;
-  } else /* GruType is mojom::GruCellPtr */ {
-    CHECK(context_properties.data_type_limits.gru_cell_input.Has(
-        input_data_type));
-    op_tag = mojom::Operation::Tag::kGruCell;
-    initial_hidden_state_operand_id = gru->hidden_state_operand_id;
-    return_sequence = false;
-    direction = mojom::RecurrentNetworkDirection::kForward;
-  }
-
-  // The input tensor is 4-D for gru and 3-D for gruCell, while DirectML
+  // The input tensor is 3-D for gru and 2-D for gruCell, while DirectML
   // expects a 4-D tensor.
   input_tensor_desc.EnsureMinimumRank(/*rank=*/4,
                                       TensorDesc::Alignment::kTrailing);
@@ -4009,6 +4011,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
 
   std::optional<TensorDesc> initial_hidden_state_tensor_desc;
   if (initial_hidden_state_operand_id.has_value()) {
+    if constexpr (std::is_same_v<GruType, mojom::GruPtr>) {
+      CHECK(context_properties.data_type_limits.gru_input.Supports(
+          id_to_operand_map.at(initial_hidden_state_operand_id.value())
+              ->descriptor));
+    } else /* GruType is mojom::GruCellPtr */ {
+      CHECK(context_properties.data_type_limits.gru_cell_input.Supports(
+          id_to_operand_map.at(initial_hidden_state_operand_id.value())
+              ->descriptor));
+    }
     const NodeOutput* initial_hidden_state = GetNodeOutputForOperand(
         id_to_node_output_map, initial_hidden_state_operand_id.value());
     // Since the HiddenInitTensor doesn't support the
@@ -4471,6 +4482,34 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     std::unordered_map<uint64_t, uint32_t>& constant_id_to_input_index_map,
     uint64_t& next_operand_id) {
   const std::string& label = lstm.label;
+  IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
+
+  mojom::Operation::Tag op_tag;
+  std::optional<uint64_t> initial_hidden_state_operand_id;
+  std::optional<uint64_t> initial_cell_state_operand_id;
+  bool return_sequence;
+  mojom::RecurrentNetworkDirection direction;
+  if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+    CHECK(context_properties.data_type_limits.lstm_input.SupportsAll(
+        {id_to_operand_map.at(lstm.input_operand_id)->descriptor,
+         id_to_operand_map.at(lstm.weight_operand_id)->descriptor,
+         id_to_operand_map.at(lstm.recurrent_weight_operand_id)->descriptor}));
+    op_tag = mojom::Operation::Tag::kLstm;
+    initial_hidden_state_operand_id = lstm.initial_hidden_state_operand_id;
+    initial_cell_state_operand_id = lstm.initial_cell_state_operand_id;
+    return_sequence = lstm.return_sequence;
+    direction = lstm.direction;
+  } else /* `LstmType` is `mojom::LstmCell` */ {
+    CHECK(context_properties.data_type_limits.lstm_cell_input.SupportsAll(
+        {id_to_operand_map.at(lstm.input_operand_id)->descriptor,
+         id_to_operand_map.at(lstm.weight_operand_id)->descriptor,
+         id_to_operand_map.at(lstm.recurrent_weight_operand_id)->descriptor}));
+    op_tag = mojom::Operation::Tag::kLstmCell;
+    initial_hidden_state_operand_id = lstm.hidden_state_operand_id;
+    initial_cell_state_operand_id = lstm.cell_state_operand_id;
+    return_sequence = false;
+    direction = mojom::RecurrentNetworkDirection::kForward;
+  }
 
   const NodeOutput* input =
       GetNodeOutputForOperand(id_to_node_output_map, lstm.input_operand_id);
@@ -4483,29 +4522,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
       input_tensor_desc.GetDataType();
   const OperandDataType input_data_type =
       DmlDataTypeToOperand(input_dml_data_type);
-
-  mojom::Operation::Tag op_tag;
-  std::optional<uint64_t> initial_hidden_state_operand_id;
-  std::optional<uint64_t> initial_cell_state_operand_id;
-  bool return_sequence;
-  mojom::RecurrentNetworkDirection direction;
-  if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
-    CHECK(context_properties.data_type_limits.lstm_input.Has(input_data_type));
-    op_tag = mojom::Operation::Tag::kLstm;
-    initial_hidden_state_operand_id = lstm.initial_hidden_state_operand_id;
-    initial_cell_state_operand_id = lstm.initial_cell_state_operand_id;
-    return_sequence = lstm.return_sequence;
-    direction = lstm.direction;
-  } else /* `LstmType` is `mojom::LstmCell` */ {
-    CHECK(context_properties.data_type_limits.lstm_cell_input.Has(
-        input_data_type));
-    op_tag = mojom::Operation::Tag::kLstmCell;
-    initial_hidden_state_operand_id = lstm.hidden_state_operand_id;
-    initial_cell_state_operand_id = lstm.cell_state_operand_id;
-    return_sequence = false;
-    direction = mojom::RecurrentNetworkDirection::kForward;
-  }
-
   // The input tensor is 2-D for lstmCell and 3-D for lstm, while DirectML
   // expects a 4-D tensor.
   input_tensor_desc.EnsureMinimumRank(/*rank=*/4,
@@ -4634,8 +4650,6 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
     recurrent_weight_iofg = graph_builder.CreateNodeOutput(
         concat_recurrent_weight_node, recurrent_weight_tensor_desc);
   }
-
-  IdToOperandMap& id_to_operand_map = graph_info->id_to_operand_map;
 
   const std::vector<uint64_t>& output_ids = lstm.output_operand_ids;
   const size_t output_count = output_ids.size();
@@ -4824,6 +4838,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
   std::optional<TensorDesc> initial_hidden_state_tensor_desc;
   if (initial_hidden_state_operand_id.has_value()) {
+    if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+      CHECK(context_properties.data_type_limits.lstm_input.Supports(
+          id_to_operand_map.at(initial_hidden_state_operand_id.value())
+              ->descriptor));
+    } else /* `LstmType` is `mojom::LstmCell` */ {
+      CHECK(context_properties.data_type_limits.lstm_cell_input.Supports(
+          id_to_operand_map.at(initial_hidden_state_operand_id.value())
+              ->descriptor));
+    }
     const NodeOutput* initial_hidden_state = GetNodeOutputForOperand(
         id_to_node_output_map, initial_hidden_state_operand_id.value());
     // Append an identity node if the initial hidden state is a constant
@@ -4844,6 +4867,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
   std::optional<TensorDesc> initial_cell_state_tensor_desc;
   if (initial_cell_state_operand_id.has_value()) {
+    if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+      CHECK(context_properties.data_type_limits.lstm_input.Supports(
+          id_to_operand_map.at(initial_cell_state_operand_id.value())
+              ->descriptor));
+    } else /* `LstmType` is `mojom::LstmCell` */ {
+      CHECK(context_properties.data_type_limits.lstm_cell_input.Supports(
+          id_to_operand_map.at(initial_cell_state_operand_id.value())
+              ->descriptor));
+    }
     const NodeOutput* initial_cell_state = GetNodeOutputForOperand(
         id_to_node_output_map, initial_cell_state_operand_id.value());
     // Append an identity node if the initial cell state is a constant operand
@@ -4868,6 +4900,15 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
 
   std::optional<TensorDesc> peephole_weight_tensor_desc;
   if (lstm.peephole_weight_operand_id.has_value()) {
+    if constexpr (std::is_same_v<LstmType, mojom::Lstm>) {
+      CHECK(context_properties.data_type_limits.lstm_bias.Supports(
+          id_to_operand_map.at(lstm.peephole_weight_operand_id.value())
+              ->descriptor));
+    } else /* `LstmType` is `mojom::LstmCell` */ {
+      CHECK(context_properties.data_type_limits.lstm_cell_bias.Supports(
+          id_to_operand_map.at(lstm.peephole_weight_operand_id.value())
+              ->descriptor));
+    }
     const NodeOutput* peephole_weight = GetNodeOutputForOperand(
         id_to_node_output_map, lstm.peephole_weight_operand_id.value());
     // Append an identity node if the peephole weight is a constant operand

@@ -376,7 +376,7 @@ int MemEntryImpl::InternalWriteData(int index, int offset, IOBuffer* buf,
   // this may still affect the file if it gets truncated or extended.
   base::span<uint8_t> to_write;
   if (buf) {
-    to_write = buf->span().first(u_buf_len);
+    to_write = buf->first(u_buf_len);
   }
 
   std::vector<char>& data = data_[index];

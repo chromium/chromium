@@ -78,6 +78,10 @@ class LensPermissionBubbleController;
 class LensOverlayEventHandler;
 }  // namespace lens
 
+namespace optimization_guide {
+  struct AIPageContentResult;
+}  // namespace optimization_guide
+
 namespace views {
 class View;
 class WebView;
@@ -824,7 +828,7 @@ class LensOverlayController : public LensSearchboxClient,
   void OnAnnotatedPageContentReceived(
       std::vector<lens::PageContent> page_contents,
       PageContentRetrievedCallback callback,
-      std::optional<optimization_guide::proto::AnnotatedPageContent> apc);
+      std::optional<optimization_guide::AIPageContentResult> apc);
 
   // Creates the mojo bounding boxes for the significant regions.
   std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(

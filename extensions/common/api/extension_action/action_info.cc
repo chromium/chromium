@@ -11,8 +11,10 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/icons/extension_icon_variants.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handler_helpers.h"
+#include "extensions/common/manifest_handlers/icon_variants_handler.h"
 
 namespace extensions {
 
@@ -39,6 +41,33 @@ ActionInfoData::ActionInfoData(std::unique_ptr<ActionInfo> info)
 
 ActionInfoData::~ActionInfoData() = default;
 
+using extensions::diagnostics::icon_variants::Feature;
+using extensions::diagnostics::icon_variants::Id;
+using extensions::diagnostics::icon_variants::Severity;
+
+// Returns the icon variants parsed from the `extension` manifest.
+// Populates `error` if there are no icon variants.
+ExtensionIconVariants GetIconVariants(const base::Value* value) {
+  ExtensionIconVariants icon_variants;
+
+  // Convert the input key into a list containing everything.
+  if (!value->is_list()) {
+    icon_variants.AddDiagnostic(Feature::kIconVariants,
+                                Id::kIconVariantsKeyMustBeAList);
+    return icon_variants;
+  }
+
+  icon_variants.Parse(&value->GetList());
+
+  // Verify `icon_variants`, e.g. that at least one `icon_variant` is valid.
+  if (icon_variants.IsEmpty()) {
+    icon_variants.AddDiagnostic(Feature::kIconVariants,
+                                Id::kIconVariantsInvalid);
+  }
+
+  return icon_variants;
+}
+
 }  // namespace
 
 ActionInfo::ActionInfo(Type type) : type(type), synthesized(false) {
@@ -52,6 +81,8 @@ ActionInfo::ActionInfo(Type type) : type(type), synthesized(false) {
       break;
   }
 }
+
+ActionInfo::ActionInfo(ActionInfo&& other) = default;
 
 ActionInfo::ActionInfo(const ActionInfo& other) = default;
 
@@ -153,7 +184,42 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
                                 : ActionInfo::DefaultState::kDisabled;
   }
 
-  // TODO(crbug.com/344639840): Load optional `icon_variants` key.
+  bool supports_icon_variants =
+      IconVariantsInfo::SupportsIconVariants(*extension);
+  const base::Value* icon_variants_value = dict.Find(keys::kIconVariants);
+  if (icon_variants_value) {
+    if (!supports_icon_variants) {
+      auto diagnostic = extensions::diagnostics::icon_variants::GetDiagnostic(
+          Feature::kIconVariants, Id::kIconVariantsNotEnabled);
+      install_warnings->emplace_back(diagnostic.message);
+    } else {
+      ExtensionIconVariants icon_variants =
+          GetIconVariants(icon_variants_value);
+
+      // Add any install warnings, handle errors, and then clear out
+      // diagnostics.
+      auto& diagnostics = icon_variants.get_diagnostics();
+      for (const auto& diagnostic : diagnostics) {
+        switch (diagnostic.severity) {
+          case Severity::kWarning:
+            // Add an install warning.
+            install_warnings->emplace_back(diagnostic.message);
+            break;
+          case Severity::kError:
+            // If any error exists, do not load the extension.
+            *error = base::UTF8ToUTF16(diagnostic.message);
+            return nullptr;
+          default:
+            NOTREACHED();
+        }
+
+        install_warnings->emplace_back(diagnostic.message);
+      }
+
+      diagnostics.clear();
+      result->icon_variants = std::move(icon_variants);
+    }
+  }
 
   return result;
 }

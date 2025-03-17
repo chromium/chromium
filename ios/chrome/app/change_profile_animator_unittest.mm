@@ -96,7 +96,7 @@ TEST_F(ChangeProfileAnimatorTest, waitForSceneState_ProfileReadyBeforeScene) {
   __weak ChangeProfileAnimator* weak_animator = nil;
   @autoreleasepool {
     ChangeProfileAnimator* animator =
-        [[ChangeProfileAnimator alloc] initWithViewController:nil];
+        [[ChangeProfileAnimator alloc] initWithWindow:nil];
 
     [animator waitForSceneState:scene_state()
                toReachInitStage:ProfileInitStage::kUIReady
@@ -148,7 +148,7 @@ TEST_F(ChangeProfileAnimatorTest, waitForSceneState_SceneReadyBeforeProfile) {
   __weak ChangeProfileAnimator* weak_animator = nil;
   @autoreleasepool {
     ChangeProfileAnimator* animator =
-        [[ChangeProfileAnimator alloc] initWithViewController:nil];
+        [[ChangeProfileAnimator alloc] initWithWindow:nil];
 
     [animator waitForSceneState:scene_state()
                toReachInitStage:ProfileInitStage::kUIReady
@@ -217,7 +217,7 @@ TEST_F(ChangeProfileAnimatorTest, waitForSceneState_ProfileAlreadyReady) {
   __weak ChangeProfileAnimator* weak_animator = nil;
   @autoreleasepool {
     ChangeProfileAnimator* animator =
-        [[ChangeProfileAnimator alloc] initWithViewController:nil];
+        [[ChangeProfileAnimator alloc] initWithWindow:nil];
 
     [animator waitForSceneState:scene_state()
                toReachInitStage:ProfileInitStage::kUIReady
@@ -266,7 +266,7 @@ TEST_F(ChangeProfileAnimatorTest, waitForSceneState_SceneDeallocated) {
   __weak ChangeProfileAnimator* weak_animator = nil;
   @autoreleasepool {
     ChangeProfileAnimator* animator =
-        [[ChangeProfileAnimator alloc] initWithViewController:nil];
+        [[ChangeProfileAnimator alloc] initWithWindow:nil];
 
     [animator waitForSceneState:scene_state()
                toReachInitStage:ProfileInitStage::kUIReady

@@ -522,8 +522,7 @@ TEST_F(ChromeAutofillClientTest,
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
-  SetUpIphForTesting(
-      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
 
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
       .WillRepeatedly(Return(false));
@@ -533,8 +532,7 @@ TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_NotShownByPromoController) {
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
-  SetUpIphForTesting(
-      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
 
   InSequence sequence;
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
@@ -548,8 +546,7 @@ TEST_F(ChromeAutofillClientTest, AutofillFieldIPH_IsShown) {
 }
 
 TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
-  SetUpIphForTesting(
-      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
 
   InSequence sequence;
   EXPECT_CALL(*autofill_field_promo_controller(), IsMaybeShowing)
@@ -564,8 +561,7 @@ TEST_F(ChromeAutofillClientTest, AutofillImprovedPredictionsIPH_IsShown) {
 
 TEST_F(ChromeAutofillClientTest,
        AutofillFieldIPH_HideOnShowAutofillSuggestions) {
-  SetUpIphForTesting(
-      feature_engagement::kIPHAutofillPredictionImprovementsFeature);
+  SetUpIphForTesting(feature_engagement::kIPHAutofillAiOptInFeature);
   auto delegate = std::make_unique<MockAutofillSuggestionDelegate>();
 
   EXPECT_CALL(*autofill_field_promo_controller(), Hide);
@@ -609,11 +605,9 @@ class ChromeAutofillClientTestWithWindow : public BrowserWithTestWindowTest {
 };
 
 TEST_F(ChromeAutofillClientTestWithWindow, AutofillFieldIPH_NotifyFeatureUsed) {
-  EXPECT_CALL(
-      *feature_promo_controller(),
-      EndPromo(
-          Ref(feature_engagement::kIPHAutofillPredictionImprovementsFeature),
-          user_education::EndFeaturePromoReason::kFeatureEngaged));
+  EXPECT_CALL(*feature_promo_controller(),
+              EndPromo(Ref(feature_engagement::kIPHAutofillAiOptInFeature),
+                       user_education::EndFeaturePromoReason::kFeatureEngaged));
   client()->NotifyIphFeatureUsed(AutofillClient::IphFeature::kAutofillAi);
 }
 #endif

@@ -2243,7 +2243,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2530166226437958497">Problēmu novēršana</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Radās problēma, un operētājsistēmu <ph name="DEVICE_OS" /> nevarēja instalēt.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Lai saņemtu papildu palīdzību, apmeklējiet vietni g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Plašāka informācija</translation>
 <translation id="2532144599248877204">Akumulatora darbība tiek paildzināta, ja akumulatora uzlāde ir aptuveni 80%. Parasti akumulators tiek pilnībā uzlādēts, pirms to atvienojat no barošanas avota.</translation>
 <translation id="2532146950330687938">Notiek ierīces sagatavošana…</translation>
 <translation id="2532198298278778531">Drošas DNS pārvaldība Chrome OS Flex iestatījumos</translation>
@@ -2799,7 +2798,6 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="2921081876747860777">Paroles izveide lokālo datu aizsardzībai</translation>
 <translation id="2923006468155067296">Jūsu <ph name="DEVICE_TYPE" /> ierīce tūlīt tiks bloķēta.
 Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievietotai.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}zero{<ph name="TASK_ROW" />. Vēl <ph name="OTHER_TASK_NUM" /> uzdevumi tajā pašā uzdevumu grupā: <ph name="OTHER_TASKS" />}one{<ph name="TASK_ROW" />. Vēl <ph name="OTHER_TASK_NUM" /> uzdevums tajā pašā uzdevumu grupā: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Vēl <ph name="OTHER_TASK_NUM" /> uzdevumi tajā pašā uzdevumu grupā: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Noņemt šo kontu</translation>
 <translation id="2923644930701689793">Piekļūstiet sava tālruņa kameras fotoalbumam.</translation>
 <translation id="292371311537977079">Chrome iestatījumi</translation>
@@ -6900,6 +6898,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5865508026715185451">Lietotnes <ph name="APP_NAME" /> darbība drīz tiks apturēta.</translation>
 <translation id="586567932979200359">Jūs izpildāt <ph name="PRODUCT_NAME" /> no diska attēla. Instalējot datorā, varēsiet to izpildīt bez diska attēla, un tiks nodrošināta tā atjaunināšana.</translation>
 <translation id="5865733239029070421">Automātiski sūtīt lietojuma statistiku un avāriju pārskatus Google serveriem</translation>
+<translation id="5866363217037791319">Beigt uzdevumu</translation>
 <translation id="5868434909835797817">Mikrofons ir izslēgts jūsu ierīcē.</translation>
 <translation id="5868479397518301468">Iestājās pierakstīšanās noildze</translation>
 <translation id="5868822853313956582">Izmantot ierīces krāsas</translation>
@@ -10628,7 +10627,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8524841856047224176">Personalizējiet kameras fonus videozvaniem un citiem nolūkiem.</translation>
 <translation id="8525306231823319788">Pilnekrāna režīms</translation>
 <translation id="8525461909394569609">Šajā lietotnē ir ietverts tīmekļa saturs no tālāk minētajiem avotiem.</translation>
-<translation id="8526313996927074827">Ievietojiet saites, emocijzīmes un citu saturu. Varat arī saņemt palīdzību rakstīšanā, izmantojot Google MI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Skaļruņi</translation>
 <translation id="8527257351549797148">Jūsu organizācija var pieprasīt reģistrāciju, lai jūs varētu piekļūt lietotnēm, paplašinājumiem un citām iespējām. Tādējādi jūsu organizācija varēs arī pārvaldīt tādu informāciju kā drošības un ierīces iestatījumi.</translation>
@@ -11086,6 +11084,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="883924185304953854">Meklēt pēc attēla</translation>
 <translation id="8841786407272321022">Parole ir saglabāta tikai šajā ierīcē. Lai saglabātu jaunas paroles savā Google kontā, atjauniniet Google Play pakalpojumus.</translation>
 <translation id="8841843049738266382">Lasīt un mainīt atļaušanas sarakstā iekļautos lietotājus</translation>
+<translation id="8841884135319684422">Beigt uzdevumu</translation>
 <translation id="8842594465773264717">Dzēst šo pirksta nospiedumu</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8846132060409673887">Nolasīt šī datora ražotāju un modeli</translation>

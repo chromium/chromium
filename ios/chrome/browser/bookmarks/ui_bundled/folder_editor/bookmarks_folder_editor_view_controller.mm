@@ -373,7 +373,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)willDeleteNode:(const bookmarks::BookmarkNode*)node
             fromFolder:(const bookmarks::BookmarkNode*)folder {
-  if (_folder->HasAncestor(node)) {
+  if (_folder && _folder->HasAncestor(node)) {
     _folder = nullptr;
     if (_ignoresOwnMove) {
       // `saveFolder` will dismiss this screen after finishing the move.

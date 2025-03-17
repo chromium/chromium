@@ -24,7 +24,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -115,7 +115,7 @@ class MessageSender : public ExtensionHostRegistry::Observer {
       host_registry_observation_{this};
 };
 
-class MessagingApiTest : public ExtensionPlatformApiTest {
+class MessagingApiTest : public ExtensionApiTest {
  public:
   explicit MessagingApiTest(bool enable_back_forward_cache = true) {
     if (!enable_back_forward_cache) {
@@ -135,7 +135,7 @@ class MessagingApiTest : public ExtensionPlatformApiTest {
   ~MessagingApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }

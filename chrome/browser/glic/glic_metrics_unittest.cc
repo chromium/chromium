@@ -11,12 +11,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_focused_tab_manager.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_tab_data.h"
 #include "chrome/browser/glic/glic_test_util.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -410,6 +410,32 @@ TEST_F(GlicMetricsFeaturesEnabledTest, ShortcutStatus) {
   histogram_tester_.ExpectBucketCount(
       "Glic.OsEntrypoint.Settings.ShortcutStatus", /*false*/0,
       /*expected_count=*/1);
+}
+
+TEST_F(GlicMetricsTest, InputModesUsed) {
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 1);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kOnlyText, 1);
+
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 2);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kNone, 1);
+
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 3);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kTextAndAudio, 1);
+
+  metrics_->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics_->OnGlicWindowClose();
+  histogram_tester_.ExpectTotalCount("Glic.Session.InputModesUsed", 4);
+  histogram_tester_.ExpectBucketCount("Glic.Session.InputModesUsed",
+                                      InputModesUsed::kOnlyAudio, 1);
 }
 
 }  // namespace

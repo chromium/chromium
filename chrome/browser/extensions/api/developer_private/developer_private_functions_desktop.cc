@@ -35,6 +35,7 @@
 #include "chrome/browser/extensions/devtools_util.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -543,8 +544,8 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
     return RespondNow(Error("No dragged path"));
   }
 
-  ExtensionService* service = GetExtensionService(browser_context());
   if (path.MatchesExtension(FILE_PATH_LITERAL(".zip"))) {
+    ExtensionService* service = GetExtensionService(browser_context());
     ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
                              MakeRegisterInExtensionServiceCallback(service))
         ->InstallZipFileToUnpackedExtensionsDir(
@@ -552,7 +553,7 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
   } else {
     auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
     scoped_refptr<CrxInstaller> crx_installer =
-        CrxInstaller::Create(service, std::move(prompt));
+        CrxInstaller::Create(browser_context(), std::move(prompt));
     crx_installer->set_error_on_unsupported_requirements(true);
     crx_installer->set_off_store_install_allow_reason(
         CrxInstaller::OffStoreInstallAllowedFromSettingsPage);

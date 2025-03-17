@@ -2605,17 +2605,12 @@ config("no_optimize") {
   } else if (is_android && !android_full_debug) {
     # On Android we kind of optimize some things that don't affect debugging
     # much even when optimization is disabled to get the binary size down.
-    if (is_clang) {
-      cflags = [ "-Oz" ] + common_optimize_on_cflags
-    } else {
-      cflags = [ "-Os" ] + common_optimize_on_cflags
-    }
+    cflags = [ "-Os" ] + common_optimize_on_cflags
 
-    if (!is_component_build) {
-      # Required for library partitions. Without this all symbols just end up
-      # in the base partition.
-      ldflags = [ "-Wl,--gc-sections" ]
-    }
+    # Required to keep file sizes down. Excessive file size slows down apk
+    # installation, and for fat binaries, can lead to signing failure
+    # https://crbug.com/402645059
+    ldflags = [ "-Wl,--gc-sections" ]
   } else if (is_fuchsia) {
     # On Fuchsia, we optimize for size here to reduce the size of debug build
     # packages so they can be run in a KVM. See crbug.com/910243 for details.

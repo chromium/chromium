@@ -64,19 +64,19 @@ struct JapaneseLegacyConfig {
     kKatakana,
   };
 
-  PreeditMethod preedit_method;
-  PunctuationMethod punctuation_method;
-  SymbolMethod symbol_method;
-  FundamentalCharacterForm space_character_form;
-  SelectionShortcut selection_shortcut;
-  SessionKeymap session_keymap;
-  bool use_auto_conversion;
-  ShiftKeyModeSwitch shift_key_mode_switch;
-  bool use_history_suggest;
-  bool use_dictionary_suggest;
-  uint32 suggestion_size;
-  bool incognito_mode;
+  PreeditMethod? preedit_method;
+  PunctuationMethod? punctuation_method;
+  SymbolMethod? symbol_method;
+  FundamentalCharacterForm? space_character_form;
+  SelectionShortcut? selection_shortcut;
+  SessionKeymap? session_keymap;
+  bool? use_auto_conversion;
+  ShiftKeyModeSwitch? shift_key_mode_switch;
+  bool? use_history_suggest;
+  bool? use_dictionary_suggest;
+  uint32? suggestion_size;
+  bool? incognito_mode;
   // Allows the uploading of usage stats to google.
-  bool upload_usage_stats;
+  bool? upload_usage_stats;
 };
 

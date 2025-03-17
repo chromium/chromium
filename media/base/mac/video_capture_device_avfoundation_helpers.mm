@@ -4,6 +4,8 @@
 
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 
@@ -48,12 +50,24 @@ NSArray<AVCaptureDevice*>* GetVideoCaptureDevices() {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
-      [AVCaptureDeviceDiscoverySession
-          discoverySessionWithDeviceTypes:captureDeviceTypes
-                                mediaType:AVMediaTypeVideo
-                                 position:AVCaptureDevicePositionUnspecified];
-  return deviceDiscoverySession.devices;
+  @try {
+    AVCaptureDeviceDiscoverySession* deviceDiscoverySession =
+        [AVCaptureDeviceDiscoverySession
+            discoverySessionWithDeviceTypes:captureDeviceTypes
+                                  mediaType:AVMediaTypeVideo
+                                   position:AVCaptureDevicePositionUnspecified];
+    return deviceDiscoverySession.devices;
+  } @catch (NSException* exception) {
+    SCOPED_CRASH_KEY_STRING1024("AVCaptureDeviceCrash", "Exception_name",
+                                exception.name.UTF8String);
+    SCOPED_CRASH_KEY_STRING1024("AVCaptureDeviceCrash", "Exception_reason",
+                                exception.reason.UTF8String);
+
+    base::debug::DumpWithoutCrashing();
+
+    // Return empty array when catching exception.
+    return @[];
+  }
 }
 
 }  // namespace media

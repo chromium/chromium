@@ -36,8 +36,6 @@
 
 // HomePageUndoBubble ---------------------------------------------------------
 
-namespace {
-
 class HomePageUndoBubble : public views::BubbleDialogDelegateView {
   METADATA_HEADER(HomePageUndoBubble, views::BubbleDialogDelegateView)
 
@@ -107,8 +105,6 @@ void HomePageUndoBubble::UndoClicked() {
 
 BEGIN_METADATA(HomePageUndoBubble)
 END_METADATA
-
-}  // namespace
 
 // HomePageUndoBubbleCoordinator ----------------------------------------------
 

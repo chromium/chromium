@@ -42,6 +42,11 @@ class SelectBnplIssuerDialogControllerImpl
   void OnCancel() override;
   void OnDialogClosed() override;
   const std::vector<BnplIssuer>& GetIssuers() const override;
+  bool IssuerEligible(std::string_view issuer_id) const override;
+  TextWithLink GetLinkText() const override;
+  std::u16string GetTitle() const override;
+  std::u16string GetSelectionOptionText(
+      std::string_view issuer_id) const override;
 
  private:
   // The dialog view, managed by the views infrastructure on desktop.

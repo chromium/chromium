@@ -83,6 +83,7 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
     return false;
   }
   bool SupportsRange() const override { return true; }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 class StateFeatureSet : public MediaQueryParser::FeatureSet {
@@ -105,6 +106,7 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
     return false;
   }
   bool SupportsRange() const override { return false; }
+  bool SupportsElementDependent() const override { return true; }
 };
 
 }  // namespace

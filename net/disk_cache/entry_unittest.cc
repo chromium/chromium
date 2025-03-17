@@ -4453,7 +4453,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream2) {
   const size_t kSize = kHalfSize * 2;
   const char key[] = "key";
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer->span().first(kHalfSize), false);
+  CacheTestFillBuffer(buffer->first(kHalfSize), false);
 
   disk_cache::Entry* entry;
 
@@ -4479,8 +4479,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream3) {
   const char key[] = "key";
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer1->span().first(static_cast<unsigned>(kHalfSize)),
-                      false);
+  CacheTestFillBuffer(buffer1->first(static_cast<unsigned>(kHalfSize)), false);
 
   disk_cache::Entry* entry;
 
@@ -4514,8 +4513,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream4) {
   const char key[] = "key";
   auto buffer1 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
   auto buffer2 = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer1->span().first(static_cast<unsigned>(kHalfSize)),
-                      false);
+  CacheTestFillBuffer(buffer1->first(static_cast<unsigned>(kHalfSize)), false);
 
   disk_cache::Entry* entry;
 
@@ -4550,7 +4548,7 @@ TEST_F(DiskCacheEntryTest, SimpleCacheOmittedThirdStream5) {
   const size_t kSize = kHalfSize * 2;
   const char key[] = "key";
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize);
-  CacheTestFillBuffer(buffer->span().first(kHalfSize), false);
+  CacheTestFillBuffer(buffer->first(kHalfSize), false);
 
   disk_cache::Entry* entry;
 

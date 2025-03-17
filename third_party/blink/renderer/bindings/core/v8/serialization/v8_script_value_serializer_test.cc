@@ -849,12 +849,12 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   V8TestingScope scope;
   ImageDataSettings* image_data_settings = ImageDataSettings::Create();
   image_data_settings->setColorSpace("display-p3");
-  image_data_settings->setStorageFormat("float32");
+  image_data_settings->setPixelFormat("rgba-float16");
   ImageData* image_data = ImageData::ValidateAndCreate(
       2, 1, std::nullopt, image_data_settings,
       ImageData::ValidateAndCreateParams(), ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
-  EXPECT_EQ(kRGBA_F32_SkColorType, pm.info().colorType());
+  EXPECT_EQ(kRGBA_F16_SkColorType, pm.info().colorType());
   static_cast<float*>(pm.writable_addr(0, 0))[0] = 200.f;
 
   v8::Local<v8::Value> wrapper =
@@ -868,9 +868,9 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
   EXPECT_EQ(image_data->Size(), new_image_data->Size());
   ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
   EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
-  EXPECT_EQ("float32", new_image_data_settings->storageFormat());
+  EXPECT_EQ("rgba-float16", new_image_data_settings->pixelFormat());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
-  EXPECT_EQ(kRGBA_F32_SkColorType, new_pm.info().colorType());
+  EXPECT_EQ(kRGBA_F16_SkColorType, new_pm.info().colorType());
   EXPECT_EQ(200.f, reinterpret_cast<const float*>(new_pm.addr(0, 0))[0]);
 }
 
@@ -931,7 +931,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
   EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
   EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
-  EXPECT_EQ("float32", new_image_data_settings->storageFormat());
+  EXPECT_EQ("rgba-float32", new_image_data_settings->pixelFormat());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
   EXPECT_EQ(kRGBA_F32_SkColorType, new_pm.info().colorType());
   EXPECT_EQ(200u, static_cast<const uint8_t*>(new_pm.addr(0, 0))[0]);
@@ -1536,7 +1536,7 @@ TEST(V8ScriptValueSerializerTest, InvalidImageBitmapDecodeV18) {
         V8ScriptValueDeserializer(script_state, input).Deserialize()->IsNull());
   }
   {
-    // Nonsense image serialization tag (kImageDataStorageFormatTag).
+    // Nonsense image serialization tag (kImageDataPixelFormatTag).
     scoped_refptr<SerializedScriptValue> input =
         SerializedValue({0xff, 0x12, 0xff, 0x0d, 0x5c, 0x67, 0x03, 0x00, 0x00,
                          0x01, 0x01, 0x04, 0x00, 0x00, 0x00, 0x00});

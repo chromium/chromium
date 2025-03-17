@@ -20,6 +20,7 @@ class ToastSpecification {
   class Builder final {
    public:
     Builder(const gfx::VectorIcon& icon, int body_string_id);
+    explicit Builder(const gfx::VectorIcon& icon);
     Builder(const Builder& other) = delete;
     Builder& operator=(const Builder&) = delete;
 
@@ -58,6 +59,8 @@ class ToastSpecification {
   ToastSpecification(base::PassKey<ToastSpecification::Builder>,
                      const gfx::VectorIcon& icon,
                      int string_id);
+  ToastSpecification(base::PassKey<ToastSpecification::Builder>,
+                     const gfx::VectorIcon& icon);
   ~ToastSpecification();
 
   int body_string_id() const { return body_string_id_; }
@@ -79,7 +82,7 @@ class ToastSpecification {
 
  private:
   const base::raw_ref<const gfx::VectorIcon> icon_;
-  int body_string_id_;
+  int body_string_id_ = 0;
   bool has_close_button_ = false;
   bool has_menu_ = false;
   std::optional<int> action_button_string_id_;

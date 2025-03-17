@@ -241,12 +241,6 @@ ColumnLayoutAlgorithm::ColumnLayoutAlgorithm(
 
 const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   const LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
-  // TODO(mstensho): This isn't the content-box size, as
-  // |BorderScrollbarPadding()| has been adjusted for fragmentation. Verify
-  // that this is the correct size.
-  column_block_size_ =
-      ShrinkLogicalSize(border_box_size, BorderScrollbarPadding()).block_size;
-
   DCHECK_GE(ChildAvailableSize().inline_size, LayoutUnit());
   column_inline_size_ =
       ResolveUsedColumnInlineSize(ChildAvailableSize().inline_size, Style());
@@ -275,6 +269,19 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   // container, before any tentative column block-size has been calculated.
   is_constrained_by_outer_fragmentation_context_ =
       GetConstraintSpace().HasKnownFragmentainerBlockSize();
+
+  remaining_content_block_size_ =
+      ShrinkLogicalSize(border_box_size, BorderScrollbarPadding()).block_size;
+  // If block-size is non-auto, subtract the space for content we've consumed in
+  // previous fragments. This is necessary when we're nested inside another
+  // fragmentation context.
+  if (remaining_content_block_size_ != kIndefiniteSize) {
+    if (GetBreakToken() && is_constrained_by_outer_fragmentation_context_) {
+      remaining_content_block_size_ -= GetBreakToken()->ConsumedBlockSize();
+    }
+    remaining_content_block_size_ =
+        remaining_content_block_size_.ClampNegativeToZero();
+  }
 
   container_builder_.SetIsBlockFragmentationContextRoot();
 
@@ -619,7 +626,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     const BlockBreakToken* next_column_token,
     LayoutUnit minimum_column_block_size,
     MarginStrut* margin_strut) {
-  LogicalSize column_size(column_inline_size_, column_block_size_);
+  LogicalSize column_size(column_inline_size_, remaining_content_block_size_);
 
   // Calculate the block-offset by including any trailing margin from a previous
   // adjacent column spanner. We will not reset the margin strut just yet, as we
@@ -628,18 +635,10 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   // row (and as far as the spec is concerned, the row won't even exist then).
   LayoutUnit row_offset = intrinsic_block_size_ + margin_strut->Sum();
 
-  // If block-size is non-auto, subtract the space for content we've consumed in
-  // previous fragments. This is necessary when we're nested inside another
-  // fragmentation context.
   if (column_size.block_size != kIndefiniteSize) {
-    if (GetBreakToken() && is_constrained_by_outer_fragmentation_context_) {
-      column_size.block_size -= GetBreakToken()->ConsumedBlockSize();
-    }
-
     // Subtract the space already taken in the current fragment (spanners and
     // earlier column rows).
     column_size.block_size -= CurrentContentBlockOffset(row_offset);
-
     column_size.block_size = column_size.block_size.ClampNegativeToZero();
   }
 
@@ -1078,7 +1077,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     LogicalRect column_logical_rect(result_with_offset.offset, column_size);
     const WritingModeConverter converter(
         GetConstraintSpace().GetWritingDirection(),
-        LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
+        LogicalSize(ChildAvailableSize().inline_size,
+                    remaining_content_block_size_));
     ColumnPseudoElement* column_pseudo =
         element->GetOrCreateColumnPseudoElementIfNeeded(
             num_columns, converter.ToPhysical(column_logical_rect));

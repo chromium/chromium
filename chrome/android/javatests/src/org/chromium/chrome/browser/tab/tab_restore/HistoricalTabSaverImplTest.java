@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -168,8 +169,7 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        0,
-                        null,
+                        new Token(1L, 2L),
                         "Foo",
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {tab0, tab1}));
@@ -201,8 +201,7 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        0,
-                        null,
+                        new Token(3L, 4L),
                         "Foo",
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
@@ -236,8 +235,7 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        0,
-                        null,
+                        new Token(3L, 7L),
                         "Foo",
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {frozenTab0, frozenTab1}));
@@ -261,7 +259,10 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        0, null, null, TabGroupColorId.GREY, Arrays.asList(new Tab[] {tab0, tab1}));
+                        new Token(3784L, 5498L),
+                        null,
+                        TabGroupColorId.GREY,
+                        Arrays.asList(new Tab[] {tab0, tab1}));
         TabRestoreServiceUtils.createTabOrGroupEntry(mTabModel, group);
 
         ArrayList<HistoricalEntry> expectedEntries = new ArrayList<>();
@@ -289,8 +290,7 @@ public class HistoricalTabSaverImplTest {
         expectedEntries.add(new HistoricalEntry(tab0));
         expectedEntries.add(
                 new HistoricalEntry(
-                        1,
-                        null,
+                        new Token(9L, 38490L),
                         "baz",
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {tab1, tab2})));
@@ -376,8 +376,7 @@ public class HistoricalTabSaverImplTest {
         window.add(new HistoricalEntry(tab0));
         window.add(
                 new HistoricalEntry(
-                        5,
-                        null,
+                        new Token(78493L, 4389L),
                         "baz",
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {tab1, tab2})));
@@ -386,8 +385,7 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        3,
-                        null,
+                        new Token(43L, 389L),
                         "group",
                         TabGroupColorId.BLUE,
                         Arrays.asList(new Tab[] {tab3, tab2}));
@@ -423,8 +421,7 @@ public class HistoricalTabSaverImplTest {
 
         HistoricalEntry group =
                 new HistoricalEntry(
-                        0,
-                        null,
+                        new Token(43784L, 3748L),
                         "bar",
                         TabGroupColorId.GREY,
                         Arrays.asList(new Tab[] {tab1, tab2}));

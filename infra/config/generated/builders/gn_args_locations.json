@@ -264,7 +264,8 @@
   "chromium.fuchsia.fyi": {
     "fuchsia-fyi-arm64-dbg": "ci/fuchsia-fyi-arm64-dbg/gn-args.json",
     "fuchsia-fyi-x64-asan": "ci/fuchsia-fyi-x64-asan/gn-args.json",
-    "fuchsia-fyi-x64-dbg-persistent-emulator": "ci/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json"
+    "fuchsia-fyi-x64-dbg-persistent-emulator": "ci/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json",
+    "fuchsia-netstack2-x64-cast-receiver-rel": "ci/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json"
   },
   "chromium.fuzz": {
     "ASAN Debug": "ci/ASAN Debug/gn-args.json",
@@ -776,6 +777,7 @@
     "fuchsia-fyi-arm64-dbg": "try/fuchsia-fyi-arm64-dbg/gn-args.json",
     "fuchsia-fyi-x64-asan": "try/fuchsia-fyi-x64-asan/gn-args.json",
     "fuchsia-fyi-x64-dbg-persistent-emulator": "try/fuchsia-fyi-x64-dbg-persistent-emulator/gn-args.json",
+    "fuchsia-netstack2-x64-cast-receiver-rel": "try/fuchsia-netstack2-x64-cast-receiver-rel/gn-args.json",
     "fuchsia-x64-cast-receiver-dbg": "try/fuchsia-x64-cast-receiver-dbg/gn-args.json",
     "fuchsia-x64-cast-receiver-dbg-compile": "try/fuchsia-x64-cast-receiver-dbg-compile/gn-args.json",
     "fuchsia-x64-cast-receiver-rel": "try/fuchsia-x64-cast-receiver-rel/gn-args.json"
@@ -852,6 +854,7 @@
     "linux-trees-in-viz-rel": "try/linux-trees-in-viz-rel/gn-args.json",
     "linux-v4l2-codec-rel": "try/linux-v4l2-codec-rel/gn-args.json",
     "linux-viz-rel": "try/linux-viz-rel/gn-args.json",
+    "linux-wayland-mutter-rel": "try/linux-wayland-mutter-rel/gn-args.json",
     "linux-wayland-rel": "try/linux-wayland-rel/gn-args.json",
     "linux-webkit-asan-rel": "try/linux-webkit-asan-rel/gn-args.json",
     "linux-webkit-msan-rel": "try/linux-webkit-msan-rel/gn-args.json",

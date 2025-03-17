@@ -1697,7 +1697,7 @@ TEST(AutocompleteGrouperSectionsTest,
 // suggestions enabled.
 TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
   omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::UrlSuggestionsOnFocus>
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
   scoped_config.Get().max_search_suggestions = 4;
@@ -1761,7 +1761,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSRPZpsSectionWithUrls) {
 // suggestions enabled.
 TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsSectionWithUrls) {
   omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::UrlSuggestionsOnFocus>
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
       scoped_config;
   scoped_config.Get().enabled = true;
   auto test = [](ACMatches matches, std::vector<int> expected_relevances,

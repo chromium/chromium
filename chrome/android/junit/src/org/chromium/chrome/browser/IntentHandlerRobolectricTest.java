@@ -198,7 +198,7 @@ public class IntentHandlerRobolectricTest {
 
         for (String url : urls) {
             mIntent.setData(Uri.parse(url));
-            if (IntentHandler.intentHasValidUrl(mIntent) != isValid) {
+            if (IntentHandler.isValidUrl(url) != isValid) {
                 failedTests.add(url);
             }
         }
@@ -336,8 +336,8 @@ public class IntentHandlerRobolectricTest {
     @Feature({"Android-AppBase"})
     public void testNullUrlIntent() {
         mIntent.setData(null);
-        Assert.assertTrue(
-                "Intent with null data should be valid", IntentHandler.intentHasValidUrl(mIntent));
+        String url = IntentHandler.getUrlFromIntent(mIntent);
+        Assert.assertTrue("Intent with null data should be valid", IntentHandler.isValidUrl(url));
     }
 
     @Test

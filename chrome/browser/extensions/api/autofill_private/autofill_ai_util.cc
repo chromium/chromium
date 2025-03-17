@@ -15,7 +15,6 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,6 +26,7 @@ namespace extensions::autofill_ai_util {
 namespace {
 
 using autofill::AttributeInstance;
+using autofill::AttributeType;
 using autofill::AttributeTypeName;
 using autofill::EntityInstance;
 using autofill::EntityType;
@@ -77,6 +77,22 @@ std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
   NOTREACHED();
 }
 
+api::autofill_private::AttributeTypeDataType
+AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
+    autofill::AttributeType::DataType data_type) {
+  switch (data_type) {
+    case AttributeType::DataType::kCountry:
+      return autofill_private::AttributeTypeDataType::kCountry;
+    case AttributeType::DataType::kDate:
+      return autofill_private::AttributeTypeDataType::kDate;
+    case AttributeType::DataType::kName:
+    case AttributeType::DataType::kState:
+    case AttributeType::DataType::kString:
+      return autofill_private::AttributeTypeDataType::kString;
+  }
+  NOTREACHED();
+}
+
 std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
     const autofill_private::EntityInstance& private_api_entity_instance) {
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
@@ -90,7 +106,7 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
       return std::nullopt;
     }
 
-    autofill::AttributeType attribute_type(
+    AttributeType attribute_type(
         AttributeTypeName(private_api_attribute_instance.type.type_name));
     AttributeInstance attribute_instance(attribute_type);
     attribute_instance.SetRawInfo(
@@ -130,6 +146,9 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
         base::to_underlying(attribute_instance.type().name());
     private_api_attribute_instances.back().type.type_name_as_string =
         base::UTF16ToUTF8(attribute_instance.type().GetNameForI18n());
+    private_api_attribute_instances.back().type.data_type =
+        AttributeTypeDataTypeToPrivateApiAttributeTypeDataType(
+            attribute_instance.type().data_type());
     private_api_attribute_instances.back().value =
         base::UTF16ToUTF8(attribute_instance.GetCompleteInfo(app_locale));
   }

@@ -1171,6 +1171,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @Test
     @Config(sdk = 31)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
     public void testTabGroupMove_MoveTabGroupToCurrentWindow_calledWithDesiredParameters() {
         int tabAtIndex = 0;
         mMultiInstanceManager.mTestBuildInstancesList = true;

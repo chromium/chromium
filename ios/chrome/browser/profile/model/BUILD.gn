@@ -222,6 +222,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
+    "//ios/chrome/browser/tab_switcher/model/inactive_tabs:model",
     "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/text_selection/model",
     "//ios/chrome/browser/tips_manager/model:factory",

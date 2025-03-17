@@ -3,4 +3,4 @@ richui@chromium.org
 skau@chromium.org
 
 # Backup OWNERS
-afakhry@chromium.org
+afakhry@chromium.org  #{LAST_RESORT_SUGGESTION}

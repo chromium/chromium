@@ -29,7 +29,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
@@ -148,7 +148,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mMessageParagraph1.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterMessageView.setMovementMethod(LinkMovementMethod.getInstance());
         mFooterContainer.setBackgroundColor(
-                ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_1));
+                SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
         updateContentVisibility();
         updateButtonVisibility();
 

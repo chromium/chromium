@@ -135,6 +135,7 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
       const GURL& script_source_url,
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::SharedStorageWorkletCreationMethod creation_method,
+      int worklet_id,
       const std::vector<blink::mojom::OriginTrialFeature>&
           origin_trial_features,
       mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
@@ -161,6 +162,12 @@ class CONTENT_EXPORT SharedStorageRuntimeManager {
   SharedStorageLockManager lock_manager_;
 
   base::ObserverList<SharedStorageObserverInterface> observers_;
+
+  // A monotonically increasing ID assigned to each SharedStorageWorkletHost.
+  // This ID is assigned during construction of the SharedStorageWorkletHost.
+  // TODO(crbug.com/401011862): Use the worklet IDs generated in DevTools
+  // reporting.
+  int next_worklet_id_ = 0;
 };
 
 }  // namespace content

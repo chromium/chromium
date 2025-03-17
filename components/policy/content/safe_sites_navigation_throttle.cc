@@ -5,7 +5,6 @@
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 
 #include "base/functional/bind.h"
-#include "components/policy/content/policy_blocklist_metrics.h"
 #include "components/policy/content/safe_search_service.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -56,10 +55,6 @@ SafeSitesNavigationThrottle::WillStartRequest() {
       effective_url,
       base::BindOnce(&SafeSitesNavigationThrottle::CheckSafeSearchCallback,
                      weak_ptr_factory_.GetWeakPtr()));
-  if (PolicyBlocklistMetrics* metrics =
-      PolicyBlocklistMetrics::Get(*navigation_handle())) {
-    metrics->cache_hit = synchronous;
-  }
   if (!synchronous) {
     deferred_ = true;
     return DEFER;

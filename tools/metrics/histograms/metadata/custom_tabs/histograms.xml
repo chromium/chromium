@@ -22,17 +22,43 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram base="true" name="CustomTab.SessionDuration" units="ms"
+<variants name="DetachedResourceRequestFinalStatus">
+  <variant name="Failure" summary="Failed detached request"/>
+  <variant name="Success" summary="Successful detached request"/>
+</variants>
+
+<variants name="DetachedResourceRequestSource">
+  <variant name="" summary=""/>
+  <variant name=".FromAga" summary="Requests originating from AGA"/>
+</variants>
+
+<variants name="IntentToFirstCommitZoom">
+  <variant name=".ZoomedIn"
+      summary="Zoomed in view: shorter range, more buckets.">
+    <owner>lizeb@chromium.org</owner>
+    <owner>pasko@chromium.org</owner>
+  </variant>
+  <variant name=".ZoomedOut"
+      summary="Zoomed out view: longer time range, less buckets.">
+    <owner>lizeb@chromium.org</owner>
+    <owner>pasko@chromium.org</owner>
+  </variant>
+</variants>
+
+<histogram name="CustomTab.SessionDuration{CustomTabOpenSource}" units="ms"
     expires_after="2020-10-18">
   <owner>ranj@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
-<!-- Name completed by histogram_suffixes name="CustomTabOpenSource" -->
-
   <summary>
     Records the time duration in CustomTab Activity from onStart/onResume to
     onStop/onPause, if that activity is opened by Webapp/WebApk/Trusted Web
-    Activity.
+    Activity. {CustomTabOpenSource}
   </summary>
+  <token key="CustomTabOpenSource">
+    <variant name=".MediaLauncherActivity"
+        summary="CustomTab opened by MediaLauncherActivity."/>
+    <variant name=".Other" summary="CustomTab opened by other apps."/>
+  </token>
 </histogram>
 
 <histogram name="CustomTabs.AuthTab.ExternalNavigationScheme"
@@ -227,7 +253,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="CustomTabs.DetachedResourceRequest.Duration"
+<histogram
+    name="CustomTabs.DetachedResourceRequest.Duration.{DetachedResourceRequestFinalStatus}{DetachedResourceRequestSource}"
     units="ms" expires_after="2024-03-17">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -235,6 +262,7 @@ chromium-metrics-reviews@google.com.
     Time between the start of a detached resource request and its completion
     (failure or success). Android only. Starting with M84 this is is also
     recorded for webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+    {DetachedResourceRequestFinalStatus} {DetachedResourceRequestSource}
   </summary>
 </histogram>
 
@@ -250,7 +278,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="CustomTabs.DetachedResourceRequest.RedirectsCount"
+<histogram
+    name="CustomTabs.DetachedResourceRequest.RedirectsCount.{DetachedResourceRequestFinalStatus}{DetachedResourceRequestSource}"
     units="redirects" expires_after="2024-03-17">
   <owner>lizeb@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -258,6 +287,7 @@ chromium-metrics-reviews@google.com.
     Number of redirects followed by a detached resource request until success or
     failure. Android only. Starting with M84 this is is also recorded for
     webapps/WebAPKs. Filter the platform for just CCT/TWA data.
+    {DetachedResourceRequestFinalStatus} {DetachedResourceRequestSource}
   </summary>
 </histogram>
 
@@ -446,23 +476,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.IntentToFirstCommitNavigationTime3" units="ms"
-    expires_after="2024-09-01">
+<histogram
+    name="CustomTabs.IntentToFirstCommitNavigationTime3{IntentToFirstCommitZoom}"
+    units="ms" expires_after="2024-09-01">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Time between the intent arrival to a Custom Tab and the first navigation
     commit. Recorded for every custom tabs intent when the page has finished
-    loading.
+    loading. {IntentToFirstCommitZoom}
   </summary>
+  <token key="IntentToFirstCommitZoom" variants="IntentToFirstCommitZoom">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="CustomTabs.IntentToFirstNavigationStartTime" units="ms"
-    expires_after="2024-09-01">
+<histogram
+    name="CustomTabs.IntentToFirstNavigationStartTime{IntentToFirstCommitZoom}"
+    units="ms" expires_after="2024-09-01">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Time between the intent arrival to a Custom Tab and the navigation start.
     Recorded when the page has finished loading. Non-&quot;Herb&quot; mode.
+    {IntentToFirstCommitZoom}
   </summary>
+  <token key="IntentToFirstCommitZoom" variants="IntentToFirstCommitZoom">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="CustomTabs.MayLaunchUrlType" enum="MayLaunchUrlType"

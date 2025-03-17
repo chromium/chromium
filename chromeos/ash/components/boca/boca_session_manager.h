@@ -44,6 +44,9 @@ class BocaSessionManager
       public signin::IdentityManager::Observer,
       public user_manager::UserManager::UserSessionStateObserver {
  public:
+  using SessionCaptionInitializer =
+      base::RepeatingCallback<void(base::OnceCallback<void(bool)>)>;
+
   inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
   inline static constexpr char kHomePageTitle[] = "School Tools Home page";
   inline static constexpr int kDefaultPollingIntervalInSeconds = 60;
@@ -185,6 +188,11 @@ class BocaSessionManager
   // Triggered by SWA delegate to notify app reload events.
   virtual void NotifyAppReload();
 
+  void SetSessionCaptionInitializer(
+      SessionCaptionInitializer session_caption_initializer);
+  void RemoveSessionCaptionInitializer();
+  void InitSessionCaption(base::OnceCallback<void(bool)> success_cb);
+
   base::ObserverList<Observer>& observers() { return observers_; }
 
   AccountId& account_id() { return account_id_; }
@@ -274,6 +282,7 @@ class BocaSessionManager
   raw_ptr<SessionClientImpl> session_client_impl_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   bool is_local_caption_enabled_ = false;
+  SessionCaptionInitializer session_caption_initializer_;
   base::OnceCallback<void(bool)> on_app_status_toggled_cb_for_test_;
   base::WeakPtrFactory<BocaSessionManager> weak_factory_{this};
 };

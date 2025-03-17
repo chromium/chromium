@@ -2180,12 +2180,14 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
     GraphicsContext context(paint_controller);
     InitRootChunk(paint_controller);
 
-#if DCHECK_IS_ON()
-    EXPECT_DEATH(
-        paint_controller.RecordRegionCaptureData(client, kCropId, kBounds),
-        "Check failed: !crop_id->is_zero");
-  }
-#else
+    // If DCHECKs are on the test stops here. Remainder verifies non-DCHECK
+    // behavior.
+    if (DCHECK_IS_ON()) {
+      EXPECT_DEATH(
+          paint_controller.RecordRegionCaptureData(client, kCropId, kBounds),
+          "DCHECK failed: !crop_id->is_zero");
+      return;
+    }
     // If DCHECKs are not enabled, we should just record the data as-is.
     paint_controller.RecordRegionCaptureData(client, kCropId, kBounds);
     DrawRect(context, client, kBackgroundType, gfx::Rect(100, 100, 200, 200));
@@ -2197,7 +2199,6 @@ TEST_P(PaintControllerTest, RecordRegionCaptureDataEmptyToken) {
   const PaintChunks& chunks = GetPersistentData().GetPaintChunks();
   EXPECT_EQ(1u, chunks.size());
   EXPECT_EQ(kBounds, chunks[0].region_capture_data->map.at(kCropId));
-#endif
 }
 
 TEST_P(PaintControllerTest, DuplicatedSubsequences) {

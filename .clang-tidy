@@ -1,6 +1,4 @@
 ---
-  # TODO(crbug.com/1282228): reenable google-readability-casting once it no
-  # longer has as many false-positives.
   Checks:          '-*,
                     bugprone-argument-comment,
                     bugprone-assert-side-effect,
@@ -19,6 +17,7 @@
                     google-default-arguments,
                     google-explicit-constructor,
                     google-objc-avoid-nsobject-new,
+                    google-readability-casting,
                     google-upgrade-googletest-case,
                     misc-misleading-identifier,
                     misc-homoglyph,

@@ -1,20 +1,9 @@
-// This file is part of ICU4X. For terms of use, please see the file
-// called LICENSE at the top level of the ICU4X source tree
-// (online at: https://github.com/unicode-org/icu4x/blob/main/LICENSE ).
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-//! Data for the `icu_casemap` crate
-//!
-//! This data was generated with CLDR version 47.0.0-BETA1, ICU version release-77-rc, and
-//! LSTM segmenter version v0.1.0.
+// @generated from third_party/rust/chromium_crates_io/removed_lib.rs
+// by tools/crates/gnrt. Do not edit!
 
-#![no_std]
-// The source is not readable and is massive as HTML.
-#![doc(html_no_source)]
-
-#[cfg(icu4x_custom_data)]
-include!(concat!(core::env!("ICU4X_DATA_DIR"), "/mod.rs"));
-#[cfg(not(icu4x_custom_data))]
-include!("../data/mod.rs");
-
-#[rustfmt::skip]
-pub use icu_provider_baked;
+// This is an empty crate that has replaced the 'icu_casemap_data' crate, since
+// it was listed in `resolve.remove_crates` in gnrt_config.toml.

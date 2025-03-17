@@ -31,6 +31,8 @@ class VIEWS_EXPORT TableHeader : public View {
   void ResizeColumnViaKeyboard(size_t index,
                                TableView::AdvanceDirection direction);
 
+  void InstallFocusRing();
+
   // Call to update TableHeader objects that rely on the focus state of its
   // corresponding virtual accessibility views.
   void UpdateFocusState();

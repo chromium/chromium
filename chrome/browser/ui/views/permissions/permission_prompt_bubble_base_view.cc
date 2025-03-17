@@ -73,7 +73,8 @@ PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
 PermissionPromptBubbleBaseView::~PermissionPromptBubbleBaseView() = default;
 
 void PermissionPromptBubbleBaseView::CreatePermissionButtons(
-    const std::u16string& allow_always_text) {
+    const std::u16string& allow_always_text,
+    const std::u16string& block_text) {
   if (is_one_time_permission_) {
     SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
@@ -105,16 +106,12 @@ void PermissionPromptBubbleBaseView::CreatePermissionButtons(
                                      kAllowButtonElementId);
     allow_always_button->SetID(GetViewId(PermissionDialogButton::kAccept));
 
-    int block_message_id =
-        permissions::feature_params::kUseStrongerPromptLanguage.Get()
-            ? IDS_PERMISSION_NEVER_ALLOW
-            : IDS_PERMISSION_DONT_ALLOW;
     auto block_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(&PermissionPromptBubbleBaseView::
                                 FilterUnintenedEventsAndRunCallbacks,
                             base::Unretained(this),
                             GetViewId(PermissionDialogButton::kDeny)),
-        l10n_util::GetStringUTF16(block_message_id));
+        block_text);
     block_button->SetProperty(views::kElementIdentifierKey,
                               kBlockButtonElementId);
     block_button->SetID(GetViewId(PermissionDialogButton::kDeny));

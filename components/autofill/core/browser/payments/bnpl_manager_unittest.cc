@@ -45,7 +45,7 @@ class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
       CreateBnplPaymentInstrument,
       (const CreateBnplPaymentInstrumentRequestDetails& request_details,
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                               std::u16string instrument_id)> callback));
+                               std::string instrument_id)> callback));
   MOCK_METHOD(
       void,
       GetDetailsForCreateBnplPaymentInstrument,
@@ -535,6 +535,57 @@ TEST_F(BnplManagerTest, OnPopupWindowCompleted_UserClosed) {
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
 }
 
+// Tests that FetchVcnDetails will display an autofill progress dialog.
+TEST_F(BnplManagerTest, FetchVcnDetails_ShowAutofillProgressDialog) {
+  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  test_api(*bnpl_manager_)
+      .PopulateManagerWithUserAndBnplIssuerDetails(
+          kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
+          kRedirectUrl, kIssuerId);
+
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+
+  test_api(*bnpl_manager_).FetchVcnDetails();
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+}
+
+// Tests that calling Reset while fetching VCN details will reset the status of
+// BnplManager.
+TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
+  bnpl_manager_->InitBnplFlow(1'000'000, base::DoNothing());
+  test_api(*bnpl_manager_)
+      .PopulateManagerWithUserAndBnplIssuerDetails(
+          kBillingCustomerNumber, kInstrumentId, kRiskData, kContextToken,
+          kRedirectUrl, kIssuerId);
+
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+  EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+
+  test_api(*bnpl_manager_).FetchVcnDetails();
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_progress_dialog_shown());
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+  EXPECT_NE(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+
+  test_api(*bnpl_manager_).Reset();
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+  EXPECT_FALSE(autofill_client_->GetPaymentsAutofillClient()
+                   ->autofill_error_dialog_shown());
+}
+
 // Tests that `OnIssuerSelected()` calls with an unlinked BNPL issuer will call
 // the payments network interface with the request details filled out correctly.
 TEST_F(
@@ -929,6 +980,66 @@ TEST_F(BnplManagerTest, BnplSettingsToggleNotShown_HasSeenBnpl) {
                   .IsAutofillHasSeenBnplPrefEnabled());
   EXPECT_TRUE(bnpl_manager_->ShouldShowBnplSettings());
 }
+
+// Tests that when CreateBnplPaymentInstrument and responds with a success
+// response, expecting GetBnplPaymentInstrumentForFetchingUrl call with the
+// returned instrument ID.
+TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Success) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  ongoing_flow_state->app_locale = kAppLocale;
+  ongoing_flow_state->billing_customer_number = kBillingCustomerNumber;
+  ongoing_flow_state->context_token = kContextToken;
+  ongoing_flow_state->issuer_id = kIssuerId;
+  ongoing_flow_state->risk_data = kRiskData;
+
+  EXPECT_CALL(*payments_network_interface_,
+              CreateBnplPaymentInstrument(
+                  FieldsAre(kAppLocale, kBillingCustomerNumber, kIssuerId,
+                            kContextToken, kRiskData),
+                  _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kSuccess, kInstrumentId));
+
+  EXPECT_CALL(*payments_network_interface_,
+              GetBnplPaymentInstrumentForFetchingUrl(
+                  FieldsAre(kBillingCustomerNumber, kInstrumentId, kRiskData,
+                            kDomain, kAmount, kCurrency),
+                  _))
+      .Times(1);
+
+  test_api(*bnpl_manager_).CreateBnplPaymentInstrument();
+
+  EXPECT_EQ(ongoing_flow_state->instrument_id, kInstrumentId);
+}
+
+// Tests that when CreateBnplPaymentInstrument fails with an error the error
+// dialog is shown and the flow is reset.
+TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  auto* ongoing_flow_state = test_api(*bnpl_manager_).GetOngoingFlowState();
+  ongoing_flow_state->app_locale = kAppLocale;
+  ongoing_flow_state->billing_customer_number = kBillingCustomerNumber;
+  ongoing_flow_state->context_token = kContextToken;
+  ongoing_flow_state->issuer_id = kIssuerId;
+  ongoing_flow_state->risk_data = kRiskData;
+
+  EXPECT_CALL(*payments_network_interface_,
+              CreateBnplPaymentInstrument(
+                  FieldsAre(kAppLocale, kBillingCustomerNumber, kIssuerId,
+                            kContextToken, kRiskData),
+                  _))
+      .WillOnce(base::test::RunOnceCallback<1>(
+          PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, ""));
+
+  test_api(*bnpl_manager_).CreateBnplPaymentInstrument();
+
+  EXPECT_TRUE(autofill_client_->GetPaymentsAutofillClient()
+                  ->autofill_error_dialog_shown());
+
+  EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

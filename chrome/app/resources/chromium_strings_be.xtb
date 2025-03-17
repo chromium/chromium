@@ -33,6 +33,7 @@
 <translation id="1478370723027452770">Атрымаць даведку па Chrome for Testing</translation>
 <translation id="1497802159252041924">Памылка ўсталявання: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Абагульце ўкладку Chromium</translation>
+<translation id="1547469039832541117">Завяршае вылучаную задачу.</translation>
 <translation id="1553461853655228091">Chromium запытвае дазвол на доступ да камеры, каб стварыць 3D-карту асяроддзя</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Гэта пашырэнне больш не падтрымліваецца. Chromium рэкамендуе выдаліць яго.}one{Гэтыя пашырэнні больш не падтрымліваюцца. Chromium рэкамендуе выдаліць іх.}few{Гэтыя пашырэнні больш не падтрымліваюцца. Chromium рэкамендуе выдаліць іх.}many{Гэтыя пашырэнні больш не падтрымліваюцца. Chromium рэкамендуе выдаліць іх.}other{Гэтыя пашырэнні больш не падтрымліваюцца. Chromium рэкамендуе выдаліць іх.}}</translation>
 <translation id="1574377791422810894">Інструменты бяспекі браўзера Chromium</translation>
@@ -225,6 +226,7 @@
 <translation id="4148957013307229264">Ідзе ўсталяванне...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Уваход у сетку – Chromium</translation>
 <translation id="421369550622382712">Адкрывайце для сябе выдатныя праграмы, гульні, пашырэнні і тэмы для Chromium.</translation>
+<translation id="4217080900579554343">Каб атрымаць доступ да гэтага пашырэння і іншых функцый на ўсіх камп’ютарах, увайдзіце ў Chromium</translation>
 <translation id="4217972271355023382">Каб заставацца ў бяспецы ў інтэрнэце дзякуючы параметрам, якія выбралі твае бацькі, пераключыся на свой профіль Chromium, дзе ў цябе ўжо выкананы ўваход як <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Адмяняецца...</translation>
 <translation id="4224210481850767180">Усталяванне скасавана.</translation>

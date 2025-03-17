@@ -669,7 +669,8 @@ void InitializeDirectComposition(
     return;
   }
 
-  if (GetGlWorkarounds().disable_direct_composition) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableDirectComposition)) {
     return;
   }
 

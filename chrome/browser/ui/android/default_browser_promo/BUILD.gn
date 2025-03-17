@@ -11,7 +11,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMessageController.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMetrics.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtils.java",
-    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserStateProvider.java",
   ]
   deps = [
     "//base:base_java",
@@ -21,6 +20,7 @@ android_library("java") {
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/util:java",
     "//components/browser_ui/styles/android:java_resources",
     "//components/feature_engagement/public:public_java",
     "//components/messages/android:java",
@@ -37,7 +37,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoManagerTest.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoMessageControllerTest.java",
     "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserPromoUtilsTest.java",
-    "java/src/org/chromium/chrome/browser/ui/default_browser_promo/DefaultBrowserStateProviderTest.java",
   ]
   deps = [
     ":java",
@@ -50,6 +49,7 @@ robolectric_library("junit") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/util:java",
     "//components/feature_engagement/public:public_java",
     "//components/messages/android:factory_java",
     "//components/messages/android:java",

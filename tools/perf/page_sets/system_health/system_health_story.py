@@ -109,7 +109,7 @@ class SystemHealthStory(
     if self._take_memory_measurement:
       action_runner.MeasureMemory(
           deterministic_mode=True,
-          timeout_in_seconds=600 if self.HEAVY_PAGE else 60)
+          timeout_in_seconds=300 if self.HEAVY_PAGE else 60)
     else:
       action_runner.Wait(_WAIT_TIME_AFTER_LOAD)
 
@@ -125,9 +125,6 @@ class SystemHealthStory(
     super(SystemHealthStory, self).RunNavigateSteps(action_runner)
 
   def RunPageInteractions(self, action_runner):
-    if self.HEAVY_PAGE:
-      action_runner.tab.WaitForDocumentReadyStateToBeComplete(timeout=600)
-    else:
-      action_runner.tab.WaitForDocumentReadyStateToBeComplete()
+    action_runner.tab.WaitForDocumentReadyStateToBeComplete()
     self._DidLoadDocument(action_runner)
     self._Measure(action_runner)

@@ -16,16 +16,14 @@ import java.util.List;
 public class TabBin {
     public final List<Tab> tabs;
     public final @Nullable Token groupId;
-    public final int rootId;
 
     /**
      * Constructor. Expects to receive a non-null group ID for tab groups. Otherwise pass a null to
      * indicate a lone tab.
      */
-    public TabBin(@Nullable Token groupId, int rootId) {
+    public TabBin(@Nullable Token groupId) {
         this.tabs = new ArrayList<>();
         this.groupId = groupId;
-        this.rootId = rootId;
     }
 
     /** Returns a representation of the bin like "[11, 12]". */

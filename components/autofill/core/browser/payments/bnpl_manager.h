@@ -147,6 +147,11 @@ class BnplManager {
   void OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult result,
                            const BnplFetchVcnResponseDetails& response_details);
 
+  // Cancels in-progress requests to `PaymentsNetworkInterface` and resets the
+  // BNPL flow state. Also invalidates `BnplManager` weak pointers from the
+  // factory.
+  void Reset();
+
   // Runs after users select a BNPL issuer, and will redirect to plan selection
   // or terms of services depending on the issuer.
   void OnIssuerSelected(const BnplIssuer& selected_issuer);
@@ -217,6 +222,13 @@ class BnplManager {
   // Sends a request to the Payments servers to create a BNPL payment
   // instrument.
   void CreateBnplPaymentInstrument();
+
+  // Callback after attempting to create a BNPL payment instrument. `result`
+  // indicates success/failure; `instrument_id` is the new ID if successful. If
+  // successful, stores the ID and fetches the redirect URL.
+  void OnBnplPaymentInstrumentCreated(
+      PaymentsAutofillClient::PaymentsRpcResult result,
+      std::string instrument_id);
 
   PaymentsAutofillClient& payments_autofill_client() {
     return *autofill_client_->GetPaymentsAutofillClient();

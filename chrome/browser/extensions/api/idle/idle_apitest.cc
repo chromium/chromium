@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/idle/idle_manager_factory.h"
@@ -13,7 +13,7 @@
 
 namespace extensions {
 
-class IdleApiTest : public ExtensionPlatformApiTest {
+class IdleApiTest : public ExtensionApiTest {
  public:
   IdleApiTest() = default;
   ~IdleApiTest() override = default;

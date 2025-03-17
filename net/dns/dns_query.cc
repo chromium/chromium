@@ -183,8 +183,7 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   if (io_buffer_ == nullptr || io_buffer_->span().empty()) {
     return false;
   }
-  auto reader =
-      base::SpanReader<const uint8_t>(io_buffer_->span().first(valid_bytes));
+  auto reader = base::SpanReader<const uint8_t>(io_buffer_->first(valid_bytes));
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;

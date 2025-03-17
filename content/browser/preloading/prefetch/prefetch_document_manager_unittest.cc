@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "content/browser/preloading/prefetch/prefetch_features.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -30,20 +29,6 @@ using testing::FieldsAre;
 using testing::IsEmpty;
 using testing::IsNull;
 using testing::UnorderedElementsAreArray;
-
-class TestPrefetchService : public PrefetchService {
- public:
-  explicit TestPrefetchService(BrowserContext* browser_context)
-      : PrefetchService(browser_context) {}
-
-  void PrefetchUrl(
-      base::WeakPtr<PrefetchContainer> prefetch_container) override {
-    prefetch_container->DisablePrecogLoggingForTest();
-    prefetches_.push_back(prefetch_container);
-  }
-
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
-};
 
 class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
  public:

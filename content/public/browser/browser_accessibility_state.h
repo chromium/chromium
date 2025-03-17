@@ -113,7 +113,8 @@ class CONTENT_EXPORT BrowserAccessibilityState {
     kTalkback = 8,
     kVoiceOver = 9,
     kZoomText = 10,
-    kMaxValue = 10
+    kZdsr = 11,
+    kMaxValue = 11
   };
 
   virtual AssistiveTech ActiveKnownAssistiveTech() = 0;

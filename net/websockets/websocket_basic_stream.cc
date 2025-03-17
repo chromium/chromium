@@ -382,9 +382,8 @@ int WebSocketBasicStream::HandleReadResult(
   buffer_size_manager_.OnReadComplete(base::TimeTicks::Now(), result);
 
   std::vector<std::unique_ptr<WebSocketFrameChunk>> frame_chunks;
-  if (!parser_.Decode(
-          read_buffer_->span().first(base::checked_cast<size_t>(result)),
-          &frame_chunks)) {
+  if (!parser_.Decode(read_buffer_->first(base::checked_cast<size_t>(result)),
+                      &frame_chunks)) {
     return WebSocketErrorToNetError(parser_.websocket_error());
   }
   if (frame_chunks.empty())

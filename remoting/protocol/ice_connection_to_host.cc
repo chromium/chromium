@@ -54,7 +54,7 @@ void IceConnectionToHost::Connect(
 }
 
 void IceConnectionToHost::Disconnect(ErrorCode error) {
-  session_->Close(error);
+  session_->Close(error, /* error_details= */ {}, FROM_HERE);
 }
 
 void IceConnectionToHost::ApplyNetworkSettings(
@@ -179,7 +179,7 @@ void IceConnectionToHost::OnIceTransportRouteChange(
 }
 
 void IceConnectionToHost::OnIceTransportError(ErrorCode error) {
-  session_->Close(error);
+  session_->Close(error, /* error_details= */ {}, FROM_HERE);
 }
 
 void IceConnectionToHost::OnChannelInitialized(
@@ -189,7 +189,7 @@ void IceConnectionToHost::OnChannelInitialized(
 
 void IceConnectionToHost::OnChannelClosed(
     ChannelDispatcherBase* channel_dispatcher) {
-  session_->Close(ErrorCode::OK);
+  session_->Close(ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
 }
 
 void IceConnectionToHost::OnVideoChannelStatus(bool active) {

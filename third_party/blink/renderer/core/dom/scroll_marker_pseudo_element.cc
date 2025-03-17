@@ -109,6 +109,25 @@ void ScrollMarkerPseudoElement::SetSelected(bool value,
   is_selected_ = value;
   PseudoStateChanged(CSSSelector::kPseudoTargetCurrent);
   if (is_selected_ && scroll_marker_group_) {
+    if (LayoutBox* group_box = scroll_marker_group_->GetLayoutBox()) {
+      // We defer executing the scroll here in case we are in a lifecycle phase
+      // in which we shouldn't access
+      // AbsoluteBoundingBoxRectHandlingEmptyInline (See ScrollIntoView below).
+      // TODO(crbug.com/402772751): Should we be able to just update style and
+      // layout and run the scroll here.
+      group_box->GetFrameView()->AddPendingScrollMarkerSelectionUpdate(
+          scroll_marker_group_, apply_snap_alignment);
+      // Ensure that the scroll we've just queued is eventually executed by a
+      // future lifecycle update.
+      if (!group_box->GetFrameView()->IsUpdatingLifecycle()) {
+        group_box->GetFrameView()->ScheduleAnimation();
+      }
+    }
+  }
+}
+
+void ScrollMarkerPseudoElement::ScrollIntoView(bool apply_snap_alignment) {
+  if (is_selected_ && scroll_marker_group_) {
     LayoutBox* group_box = scroll_marker_group_->GetLayoutBox();
     LayoutObject* marker_object = GetLayoutObject();
     if (!group_box || !marker_object) {

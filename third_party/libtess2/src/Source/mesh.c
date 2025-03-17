@@ -437,7 +437,7 @@ TESShalfEdge *tessMeshAddEdgeVertex( TESSmesh *mesh, TESShalfEdge *eOrg )
 	eNew->Org = eOrg->Dst;
 	{
 		TESSvertex *newVertex= (TESSvertex*)bucketAlloc( mesh->vertexBucket );
-		if (newVertex == NULL) return NULL;
+		if (newVertex == NULL || eNew->Org == NULL) return NULL;
 
 		MakeVertex( newVertex, eNewSym, eNew->Org );
 	}

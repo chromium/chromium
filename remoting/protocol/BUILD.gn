@@ -179,7 +179,6 @@ static_library("protocol") {
     "sdp_message.h",
     "secure_channel_factory.cc",
     "secure_channel_factory.h",
-    "session.cc",
     "session.h",
     "session_authz_authenticator.cc",
     "session_authz_authenticator.h",

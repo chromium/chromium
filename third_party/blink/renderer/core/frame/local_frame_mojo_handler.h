@@ -239,6 +239,7 @@ class LocalFrameMojoHandler
       bool is_validated,
       const WTF::String& normalized_server_timing,
       const ::network::URLLoaderCompletionStatus& completion_status) final;
+  void GetScrollPosition(GetScrollPositionCallback callback) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,

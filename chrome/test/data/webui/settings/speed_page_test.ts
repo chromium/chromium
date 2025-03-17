@@ -90,7 +90,7 @@ suite('SpeedPage', function() {
         'net.network_prediction_options', NetworkPredictionOptions.EXTENDED);
 
     speedPage.$.preloadingStandard.click();
-    await eventToPromise('selected-changed', speedPage.$.preloadingRadioGroup);
+    await eventToPromise('change', speedPage.$.preloadingRadioGroup);
 
     assertEquals(
         NetworkPredictionOptions.STANDARD,
@@ -101,7 +101,7 @@ suite('SpeedPage', function() {
 
   test('testPreloadPagesExtended', async () => {
     speedPage.$.preloadingExtended.click();
-    await eventToPromise('selected-changed', speedPage.$.preloadingRadioGroup);
+    await eventToPromise('change', speedPage.$.preloadingRadioGroup);
 
     assertEquals(
         NetworkPredictionOptions.EXTENDED,

@@ -21,8 +21,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
-namespace {
-
 class RemoveSuggestionBubbleDialogDelegateView
     : public views::BubbleDialogDelegateView {
   METADATA_HEADER(RemoveSuggestionBubbleDialogDelegateView,
@@ -111,8 +109,6 @@ class RemoveSuggestionBubbleDialogDelegateView
 
 BEGIN_METADATA(RemoveSuggestionBubbleDialogDelegateView)
 END_METADATA
-
-}  // namespace
 
 void ShowRemoveSuggestion(TemplateURLService* template_url_service,
                           views::View* anchor_view,

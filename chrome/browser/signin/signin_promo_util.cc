@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/features.h"
+#include "components/sync_bookmarks/switches.h"
 #include "net/base/network_change_notifier.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -237,7 +238,9 @@ bool ShouldShowAddressSignInPromo(Profile& profile,
 bool ShouldShowBookmarkSignInPromo(Profile& profile) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (!base::FeatureList::IsEnabled(
-          switches::kSyncEnableBookmarksInTransportMode)) {
+          switches::kSyncEnableBookmarksInTransportMode) ||
+      !base::FeatureList::IsEnabled(
+          switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload)) {
     return false;
   }
 
@@ -249,6 +252,20 @@ bool ShouldShowBookmarkSignInPromo(Profile& profile) {
            ->GetString(::prefs::kGoogleServicesLastSyncingGaiaId)
            .empty()) {
     return false;
+  }
+
+  // If the user is in sign in pending state, the promo should only be shown if
+  // they already have account storage for bookmarks enabled.
+  IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(&profile);
+  if (identity_manager && signin_util::IsSigninPending(identity_manager)) {
+    if (!sync_service ||
+        !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kBookmarks)) {
+      return false;
+    }
   }
 
   return ShouldShowSignInPromoCommon(profile, SignInPromoType::kBookmark);
@@ -270,6 +287,11 @@ bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
   if (access_point == signin_metrics::AccessPoint::kExtensionInstallBubble) {
     return base::FeatureList::IsEnabled(
         switches::kEnableExtensionsExplicitBrowserSignin);
+  }
+
+  if (access_point == signin_metrics::AccessPoint::kBookmarkBubble) {
+    return base::FeatureList::IsEnabled(
+        switches::kSyncEnableBookmarksInTransportMode);
   }
 
   return false;

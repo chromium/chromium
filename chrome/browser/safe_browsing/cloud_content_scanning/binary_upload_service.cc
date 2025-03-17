@@ -133,10 +133,6 @@ bool BinaryUploadService::Request::per_profile_request() const {
   return per_profile_request_;
 }
 
-void BinaryUploadService::Request::set_fcm_token(const std::string& token) {
-  content_analysis_request_.set_fcm_notification_token(token);
-}
-
 void BinaryUploadService::Request::set_device_token(const std::string& token) {
   content_analysis_request_.set_device_token(token);
 }
@@ -289,11 +285,6 @@ const std::string& BinaryUploadService::Request::device_token() const {
 
 const std::string& BinaryUploadService::Request::request_token() const {
   return content_analysis_request_.request_token();
-}
-
-const std::string& BinaryUploadService::Request::fcm_notification_token()
-    const {
-  return content_analysis_request_.fcm_notification_token();
 }
 
 const std::string& BinaryUploadService::Request::filename() const {

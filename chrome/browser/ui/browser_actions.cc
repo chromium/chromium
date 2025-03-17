@@ -273,6 +273,24 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowOffersAndRewardsForPage(browser);
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionOffersAndRewardsForPage)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kLocalOfferFlippedRefreshIcon, ui::kColorIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
+          .Build());
+
   // Create the lens action item. The icon and text are set appropriately in the
   // lens side panel coordinator. They have default values here.
   root_action_item_->AddChild(

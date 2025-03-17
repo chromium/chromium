@@ -175,6 +175,11 @@ Se a política for ativada, os usuários poderão usar o hardware de dispositivo
           Se a política for definida como verdadeira ou deixada sem definição, o recurso poderá ser ativado ou desativado pelo usuário.</translation>
 <translation id="1137479817584930805">Permitir o salvamento de imagens diretamente no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" /></translation>
 <translation id="1138294736309071213">Esta política é ativa somente no modo de varejo. Determina o tempo antes do protetor de tela ser mostrado na tela de login para os dispositivos no modo de varejo. O valor da política deve ser especificado em milésimos de segundos.</translation>
+<translation id="1141534298047883088">A definição da política especifica se os dispositivos dos usuários selecionados precisam estar em uma rede gerenciada para fazer parte da turma do <ph name="CLASS_TOOLS_NAME" />.
+
+   Se o valor for "true", eles precisam estar em uma rede gerenciada.
+
+   Se o valor for "false" ou não for definido, será possível participar sem estar em uma rede gerenciada.</translation>
 <translation id="1143257335984030879">Esta política controla a disponibilidade do recurso da lista de compras.
       Se for ativada, os usuários vão receber uma interface para monitorar o preço do produto mostrado na página atual. O produto é mostrado no painel lateral de favoritos.
       Se a política for ativada ou deixada sem definição, a lista de compras vai ficar disponível para os usuários.
@@ -203,6 +208,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
             * digest;
             * ntlm.
             Deixar essa opção vazia permitirá que os três esquemas sejam usados.</translation>
+<translation id="1153098295759945906">Os usuários não podem usar os recursos de <ph name="CLASS_TOOLS_NAME" /> nem ser adicionados a uma sessão de <ph name="CLASS_TOOLS_NAME" />.</translation>
 <translation id="1153306961094113710">Permitir a depuração remota</translation>
 <translation id="115699958189272121">Informar eventos da <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /></translation>
 <translation id="1157003104143964656">Esta configuração ativa ou desativa a interceptação de login.
@@ -912,6 +918,7 @@ Observação: esta política só afeta a interface, e o ChromeOS vai manter as c
 
       Observação: há configurações separadas para bateria e alimentação CA.</translation>
 <translation id="1607734317623618500">O app da Web de quiosque pode ser usado off-line</translation>
+<translation id="1608268562678058028">Impedir docentes de enviar e bloquear conteúdo em telas de estudantes</translation>
 <translation id="1608755754295374538">URLs que terão acesso a dispositivos de captura de áudio sem solicitação</translation>
 <translation id="1608901087213748889">Acionar uma ação quando o computador está inativo.
 
@@ -1300,6 +1307,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 Se ela for definida, não será necessário fazer login nas contas dos domínios listados para criar um perfil separado.
 
 Se for definida como uma string vazia, todos os logins de conta serão necessários para criar um perfil separado.</translation>
+<translation id="1895698360618946084">Configurar o recurso de integração para <ph name="CLASS_TOOLS_NAME" /> do Google Sala de Aula</translation>
 <translation id="1897095538209040086">Se a política for definida como ativada ou não for definida, o <ph name="PRODUCT_NAME" /> manterá pelo menos uma guia aberta depois de mudar para um navegador alternativo.
 
 Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechará a guia depois de mudar para um navegador alternativo, mesmo se essa for a última guia. Isso faz com que o <ph name="PRODUCT_NAME" /> seja completamente fechado.</translation>
@@ -1819,6 +1827,11 @@ Se for deixada sem definição ou desativada, a transferência de arquivos não 
 <translation id="2246565294817797392">Bloquear cookies truncados</translation>
 <translation id="2246621891161157804">Permitir que o Chrome bloqueie a navegação para protocolos externos no iframe dentro do sandbox</translation>
 <translation id="224750967938323855">Não mostrar o consentimento de sincronização durante o login</translation>
+<translation id="2250738397312289836">A definição da política especifica se alguns docentes podem enviar e bloquear conteúdo nas telas de estudantes.
+
+  Se o valor for "true" ou não for definido, será possível enviar e bloquear conteúdo.
+
+  Se o valor for "false", os usuários não poderão acessar o recurso.</translation>
 <translation id="2252400912879027343">O WebSQL em contextos não seguros continuará disponível até a versão M109 e ficará indisponível da M110 em diante.</translation>
 <translation id="225340736558643885">Ativar alertas para formulários não seguros</translation>
 <translation id="2258126710006312594">Permitir que usuários de acesso remoto transfiram arquivos para/do host</translation>
@@ -1949,6 +1962,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
           Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.</translation>
 <translation id="2336822410658374491">Desativar o acesso ao menu de contexto do provedor de pesquisa padrão</translation>
+<translation id="233726003666026610">Configurações dos grupos sugeridos</translation>
 <translation id="2337859888277013371">Não permitir o uso do cache de avanço e retorno</translation>
 <translation id="2341509917222115272">Se a política for definida como "Ativada" ou deixada sem definição, o usuário poderá parear clientes e hosts durante a conexão, eliminando a necessidade de inserir um PIN todas as vezes.
 
@@ -2473,6 +2487,7 @@ O sistema só consulta registros AAAA quando está acessível a um host IPv6 glo
       Para acessar informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Os caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos. A política só faz a correspondência de origens, então os caminhos no padrão do URL serão ignorados.
 
       Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> será aplicada, se configurada. Caso contrário, a permissão vai seguir os padrões do navegador e autorizar a escolha dos usuários para cada site.</translation>
+<translation id="272712253546233296">Permita que docentes acessem telas de estudantes remotamente.</translation>
 <translation id="2727844239611930002">Permitir que o <ph name="PRODUCT_NAME" /> determine se a solicitação do <ph name="PRIVACY_SANDBOX_NAME" /> vai ser mostrada.</translation>
 <translation id="2729889068935597630">Esta política define a configuração padrão para todos os recursos de IA generativa cobertos. Por exemplo, se esta política for definida com o valor 1, então 1 será a configuração padrão para todos os recursos de IA generativa cobertos. Isso não afeta os valores de política definidos manualmente. Consulte https://support.google.com/chrome/a?p=generative_ai_settings para conferir a lista de recursos cobertos.
 
@@ -2571,11 +2586,6 @@ Se a política não for definida, a <ph name="BLOCK_POPUPS_POLICY_NAME" /> será
 <translation id="2812417768214606683">Esta política especifica uma lista de dispositivos de armazenamento USB isentos das políticas de <ph name="EXTERNAL_STORAGE_DISABLED_POLICY_NAME" /> e <ph name="EXTERNAL_STORAGE_READ_ONLY_POLICY_NAME" />.
 
 As entradas são pares de identificador de fornecedor e identificador de produto USB que reconhecem o modelo específico do dispositivo USB.</translation>
-<translation id="2815701930753942156">Esta política especifica uma lista de intervalos semanais durante os quais o dispositivo <ph name="PRODUCT_OS_NAME" /> não pode ser usado. As sessões em andamento serão fechadas, e o login será bloqueado.
-
-Não é possível usar intervalos sobrepostos.
-
-Os dispositivos <ph name="PRODUCT_OS_NAME" /> vão usar o fuso horário do sistema para aplicar esses intervalos.</translation>
 <translation id="2816964824289752181">Ativar a <ph name="DESK_API_NAME" /> para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros</translation>
 <translation id="2818074121667686266">Se a política for definida como ativada ou não for definida, o usuário receberá uma solicitação para acesso de captura de áudio, exceto para URLs configurados na lista AudioCaptureAllowedUrls.
 
@@ -3449,8 +3459,14 @@ Se ela não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_N
 Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
 
 Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
+<translation id="3475567950961265791">A definição da política especifica se alguns docentes podem acessar telas de estudantes remotamente.
+
+   Se o valor for "true" ou não for definido, será possível ver as telas de estudantes.
+
+   Se o valor for "false", os usuários não poderão acessar o recurso.</translation>
 <translation id="3478024346823118645">Limpa os dados do usuário ao sair</translation>
 <translation id="3478406829037689272">Ativar verificações detalhadas de downloads com a Navegação segura</translation>
+<translation id="3480403794500220210">Permita que docentes usem a lista de estudantes da turma do Google Sala de Aula.</translation>
 <translation id="3480961938508521469">Carregar totalmente a bateria na velocidade padrão.</translation>
 <translation id="348110646151632565">Ativar o recurso de acessibilidade "Selecionar para ouvir" na tela de login.
 
@@ -4417,6 +4433,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 <translation id="4158531549614162499">Ativar a sincronização do Google Drive em conexões celulares</translation>
 <translation id="4160962198980004898">Fonte de endereço MAC do dispositivo quando encaixado na base</translation>
 <translation id="4161019158509414446">Controla as políticas do recurso de conjuntos de sites relacionados.</translation>
+<translation id="4161996763955215788">Não exigir que os dispositivos dos usuários estejam em uma rede gerenciada para fazer parte da turma de <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="4164511138197196839">Se a política for ativada, as extensões não publicadas na Chrome Web
 Store serão desativadas no <ph name="PRODUCT_NAME" />.
 Esta política se aplica apenas às extensões instaladas e atualizadas pela
@@ -4563,6 +4580,11 @@ raízes e do verificador de certificados disponibilizados pela plataforma foi re
 <translation id="4245159233848584683">Ativar a política ou deixá-la sem definição faz com que o <ph name="PRODUCT_OS_NAME" /> mostre uma solicitação de configuração da rede quando um dispositivo ficar off-line, se uma conta local do dispositivo estiver definida para login automático sem atraso.
 
 A desativação da política faz com que uma mensagem de erro apareça.</translation>
+<translation id="424605961245122145">A definição da política especifica se docentes podem se conectar a estudantes usando a lista da turma do Google Sala de Aula. Consulte <ph name="GOOGLE_CLASSROOM_LINK" />.
+
+    Se o valor for "true" ou não for definido, a lista poderá ser usada.
+
+    Se o valor for "false", os usuários não poderão acessar o recurso.</translation>
 <translation id="4248277954659222481">Permitir reprodução automática de mídia em uma lista de permissões de padrões de URL</translation>
 <translation id="4250680216510889253">Não</translation>
 <translation id="4251370222792468420">O Chrome tenta fazer upgrade de alguns tipos de recursos secundários de conteúdo misto (HTTP em um site HTTPS) no iOS.
@@ -4901,6 +4923,7 @@ Esta política não vai ter efeito se for ativada, deixada vazia ou não for def
 <translation id="4508728400492074981">Controla as políticas do recurso First-Party Sets.</translation>
 <translation id="4510131075424939993">Especificar o valor de um sal a ser usado na política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> ao avaliar as informações de identidade</translation>
 <translation id="4510923771103268849">O usuário tem permissão de acesso root aos contêineres do Crostini</translation>
+<translation id="4511848671760711978">Impeça que docentes acessem telas de estudantes remotamente.</translation>
 <translation id="4512407512989846472">Permite bloquear cópias para a área de transferência em URLs específicas</translation>
 <translation id="4513691822411041977">Não forçar o uso do SafeSearch na Pesquisa Google nem o Modo restrito do YouTube</translation>
 <translation id="4515404363392014383">Ativar a Navegação segura para fontes confiáveis</translation>
@@ -5342,6 +5365,7 @@ Se a política for definida como "false", o comportamento padrão será usado.</
 <translation id="4826326557828204741">Ação a ser executada quando o tempo de inatividade for atingido durante execução com bateria</translation>
 <translation id="4826701474986856664">Mostra a tela do sensor de presença humana durante o login</translation>
 <translation id="4826977043372474305">As credenciais do Wi-Fi do quiosque são armazenadas no nível do quiosque</translation>
+<translation id="4827191685269660892">Configurar o recurso de envio de conteúdo para <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="4827727182370777723">Configuração padrão de permissão das fontes locais</translation>
 <translation id="482803100714220060">Exibir URLs completos</translation>
 <translation id="4832852360828533362">Relatórios de usuário e do dispositivo</translation>
@@ -5938,6 +5962,11 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se a política não for definida, o período padrão de 604.800.000 milissegundos (uma semana) será usado.</translation>
 <translation id="5212810195096589189">Especificar permissão para CLI de VM</translation>
 <translation id="5213038356678567351">Sites que nunca acionarão uma troca de navegador.</translation>
+<translation id="5216520638921067085">Especifica a idade mínima da versão para notificações de reinicialização mais agressivas. A idade é calculada a partir do momento em que a versão atual foi veiculada aos clientes pela última vez.
+
+Se uma nova versão estiver pendente ou for necessário reinicializar o navegador/reiniciar o dispositivo e a versão atual tiver sido substituída por mais tempo do que o número de dias especificado por essa configuração, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será substituída por duas horas. Se a política <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> estiver definida como 1 (obrigatória), os usuários vão precisar reinicializar ou reiniciar ao final do período.
+
+Se ela estiver sem definição ou não for possível determinar a idade de lançamento, a política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> será usada para todas as atualizações.</translation>
 <translation id="5216815237712190041">Configure a imagem de plano de fundo que vai aparecer na tela de login do dispositivo quando nenhum usuário tiver feito login. A política é definida especificando o URL do qual o dispositivo ChromeOS pode fazer o download da imagem de plano de fundo e de uma hash criptográfica usada para verificar a integridade do download. A imagem precisa estar no formato JPEG, e o tamanho desse arquivo não pode ultrapassar 16 MB. É necessário que o URL possa ser acessado sem qualquer tipo de autenticação. A imagem do plano de fundo é baixada e armazenada em cache. O download vai ser refeito sempre que o URL ou o hash mudarem.
 
       Se esta política de plano de fundo for definida, o dispositivo ChromeOS vai fazer o download da imagem de plano de fundo, que será usada na tela de login caso nenhum usuário tenha feito login no dispositivo. Depois que o usuário faz login, a política de plano de fundo dele entra em ação.
@@ -6003,6 +6032,7 @@ Observação: esse recurso ainda não está disponível para o público geral. P
 <translation id="5252995168844634755">Se a política for definida como verdadeira, a área de trabalho unificada será ativada e permitirá que aplicativos apareçam em várias telas. Os usuários poderão desativar essa configuração para usarem as telas individualmente.
 
       Se a política for definida como falsa ou não for definida, a área de trabalho unificada ficará desativada e os usuários não poderão ativá-la.</translation>
+<translation id="5255030951930491102">Configurar <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="5255162913209987122">Pode ser recomendada</translation>
 <translation id="525543707238275321">Desativar relatórios de informações da CPU do dispositivo</translation>
 <translation id="5255790642269910630">A definição da política faz com que cada tela gire para a orientação especificada em todas as reinicializações e na primeira vez que ela for conectada depois que o valor da política mudar. O usuário pode mudar a rotação da tela na página de configurações depois de fazer login, mas as mudanças serão revertidas após a próxima reinicialização. Esta política se aplica às telas primária e secundária.
@@ -6198,6 +6228,7 @@ Na versão 92 e mais recentes do <ph name="PRODUCT_NAME" />, esta política tamb
 <translation id="5373552304217872025">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.
 
       Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.</translation>
+<translation id="5376378981585287162">Excluir arquivos locais atuais (compatível desde a versão 136)</translation>
 <translation id="5377606826822211923">Controla, no lugar do usuário, o uso de apps Android de fontes não confiáveis</translation>
 <translation id="5377826248281933035">Esta política oferece uma lista de sites em que o usuário pode pesquisar rapidamente usando atalhos na barra de endereço. É possível iniciar uma pesquisa digitando o atalho ou @atalho (por exemplo, @trabalho) seguido da barra de espaço ou tecla Tab na barra de endereço.
 
@@ -6249,6 +6280,7 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="5395778184390568113">Controla o atalho usado para acionar as teclas Home/End</translation>
 <translation id="5396322417222266779">Permitir que o usuário personalize os atalhos do sistema</translation>
 <translation id="5398387276166014955">Permitir que códigos de terceiros sejam injetados no Chrome</translation>
+<translation id="5401574762248900530">Configurar o recurso de tela de visualização para <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="5401696449591951427">Ativar <ph name="CHROME_DEVICES_LINK" /></translation>
 <translation id="5404749470367600971">Permitir a filtragem de desempenho de acessibilidade.</translation>
 <translation id="5405289061476885481">Configura quais layouts de teclado são permitidos na tela de login do <ph name="PRODUCT_OS_NAME" />.
@@ -6633,6 +6665,7 @@ Quando definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, esta política
 
       Esta política está disponível apenas para usuários que receberam uma licença do Chrome Enterprise Premium.</translation>
 <translation id="5625771176514429288">A execução de apps do Chrome será permitida nestas plataformas.</translation>
+<translation id="5627270992026554674">Impeça que docentes usem a lista de estudantes da turma do Google Sala de Aula.</translation>
 <translation id="5630352020869108293">Restaurar a última sessão</translation>
 <translation id="5633871703004128675">Ativar o recurso de acessibilidade que destaca o cursor</translation>
 <translation id="5634032995857968056">Ativar o sandbox do contêiner do app Renderer</translation>
@@ -6881,6 +6914,17 @@ Se a política não for definida, isso será funcionalmente equivalente a defini
 <translation id="5836064773277134605">Restringir o intervalo de portas UDP usado pelo host de acesso remoto</translation>
 <translation id="583627479140113555">Ativar a importação de senhas salvas na primeira execução</translation>
 <translation id="5838452040629810808">Ativar destaque do cursor</translation>
+<translation id="5839430986743008680">Esta política controla se grupos com base em conteúdo semelhante, como guias e apps do navegador, serão sugeridos para <ph name="PRODUCT_OS_NAME" />. Essa sugestão vai ocorrer quando os usuários fizerem login. Os espaços de trabalho sugeridos para um grupo vão estar disponíveis durante uma sessão.
+
+Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de origem e feedback por escrito, dependendo do recurso. Eles também podem ser analisados por humanos para melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de origem e feedback por escrito) para melhorar os modelos. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Se ela for definida como 2, o recurso não será habilitado.
+
+Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="5841157246593092717">Controla se os manipuladores de eventos <ph name="UNLOAD_EVENT_NAME" /> podem ser desativados.</translation>
 <translation id="5842283830553218200">O novo comportamento para envio de eventos em controles de formulário desativados vai ser usado por padrão.</translation>
 <translation id="5843736977964493779">Não permitir o fluxo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /></translation>
@@ -7042,6 +7086,7 @@ Se a política for definida como <ph name="DISPLAY_MANAGEMENT_LABEL_TRANSIENT_VA
 
       Caso contrário, se a compatibilidade com um servidor com bugs precisar ser mantida, essa política poderá ser definida como "tls1.1". Essa é uma medida provisória, e o servidor precisará ser corrigido o mais rápido possível.</translation>
 <translation id="5932767795525445337">Esta política também pode ser usada para fixar apps Android.</translation>
+<translation id="5936192285609409992">Calculadora (compatível desde a versão 136)</translation>
 <translation id="5936193585187054065">O Encrypted ClientHello (ECH) é uma extensão do TLS para criptografar campos confidenciais do ClientHello e melhorar a privacidade.
 
       Se esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> vai seguir o processo de lançamento padrão do ECH. Se ela for desativada, o <ph name="PRODUCT_NAME" /> não vai ativar o ECH.
@@ -7111,6 +7156,7 @@ Esta política se aplica apenas a novas tentativas de conexão e não invalida a
 <translation id="5997846976342452720">Especifica se o localizador de plug-ins deve ser desativado (uso suspenso)</translation>
 <translation id="5998198091336830580">Esta política faz parte do seguinte grupo atômico (apenas as políticas da fonte de maior prioridade presentes no grupo são aplicadas):</translation>
 <translation id="6001621991816939414">Limpar histórico de downloads</translation>
+<translation id="600340336794837950">Os usuários poderão participar e ser adicionados a uma sessão de <ph name="CLASS_TOOLS_NAME" />. Os professores poderão enviar conteúdo para esses usuários.</translation>
 <translation id="600402562436559989">Permitir que as configurações de rede Wi-Fi sejam sincronizadas entre dispositivos <ph name="PRODUCT_OS_NAME" /> e um smartphone Android conectado</translation>
 <translation id="6004575267180297869">
       Especifica se módulos WebAssembly podem ser enviados em origem cruzada a outra janela ou outro worker. O compartilhamento do módulo WebAssembly em origem cruzada será descontinuado como parte dos esforços para descontinuar document.domain, conforme descrito em https://github.com/mikewest/deprecating-document-domain (link em inglês). Esta política permite que o compartilhamento do módulo WebAssembly em origem cruzada seja reativado para oferecer um período de transição maior no processo de descontinuação.
@@ -7562,6 +7608,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
 <translation id="6287128640500683781">Permitir que qualquer usuário faça login</translation>
 <translation id="6287310684159482272">Configurações de cookies</translation>
 <translation id="6287742528823584153">Ativar o serviço <ph name="PRODUCT_NAME" /> e iniciar o espaço de trabalho remoto após o login</translation>
+<translation id="6288152932495466841">Notificar usuários de versões do navegador substituídas</translation>
 <translation id="6299147100249359151">Permitir a detecção do escopo da política.</translation>
 <translation id="6299554629216555326">Configurações de gerenciamento de janelas</translation>
 <translation id="6302021021024941085">Desativar as ferramentas de solução de problemas em quiosques.</translation>
@@ -7791,7 +7838,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
       contas não gerenciadas.</translation>
 <translation id="6401669939808766804">Fazer logout do usuário</translation>
 <translation id="640244877779556713">Permitir sugestão de emojis</translation>
-<translation id="6402928885627067154">Especificar intervalos semanais em que os dispositivos ChromeOS não podem ser usados</translation>
 <translation id="6403114173011456561">Controla o teclado virtual de toque, agindo como uma política complementar à <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
 
       Se o teclado virtual de acessibilidade estiver ativado, esta política não terá efeito.
@@ -8150,6 +8196,7 @@ Mudanças na política são aplicadas apenas enquanto o ARC não está em execu�
       - Se esta política for desativada, os administradores precisarão informar isso para os usuários finais do dispositivo.</translation>
 <translation id="6605778633186421420">Ativar o suporte ao transporte do dicionário por compactação</translation>
 <translation id="6607983779935460461">Suporte ao URL dos dados para SVGUseElement.</translation>
+<translation id="660893824005096050">Permita que docentes enviem a transcrição para estudantes.</translation>
 <translation id="6609867253856597039">Definir a experiência do usuário com recursos desativados</translation>
 <translation id="6614557704487944013">Permitir que os usuários usem o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="6614648642325603511">O algoritmo para gerar pares de chaves. Há suporte à opção EC desde a versão 132.</translation>
@@ -8683,6 +8730,13 @@ Esta política será removida após o lançamento do recurso de drivers de impre
 
       Se esta política não for definida, o HTTP/0.9 será desativado em portas não padrão.</translation>
 <translation id="6969332115615661188">Desativar entrada de vídeo</translation>
+<translation id="696985172258622870">Controla a migração de arquivos locais para a nuvem.
+Aplicável apenas a usuários do SkyVault, ou seja, quando o valor LocalUserFilesAllowed é falso. Caso contrário, a política é ignorada.
+
+Se definida como "google_drive", os arquivos locais são movidos para o Google Drive e as pastas locais são ocultas.
+Se definida como "microsoft_onedrive", os arquivos locais são movidos para o OneDrive e as pastas locais são ocultas.
+Se definida como "somente leitura" ou deixada sem definição, os arquivos locais vão continuar no modo somente leitura.
+Se definida como "excluir", os arquivos locais serão excluídos.</translation>
 <translation id="6969949359984470271">O app da Web de quiosque não pode ser usado off-line.</translation>
 <translation id="6972540544240464302">Seleciona a configuração do programador de tarefas</translation>
 <translation id="6975533677426693807">Sempre abrir arquivos PDF usando o leitor de PDF interno</translation>
@@ -9880,6 +9934,7 @@ Desative a política somente se você estiver usando uma solução de segurança
       Se não for definida, os sites têm permissão para solicitar acesso, mas os usuários podem mudar essa configuração.
 
       Esta política pode ser substituída por padrões de <ph name="URL_LABEL" /> específicos usando as políticas <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="7950451717181391167">A definição da política especifica se os usuários usam <ph name="CLASS_TOOLS_NAME" /> para enviar/receber conteúdo, enviar/receber legendas como estudantes ou professores ou se as ferramentas de gerenciamento de turmas estão desativadas para os usuários.</translation>
 <translation id="7952007677054834789">Configura as páginas a serem carregadas na inicialização, a página inicial padrão e a página "Nova guia" padrão no <ph name="PRODUCT_NAME" /> e impede que elas sejam alteradas pelos usuários.
 
       As configurações da página inicial do usuário só serão completamente bloqueadas se você selecionar a página inicial como a página "Nova guia" ou se configurá-la para que seja um URL específico. Se você não especificar o URL, o usuário ainda poderá definir a página inicial como a página "Nova guia" especificando "chrome://newtab".
@@ -10033,6 +10088,7 @@ também é seguro.</translation>
 <translation id="80453040817068401">Disponibilizar o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Permitir o uso da depuração remota</translation>
 <translation id="8047600674992048328">Nome desta configuração visível para o usuário</translation>
+<translation id="804935152359592405">Configurar a restrição de rede para <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="8050080920415773384">Impressão nativa</translation>
 <translation id="8056237304861875584">Permitir que a continuação da tarefa do recurso "Seu smartphone" seja ativada.</translation>
 <translation id="8056273037819805106">As credenciais de login do <ph name="PRODUCT_OS_NAME" /> serão usadas para a autenticação de rede para um proxy gerenciado.</translation>
@@ -10531,6 +10587,7 @@ Os certificados precisam ser codificados em Base64.</translation>
 <translation id="8393850527597048037">Somente de plataforma</translation>
 <translation id="8395350646076131800">Tempo limite de inatividade do protetor da tela de bloqueio do usuário.</translation>
 <translation id="8395749934754392549">Controla configurações do contêiner Android (ARC) e de apps Android.</translation>
+<translation id="8397522492225967301">Permitir que docentes enviem e bloqueiem conteúdo em telas de estudantes</translation>
 <translation id="8398952282584132331">Ativar tela de privacidade</translation>
 <translation id="8399825694820904218">Se a política for definida como um número, o <ph name="PRODUCT_NAME" /> vai mostrar uma mensagem de milésimos de segundo para o número e abrirá um navegador alternativo.
 
@@ -10562,6 +10619,11 @@ Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
       Se ela não for definida, a API Event.path vai estar no status padrão: disponível antes da versão M109 e indisponível da versão M109 à M114.
 
       Esta política será removida após o Chrome 115.</translation>
+<translation id="8413397475489512035">A definição da política especifica se docentes podem usar o recurso de legendas.
+
+   Se o valor for "true" ou não for definido, alguns docentes poderão adicionar legendas à própria voz e enviar a transcrição para estudantes.
+
+   Se o valor for "false", os usuários não poderão acessar o recurso.</translation>
 <translation id="841395160262233331">A tecla de acesso rápido/pesquisa não pode mudar o comportamento das teclas de função, e essa configuração não pode ser modificada pelos usuários.</translation>
 <translation id="8415953438346821074">Se você ativar esta configuração, as definições armazenadas nos perfis do <ph name="PRODUCT_NAME" />, como favoritos, dados de preenchimento automático, senhas, entre outras, serão gravadas em um arquivo armazenado na pasta "Perfil de usuário de roaming" ou em um local especificado pelo administrador por meio da política <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME" />. A ativação dessa política desativa a sincronização em nuvem.
 
@@ -10572,6 +10634,7 @@ Se a política for definida como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
 
       Se deixada sem definição, a frequência padrão de 15 minutos é usada.</translation>
 <translation id="8420426128163801949">Permitir que os usuários ativem ou desativem o Bluetooth</translation>
+<translation id="8421202694245456861">Configurar o recurso de legendas para <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="8422658829373743789">Controlar o novo comportamento para envio de eventos em controles de formulário desativados</translation>
 <translation id="8423237137411858515">Manter os arquivos locais no modo somente leitura</translation>
 <translation id="8424255554404582727">Definir rotação padrão da tela, reaplicada em cada reinicialização</translation>
@@ -11388,6 +11451,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="8976248126101463034">Permitir autenticação gnubby para hosts de acesso remoto</translation>
 <translation id="8976531594979650914">Usar a impressora padrão do sistema como padrão</translation>
 <translation id="8977192934280677167">Permitir o acesso à pesquisa do menu de contexto pelo provedor de pesquisa padrão</translation>
+<translation id="8979452496746546475">Impeça que docentes enviem a transcrição para estudantes.</translation>
 <translation id="8983537551095611459">Configurar a lista de IDs de extensão isenta do processo de limpeza da sessão de visitante gerenciada restrita</translation>
 <translation id="8983539044126123594">Ativar o login com mais Contas do Google</translation>
 <translation id="8985219286836584291">Ativar relatórios de informações do sistema do dispositivo</translation>
@@ -11596,6 +11660,7 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 <translation id="9107635531763682565">Se a política for definida como 1, os sites poderão mostrar notificações na área de trabalho. Se a política for definida como 2, as notificações na área de trabalho serão negadas.
 
 Se a política não for definida, a <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="9107664925383184344">Período (dias)</translation>
 <translation id="910929592571075861">Não particionar URLs de blobs durante a busca e navegação.</translation>
 <translation id="9110194749335632373">Impedir conexões de acesso remoto de administradores corporativos a esta máquina</translation>
 <translation id="9110198768621013941">Esta política ativa as configurações de previsão de preenchimento automático.
@@ -11768,6 +11833,7 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
 <translation id="966425658642788645">Aplicar comportamento padrão</translation>
 <translation id="971677226939413180">A opção "Imprimir como imagem" não está disponível para a seleção do usuário.</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>
+<translation id="976415389478739655">Exigir que os dispositivos dos usuários estejam em uma rede gerenciada para fazer parte da turma de <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Configurações das ferramentas de gerenciamento de turmas</translation>
 <translation id="978658824596356870">Formato de relógio de 24 horas</translation>
 <translation id="979467274961593903">Não permitir o uso da depuração remota</translation>

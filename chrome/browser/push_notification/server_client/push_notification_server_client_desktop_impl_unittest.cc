@@ -357,7 +357,7 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
     base::test::TestFuture<
         PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError>
         future2;
-    EXPECT_DCHECK_DEATH(client_->RegisterWithPushNotificationService(
+    EXPECT_CHECK_DEATH(client_->RegisterWithPushNotificationService(
         push_notification::proto::NotificationsMultiLoginUpdateRequest(),
         base::BindOnce(
             &NotCalledConstRef<push_notification::proto::
@@ -426,7 +426,7 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
     base::test::TestFuture<
         PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError>
         future;
-    EXPECT_DCHECK_DEATH(client_->RegisterWithPushNotificationService(
+    EXPECT_CHECK_DEATH(client_->RegisterWithPushNotificationService(
         push_notification::proto::NotificationsMultiLoginUpdateRequest(),
         base::BindOnce(
             &NotCalledConstRef<push_notification::proto::

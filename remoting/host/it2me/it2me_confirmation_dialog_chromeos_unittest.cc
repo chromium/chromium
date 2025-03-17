@@ -175,8 +175,8 @@ class It2MeConfirmationDialogChromeOSTest
 
   void CreateAndShowDialog(const std::string& remote_user_email,
                            It2MeConfirmationDialog::ResultCallback callback) {
-    dialog_ =
-        std::make_unique<It2MeConfirmationDialogChromeOS>(/*style=*/GetParam());
+    dialog_ = std::make_unique<It2MeConfirmationDialogChromeOS>(
+        /*style=*/GetParam(), /*auto_accept_timeout=*/base::TimeDelta());
     dialog_->Show(remote_user_email, std::move(callback));
   }
 

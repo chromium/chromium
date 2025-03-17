@@ -905,11 +905,6 @@ SavedTabGroupBar::CalculateDropIndicatorIndexInCombinedSpace() const {
 }
 
 void SavedTabGroupBar::MaybeShowClosePromo(const base::Uuid& saved_group_id) {
-  // Only show this promo with the V2 enabled flag.
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return;
-  }
-
   // Do not show close promo while the browser is closing
   if (!browser_ || browser_->IsBrowserClosing()) {
     return;
