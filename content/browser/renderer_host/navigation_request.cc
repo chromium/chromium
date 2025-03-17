@@ -8948,6 +8948,10 @@ bool NavigationRequest::IsInFencedFrameTree() const {
   return frame_tree_node()->IsInFencedFrameTree();
 }
 
+bool NavigationRequest::IsGuestViewMainFrame() const {
+  return GetNavigatingFrameType() == content::FrameType::kGuestMainFrame;
+}
+
 FrameType NavigationRequest::GetNavigatingFrameType() const {
   return frame_tree_node()->GetFrameType();
 }
