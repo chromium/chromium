@@ -92,7 +92,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     private Set<Token> mHidingTabGroups = new HashSet<>();
 
     private int mCurrentGroupIndex = TabList.INVALID_TAB_INDEX;
-    private Tab mAbsentSelectedTab;
     private boolean mShouldRecordUma = true;
     private boolean mTabRestoreCompleted;
     private boolean mTabStateInitialized;
@@ -829,12 +828,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 resetRootIdToGroupIndexMap();
             }
         }
-
-        if (mAbsentSelectedTab != null) {
-            Tab absentSelectedTab = mAbsentSelectedTab;
-            mAbsentSelectedTab = null;
-            selectTab(absentSelectedTab);
-        }
     }
 
     private void resetRootIdToGroupIndexMap() {
@@ -919,17 +912,14 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @VisibleForTesting
     void selectTab(Tab tab) {
-        assert mAbsentSelectedTab == null;
-
         if (tab == null) return;
 
         int rootId = tab.getRootId();
-        if (mRootIdToGroupMap.get(rootId) == null) {
-            mAbsentSelectedTab = tab;
-        } else {
-            mRootIdToGroupMap.get(rootId).setLastShownTabId(tab.getId());
-            mCurrentGroupIndex = mRootIdToGroupIndexMap.get(rootId);
-        }
+        TabGroup group = mRootIdToGroupMap.get(rootId);
+        assert group != null;
+
+        group.setLastShownTabId(tab.getId());
+        mCurrentGroupIndex = mRootIdToGroupIndexMap.get(rootId);
     }
 
     private void reorder() {
@@ -1000,13 +990,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
         mShouldRecordUma = true;
         mIsResetting = false;
-    }
-
-    // TODO(crbug.com/41450619): This is a band-aid fix for not crashing when undo the last closed
-    // tab, should remove later.
-    /** Returns whether filter should notify observers about the SetIndex call. */
-    private boolean shouldNotifyObserversOnSetIndex() {
-        return mAbsentSelectedTab == null;
     }
 
     @Override
@@ -1703,7 +1686,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         RecordHistogram.recordBooleanHistogram(
                 "TabGroups.SelectedTabInTabGroup", isTabInTabGroup(tab));
         selectTab(tab);
-        if (!shouldNotifyObserversOnSetIndex()) return;
         for (TabModelObserver observer : mFilteredObservers) {
             observer.didSelectTab(tab, type, lastId);
         }
