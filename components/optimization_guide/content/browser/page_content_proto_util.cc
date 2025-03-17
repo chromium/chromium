@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/notreached.h"
+#include "components/optimization_guide/content/browser/ai_page_content_metadata.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
@@ -454,9 +455,26 @@ bool ConvertAttributes(
   return true;
 }
 
+void ConvertFrameMetadata(
+    GURL url,
+    const blink::mojom::AIPageContentFrameData& mojom_frame_data,
+    AIPageContentMetadata& metadata) {
+  FrameMetadata frame_metadata;
+  frame_metadata.url = url;
+
+  for (const auto& mojom_meta_tag : mojom_frame_data.meta_data) {
+    MetaTag meta_tag;
+    meta_tag.name = mojom_meta_tag->name;
+    meta_tag.content = mojom_meta_tag->content;
+    frame_metadata.meta_tags.push_back(std::move(meta_tag));
+  }
+  metadata.frame_metadata.push_back(std::move(frame_metadata));
+}
+
 void ConvertIframeData(
     const RenderFrameInfo& render_frame_info,
     const blink::mojom::AIPageContentIframeData& mojom_iframe_data,
+    AIPageContentMetadata& metadata,
     optimization_guide::proto::IframeData* proto_iframe_data) {
   if (!render_frame_info.source_origin.opaque()) {
     proto_iframe_data->set_url(render_frame_info.source_origin.Serialize());
@@ -464,9 +482,13 @@ void ConvertIframeData(
   proto_iframe_data->set_likely_ad_frame(mojom_iframe_data.likely_ad_frame);
   auto* proto_frame_data = proto_iframe_data->mutable_frame_data();
   if (mojom_iframe_data.local_frame_data) {
+    // TODO(crbug.com/403325367): Add Interaction and Meta Data for remote
+    // frames.
     ConvertFrameInteractionInfo(
         *mojom_iframe_data.local_frame_data->frame_interaction_info,
         proto_frame_data->mutable_frame_interaction_info());
+    ConvertFrameMetadata(render_frame_info.url,
+                         *mojom_iframe_data.local_frame_data, metadata);
   }
 }
 
@@ -474,6 +496,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
                  const blink::mojom::AIPageContentNode& mojom_node,
                  const AIPageContentMap& page_content_map,
                  GetRenderFrameInfo get_render_frame_info,
+                 AIPageContentMetadata& metadata,
                  optimization_guide::proto::ContentNode* proto_node) {
   const auto& mojom_attributes = *mojom_node.content_attributes;
   if (!ConvertAttributes(mojom_attributes,
@@ -514,14 +537,16 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
       auto* proto_child_frame_node = proto_node->add_children_nodes();
       if (!ConvertNode(render_frame_info->global_frame_token,
                        *frame_page_content.root_node, page_content_map,
-                       get_render_frame_info, proto_child_frame_node)) {
+                       get_render_frame_info, metadata,
+                       proto_child_frame_node)) {
         return false;
       }
     }
 
     auto* proto_iframe_data =
         proto_node->mutable_content_attributes()->mutable_iframe_data();
-    ConvertIframeData(*render_frame_info, iframe_data, proto_iframe_data);
+    ConvertIframeData(*render_frame_info, iframe_data, metadata,
+                      proto_iframe_data);
   }
 
   const auto source_frame_for_children =
@@ -530,7 +555,7 @@ bool ConvertNode(content::GlobalRenderFrameHostToken source_frame_token,
   for (const auto& mojom_child : mojom_node.children_nodes) {
     auto* proto_child = proto_node->add_children_nodes();
     if (!ConvertNode(source_frame_for_children, *mojom_child, page_content_map,
-                     get_render_frame_info, proto_child)) {
+                     get_render_frame_info, metadata, proto_child)) {
       return false;
     }
   }
@@ -544,32 +569,49 @@ bool ConvertAIPageContentToProto(
     content::GlobalRenderFrameHostToken main_frame_token,
     const AIPageContentMap& page_content_map,
     GetRenderFrameInfo get_render_frame_info,
-    optimization_guide::AIPageContentResult& page_content) {
+    optimization_guide::AIPageContentResult& page_content_result) {
   auto it = page_content_map.find(main_frame_token);
   if (it == page_content_map.end()) {
     return false;
   }
 
   const auto& main_frame_page_content = *it->second;
+
+  auto render_frame_info = get_render_frame_info.Run(
+      main_frame_token.child_id, main_frame_token.frame_token);
+  // The frame may have been torn down or crashed before we got a response.
+  if (!render_frame_info) {
+    return false;
+  }
+
+  if(main_frame_page_content.frame_data) {
+    ConvertFrameMetadata(render_frame_info->url,
+                        *main_frame_page_content.frame_data,
+                        page_content_result.metadata);
+
+  }
+
   if (!ConvertNode(main_frame_token, *main_frame_page_content.root_node,
                    page_content_map, get_render_frame_info,
-                   page_content.proto.mutable_root_node())) {
+                   page_content_result.metadata,
+                   page_content_result.proto.mutable_root_node())) {
     return false;
   }
 
   if (main_frame_page_content.page_interaction_info) {
     ConvertPageInteractionInfo(
         *main_frame_page_content.page_interaction_info,
-        page_content.proto.mutable_page_interaction_info());
+        page_content_result.proto.mutable_page_interaction_info());
   }
   if (main_frame_page_content.frame_data) {
-    auto* proto_main_frame_data = page_content.proto.mutable_main_frame_data();
+    auto* proto_main_frame_data =
+        page_content_result.proto.mutable_main_frame_data();
     ConvertFrameInteractionInfo(
         *main_frame_page_content.frame_data->frame_interaction_info,
         proto_main_frame_data->mutable_frame_interaction_info());
   }
 
-  page_content.proto.set_version(
+  page_content_result.proto.set_version(
       optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   return true;
 }

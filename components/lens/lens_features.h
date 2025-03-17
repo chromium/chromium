@@ -61,6 +61,10 @@ BASE_DECLARE_FEATURE(kLensOverlaySimplifiedSelection);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
 
+// Enables opening the Lens overlay MGT feature in the side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayMGTInSidePanel);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -723,6 +727,11 @@ extern bool UpdateViewportEachQueryEnabled();
 // Whether to use the updated client context.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsUpdatedClientContextEnabled();
+
+// Whether to show open MGT search pages in the side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldShowMGTInSidePanel();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

@@ -139,7 +139,7 @@ void SetFallbackImageToImageView(UIImageView* image_view,
     self.accessibilityLabel = _item.shopCardData.accessibilityString;
   } else {
     self.accessibilityLabel =
-        [accessibilityLabel componentsJoinedByString:@","];
+        [accessibilityLabel componentsJoinedByString:@", "];
   }
 
   [self addSubview:_containerStackView];

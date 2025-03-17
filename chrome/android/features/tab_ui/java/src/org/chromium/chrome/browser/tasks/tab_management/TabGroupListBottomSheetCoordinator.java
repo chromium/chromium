@@ -50,9 +50,6 @@ public class TabGroupListBottomSheetCoordinator {
 
         /** Hides the bottom sheet. */
         void hide(@StateChangeReason int hideReason);
-
-        /** To be run on sheet close. */
-        void onSheetClosed();
     }
 
     /** A callback to run after a tab group is created. */
@@ -153,11 +150,6 @@ public class TabGroupListBottomSheetCoordinator {
             @Override
             public void hide(@StateChangeReason int hideReason) {
                 mBottomSheetController.hideContent(mView, /* animate= */ true, hideReason);
-            }
-
-            @Override
-            public void onSheetClosed() {
-                destroy();
             }
         };
     }

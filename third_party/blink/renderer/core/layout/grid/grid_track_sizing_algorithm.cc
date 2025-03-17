@@ -77,7 +77,7 @@ void GridTrackSizingAlgorithm::CacheGridItemsProperties(
         wtf_size_t current_range_index = 0;
         const wtf_size_t range_count = track_collection.RangeCount();
 
-        for (auto grid_item : grid_items_spanning_multiple_ranges) {
+        for (auto& grid_item : grid_items_spanning_multiple_ranges) {
           // We want to find the first range in the collection that:
           //   - Spans tracks located AFTER the start line of the current grid
           //   item; this can be done by checking that the last track number of
@@ -884,14 +884,14 @@ void GridTrackSizingAlgorithm::ResolveIntrinsicTrackSizes(
   DCHECK(track_collection);
   DCHECK(grid_items);
 
-  HeapVector<Member<GridItemData>> reordered_grid_items;
+  GridItemDataPtrVector reordered_grid_items;
   const auto track_direction = track_collection->Direction();
   reordered_grid_items.ReserveInitialCapacity(grid_items->Size());
 
   for (auto& grid_item : grid_items->IncludeSubgriddedItems()) {
     if (grid_item.IsSpanningIntrinsicTrack(track_direction) &&
         grid_item.IsConsideredForSizing(track_direction)) {
-      reordered_grid_items.emplace_back(grid_item);
+      reordered_grid_items.emplace_back(&grid_item);
     }
   }
 

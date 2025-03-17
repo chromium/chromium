@@ -310,7 +310,8 @@ void CardboardRenderLoop::CleanUp() {
 void CardboardRenderLoop::GetFrameData(
     mojom::XRFrameDataRequestOptionsPtr options,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  TRACE_EVENT1("gpu", __func__, "frame", webxr_->PeekNextFrameIndex());
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::GetFrameData", "frame",
+               webxr_->PeekNextFrameIndex());
   DCHECK(task_runner()->BelongsToCurrentThread());
   CHECK(!texture_size_.IsEmpty());
 
@@ -431,7 +432,8 @@ bool CardboardRenderLoop::IsSubmitFrameExpected(int16_t frame_index) {
 
 void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
                                              const gpu::SyncToken& sync_token) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameMissing", "frame",
+               frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
 
   if (!IsSubmitFrameExpected(frame_index)) {
@@ -457,7 +459,8 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameDrawnIntoTexture",
+               "frame", frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
 
   if (!IsSubmitFrameExpected(frame_index)) {
@@ -517,7 +520,7 @@ void CardboardRenderLoop::RenderFrame(const gfx::Transform& uv_transform) {
   DVLOG(2) << __func__;
   CHECK(webxr_->HaveProcessingFrame());
   int16_t frame_index = webxr_->GetProcessingFrame()->index;
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::RenderFrame", "frame", frame_index);
 
   TransitionProcessingFrameToRendering();
 
@@ -551,7 +554,8 @@ void CardboardRenderLoop::FinishRenderingFrame(WebXrFrame* frame) {
 }
 
 void CardboardRenderLoop::ClearRenderingFrame(WebXrFrame* frame) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame->index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::ClearRenderingFrame", "frame",
+               frame->index);
   DVLOG(3) << __func__ << ": frame=" << frame->index;
 
   // Ensure that we're totally finished with the rendering frame, then collect
@@ -564,7 +568,7 @@ void CardboardRenderLoop::ClearRenderingFrame(WebXrFrame* frame) {
 }
 
 void CardboardRenderLoop::FinishFrame(int16_t frame_index) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "CardboardRenderLoop::FinishFrame", "frame", frame_index);
   DVLOG(3) << __func__;
 
   surface_->SwapBuffers(base::DoNothing(), gfx::FrameData());

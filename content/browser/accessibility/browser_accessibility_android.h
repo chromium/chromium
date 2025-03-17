@@ -146,6 +146,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetContentInvalidErrorMessage() const;
 
   std::u16string GetStateDescription() const;
+  std::u16string GetContainerTitle() const;
   std::u16string GetMultiselectableStateDescription() const;
   std::u16string GetToggleStateDescription() const;
   std::u16string GetCheckboxStateDescription() const;
@@ -267,6 +268,10 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool HasOnlyTextChildren() const;
   bool HasOnlyTextAndImageChildren() const;
   bool HasListMarkerChild() const;
+
+  // Returns true if the accessible name source (kNameFrom) comes from
+  // kAttribute.
+  bool IsAccessibleNameFromAttribute() const;
 
   // This method determines if a node should expose its value as a name, which
   // is placed in the Android API's "text" attribute. For controls that can take

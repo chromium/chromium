@@ -25,7 +25,7 @@ public class SafetyHubAccountPasswordsNoPasswordsModuleHelper implements SafetyH
 
     @Override
     public String getTitle() {
-        return mContext.getString(R.string.safety_hub_no_passwords_title);
+        return mContext.getString(R.string.safety_hub_no_account_passwords_title);
     }
 
     @Override

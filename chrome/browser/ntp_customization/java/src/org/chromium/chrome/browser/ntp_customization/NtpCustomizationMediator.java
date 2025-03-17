@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.ntp_customization;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 
+import android.support.annotation.VisibleForTesting;
 import android.widget.ViewFlipper;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
@@ -28,18 +31,33 @@ public class NtpCustomizationMediator {
     private final Map<Integer, Integer> mViewFlipperMap;
 
     private final BottomSheetController mBottomSheetController;
-    private final BottomSheetContent mBottomSheetContent;
+    private final NtpCustomizationBottomSheetContent mBottomSheetContent;
+    private final BottomSheetObserver mBottomSheetObserver;
     private final PropertyModel mPropertyModel;
     private Integer mCurrentBottomSheet;
 
     public NtpCustomizationMediator(
             BottomSheetController bottomSheetController,
-            BottomSheetContent bottomSheetContent,
+            NtpCustomizationBottomSheetContent bottomSheetContent,
             PropertyModel propertyModel) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mPropertyModel = propertyModel;
         mViewFlipperMap = new HashMap<>();
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetOpened(@BottomSheetController.StateChangeReason int reason) {
+                        mBottomSheetContent.onSheetOpened();
+                    }
+
+                    @Override
+                    public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                        mBottomSheetContent.onSheetClosed();
+                        mBottomSheetController.removeObserver(mBottomSheetObserver);
+                    }
+                };
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     /**
@@ -97,5 +115,10 @@ public class NtpCustomizationMediator {
     void setCurrentBottomSheetForTesting(
             @NtpCustomizationCoordinator.BottomSheetType int bottomSheetType) {
         mCurrentBottomSheet = bottomSheetType;
+    }
+
+    @VisibleForTesting
+    BottomSheetObserver getBottomSheetObserver() {
+        return mBottomSheetObserver;
     }
 }

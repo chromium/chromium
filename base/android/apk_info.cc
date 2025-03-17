@@ -11,6 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -69,7 +70,7 @@ static void JNI_ApkInfo_FillFields(
   DCHECK(!holder.has_value());
   auto java_string_to_const_char =
       [](const jni_zero::JavaParamRef<jstring>& str) {
-        return strdup(ConvertJavaStringToUTF8(str).c_str());
+        return UNSAFE_TODO(strdup(ConvertJavaStringToUTF8(str).c_str()));
       };
   holder = ApkInfo{
       .host_package_name = java_string_to_const_char(hostPackageName),

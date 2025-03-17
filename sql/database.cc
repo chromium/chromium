@@ -1718,13 +1718,13 @@ std::string Database::GetSchema() {
 
   std::string schema;
   while (statement.Step()) {
-    schema += statement.ColumnString(0);
+    schema += statement.ColumnStringView(0);
     schema += '|';
-    schema += statement.ColumnString(1);
+    schema += statement.ColumnStringView(1);
     schema += '|';
-    schema += statement.ColumnString(2);
+    schema += statement.ColumnStringView(2);
     schema += '|';
-    schema += statement.ColumnString(3);
+    schema += statement.ColumnStringView(3);
     schema += '\n';
   }
 

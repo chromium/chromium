@@ -884,8 +884,9 @@ class RenderWidgetHostFoldableCSSTest : public RenderWidgetHostBrowserTest {
 // Tests that when a video element goes fullscreen and uses the default
 // fullscreen UA stylesheet (in blink/core/css/fullscreen.css) the viewport
 // segments MQs and env variables are correctly working.
-IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
-                       ViewportSegmentsWorksInUAFullscreenCSS) {
+IN_PROC_BROWSER_TEST_F(
+    RenderWidgetHostFoldableCSSTest,
+    ViewportSegmentsWorksInUAFullscreenCSSAfterEnteringFullscreen) {
   const char kTestPageURL[] =
       R"HTML(data:text/html,<!DOCTYPE html>
       <video id='video'></video>)HTML";
@@ -900,8 +901,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   )JS";
   // Initial state. This will ensure that no display feature/viewport segments
   // are coming from the platform.
-  view()->SetDisplayFeatureForTesting(nullptr);
-  host()->SynchronizeVisualProperties();
+  view()->OverrideDisplayFeatureForEmulation(nullptr);
   ASSERT_TRUE(EvalJs(web_contents(), kEnterFullscreenScript).ExtractBool());
 
   // Changing the display feature/viewport segments without leaving fullscreen
@@ -912,8 +912,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   DisplayFeature emulated_display_feature{
       DisplayFeature::Orientation::kVertical, offset,
       /* mask_length */ kDisplayFeatureLength};
-  view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-  host()->SynchronizeVisualProperties();
+  view()->OverrideDisplayFeatureForEmulation(&emulated_display_feature);
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).width").ExtractString());
@@ -928,8 +927,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
       DisplayFeature::Orientation::kHorizontal;
   offset = root_view_size.height() / 2 - kDisplayFeatureLength / 2;
   emulated_display_feature.offset = offset;
-  view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-  host()->SynchronizeVisualProperties();
+  view()->OverrideDisplayFeatureForEmulation(&emulated_display_feature);
   WaitForVisualPropertiesAck();
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
@@ -940,8 +938,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
 
   // No display feature/viewport segments are set, the video should go
   // fullscreen.
-  view()->SetDisplayFeatureForTesting(nullptr);
-  host()->SynchronizeVisualProperties();
+  view()->OverrideDisplayFeatureForEmulation(nullptr);
   WaitForVisualPropertiesAck();
   // Rounding of GetVisibleViewportSize in the presence of a non-integer
   // devicePixelRatio device can make this off by one vs the video height.
@@ -961,179 +958,39 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   )JS";
   ASSERT_TRUE(EvalJs(web_contents(), kExitFullscreenScript).ExtractBool());
   ASSERT_FALSE(web_contents()->IsFullscreen());
+}
 
-  // Change the viewport segments/display feature before entering fullscreen.
-  view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-  ASSERT_TRUE(EvalJs(web_contents(), kEnterFullscreenScript).ExtractBool());
-  host()->SynchronizeVisualProperties();
+IN_PROC_BROWSER_TEST_F(
+    RenderWidgetHostFoldableCSSTest,
+    ViewportSegmentsWorksInUAFullscreenCSSBeforeEnteringFullscreen) {
+  const char kTestPageURL[] =
+      R"HTML(data:text/html,<!DOCTYPE html>
+      <video id='video'></video>)HTML";
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(kTestPageURL)));
+  // Check initial state before entering fullscreen.
+  ASSERT_FALSE(shell()->IsFullscreenForTabOrPending(web_contents()));
+  ASSERT_FALSE(web_contents()->IsFullscreen());
+  constexpr char kEnterFullscreenScript[] = R"JS(
+    document.querySelector('video').requestFullscreen().then(() => {
+        return !!document.fullscreenElement;
+    });
+  )JS";
+
+  const gfx::Size root_view_size = view()->GetVisibleViewportSize();
+  const int kDisplayFeatureLength = 10;
+  int offset = root_view_size.height() / 2 - kDisplayFeatureLength / 2;
+  DisplayFeature emulated_display_feature{
+      DisplayFeature::Orientation::kHorizontal, offset,
+      /* mask_length */ kDisplayFeatureLength};
+  view()->OverrideDisplayFeatureForEmulation(&emulated_display_feature);
   WaitForVisualPropertiesAck();
+  ASSERT_TRUE(EvalJs(web_contents(), kEnterFullscreenScript).ExtractBool());
   EXPECT_EQ(base::NumberToString(offset) + "px",
             EvalJs(shell(), "getComputedStyle(video).height").ExtractString());
   EXPECT_NEAR(
       root_view_size.width(),
       EvalJs(shell(), "parseInt(getComputedStyle(video).width)").ExtractInt(),
       1);
-}
-
-// Tests that the renderer receives the root widget's viewport segments and
-// correctly exposes those via CSS.
-// TODO(crbug.com/40137084) Convert this to a WPT once emulation is available
-// via WebDriver.
-IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
-                       FoldablesCSSWithOverrides) {
-  const char kTestPageURL[] =
-      R"HTML(data:text/html,<!DOCTYPE html>
-      <style>
-      /* The following styles set the margin top/left/bottom/right to the
-         values where the display feature between segments is, and the width and
-         height of the div to the width and height of the display feature */
-        @media (horizontal-viewport-segments: 2) {
-          div {
-            margin: env(viewport-segment-top 0 0, 10px)
-                    env(viewport-segment-left 1 0, 10px)
-                    env(viewport-segment-bottom 0 0, 10px)
-                    env(viewport-segment-right 0 0, 10px);
-            width: calc(env(viewport-segment-left 1 0, 10px) -
-                        env(viewport-segment-right 0 0, 0px));
-            height: env(viewport-segment-height 0 0, 10px);
-          }
-        }
-
-        @media (vertical-viewport-segments: 2) {
-          div {
-            margin: env(viewport-segment-bottom 0 0, 11px)
-                    env(viewport-segment-right 0 1, 11px)
-                    env(viewport-segment-top 0 1, 11px)
-                    env(viewport-segment-left 0 0, 11px);
-            width: env(viewport-segment-width 0 0, 11px);
-            height: calc(env(viewport-segment-top 0 1, 11px) -
-                         env(viewport-segment-bottom 0 0, 0px));
-          }
-        }
-        @media (horizontal-viewport-segments: 1) and
-               (vertical-viewport-segments: 1) {
-          div { opacity: 0.1; margin: 1px; width: 1px; height: 1px; }
-        }
-        @media (horizontal-viewport-segments: 2) and
-               (vertical-viewport-segments: 1) {
-          div { opacity: 0.2; }
-        }
-        @media (horizontal-viewport-segments: 1) and
-               (vertical-viewport-segments: 2) {
-          div { opacity: 0.3; }
-        }
-      </style>
-      <div id='target'></div>)HTML";
-
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(kTestPageURL)));
-
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginTop").ExtractString());
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginRight").ExtractString());
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginBottom").ExtractString());
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginLeft").ExtractString());
-  EXPECT_EQ("1px",
-            EvalJs(shell(), "getComputedStyle(target).width").ExtractString());
-  EXPECT_EQ("1px",
-            EvalJs(shell(), "getComputedStyle(target).height").ExtractString());
-
-  EXPECT_EQ(
-      "0.1",
-      EvalJs(shell(), "getComputedStyle(target).opacity").ExtractString());
-
-  const gfx::Size root_view_size = view()->GetVisibleViewportSize();
-  const int kDisplayFeatureLength = 10;
-  int offset = root_view_size.width() / 2 - kDisplayFeatureLength / 2;
-  DisplayFeature emulated_display_feature{
-      DisplayFeature::Orientation::kVertical, offset,
-      /* mask_length */ kDisplayFeatureLength};
-  view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-  host()->SynchronizeVisualProperties();
-
-  EXPECT_EQ(
-      "0px",
-      EvalJs(shell(), "getComputedStyle(target).marginTop").ExtractString());
-  EXPECT_EQ(
-      base::NumberToString(emulated_display_feature.offset +
-                           emulated_display_feature.mask_length) +
-          "px",
-      EvalJs(shell(), "getComputedStyle(target).marginRight").ExtractString());
-  EXPECT_EQ(
-      base::NumberToString(root_view_size.height()) + "px",
-      EvalJs(shell(), "getComputedStyle(target).marginBottom").ExtractString());
-  EXPECT_EQ(
-      base::NumberToString(emulated_display_feature.offset) + "px",
-      EvalJs(shell(), "getComputedStyle(target).marginLeft").ExtractString());
-  EXPECT_EQ(base::NumberToString(emulated_display_feature.mask_length) + "px",
-            EvalJs(shell(), "getComputedStyle(target).width").ExtractString());
-  EXPECT_EQ(base::NumberToString(root_view_size.height()) + "px",
-            EvalJs(shell(), "getComputedStyle(target).height").ExtractString());
-
-  EXPECT_EQ(
-      "0.2",
-      EvalJs(shell(), "getComputedStyle(target).opacity").ExtractString());
-
-  emulated_display_feature.orientation =
-      DisplayFeature::Orientation::kHorizontal;
-  offset = root_view_size.height() / 2 - kDisplayFeatureLength / 2;
-  emulated_display_feature.offset = offset;
-
-  view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-  host()->SynchronizeVisualProperties();
-
-  EXPECT_EQ(
-      base::NumberToString(emulated_display_feature.offset) + "px",
-      EvalJs(shell(), "getComputedStyle(target).marginTop").ExtractString());
-  EXPECT_EQ(
-      base::NumberToString(root_view_size.width()) + "px",
-      EvalJs(shell(), "getComputedStyle(target).marginRight").ExtractString());
-  EXPECT_EQ(
-      base::NumberToString(emulated_display_feature.offset +
-                           emulated_display_feature.mask_length) +
-          "px",
-      EvalJs(shell(), "getComputedStyle(target).marginBottom").ExtractString());
-  EXPECT_EQ(
-      "0px",
-      EvalJs(shell(), "getComputedStyle(target).marginLeft").ExtractString());
-  EXPECT_EQ(base::NumberToString(root_view_size.width()) + "px",
-            EvalJs(shell(), "getComputedStyle(target).width").ExtractString());
-  EXPECT_EQ(base::NumberToString(emulated_display_feature.mask_length) + "px",
-            EvalJs(shell(), "getComputedStyle(target).height").ExtractString());
-
-  EXPECT_EQ(
-      "0.3",
-      EvalJs(shell(), "getComputedStyle(target).opacity").ExtractString());
-
-  view()->SetDisplayFeatureForTesting(nullptr);
-  host()->SynchronizeVisualProperties();
-
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginTop").ExtractString());
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginRight").ExtractString());
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginBottom").ExtractString());
-  EXPECT_EQ(
-      "1px",
-      EvalJs(shell(), "getComputedStyle(target).marginLeft").ExtractString());
-  EXPECT_EQ("1px",
-            EvalJs(shell(), "getComputedStyle(target).width").ExtractString());
-  EXPECT_EQ("1px",
-            EvalJs(shell(), "getComputedStyle(target).height").ExtractString());
-
-  EXPECT_EQ(
-      "0.1",
-      EvalJs(shell(), "getComputedStyle(target).opacity").ExtractString());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
@@ -1158,10 +1015,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   DisplayFeature emulated_display_feature{
       DisplayFeature::Orientation::kVertical, offset,
       /* mask_length */ kDisplayFeatureLength};
-  {
-    view()->SetDisplayFeatureForTesting(&emulated_display_feature);
-    host()->SynchronizeVisualProperties();
-  }
+  view()->OverrideDisplayFeatureForEmulation(&emulated_display_feature);
 
   EXPECT_EQ(
       base::NumberToString(emulated_display_feature.offset) + "px",
@@ -1181,9 +1035,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
         navigation_manager.GetNavigationHandle()
             ->GetRenderFrameHost()
             ->GetRenderWidgetHost());
-    target_rwh->GetView()->SetDisplayFeatureForTesting(
+    target_rwh->GetView()->OverrideDisplayFeatureForEmulation(
         &emulated_display_feature);
-    target_rwh->SynchronizeVisualProperties();
   }
   EXPECT_TRUE(navigation_manager.WaitForNavigationFinished());
   load_stop_observer2.Wait();

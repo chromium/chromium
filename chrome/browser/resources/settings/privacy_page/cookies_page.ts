@@ -113,11 +113,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         observer: 'focusConfigChanged_',
       },
 
-      enableFirstPartySetsUI_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
-      },
-
       is3pcdRedesignEnabled_: {
         type: Boolean,
         value: () =>
@@ -147,7 +142,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private cookiesContentSettingType_: ContentSettingsTypes;
   private blockAllPref_: chrome.settingsPrivate.PrefObject;
   focusConfig: FocusConfig;
-  private enableFirstPartySetsUI_: boolean;
   private is3pcdRedesignEnabled_: boolean;
   private isIpProtectionAvailable_: boolean;
   private isFingerprintingProtectionAvailable_: boolean;
@@ -293,14 +287,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private relatedWebsiteSetsToggle3pcSettingDisabled_() {
     return this.getPref('generated.third_party_cookie_blocking_setting')
                .value !== ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
-  }
-
-  private getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_():
-      string {
-    return this.i18n(
-        this.enableFirstPartySetsUI_ ?
-            'cookiePageBlockThirdIncognitoBulTwoRws' :
-            'thirdPartyCookiesPageBlockIncognitoBulTwo');
   }
 
   private getThirdPartyCookiesPageDescription_():

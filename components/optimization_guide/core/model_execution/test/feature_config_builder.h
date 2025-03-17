@@ -91,6 +91,15 @@ inline proto::OnDeviceModelExecutionConfig ExecutionConfigWithValidation(
   return cfg;
 }
 
+inline proto::OnDeviceModelExecutionConfig ExecutionConfigWithCapabilities(
+    const std::vector<proto::OnDeviceModelCapability>& capabilities) {
+  proto::OnDeviceModelExecutionConfig cfg;
+  for (proto::OnDeviceModelCapability c : capabilities) {
+    cfg.add_capabilities(c);
+  }
+  return cfg;
+}
+
 inline auto Int32Proto(int32_t value) {
   proto::Value v;
   v.set_int32_value(value);

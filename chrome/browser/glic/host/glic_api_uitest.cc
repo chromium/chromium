@@ -4,16 +4,27 @@
 
 #include <math.h>
 
+#include <algorithm>
+#include <ranges>
+
 #include "base/command_line.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_test_util.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/metrics/metrics_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -27,18 +38,55 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 class GlicApiTest : public test::InteractiveGlicTest {
  public:
   GlicApiTest() {
+    add_mock_glic_query_param(
+        "test",
+        ::testing::UnitTest::GetInstance()->current_test_info()->name());
+
+    features_.InitWithFeatures({features::kGlicScrollTo}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kGlicHostLogging);
     SetGlicPagePath("/glic/test.html");
   }
   ~GlicApiTest() override = default;
 
-  void ExecuteJsTest(std::string_view name) {
+  void TearDownOnMainThread() override {
+    if (next_step_required_) {
+      FAIL() << "Test not finished: call ContinueJsTest()";
+    }
+    test::InteractiveGlicTest::TearDownOnMainThread();
+  }
+
+  // Run the test typescript function. The typescript function must have the
+  // same name as the current test.
+  // If the test uses `advanceToNextStep()`, then ContinueJsTest() must be
+  // called later.
+  void ExecuteJsTest() {
     content::WebContents* web_contents = FindGlicGuestWebContents();
     ASSERT_TRUE(web_contents);
-    ASSERT_THAT(content::EvalJs(web_contents,
-                                base::StrCat({"runApiTest('", name, "')"})),
-                testing::Eq("pass"));
+    auto result = content::EvalJs(web_contents, base::StrCat({"runApiTest()"}));
+    ASSERT_THAT(result, content::EvalJsResult::IsOk());
+    ASSERT_THAT(result.ExtractString(),
+                testing::AnyOf(testing::Eq("pass"), testing::Eq("next-step")));
+    if (result.ExtractString() == "next-step") {
+      next_step_required_ = true;
+    }
+  }
+
+  // Continues test execution if `advanceToNextStep()` was used to return
+  // control to C++.
+  void ContinueJsTest() {
+    ASSERT_TRUE(next_step_required_);
+    content::WebContents* web_contents = FindGlicGuestWebContents();
+    next_step_required_ = false;
+    ASSERT_TRUE(web_contents);
+    auto result =
+        content::EvalJs(web_contents, base::StrCat({"continueApiTest()"}));
+    ASSERT_THAT(result, content::EvalJsResult::IsOk());
+    ASSERT_THAT(result.ExtractString(),
+                testing::AnyOf(testing::Eq("pass"), testing::Eq("next-step")));
+    if (result.ExtractString() == "next-step") {
+      next_step_required_ = true;
+    }
   }
 
   content::WebContents* FindGlicGuestWebContents() {
@@ -52,7 +100,8 @@ class GlicApiTest : public test::InteractiveGlicTest {
     return nullptr;
   }
 
-  base::test::ScopedFeatureList features_{features::kGlicScrollTo};
+  bool next_step_required_ = false;
+  base::test::ScopedFeatureList features_;
 };
 
 class GlicApiTestWithOneTab : public GlicApiTest {
@@ -70,120 +119,155 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   }
 };
 
+// Note: Test names must match test function names in api_test.ts.
+
 // TODO(harringtond): Many of these tests are minimal, and could be improved
 // with additional cases and additional assertions.
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, CreateTab) {
+// Just verify the test harness works.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testDoNothing) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTab) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testCreateTab");
+  ExecuteJsTest();
   // TODO(harringtond): Add assertions to verify a tab was created.
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, OpenGlicSettingsPage) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testOpenGlicSettingsPage");
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
+  ExecuteJsTest();
   // TODO(harringtond): Add assertions to verify the settings page opened.
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, ClosePanel) {
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testClosePanel) {
+  ExecuteJsTest();
+  RunTestSequence(WaitForHide(kGlicViewElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testAttachPanel) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testClosePanel");
-  // TODO(harringtond): Assert panel is actually closed.
+  ExecuteJsTest();
+  RunTestSequence(CheckControllerWidgetMode(GlicWindowMode::kAttached));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, AttachPanel) {
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testUnsubscribeFromObservable) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testAttachPanel");
-  // TODO(harringtond): Assert panel is actually attached.
+  ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, DetachPanel) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testDetachPanel");
-  // TODO(harringtond): Assert panel is actually detached.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testDetachPanel) {
+  ExecuteJsTest();
+  RunTestSequence(CheckControllerWidgetMode(GlicWindowMode::kDetached));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, ShowProfilePicker) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testShowProfilePicker");
-  // TODO(harringtond): Assert picker is shown, and try to test changing
-  // profiles.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testShowProfilePicker) {
+  base::test::TestFuture<void> profile_picker_opened;
+  ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+      profile_picker_opened.GetCallback());
+  ExecuteJsTest();
+  ASSERT_TRUE(profile_picker_opened.Wait());
+  // TODO(harringtond): Try to test changing profiles.
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, PanelActive) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached,
-                                 GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testPanelActive");
-  // TODO(harringtond): Test deactivating the panel.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPanelActive) {
+  ExecuteJsTest();
+
+  // Opening a new browser window will deactivate the previous one, and make
+  // the panel not active.
+  NavigateParams params(browser()->profile(), GURL("about:blank"),
+                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+  params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  base::WeakPtr<content::NavigationHandle> navigation_handle =
+      Navigate(&params);
+
+  ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTest, CanAttachPanel) {
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCanAttachPanel) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
                                  GlicInstrumentMode::kHostAndContents));
-  ExecuteJsTest("testCanAttachPanel");
+  ExecuteJsTest();
   // TODO(harringtond): Test case where the canAttachPanel returns false.
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, GetFocusedTabStateV2) {
-  ExecuteJsTest("testGetFocusedTabStateV2");
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithoutPermission) {
-  ExecuteJsTest("testGetContextFromFocusedTabWithoutPermission");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithNoRequestedData) {
-  ExecuteJsTest("testGetContextFromFocusedTabWithNoRequestedData");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithAllRequestedData) {
-  ExecuteJsTest("testGetContextFromFocusedTabWithAllRequestedData");
+  ExecuteJsTest();
 }
 
 // TODO(harringtond): Fix this, it hangs.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, DISABLED_testCaptureScreenshot) {
-  ExecuteJsTest("testCaptureScreenshot");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPermissionAccess) {
-  ExecuteJsTest("testPermissionAccess");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetUserProfileInfo) {
-  ExecuteJsTest("testGetUserProfileInfo");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testRefreshSignInCookies) {
-  ExecuteJsTest("testRefreshSignInCookies");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetContextAccessIndicator) {
-  ExecuteJsTest("testSetContextAccessIndicator");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetAudioDucking) {
-  ExecuteJsTest("testSetAudioDucking");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testMetrics) {
-  ExecuteJsTest("testMetrics");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {
-  ExecuteJsTest("testScrollToFindsText");
+  ExecuteJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToNoMatchFound) {
-  ExecuteJsTest("testScrollToNoMatchFound");
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetSyntheticExperimentState) {
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil([]() {
+    std::vector<variations::ActiveGroupId> trials =
+        g_browser_process->metrics_service()
+            ->GetSyntheticTrialRegistry()
+            ->GetCurrentSyntheticFieldTrialsForTest();
+    variations::ActiveGroupId expected =
+        variations::MakeActiveGroupId("TestTrial", "Enabled");
+    return std::ranges::any_of(trials, [&](const auto& trial) {
+      return trial.name == expected.name && trial.group == expected.group;
+    });
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testNotifyPanelWillOpenIsCalledOnce) {
+  ExecuteJsTest();
 }
 
 }  // namespace

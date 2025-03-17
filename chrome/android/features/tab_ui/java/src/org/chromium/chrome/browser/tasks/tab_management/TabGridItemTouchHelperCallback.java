@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -26,6 +27,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -49,12 +52,26 @@ import java.util.List;
  */
 public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallback {
     /** An interface to observe the longpress event triggered on a tab card item. */
+    @FunctionalInterface
     interface OnLongPressTabItemEventListener {
         /**
          * Notify the observers that the longpress event on the tab has triggered.
-         * @param tabId the id of the current tab that is being selected.
+         *
+         * @param tabId The id of the current tab that is being selected.
+         * @param cardView The view representing the tab card.
          */
-        void onLongPressEvent(int tabId);
+        @Nullable
+        CancelLongPressTabItemEventListener onLongPressEvent(int tabId, @Nullable View cardView);
+    }
+
+    /**
+     * An interface to observe the longpress cancel event triggered on a tab card item. This occurs
+     * when the tab card is dragged after already being long pressed.
+     */
+    @FunctionalInterface
+    interface CancelLongPressTabItemEventListener {
+        /** Notify the observers that the longpress event on the tab has been cancelled. */
+        void cancelLongPress();
     }
 
     private final TabListModel mModel;
@@ -65,9 +82,11 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     private final String mComponentName;
     private final TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     @Nullable private OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+    @Nullable private CancelLongPressTabItemEventListener mCancelLongPressTabItemEventListener;
     private final int mLongPressDpThreshold;
     private final TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     private float mSwipeToDismissThreshold;
+    private float mLongPressDpCancelThreshold;
     private float mMergeThreshold;
     private float mUngroupThreshold;
     // A bool to track whether an action such as swiping, group/ungroup and drag past a certain
@@ -115,10 +134,17 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         mComponentName = componentName;
         mActionsOnAllRelatedTabs = actionsOnAllRelatedTabs;
         mTabGridDialogHandler = tabGridDialogHandler;
-        mLongPressDpThreshold =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.tab_list_editor_longpress_entry_threshold);
         mTabGroupCreationDialogManager = tabGroupCreationDialogManager;
+
+        Resources resources = context.getResources();
+        int longPressDpThreshold =
+                resources.getDimensionPixelSize(R.dimen.tab_list_editor_longpress_entry_threshold);
+        int longPressDpCancelThreshold =
+                resources.getDimensionPixelSize(R.dimen.long_press_cancel_threshold);
+
+        // Square, since the threshold will be compared against a squared vector magnitude.
+        mLongPressDpThreshold = longPressDpThreshold * longPressDpThreshold;
+        mLongPressDpCancelThreshold = longPressDpCancelThreshold * longPressDpCancelThreshold;
     }
 
     /**
@@ -270,10 +296,15 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     @Override
     public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {
         super.onSelectedChanged(viewHolder, actionState);
+        mCancelLongPressTabItemEventListener = null;
         if (isMessageType(viewHolder)) return;
 
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
             mSelectedTabIndex = viewHolder.getAdapterPosition();
+            if (mSelectedTabIndex != TabModel.INVALID_TAB_INDEX
+                    && mSelectedTabIndex < mModel.size()) {
+                mCancelLongPressTabItemEventListener = onLongPressStarted();
+            }
             mModel.updateSelectedTabForMergeToGroup(mSelectedTabIndex, true);
             RecordUserAction.record("TabGrid.Drag.Start." + mComponentName);
         } else if (actionState == ItemTouchHelper.ACTION_STATE_IDLE) {
@@ -370,12 +401,6 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 if (!mActionStarted) {
                     mShouldBlockAction = true;
                 }
-
-                if (mOnLongPressTabItemEventListener != null
-                        && TabUiFeatureUtilities.isTabListEditorLongPressEntryEnabled()) {
-                    int tabId = mModel.get(mSelectedTabIndex).model.get(TabProperties.TAB_ID);
-                    mOnLongPressTabItemEventListener.onLongPressEvent(tabId);
-                }
             }
             mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             mSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -426,6 +451,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                     }
                 };
         recyclerView.post(removeViewHolderRunnable);
+        mCancelLongPressTabItemEventListener = null;
     }
 
     @Override
@@ -468,16 +494,20 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             if (cardModel == null) return;
 
             cardModel.set(TabListModel.CardProperties.CARD_ALPHA, alpha);
-            boolean isOverThreshold = Math.abs(dX) >= mSwipeToDismissThreshold;
-            if (isOverThreshold && !mIsSwipingToDismiss) {
+            boolean isOverSwipeThreshold = Math.abs(dX) >= mSwipeToDismissThreshold;
+            if (isOverSwipeThreshold && !mIsSwipingToDismiss) {
                 viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
             }
-            mIsSwipingToDismiss = isOverThreshold;
+            mIsSwipingToDismiss = isOverSwipeThreshold;
             return;
         }
-        if (dX * dX + dY * dY > mLongPressDpThreshold * mLongPressDpThreshold) {
+
+        float magnitudeSquared = calcMagnitudeSquared(dX, dY);
+        if (magnitudeSquared > mLongPressDpThreshold) {
             mActionAttempted = true;
         }
+        cancelLongPressIfRequired(actionState, magnitudeSquared);
+
         mCurrentActionState = actionState;
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mActionsOnAllRelatedTabs) {
             int prev_hovered = mHoveredTabIndex;
@@ -513,6 +543,24 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                                     ? TabGridDialogView.UngroupBarStatus.HIDE
                                     : TabGridDialogView.UngroupBarStatus.SHOW));
         }
+    }
+
+    private void cancelLongPressIfRequired(int actionState, float magnitudeSquared) {
+        boolean overThreshold = magnitudeSquared > mLongPressDpCancelThreshold;
+        boolean shouldCancel = overThreshold && mCancelLongPressTabItemEventListener != null;
+        boolean isIdle = actionState == ItemTouchHelper.ACTION_STATE_IDLE;
+
+        if (shouldCancel) {
+            mCancelLongPressTabItemEventListener.cancelLongPress();
+        }
+
+        if (shouldCancel || isIdle) {
+            mCancelLongPressTabItemEventListener = null;
+        }
+    }
+
+    private static float calcMagnitudeSquared(float dX, float dY) {
+        return dX * dX + dY * dY;
     }
 
     @Override
@@ -602,5 +650,17 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
     boolean hasSwipeFlag(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         int flags = getMovementFlags(recyclerView, viewHolder);
         return ((flags >> 8) & 0xFF) != 0;
+    }
+
+    private @Nullable CancelLongPressTabItemEventListener onLongPressStarted() {
+        if (mOnLongPressTabItemEventListener != null
+                && ChromeFeatureList.sTabSwitcherContextMenuAndroid.isEnabled()) {
+            MVCListAdapter.ListItem listItem = mModel.get(mSelectedTabIndex);
+            int tabId = listItem.model.get(TabProperties.TAB_ID);
+            int cardIdx = mModel.indexFromTabId(tabId);
+            View card = mRecyclerView.getChildAt(cardIdx);
+            return mOnLongPressTabItemEventListener.onLongPressEvent(tabId, card);
+        }
+        return null;
     }
 }

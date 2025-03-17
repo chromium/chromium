@@ -1768,6 +1768,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Test signing out from the account menu.
 - (void)testSignOutFromAccountFromAccountMenu {
+  // TODO(crbug.com/404180896): Test fails on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+
   // Separate profiles are only available in iOS 17+.
   if (!@available(iOS 17, *)) {
     return;

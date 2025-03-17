@@ -438,6 +438,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/test:test_support",
     "//ios/web/common:user_agent",

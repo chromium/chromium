@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.components.page_info;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -15,6 +18,9 @@ import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -29,6 +35,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** View showing a toggle and a description for third-party cookie blocking for a site. */
+@NullMarked
 public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String COOKIE_SWITCH_PREFERENCE = "cookie_switch";
@@ -45,11 +52,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
-    private Dialog mConfirmationDialog;
+    private @Nullable Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
-    private CharSequence mHostName;
-    private RwsCookieInfo mRwsInfo;
+    private @Nullable CharSequence mHostName;
     private boolean mIsModeBUi;
     private boolean mBlockAll3pc;
     private boolean mIsIncognito;
@@ -59,46 +65,72 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private int mDaysUntilExpirationForTesting;
 
     /** Parameters to configure the cookie controls view. */
-    public static class PageInfoCookiesViewParams {
+    static class PageInfoCookiesViewParams {
         // Called when the toggle controlling third-party cookie blocking changes.
-        public boolean thirdPartyCookieBlockingEnabled;
-        public Callback<Boolean> onThirdPartyCookieToggleChanged;
-        public Runnable onClearCallback;
-        public Runnable onCookieSettingsLinkClicked;
-        public Callback<Activity> onFeedbackLinkClicked;
-        public boolean disableCookieDeletion;
-        public CharSequence hostName;
+        public final boolean thirdPartyCookieBlockingEnabled;
+        public final Callback<Boolean> onThirdPartyCookieToggleChanged;
+        public final Runnable onClearCallback;
+        public final Runnable onCookieSettingsLinkClicked;
+        public final Callback<Activity> onFeedbackLinkClicked;
+        public final boolean disableCookieDeletion;
+        public final CharSequence hostName;
         // Block all third-party cookies when Tracking Protection is on.
-        public boolean blockAll3pc;
-        public boolean isIncognito;
-        public boolean isModeBUi;
-        public boolean fixedExpirationForTesting;
-        public int daysUntilExpirationForTesting;
+        public final boolean blockAll3pc;
+        public final boolean isIncognito;
+        public final boolean isModeBUi;
+        public final boolean fixedExpirationForTesting;
+        public final int daysUntilExpirationForTesting;
+
+        public PageInfoCookiesViewParams(
+                boolean thirdPartyCookieBlockingEnabled,
+                Callback<Boolean> onThirdPartyCookieToggleChanged,
+                Runnable onClearCallback,
+                Runnable onCookieSettingsLinkClicked,
+                Callback<Activity> onFeedbackLinkClicked,
+                boolean disableCookieDeletion,
+                CharSequence hostName,
+                boolean blockAll3pc,
+                boolean isIncognito,
+                boolean isModeBUi,
+                boolean fixedExpirationForTesting,
+                int daysUntilExpirationForTesting) {
+            this.thirdPartyCookieBlockingEnabled = thirdPartyCookieBlockingEnabled;
+            this.onThirdPartyCookieToggleChanged = onThirdPartyCookieToggleChanged;
+            this.onClearCallback = onClearCallback;
+            this.onCookieSettingsLinkClicked = onCookieSettingsLinkClicked;
+            this.onFeedbackLinkClicked = onFeedbackLinkClicked;
+            this.disableCookieDeletion = disableCookieDeletion;
+            this.hostName = hostName;
+            this.blockAll3pc = blockAll3pc;
+            this.isIncognito = isIncognito;
+            this.isModeBUi = isModeBUi;
+            this.fixedExpirationForTesting = fixedExpirationForTesting;
+            this.daysUntilExpirationForTesting = daysUntilExpirationForTesting;
+        }
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         // Remove this Preference if it is restored without SiteSettingsDelegate.
         if (!hasSiteSettingsDelegate()) {
             getParentFragmentManager().beginTransaction().remove(this).commit();
+            // Appease NullAway.
+            assumeNonNull(mRwsInUse);
             return;
         }
         SettingsUtils.addPreferencesFromResource(this, R.xml.page_info_cookie_preference);
-        mCookieSwitch = findPreference(COOKIE_SWITCH_PREFERENCE);
-        mCookieInUse = findPreference(COOKIE_IN_USE_PREFERENCE);
-        mRwsInUse = findPreference(RWS_IN_USE_PREFERENCE);
+        mCookieSwitch = assertNonNull(findPreference(COOKIE_SWITCH_PREFERENCE));
+        mCookieInUse = assertNonNull(findPreference(COOKIE_IN_USE_PREFERENCE));
+        mRwsInUse = assertNonNull(findPreference(RWS_IN_USE_PREFERENCE));
         mRwsInUse.setVisible(false);
-        mThirdPartyCookiesTitle = findPreference(TPC_TITLE);
-        mThirdPartyCookiesSummary = findPreference(TPC_SUMMARY);
+        mThirdPartyCookiesTitle = assertNonNull(findPreference(TPC_TITLE));
+        mThirdPartyCookiesSummary = assertNonNull(findPreference(TPC_SUMMARY));
         // Set accessibility properties on the region that will change with the toggle.
         // Two a11y live regions don't work at the same time. Using a workaround of setting the
         // content description for both the title and the summary on one of them.
         // See crbug.com/388844792 for more background.
         updateContentDescriptionsForA11y();
-        if (mThirdPartyCookiesSummary != null) {
-            mThirdPartyCookiesSummary.setAccessibilityLiveRegion(
-                    View.ACCESSIBILITY_LIVE_REGION_POLITE);
-        }
+        mThirdPartyCookiesSummary.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
     }
 
     @Override
@@ -113,14 +145,20 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         return getContext().getResources().getQuantityString(resId, count, count);
     }
 
-    public void setParams(PageInfoCookiesViewParams params) {
+    /**
+     * @param delegate {@link PageInfoControllerDelegate} for showing filtered RWS (Related Website
+     *     Sets) in settings.
+     */
+    @Initializer
+    public void setParams(PageInfoCookiesViewParams params, PageInfoControllerDelegate delegate) {
+        mPageInfoControllerDelegate = delegate;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         mFixedExpirationForTesting = params.fixedExpirationForTesting;
         mBlockAll3pc = params.blockAll3pc;
         mIsIncognito = params.isIncognito;
         mIsModeBUi = params.isModeBUi;
         mDaysUntilExpirationForTesting = params.daysUntilExpirationForTesting;
-        Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
+        Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
         ChromeClickableSpan linkSpan =
                 new ChromeClickableSpan(
                         getContext(),
@@ -203,7 +241,8 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             // Hide all the 3PC controls.
             mCookieSwitch.setVisible(false);
             mThirdPartyCookiesTitle.setVisible(false);
-            findPreference(COOKIE_SUMMARY_PREFERENCE).setVisible(false);
+            Preference cookieSummary = assertNonNull(findPreference(COOKIE_SUMMARY_PREFERENCE));
+            cookieSummary.setVisible(false);
             ChromeClickableSpan linkSpan =
                     new ChromeClickableSpan(
                             getContext(),
@@ -301,23 +340,14 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     /**
-     * @param delegate {@link PageInfoControllerDelegate} for showing filtered RWS (Related Website
-     *     Sets) in settings.
-     */
-    public void setPageInfoDelegate(PageInfoControllerDelegate delegate) {
-        mPageInfoControllerDelegate = delegate;
-    }
-
-    /**
      * Returns a boolean indicating if the RWS info has been shown or not.
      *
      * @param rwsInfo Related Website Sets info to show.
      * @param currentOrigin PageInfo current origin.
      * @return a boolean indicating if the RWS info has been shown or not.
      */
-    public boolean maybeShowRwsInfo(RwsCookieInfo rwsInfo, String currentOrigin) {
-        mRwsInfo = rwsInfo;
-        if (rwsInfo == null || mRwsInUse == null) {
+    public boolean maybeShowRwsInfo(@Nullable RwsCookieInfo rwsInfo, String currentOrigin) {
+        if (rwsInfo == null) {
             return false;
         }
 
@@ -348,7 +378,7 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             rwsInfo.getOwner()));
             mRwsInUse.setOnPreferenceClickListener(
                     preference -> {
-                        Website currentWebsite = mRwsInfo.findWebsiteForOrigin(currentOrigin);
+                        Website currentWebsite = rwsInfo.findWebsiteForOrigin(currentOrigin);
                         if (currentWebsite != null) {
                             mPageInfoControllerDelegate.showSiteSettings(currentWebsite);
                         }
@@ -394,7 +424,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
     // TODO(crbug.com/388844792): Revert back to two live regions once that's supported.
     private void updateContentDescriptionsForA11y() {
-        if (mThirdPartyCookiesTitle == null || mThirdPartyCookiesSummary == null) return;
         // Combine both the title and the summary into a content description inside of a single a11y
         // live region.
         mThirdPartyCookiesTitle.setTitleContentDescription("");

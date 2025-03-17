@@ -219,6 +219,11 @@
       </message>
     </if>
 
+    <!-- QWAC Certificate Info strings -->
+    <message name="IDS_PAGE_INFO_QWAC_STATUS_TITLE" desc="The text of the title of the Page Info row that shows EU Qualified Certificate status.">
+      EU Qualified Status
+    </message>
+
     <!-- Certificate Info strings -->
     <if expr="is_android">
     <!-- Only used in the dialog shown after tapping "Details" in page info -->

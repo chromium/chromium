@@ -84,4 +84,9 @@ OptimizationGuideModelStreamingExecutionResult::
     OptimizationGuideModelStreamingExecutionResult(
         OptimizationGuideModelStreamingExecutionResult&& src) = default;
 
+on_device_model::Capabilities
+OptimizationGuideModelExecutor::GetOnDeviceCapabilities() {
+  return {};
+}
+
 }  // namespace optimization_guide

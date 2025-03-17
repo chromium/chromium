@@ -61,6 +61,7 @@
 #include "components/sync_sessions/synced_session.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -448,9 +449,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
                                      user_manager::UserType::kRegular);
     fake_user_manager()->UserLoggedIn(
         account_id_,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        user_manager::TestHelper::GetFakeUsernameHash(account_id_));
     CoreAccountInfo account_info;
     account_info.email = kTestAccount;
     account_info.gaia = GaiaId("gaia");
@@ -2331,9 +2330,7 @@ class FloatingWorkspaceServiceMultiUserTest
                                      user_manager::UserType::kRegular);
     fake_user_manager()->UserLoggedIn(
         account_id2_,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id2_),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        user_manager::TestHelper::GetFakeUsernameHash(account_id2_));
     CoreAccountInfo account_info;
     account_info.email = kTestAccount2;
     account_info.gaia = GaiaId("gaia2");

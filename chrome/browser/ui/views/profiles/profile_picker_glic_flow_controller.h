@@ -6,13 +6,17 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_GLIC_FLOW_CONTROLLER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
 
 // Profile management flow controller that will run the Glic version of the
 // Profile Picker.
-class ProfilePickerGlicFlowController : public ProfileManagementFlowController {
+class ProfilePickerGlicFlowController
+    : public ProfileManagementFlowController,
+      public signin::IdentityManager::Observer {
  public:
   // `picked_profile_callback` will always be called, and may be called with
   // a nullptr profile in case the profile failed to load or the `host` was
@@ -39,14 +43,30 @@ class ProfilePickerGlicFlowController : public ProfileManagementFlowController {
   // ProfileManagementFlowController:
   void CancelPostSignInFlow() override;
 
-  // Callback after loading the picked profile.
+  // signin::IdentityManager::Observer:
+  void OnRefreshTokensLoaded() override;
+
+  // Callback after loading the picked profile. Prepares `loaded_profile_` and
+  // attempts to exit the flow with the loaded profile.
   void OnPickedProfileLoaded(Profile* profile);
+
+  // Returns `loaded_profile_` through `picked_profile_callback_` while ensuring
+  // that the refresh tokens are loaded.
+  void ExitFlowWithLoadedProfile();
 
   // Makes sure to clear the current flow and return a nullptr profile to the
   // callback.
   void Clear();
 
   base::OnceCallback<void(Profile*)> picked_profile_callback_;
+
+  // This value is only set between the time the picked profile is loaded and it
+  // is sent through `picked_profile_callback_`. It is nullptr otherwise.
+  raw_ptr<Profile> loaded_profile_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_GLIC_FLOW_CONTROLLER_H_

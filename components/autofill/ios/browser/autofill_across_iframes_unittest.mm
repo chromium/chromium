@@ -18,6 +18,7 @@
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_data_test_api.h"
 #import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -1219,6 +1220,134 @@ TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm) {
               UnorderedElementsAre(
                   Property(&FormFieldData::global_id, field_global_ids[0]),
                   Property(&FormFieldData::global_id, field_global_ids[1])));
+}
+
+// Tests that that XHR submission can be detected when it happens in a child
+// frame.
+TEST_F(AutofillAcrossIframesTest, SubmitMultiFrameForm_XHR) {
+  // Enable the feature for fixing XHR with autofill across iframes. Disable
+  // the form scans triggered by the forest to test the feature in the same
+  // state autofill across iframes is currently in production.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kAutofillFixXhrForXframe},
+      {features::kAutofillAcrossIframesIosTriggerFormExtraction});
+
+  const std::u16string kNamePlaceholder = u"Name";
+  const std::u16string kFakeName = u"Bob Bobbertson";
+  const std::u16string kPhonePlaceholder = u"Phone";
+  const std::u16string kFakePhone = u"18005551234";
+
+  AddIframe("cf1", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToUTF8(kNamePlaceholder) + "\"></form>");
+  AddIframe("cf2", "<form><input type=\"text\" placeholder=\"" +
+                       base::UTF16ToUTF8(kPhonePlaceholder) + "\"></form>");
+  StartTestServerAndLoad();
+
+  // Wait for the 3 forms seen in the main frame. Each registration will report
+  // forms seen (for a total of 2) and the extracting forms in the main frame
+  // itself will report forms seen one time, for grand total of 3 forms seen
+  // events.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(3));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 3u);
+
+  // Pick the last form that was seen which reflects the latest and most
+  // complete state of the browser form.
+  const FormData& browser_form = main_frame_manager().seen_forms().back();
+  ASSERT_EQ(browser_form.child_frames().size(), 2u);
+  ASSERT_EQ(browser_form.fields().size(), 2u);
+
+  std::vector<FieldGlobalId> field_global_ids(browser_form.fields().size());
+  std::ranges::transform(
+      browser_form.fields(), field_global_ids.begin(),
+      [](const FormFieldData& field) { return field.global_id(); });
+
+  std::set frames = web_frames_manager()->GetAllWebFrames();
+
+  // Part 1: Test that removing a renderer form (living in a child frame) that
+  // the user interacted with will trigger a XHR submission for the browser form
+  // (living in the main frame).
+
+  // Pick a child frame.
+  auto child_frame_it =
+      std::ranges::find(frames, false, &web::WebFrame::IsMainFrame);
+  ASSERT_NE(frames.end(), child_frame_it);
+  web::WebFrame* child_frame_1 = *child_frame_it;
+  AutofillDriverIOS* child_frame_driver = GetDriverForFrame(child_frame_1);
+  auto& child_frame_autofill_manager = static_cast<TestAutofillManager&>(
+      child_frame_driver->GetAutofillManager());
+
+  // Get the renderer form from that child frame. Empty the forms seen queue.
+  ASSERT_TRUE(child_frame_autofill_manager.WaitForFormsSeen(1));
+
+  ASSERT_EQ(child_frame_autofill_manager.seen_forms().size(), 1u);
+  const FormData& renderer_form =
+      child_frame_autofill_manager.seen_forms().back();
+  ASSERT_THAT(renderer_form.child_frames(), SizeIs(0u));
+  ASSERT_THAT(renderer_form.fields(), SizeIs(1u));
+
+  // Report a text value change on the renderer form in the child frame.
+  child_frame_driver->TextFieldValueChanged(
+      renderer_form, renderer_form.fields()[0].global_id(),
+      base::TimeTicks::Now());
+
+  // Wait for the text change event to propagate to the browser form.
+  ASSERT_TRUE(main_frame_manager().WaitOnTextFieldValueChanged(1));
+  ASSERT_THAT(main_frame_manager().text_filled_did_change_forms(), SizeIs(1));
+
+  // Also report a text change event on the other child frame. This will be
+  // used for that Part 2 of the test but has to be done here before triggering
+  // form submission.
+  auto child_frame_2_it = std::ranges::find_if(frames, [&](const auto* frame) {
+    return frame != child_frame_1 && !frame->IsMainFrame();
+  });
+  ASSERT_NE(frames.end(), child_frame_2_it);
+  web::WebFrame* child_frame_2 = *child_frame_it;
+  AutofillDriverIOS* child_frame_2_driver = GetDriverForFrame(child_frame_2);
+  child_frame_2_driver->TextFieldValueChanged(
+      renderer_form, renderer_form.fields()[0].global_id(),
+      base::TimeTicks::Now());
+  // Wait for the text change event to propagate to the browser form.
+  ASSERT_TRUE(main_frame_manager().WaitOnTextFieldValueChanged(1));
+  ASSERT_THAT(main_frame_manager().text_filled_did_change_forms(), SizeIs(2));
+
+  // Report forms removed in the child frame so it triggers XHR.
+  child_frame_driver->FormsRemoved(
+      /*removed_forms=*/{renderer_form.renderer_id()},
+      /*removed_unowned_fields=*/{});
+
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSeen(1));
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 4u);
+
+  // Wait on the XHR submit event to propagate to the main frame hosting the
+  // xframe browser form.
+  ASSERT_TRUE(main_frame_manager().WaitForFormsSubmitted(1));
+  ASSERT_EQ(main_frame_manager().submitted_forms().size(), 1u);
+
+  // Verify that the submitted form represent the browser form across frames.
+  const FormData& submitted_form = main_frame_manager().submitted_forms()[0];
+  EXPECT_THAT(submitted_form.fields(),
+              UnorderedElementsAre(
+                  Property(&FormFieldData::global_id, field_global_ids[0]),
+                  Property(&FormFieldData::global_id, field_global_ids[1])));
+
+  // Part 2: Test that XHR submission isn't double reported if the user hasn't
+  // interacted with another renderer form after XHR submission was detected.
+
+  child_frame_2_driver->FormsRemoved(
+      /*removed_forms=*/{renderer_form.renderer_id()},
+      /*removed_unowned_fields=*/{});
+
+  // Verify that the forms seen count remains the same as the browser form
+  // was completely deleted which will result in not calling FormsSeen on the
+  // manager.
+  ASSERT_EQ(main_frame_manager().seen_forms().size(), 4u);
+
+  // There still should be only one submit form event since the second form
+  // removal didn't trigger a XHR submission despite that the user had
+  // interacted with that form in the past. This is to verity if the anti spam
+  // mechanism works.
+  ASSERT_EQ(main_frame_manager().submitted_forms().size(), 1u);
 }
 
 // Tests that, when asked for, there is a query made to retrive fill data for

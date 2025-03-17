@@ -117,6 +117,19 @@ Seldom-updated directories may have exceptions to the "substantiality" and
 Directories in `//third_party` should list those most familiar with the
 library, regardless of how often the code is updated.
 
+#### Addition of new OWNERS
+
+New OWNERS are added by consensus of the existing OWNERS.
+
+Some directories have more well-defined processes for updating their OWNERS
+file which will be documented at the top of the OWNERS file itself (such as in
+[blink/renderer/](../third_party/blink/renderer/OWNERS)).
+
+CLs for modifying OWNERS files should cc all other OWNERS for awareness (unless
+another awareness mechanism exists), and concerns may be raised even after
+the change has landed. Any disagreements should be escalated up to higher-level
+directory OWNERS or up to top-level [ATL_OWNERS](../ATL_OWNERS).
+
 #### Removal of owners
 
 If a code owner is not meeting the [expectations of
@@ -136,7 +149,7 @@ the following process:
       be escalated to the owners of the parent directory (or directories)
       as necessary to provide enough votes.
     * If there are objections, then the decision should be escalated to
-      the [../ATL_OWNERS](../ATL_OWNERS) for resolution.
+      the [ATL_OWNERS](../ATL_OWNERS) for resolution.
 
 Note: For the purpose of not slowing down code review, Chromium removes
 inactive owners (e.g., those who made no contributions for multiple quarters)

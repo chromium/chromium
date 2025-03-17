@@ -44,6 +44,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -359,11 +360,10 @@ class SmartLockServiceTest : public testing::Test {
 
  private:
   void SetPrimaryUserLoggedIn() {
-    const user_manager::User* user =
-        fake_user_manager_->AddPublicAccountUser(account_id_);
-    fake_user_manager_->UserLoggedIn(account_id_, user->username_hash(),
-                                     false /* browser_restart */,
-                                     false /* is_child */);
+    fake_user_manager_->AddPublicAccountUser(account_id_);
+    fake_user_manager_->UserLoggedIn(
+        account_id_,
+        user_manager::TestHelper::GetFakeUsernameHash(account_id_));
   }
 };
 

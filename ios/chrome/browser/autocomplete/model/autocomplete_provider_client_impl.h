@@ -105,6 +105,10 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   void CloseIncognitoWindows() override {}
   void PromptPageTranslation() override {}
   void OpenLensOverlay() override {}
+  void IssueContextualSearchRequest(
+      const GURL& destination_url,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion) override {}
 
  private:
   raw_ptr<ProfileIOS> profile_;

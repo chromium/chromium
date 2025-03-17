@@ -17,7 +17,7 @@ import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {FocusedTabCandidate as FocusedTabCandidateMojo, FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, InvalidCandidateError as MojoInvalidCandidateError, NoCandidateTabError as MojoNoCandidateTabError, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
-import {WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
+import {WebClientHandlerRemote, WebClientMode, WebClientReceiver, WebClientSizingMode} from '../glic.mojom-webui.js';
 import type {ActInFocusedTabParams, DraggableArea, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
 import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, GetTabContextErrorReason, InvalidCandidateError, NoCandidateTabError, ScrollToErrorReason} from '../glic_api/glic_api.js';
 
@@ -145,6 +145,13 @@ class WebClientImpl implements WebClientInterface {
         });
   }
 
+  notifyOsLocationPermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyOsLocationPermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
+
   notifyFocusedTabChanged(focusedTabData: (FocusedTabDataMojo)): void {
     const extras = new ResponseExtras();
     this.sender.requestNoResponse(
@@ -196,8 +203,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           patch: chromeVersion[3] || 0,
         },
         scrollToEnabled: loadTimeData.getBoolean('enableScrollTo'),
-        actInFocusedTabEnabled: loadTimeData.getBoolean('enableActInFocusedTab'),
+        actInFocusedTabEnabled:
+            loadTimeData.getBoolean('enableActInFocusedTab'),
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
+        fitWindow: initialState.sizingMode === WebClientSizingMode.kFitWindow,
       }),
     };
   }
@@ -457,6 +466,9 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   glicBrowserOpenOsPermissionSettingsMenu(request: {permission: string}) {
+    // Warning: calling openOsPermissionSettingsMenu with unsupported content
+    // setting type will terminate the render process (bad mojo message). Update
+    // GlicWebClientHandler:OpenOsPermissionSettingsMenu with any new types.
     switch (request.permission) {
       case 'media':
         return this.handler.openOsPermissionSettingsMenu(
@@ -466,6 +478,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
             ContentSettingsType.GEOLOCATION);
     }
     return Promise.resolve();
+  }
+
+  glicBrowserGetOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
+    return this.handler.getOsMicrophonePermissionStatus();
   }
 }
 
@@ -490,7 +506,10 @@ class OneShotTimer {
   // Cancels any running timer, starts a new one. Callback is only
   // run if the timer is not reset first.
   start(callback: () => void): void {
-    this.startPromise().then(callback);
+    this.startPromise().then(callback).catch(
+        () => {
+            // Catch and ignore timer reset.
+        });
   }
 
   // Cancels any running timer, starts a new one. Resolves when
@@ -612,7 +631,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
           const timeoutPromise = new Promise((_, reject) => {
             timeoutId = setTimeout(
                 () => reject(
-                    new Error('No response received within the timeout.')),
+                    new Error('No response received from Glic web client.')),
                 timeoutMs);
           });
 
@@ -642,11 +661,12 @@ export class GlicApiHost implements PostMessageRequestHandler {
     }
   }
 
-  async startUnresponsiveUiTimer() {
-    await this.webClientUnresponsiveUiTimer.startPromise();
-    this.webClientState = WebClientState.ERROR;
-    this.embedder?.webClientStateChanged(WebClientState.ERROR);
-    this.stopWebClientResponsivenessCheck();
+  startUnresponsiveUiTimer() {
+    this.webClientUnresponsiveUiTimer.start(() => {
+      this.webClientState = WebClientState.ERROR;
+      this.embedder?.webClientStateChanged(WebClientState.ERROR);
+      this.stopWebClientResponsivenessCheck();
+    });
   }
 
   stopUnresponsiveUiTimer() {

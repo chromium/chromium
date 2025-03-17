@@ -362,9 +362,7 @@ class BocaAppPageHandlerTest : public testing::Test {
                                     user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
     auto* browser_context =
         browser_context_helper_delegate_ptr->CreateBrowserContext(
             browser_context_helper_delegate_ptr->GetUserDataDir()->AppendASCII(
@@ -732,14 +730,10 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
         auto* activity_1 = device_1.mutable_activity();
         activity_1->mutable_active_tab()->set_title("google");
         ::boca::StudentDevice device_11;
-        auto* activity_11 = device_11.mutable_activity();
-        activity_11->mutable_active_tab()->set_title("google1");
-        device_11.mutable_view_screen_config()
-            ->mutable_connection_param()
-            ->set_connection_code("abcd");
+        device_1.set_state(::boca::StudentDevice::INACTIVE);
+
         (*status_1.mutable_devices())["device1"] = std::move(device_1);
-        (*status_1.mutable_devices())["device11"] = std::move(device_11);
-        (*student_statuses)["000"] = std::move(status_1);
+        (*student_statuses)["111"] = std::move(status_1);
 
         request->callback().Run(std::move(session));
       })));
@@ -788,7 +782,9 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   EXPECT_EQ("http://data/image", result->on_task_config->tabs[0]->tab->favicon);
 
   auto activities = std::move(result0->activities);
-  EXPECT_EQ(2u, activities.size());
+  EXPECT_EQ(1u, activities.size());
+  EXPECT_FALSE(activities[0]->activity->is_active);
+  EXPECT_EQ("google", activities[0]->activity->active_tab);
 }
 
 TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
@@ -1572,25 +1568,23 @@ TEST_F(BocaAppPageHandlerTest, UpdateEmptyStudentActivitySucceed) {
   ASSERT_TRUE(result.empty());
 }
 
-TEST_F(BocaAppPageHandlerTest, DISABLED_UpdateNonEmptyStudentActivitySucceed) {
+TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   std::map<std::string, ::boca::StudentStatus> activities;
   ::boca::StudentStatus status_1;
   status_1.set_state(::boca::StudentStatus::ACTIVE);
   ::boca::StudentDevice device_1;
   auto* activity_1 = device_1.mutable_activity();
   activity_1->mutable_active_tab()->set_title("google");
-  ::boca::StudentDevice device_11;
-  auto* activity_11 = device_11.mutable_activity();
-  activity_11->mutable_active_tab()->set_title("google1");
-  device_11.mutable_view_screen_config()
+  device_1.set_state(::boca::StudentDevice::INACTIVE);
+  device_1.mutable_view_screen_config()
       ->mutable_connection_param()
       ->set_connection_code("abcd");
   (*status_1.mutable_devices())["device1"] = std::move(device_1);
-  (*status_1.mutable_devices())["device11"] = std::move(device_11);
 
   ::boca::StudentStatus status_2;
   status_2.set_state(::boca::StudentStatus::ADDED);
   ::boca::StudentDevice device_2;
+  device_2.set_state(::boca::StudentDevice::ACTIVE);
   auto* activity_2 = device_2.mutable_activity();
   activity_2->mutable_active_tab()->set_title("youtube");
   (*status_2.mutable_devices())["device2"] = std::move(device_2);
@@ -1602,28 +1596,17 @@ TEST_F(BocaAppPageHandlerTest, DISABLED_UpdateNonEmptyStudentActivitySucceed) {
   fake_page()->SetActivityInterceptorCallback(future.GetCallback());
   boca_app_handler()->OnConsumerActivityUpdated(activities);
   auto result = future.Take();
-  EXPECT_EQ(3u, result.size());
-  // Verify multiple devices are both added.
+  EXPECT_EQ(2u, result.size());
+  // Verify only first device added.
   EXPECT_EQ("1", result[0]->id);
-  EXPECT_TRUE(result[0]->activity->is_active);
-  EXPECT_EQ("1", result[1]->id);
-  EXPECT_TRUE(result[1]->activity->is_active);
-
-  std::vector<std::string> tabs = {"google", "google1"};
-  // The order shouldn't matter.
-  EXPECT_TRUE(std::find(tabs.begin(), tabs.end(),
-                        result[0]->activity->active_tab) != tabs.end());
-  EXPECT_TRUE(std::find(tabs.begin(), tabs.end(),
-                        result[1]->activity->active_tab) != tabs.end());
-
-  EXPECT_EQ("2", result[2]->id);
-  EXPECT_EQ("youtube", result[2]->activity->active_tab);
-  EXPECT_FALSE(result[2]->activity->is_active);
-
+  EXPECT_FALSE(result[0]->activity->is_active);
+  EXPECT_EQ("google", result[0]->activity->active_tab);
   // Connection code should be set
   EXPECT_EQ("abcd", result[0]->activity->view_screen_session_code);
-  EXPECT_EQ("", result[1]->activity->view_screen_session_code);
-  EXPECT_EQ("", result[2]->activity->view_screen_session_code);
+
+  EXPECT_EQ("2", result[1]->id);
+  EXPECT_EQ("youtube", result[1]->activity->active_tab);
+  EXPECT_TRUE(result[1]->activity->is_active);
 }
 
 TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {

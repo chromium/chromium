@@ -234,6 +234,7 @@ ci.builder(
         configs = [
             "android_builder",
             "debug_static_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "arm64",
             "webview_google",

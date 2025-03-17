@@ -17,10 +17,6 @@
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-#include "media/mojo/clients/mojo_stable_video_decoder.h"
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
 namespace media {
 
 namespace {
@@ -79,34 +75,9 @@ void MojoDecoderFactory::CreateVideoDecoders(
     const gfx::ColorSpace& target_color_space,
     std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) {
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
-
-#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  switch (GetOutOfProcessVideoDecodingMode()) {
-    case OOPVDMode::kEnabledWithoutGpuProcessAsProxy: {
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-          stable_video_decoder_remote;
-      interface_factory_->CreateStableVideoDecoder(
-          stable_video_decoder_remote.InitWithNewPipeAndPassReceiver());
-
-      video_decoders->push_back(std::make_unique<MojoStableVideoDecoder>(
-          task_runner, gpu_factories, media_log,
-          std::move(stable_video_decoder_remote)));
-      break;
-    }
-    case OOPVDMode::kEnabledWithGpuProcessAsProxy:
-    case OOPVDMode::kDisabled:
-      CreateMojoVideoDecoder(interface_factory_, std::move(task_runner),
-                             gpu_factories, media_log,
-                             std::move(request_overlay_info_cb),
-                             target_color_space, video_decoders);
-      break;
-  }
-#else
   CreateMojoVideoDecoder(
       interface_factory_, std::move(task_runner), gpu_factories, media_log,
       std::move(request_overlay_info_cb), target_color_space, video_decoders);
-#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 }
 

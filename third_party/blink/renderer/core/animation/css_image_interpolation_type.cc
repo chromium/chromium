@@ -36,11 +36,17 @@ const StyleImage* GetStyleImage(const CSSProperty& property,
 
 class CSSImageNonInterpolableValue final : public NonInterpolableValue {
  public:
+  CSSImageNonInterpolableValue(CSSValue* start, CSSValue* end)
+      : start_(start), end_(end), is_single_(start_ == end_) {
+    DCHECK(start_);
+    DCHECK(end_);
+  }
   ~CSSImageNonInterpolableValue() final = default;
 
-  static scoped_refptr<CSSImageNonInterpolableValue> Create(CSSValue* start,
-                                                            CSSValue* end) {
-    return base::AdoptRef(new CSSImageNonInterpolableValue(start, end));
+  void Trace(Visitor* visitor) const override {
+    NonInterpolableValue::Trace(visitor);
+    visitor->Trace(start_);
+    visitor->Trace(end_);
   }
 
   bool IsSingle() const { return is_single_; }
@@ -49,9 +55,8 @@ class CSSImageNonInterpolableValue final : public NonInterpolableValue {
            base::ValuesEquivalent(end_, other.end_);
   }
 
-  static scoped_refptr<CSSImageNonInterpolableValue> Merge(
-      scoped_refptr<const NonInterpolableValue> start,
-      scoped_refptr<const NonInterpolableValue> end);
+  static CSSImageNonInterpolableValue* Merge(const NonInterpolableValue* start,
+                                             const NonInterpolableValue* end);
 
   CSSValue* Crossfade(double progress) const {
     if (is_single_ || progress <= 0)
@@ -70,14 +75,8 @@ class CSSImageNonInterpolableValue final : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSImageNonInterpolableValue(CSSValue* start, CSSValue* end)
-      : start_(start), end_(end), is_single_(start_ == end_) {
-    DCHECK(start_);
-    DCHECK(end_);
-  }
-
-  Persistent<CSSValue> start_;
-  Persistent<CSSValue> end_;
+  Member<CSSValue> start_;
+  Member<CSSValue> end_;
   const bool is_single_;
 };
 
@@ -92,14 +91,15 @@ struct DowncastTraits<CSSImageNonInterpolableValue> {
   }
 };
 
-scoped_refptr<CSSImageNonInterpolableValue> CSSImageNonInterpolableValue::Merge(
-    scoped_refptr<const NonInterpolableValue> start,
-    scoped_refptr<const NonInterpolableValue> end) {
+CSSImageNonInterpolableValue* CSSImageNonInterpolableValue::Merge(
+    const NonInterpolableValue* start,
+    const NonInterpolableValue* end) {
   const auto& start_image_pair = To<CSSImageNonInterpolableValue>(*start);
   const auto& end_image_pair = To<CSSImageNonInterpolableValue>(*end);
   DCHECK(start_image_pair.is_single_);
   DCHECK(end_image_pair.is_single_);
-  return Create(start_image_pair.start_, end_image_pair.end_);
+  return MakeGarbageCollected<CSSImageNonInterpolableValue>(
+      start_image_pair.start_, end_image_pair.end_);
 }
 
 InterpolationValue CSSImageInterpolationType::MaybeConvertStyleImage(
@@ -113,9 +113,10 @@ InterpolationValue CSSImageInterpolationType::MaybeConvertCSSValue(
     bool accept_gradients) {
   if (value.IsImageValue() || (value.IsGradientValue() && accept_gradients)) {
     CSSValue* refable_css_value = const_cast<CSSValue*>(&value);
-    return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(1),
-                              CSSImageNonInterpolableValue::Create(
-                                  refable_css_value, refable_css_value));
+    return InterpolationValue(
+        MakeGarbageCollected<InterpolableNumber>(1),
+        MakeGarbageCollected<CSSImageNonInterpolableValue>(refable_css_value,
+                                                           refable_css_value));
   }
   return nullptr;
 }
@@ -197,8 +198,8 @@ class UnderlyingImageChecker final
     return underlying_->underlying().interpolable_value->Equals(
                *underlying.interpolable_value) &&
            CSSImageInterpolationType::EqualNonInterpolableValues(
-               underlying_->underlying().non_interpolable_value.get(),
-               underlying.non_interpolable_value.get());
+               underlying_->underlying().non_interpolable_value.Get(),
+               underlying.non_interpolable_value.Get());
   }
 
   const Member<InterpolationValueGCed> underlying_;

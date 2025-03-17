@@ -118,6 +118,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/upload_list/upload_list.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
@@ -1077,10 +1078,10 @@ class DeviceStatusCollectorTest : public testing::Test {
     testing_profile_ = profile_builder.Build();
 
     auto* user_manager = GetFakeChromeUserManager();
-    auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+    user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, is_affiliated, user_type, testing_profile_.get());
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
+    user_manager->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   void MockRegularUserWithAffiliation(const AccountId& account_id,
@@ -1113,9 +1114,8 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
     SetDeviceLocalAccountsForTesting(&owner_settings_service_, {account});
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false,
-                               /*is_child=*/false);
+    user_manager->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   std::unique_ptr<ScopedChromeOSVersionInfo> MockPlatformVersion(
@@ -1553,10 +1553,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
   const AccountId public_account_id(AccountId::FromUserEmail(
       "public@public-accounts.device-local.localhost"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddPublicAccountUser(public_account_id);
-  user_manager->UserLoggedIn(public_account_id, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddPublicAccountUser(public_account_id);
+  user_manager->UserLoggedIn(
+      public_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(public_account_id));
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1580,10 +1580,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   const AccountId public_account_id(
       AccountId::FromUserEmail("public@web-kiosk-apps.device-local.localhost"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddPublicAccountUser(public_account_id);
-  user_manager->UserLoggedIn(public_account_id, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddPublicAccountUser(public_account_id);
+  user_manager->UserLoggedIn(
+      public_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(public_account_id));
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1607,10 +1607,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
   const AccountId kiosk_account_id(AccountId::FromUserEmail(
       "public@isolated-kiosk-apps.device-local.localhost"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddPublicAccountUser(kiosk_account_id);
-  user_manager->UserLoggedIn(kiosk_account_id, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddPublicAccountUser(kiosk_account_id);
+  user_manager->UserLoggedIn(
+      kiosk_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(kiosk_account_id));
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1633,11 +1633,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
       ash::kReportDeviceUsers, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
   EXPECT_TRUE(status_collector_->IsReportingUsers());
@@ -1674,11 +1673,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
       ash::kReportDeviceUsers, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1868,41 +1866,35 @@ TEST_F(DeviceStatusCollectorTest, ReportUsers) {
   const AccountId account_id5(AccountId::FromUserEmail("user5@managed.com"));
 
   auto* user_manager = GetFakeChromeUserManager();
-  auto* public_user = user_manager->AddPublicAccountUser(public_account_id);
-  user_manager->UserLoggedIn(public_account_id, public_user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddPublicAccountUser(public_account_id);
+  user_manager->UserLoggedIn(
+      public_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(public_account_id));
 
-  auto* user0 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user0->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user1 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id1, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id1, user1->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user2 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id1, user_manager::TestHelper::GetFakeUsernameHash(account_id1));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id2, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id2, user2->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user3 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id2, user_manager::TestHelper::GetFakeUsernameHash(account_id2));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id3, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id3, user3->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user4 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id3, user_manager::TestHelper::GetFakeUsernameHash(account_id3));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id4, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id4, user4->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user5 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id4, user_manager::TestHelper::GetFakeUsernameHash(account_id4));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id5, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id5, user5->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id5, user_manager::TestHelper::GetFakeUsernameHash(account_id5));
 
   // Verify that users are reported by default.
   GetStatus();
@@ -4204,11 +4196,10 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
       ash::kReportDeviceNetworkConfiguration, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   GetStatus();
   VerifyReporting();
@@ -4220,11 +4211,10 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
       ash::kReportDeviceNetworkConfiguration, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   GetStatus();
   VerifyReporting();
@@ -4237,9 +4227,9 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddPublicAccountUser(
       AccountId::FromUserEmail(kPublicAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();
@@ -4338,9 +4328,9 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, Default) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();
@@ -4376,11 +4366,11 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfUnaffiliatedUser) {
       ash::kReportDeviceNetworkStatus, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
+
   GetStatus();
   EXPECT_EQ(0, device_status_.network_states_size());
 }
@@ -4391,11 +4381,11 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfAffiliatedUser) {
       ash::kReportDeviceNetworkStatus, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
+
   GetStatus();
   VerifyReporting();
 }
@@ -4407,9 +4397,9 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfPublicSession) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddPublicAccountUser(
       AccountId::FromUserEmail(kPublicAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();
@@ -4422,9 +4412,9 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfKioskMode) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();

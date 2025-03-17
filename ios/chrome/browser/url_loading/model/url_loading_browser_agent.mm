@@ -100,6 +100,23 @@ NOINLINE void InduceBrowserCrash(const GURL& url) {
     return;
   }
 
+#if DCHECK_IS_ON()
+  std::string use_after_free_string;
+  if (net::GetValueForKeyInQuery(url, "uaf", &use_after_free_string) &&
+      (use_after_free_string == "" || use_after_free_string == "true")) {
+    for (int i = 0; i < 1000000000; ++i) {
+      auto allocation = std::make_unique<int>();
+      volatile int* allocation_ptr = allocation.get();
+      allocation.reset();
+      // Cause a UAF.
+      [[maybe_unused]] int load = *allocation_ptr;
+    }
+
+    // If no one (gwp, asan, etc) catches the UAF, crash regardless.
+    base::ImmediateCrash();
+  }
+#endif
+
   std::string crash_string;
   if (!net::GetValueForKeyInQuery(url, "crash", &crash_string) ||
       (crash_string == "" || crash_string == "true")) {

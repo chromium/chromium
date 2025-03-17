@@ -8,12 +8,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
-#include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
@@ -26,6 +26,7 @@ class SchedulerConfigurationManagerBase;
 namespace arc {
 
 class ArcDiskSpaceMonitor;
+class ArcDlcInstaller;
 class ArcIconCacheDelegateProvider;
 class ArcPlayStoreEnabledPreferenceHandler;
 class ArcServiceManager;
@@ -103,6 +104,11 @@ class ArcServiceLauncher {
   bool expanded_property_files_ = false;
 #endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
+  // Callback invoked after the ARC DLC image has been bind-mounted
+  // successfully. This function is called after OnPrepareArcDlc() has
+  // successfully configured Upstart jobs and bind-mounted the DLC image.
+  void OnDlcImageBindMountArcPath(bool result);
+
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler>
@@ -117,9 +123,9 @@ class ArcServiceLauncher {
   const raw_ptr<ash::SchedulerConfigurationManagerBase>
       scheduler_configuration_manager_;
 
-#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
+
   base::WeakPtrFactory<ArcServiceLauncher> weak_factory_{this};
-#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 };
 
 }  // namespace arc

@@ -232,10 +232,6 @@ class WizardControllerTestBase : public ::testing::Test {
   void TearDown() override {
     wallpaper_controller_client_.reset();
     auth_events_recorder_.reset();
-    extensions::ExtensionSystem::Get(profile_)->Shutdown();
-    extensions::ExtensionSystem::Get(
-        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/false))
-        ->Shutdown();
     StatsReportingController::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
     network_portal_detector::InitializeForTesting(nullptr);

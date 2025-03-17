@@ -106,7 +106,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
   self.mediator.consumer = self.tableViewController;
   self.mediator.presenter = self;
   self.mediator.handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PriceNotificationsCommands);
+      self.browser->GetCommandDispatcher(), PriceTrackedItemsCommands);
   self.mediator.bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
   self.mediator.gaiaID = gaiaID;
@@ -285,7 +285,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 
 - (void)dismissButtonTapped {
   [HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                      PriceNotificationsCommands) hidePriceNotifications];
+                      PriceTrackedItemsCommands) hidePriceTrackedItems];
 }
 
 - (void)dismissAlertCoordinator {

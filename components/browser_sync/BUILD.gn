@@ -47,6 +47,7 @@ static_library("browser_sync") {
     "//components/prefs",
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
+    "//components/saved_tab_groups/internal:shared_tab_group_data_type_controller",
     "//components/saved_tab_groups/public",
     "//components/search_engines",
     "//components/send_tab_to_self",

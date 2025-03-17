@@ -114,4 +114,11 @@ void TestPermissionsClient::SetCanRequestDevicePermission(
   can_request_device_permission_ = can_request_device_permission;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Gets the name of the embedder.
+const std::u16string TestPermissionsClient::GetClientApplicationName() const {
+  return u"Chrome";
+}
+#endif
+
 }  // namespace permissions

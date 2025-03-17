@@ -62,9 +62,6 @@ void RecordUpgradePromoSigninStarted(
     ChromeAccountManagerService* account_manager_service,
     const base::Version& current_version);
 
-// Returns the current sign-in state of primary identity.
-IdentitySigninState GetPrimaryIdentitySigninState(ProfileIOS* profile);
-
 // Converts a SystemIdentityCapabilityResult to a Tribool.
 Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result);
 

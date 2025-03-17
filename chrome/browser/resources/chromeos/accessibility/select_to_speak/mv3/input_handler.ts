@@ -6,6 +6,8 @@ import {RectUtil} from '/common/rect_util.js';
 
 import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 
+type MessageSender = chrome.runtime.MessageSender;
+
 /**
  * Callbacks for InputHandler.
  * |canStartSelecting| returns true if the user can start selecting a region
@@ -39,13 +41,9 @@ export class InputHandler {
   private isSelectionKeyDown_: boolean;
   private keysCurrentlyDown_: Set<number>;
   private keysPressedTogether_: Set<number>;
-  private lastClearClipboardDataTime_: Date;
-  private lastReadClipboardDataTime_: Date;
   private mouseStart_: {x: number, y: number};
   private mouseEnd_: {x: number, y: number};
   private trackingMouse_: boolean;
-  static kClipboardClearMaxDelayMs: number;
-  static kClipboardReadMaxDelayMs: number;
 
   /**
    * Please keep fields in alphabetical order.
@@ -62,65 +60,14 @@ export class InputHandler {
      */
     this.keysPressedTogether_ = new Set();
 
-    /**
-     * The timestamp at which the last clipboard data clear was requested.
-     * Used to make sure we don't clear the clipboard on a user's request,
-     * but only after the clipboard was used to read selected text.
-     */
-    this.lastClearClipboardDataTime_ = new Date(0);
-
-    /**
-     * The timestamp at which clipboard data read was requested by the user
-     * doing a "read selection" keystroke on a Google Docs app. If a
-     * clipboard change event comes in within kClipboardReadMaxDelayMs,
-     * Select-to-Speak will read that text out loud.
-     */
-    this.lastReadClipboardDataTime_ = new Date(0);
-
     this.mouseStart_ = {x: 0, y: 0};
     this.mouseEnd_ = {x: 0, y: 0};
     this.trackingMouse_ = false;
   }
 
-  private clearClipboard_(): void {
-    this.lastClearClipboardDataTime_ = new Date();
-    document.execCommand('copy');
-  }
-
-  private onClipboardCopy_(evt: ClipboardEvent): void {
-    if (new Date().getTime() - this.lastClearClipboardDataTime_.getTime() <
-        InputHandler.kClipboardClearMaxDelayMs) {
-      // onClipboardPaste has just completed reading the clipboard for speech.
-      // This is used to clear the clipboard.
-      // @ts-ignore: TODO(b/270623046): clipboardData can be null.
-      evt.clipboardData.setData('text/plain', '');
-      evt.preventDefault();
-      this.lastClearClipboardDataTime_ = new Date(0);
-    }
-  }
-
-  private onClipboardDataChanged_() : void {
-    if (new Date().getTime() - this.lastReadClipboardDataTime_.getTime() <
-        InputHandler.kClipboardReadMaxDelayMs) {
-      // The data has changed, and we are ready to read it.
-      // Get it using a paste.
-      document.execCommand('paste');
-    }
-  }
-
-  private onClipboardPaste_(evt: ClipboardEvent): void {
-    if (new Date().getTime() - this.lastReadClipboardDataTime_.getTime() <
-        InputHandler.kClipboardReadMaxDelayMs) {
-      // Read the current clipboard data.
-      evt.preventDefault();
-      // @ts-ignore: TODO(b/270623046): clipboardData can be null.
-      this.callbacks_.onTextReceived(evt.clipboardData.getData('text/plain'));
-      this.lastReadClipboardDataTime_ = new Date(0);
-      // Clear the clipboard data by copying nothing (the current document).
-      // Do this in a timeout to avoid a recursive warning per
-      // https://crbug.com/363288.
-      setTimeout(() => this.clearClipboard_(), 0);
-    }
+  private onClipboardPaste_(content: String): void {
+    // @ts-ignore: TODO(crbug.com/270623046): clipboardData can be null.
+    this.callbacks_.onTextReceived(content);
   }
 
   /**
@@ -130,10 +77,9 @@ export class InputHandler {
    * any particular window.
    */
   setUpEventListeners(): void {
-    chrome.clipboard.onClipboardDataChanged.addListener(
-        () => this.onClipboardDataChanged_());
-    document.addEventListener('paste', evt => this.onClipboardPaste_(evt));
-    document.addEventListener('copy', evt => this.onClipboardCopy_(evt));
+    chrome.clipboard.onClipboardDataChanged.addListener(() => {
+      chrome.runtime.sendMessage(undefined, {command: 'clipboardDataChanged'});
+    });
     chrome.accessibilityPrivate.onSelectToSpeakKeysPressedChanged.addListener(
         (keysPressed) => {
           this.onKeysPressedChanged(new Set(keysPressed));
@@ -141,6 +87,18 @@ export class InputHandler {
     chrome.accessibilityPrivate.onSelectToSpeakMouseChanged.addListener(
         (eventType, mouseX, mouseY) => {
           this.onMouseEvent(eventType, mouseX, mouseY);
+        });
+
+    // Handle messages from the offscreen document.
+    chrome.runtime.onMessage.addListener(
+        (message: any|undefined, _sender: MessageSender,
+         _sendResponse: (value: any) => void) => {
+          switch (message['command']) {
+            case 'paste':
+              this.onClipboardPaste_(message);
+              break;
+          }
+          return false;
         });
   }
 
@@ -166,7 +124,8 @@ export class InputHandler {
    * Sets the date at which we last wanted the clipboard data to be read.
    */
   onRequestReadClipboardData(): void {
-    this.lastReadClipboardDataTime_ = new Date();
+    chrome.runtime.sendMessage(
+        undefined, {command: 'updateLastReadClipboardDataTime'});
   }
 
   /**
@@ -346,11 +305,3 @@ export class InputHandler {
   }
 }
 
-// Number of milliseconds to wait after requesting a clipboard read
-// before clipboard change and paste events are ignored.
-InputHandler.kClipboardReadMaxDelayMs = 1000;
-
-// Number of milliseconds to wait after requesting a clipboard copy
-// before clipboard copy events are ignored, used to clear the clipboard
-// after reading data in a paste event.
-InputHandler.kClipboardClearMaxDelayMs = 500;

@@ -504,6 +504,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="310900540163454140">Ștergi parola pentru <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Marchează…</translation>
 <translation id="3119874402040566234">Vei fi deconectat(ă), iar datele de navigare se vor șterge</translation>
+<translation id="3124568093781685165">Permite accesul familiei la parole</translation>
 <translation id="3130863904455712965">Istoric și altele</translation>
 <translation id="313283613037595347">Creează o nouă filă incognito.</translation>
 <translation id="3138611310073113613">Renunță la selecție</translation>
@@ -1003,6 +1004,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5352128922772839949">Salvează fișierul</translation>
 <translation id="5355191726083956201">Protecția îmbunătățită este activată</translation>
 <translation id="537853552771686272">Gestionează subiectele și site-urile care te interesează</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} închisă}few{{count} închise}other{{count} închise}}</translation>
 <translation id="5394975111793637642">Ascunde cardul Recenzii de produse pentru tine</translation>
 <translation id="5395707839134961196">Ascunde detaliile motorului de căutare</translation>
 <translation id="5414763847370083940">Vei primi o alertă dacă prețul scade pe orice site.</translation>
@@ -1132,6 +1134,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5897749768294722429">Pentru a reveni rapid la site-urile pe care le-ai accesat, sincronizează filele și istoricul.</translation>
 <translation id="5898848375214731122">Greutate</translation>
 <translation id="5899314093904173337">Ca să le permiți accesul persoanelor din apropiere, solicită-le să scaneze acest cod QR folosind camera sau aplicația de scanat coduri QR</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} filă nouă}few{{count} file noi}other{{count} de file noi}}</translation>
 <translation id="5911030830365207728">Google Traducere</translation>
 <translation id="5917913282764181683">Șterge automat descărcările</translation>
 <translation id="5922999516621365983">Trage fila aici pentru a o fixa.</translation>
@@ -1674,6 +1677,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8132598642024322408">Acum <ph name="PRICE" />, a fost <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Folosește o parolă unică pentru fiecare site sau aplicație. Dacă cineva află o parolă refolosită, o poate folosi pentru a-ți accesa celelalte conturi. Dă clic pentru a deschide site-ul și modific-o acum.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} filă închisă}few{{count} file închise}other{{count} de file închise}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Încă una}few{Încă #}other{Încă #}}</translation>
 <translation id="8150167929304790980">Nume complet</translation>
 <translation id="8152331954420209374">Accesează Lens</translation>

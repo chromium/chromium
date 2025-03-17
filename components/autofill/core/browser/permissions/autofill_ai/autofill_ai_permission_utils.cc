@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -68,7 +69,6 @@ namespace {
     return false;
   }
 
-  // Only `kServerClassificationModel` requires additional feature permissions.
   switch (action) {
     case AutofillAiAction::kServerClassificationModel:
       return is_enabled(features::kAutofillAiServerModel);
@@ -78,6 +78,7 @@ namespace {
     case AutofillAiAction::kFilling:
     case AutofillAiAction::kImport:
     case AutofillAiAction::kIphForOptIn:
+      return is_enabled(feature_engagement::kIPHAutofillAiOptInFeature);
     case AutofillAiAction::kListEntityInstancesInSettings:
     case AutofillAiAction::kOptIn:
       return true;

@@ -40,9 +40,9 @@ bool CheckForeignKeyConstraints(sql::Database& db) {
   bool ret = true;
   while (stmt.Step()) {
     ret = false;
-    LOG(ERROR) << "Foreign key violation "
-               << stmt.ColumnString(0) + ", " + stmt.ColumnString(1) + ", " +
-                      stmt.ColumnString(2) + ", " + stmt.ColumnString(3);
+    LOG(ERROR) << "Foreign key violation " << stmt.ColumnStringView(0) << ", "
+               << stmt.ColumnStringView(1) << ", " << stmt.ColumnStringView(2)
+               << ", " << stmt.ColumnStringView(3);
   }
   return ret;
 }

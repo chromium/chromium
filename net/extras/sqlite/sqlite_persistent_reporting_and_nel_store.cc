@@ -78,7 +78,7 @@ base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
 // Attempts to convert a string returned by NetworkAnonymizationKeyToString() to
 // a NetworkAnonymizationKey. Returns false on failure.
 [[nodiscard]] bool NetworkAnonymizationKeyFromString(
-    const std::string& string,
+    std::string_view string,
     NetworkAnonymizationKey* out_network_anonymization_key) {
   std::optional<base::Value> value = base::JSONReader::Read(string);
   if (!value)
@@ -1301,9 +1301,10 @@ void SQLitePersistentReportingAndNelStore::Backend::
     // Attempt to reconstitute a NEL policy from the fields stored in the
     // database.
     NetworkAnonymizationKey network_anonymization_key;
-    if (!NetworkAnonymizationKeyFromString(smt.ColumnString(0),
-                                           &network_anonymization_key))
+    if (!NetworkAnonymizationKeyFromString(smt.ColumnStringView(0),
+                                           &network_anonymization_key)) {
       continue;
+    }
     NetworkErrorLoggingService::NelPolicy policy;
     policy.key = NetworkErrorLoggingService::NelPolicyKey(
         network_anonymization_key,
@@ -1311,8 +1312,10 @@ void SQLitePersistentReportingAndNelStore::Backend::
             /* origin_scheme = */ smt.ColumnString(1),
             /* origin_host = */ smt.ColumnString(2),
             /* origin_port = */ smt.ColumnInt(3)));
-    if (!policy.received_ip_address.AssignFromIPLiteral(smt.ColumnString(4)))
+    if (!policy.received_ip_address.AssignFromIPLiteral(
+            smt.ColumnStringView(4))) {
       policy.received_ip_address = IPAddress();
+    }
     policy.report_to = smt.ColumnString(5);
     policy.expires = base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(smt.ColumnInt64(6)));
@@ -1388,9 +1391,11 @@ void SQLitePersistentReportingAndNelStore::Backend::
     // Attempt to reconstitute a ReportingEndpoint from the fields stored in the
     // database.
     NetworkAnonymizationKey network_anonymization_key;
-    if (!NetworkAnonymizationKeyFromString(endpoints_statement.ColumnString(0),
-                                           &network_anonymization_key))
+    if (!NetworkAnonymizationKeyFromString(
+            endpoints_statement.ColumnStringView(0),
+            &network_anonymization_key)) {
       continue;
+    }
     // The target_type is set to kDeveloper because this function is used for
     // V0 reporting, which only includes web developer entities.
     ReportingEndpointGroupKey group_key(
@@ -1416,9 +1421,10 @@ void SQLitePersistentReportingAndNelStore::Backend::
     // stored in the database.
     NetworkAnonymizationKey network_anonymization_key;
     if (!NetworkAnonymizationKeyFromString(
-            endpoint_groups_statement.ColumnString(0),
-            &network_anonymization_key))
+            endpoint_groups_statement.ColumnStringView(0),
+            &network_anonymization_key)) {
       continue;
+    }
     // The target_type is set to kDeveloper because this function is used for
     // V0 reporting, which only includes web developer entities.
     ReportingEndpointGroupKey group_key(

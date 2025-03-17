@@ -33,7 +33,7 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     for (const auto& masonry_item :
-         *algorithm.BuildVirtualMasonryItems(line_resolver, &start_offset)) {
+         algorithm.BuildVirtualMasonryItems(line_resolver, &start_offset)) {
       MasonryItemCachedData item_data;
 
       item_data.resolved_span =
@@ -132,7 +132,7 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
   MasonryNode node(GetLayoutBoxByElementId("masonry"));
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto* masonry_items =
+  const auto masonry_items =
       node.ConstructMasonryItems(line_resolver, /*start_offset=*/0);
 
   const Vector<GridSpan> expected_spans = {
@@ -145,10 +145,10 @@ TEST_F(MasonryLayoutAlgorithmTest, ConstructMasonryItems) {
       GridSpan::TranslatedDefiniteGridSpan(0, 2),
       GridSpan::TranslatedDefiniteGridSpan(2, 4)};
 
-  EXPECT_EQ(masonry_items->Size(), expected_spans.size());
+  EXPECT_EQ(masonry_items.Size(), expected_spans.size());
 
   const auto grid_axis_direction = node.Style().MasonryTrackSizingDirection();
-  for (wtf_size_t i = 0; const auto& masonry_item : *masonry_items) {
+  for (wtf_size_t i = 0; const auto& masonry_item : masonry_items) {
     EXPECT_EQ(masonry_item.resolved_position.Span(grid_axis_direction),
               expected_spans[i++]);
   }

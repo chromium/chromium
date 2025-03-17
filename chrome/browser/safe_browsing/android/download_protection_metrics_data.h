@@ -44,8 +44,13 @@ class DownloadProtectionMetricsData : public base::SupportsUserData::Data {
     kUnsupportedUrlScheme = 7,
     kRemoteFile = 8,
     kLocalFile = 9,
+    // Did not send ClientDownloadRequest. The service is misconfigured.
+    // Note: If the service is misconfigued but Android download protection is
+    // not enabled, then kDownloadProtectionDisabled will be logged
+    // preferentially.
+    kMisconfigured = 10,
 
-    kMaxValue = kLocalFile,
+    kMaxValue = kMisconfigured,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientDownloadAndroidDownloadProtectionOutcome)
 

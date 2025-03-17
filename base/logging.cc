@@ -468,13 +468,13 @@ std::string BuildCrashString(const char* file,
                              const char* message_without_prefix) {
   // Only log last path component.
   if (file) {
-    const char* slash = strrchr(file,
+    const char* slash = UNSAFE_TODO(strrchr(file,
 #if BUILDFLAG(IS_WIN)
-                                '\\'
+                                            '\\'
 #else
-                                '/'
+                                            '/'
 #endif  // BUILDFLAG(IS_WIN)
-    );
+                                            ));
     if (slash) {
       file = UNSAFE_TODO(slash + 1);
     }
@@ -940,8 +940,8 @@ void LogMessage::Flush() {
                 static_cast<DWORD>(str_newline.length()), &num_written,
                 nullptr);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-      std::ignore =
-          fwrite(str_newline.data(), str_newline.size(), 1, g_log_file);
+      std::ignore = UNSAFE_TODO(
+          fwrite(str_newline.data(), str_newline.size(), 1, g_log_file));
       fflush(g_log_file);
 #else
 #error Unsupported platform
@@ -1035,7 +1035,8 @@ void LogMessage::Init(const char* file, int line) {
 void LogMessage::HandleFatal(size_t stack_start,
                              const std::string& str_newline) const {
   char str_stack[1024];
-  base::strlcpy(str_stack, str_newline.data(), std::size(str_stack));
+  UNSAFE_TODO(
+      base::strlcpy(str_stack, str_newline.data(), std::size(str_stack)));
   base::debug::Alias(&str_stack);
 
   if (!GetLogAssertHandlerStack().empty()) {

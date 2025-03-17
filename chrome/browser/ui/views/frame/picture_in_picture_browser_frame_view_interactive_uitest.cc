@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
       pip_frame_view()->GetWidget()->GetWindowBoundsInScreen();
   // Memorize these, rather than reusing the #if's in the cc file, in case
   // somebody accidentally changes them.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // On these platforms, the pip window should be updated.
   EXPECT_NE(initial_pip_bounds, new_pip_bounds);
   EXPECT_GE(new_pip_bounds.width(), child_dialog_size.width());

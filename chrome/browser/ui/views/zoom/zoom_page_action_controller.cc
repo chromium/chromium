@@ -90,8 +90,6 @@ void ZoomPageActionController::WillDiscardContents(
     content::WebContents* new_content) {
   zoom_observation_.Reset();
 
-  CHECK_EQ(tab_interface_->GetContents(), new_content);
-
   if (auto* zoom_controller =
           zoom::ZoomController::FromWebContents(new_content)) {
     zoom_observation_.Observe(zoom_controller);

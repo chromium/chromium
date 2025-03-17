@@ -13,7 +13,6 @@
 #include "media/base/video_decoder.h"
 #include "media/mojo/clients/mojo_codec_factory.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -51,9 +50,7 @@ class MojoCodecFactoryMojoDecoder final : public media::MojoCodecFactory {
 
   mojo::Remote<media::mojom::InterfaceFactory> interface_factory_;
 
-  absl::variant<mojo::Remote<media::mojom::VideoDecoder>,
-                mojo::Remote<media::stable::mojom::StableVideoDecoder>>
-      video_decoder_;
+  mojo::Remote<media::mojom::VideoDecoder> video_decoder_;
 };
 
 }  // namespace media

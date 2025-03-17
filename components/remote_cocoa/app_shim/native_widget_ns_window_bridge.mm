@@ -1218,6 +1218,14 @@ void NativeWidgetNSWindowBridge::OnPositionChanged() {
   UpdateWindowGeometry();
 }
 
+void NativeWidgetNSWindowBridge::OnWindowWillStartLiveResize() {
+  host_->OnWindowWillStartLiveResize();
+}
+
+void NativeWidgetNSWindowBridge::OnWindowDidEndLiveResize() {
+  host_->OnWindowDidEndLiveResize();
+}
+
 void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
   const bool window_visible = [window_ isVisible];
   if (window_visible_ == window_visible)

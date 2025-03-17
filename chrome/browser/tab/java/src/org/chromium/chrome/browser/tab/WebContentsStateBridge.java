@@ -75,7 +75,7 @@ public class WebContentsStateBridge {
      * @return ByteBuffer that represents a state representing a single pending URL.
      */
     public static @Nullable ByteBuffer createSingleNavigationStateAsByteBuffer(
-            String title,
+            @Nullable String title,
             String url,
             @Nullable String referrerUrl,
             int referrerPolicy,
@@ -166,7 +166,7 @@ public class WebContentsStateBridge {
                 ByteBuffer state, int saveStateVersion, long predicate);
 
         @Nullable ByteBuffer createSingleNavigationStateAsByteBuffer(
-                String title,
+                @Nullable String title,
                 String url,
                 @Nullable String referrerUrl,
                 int referrerPolicy,

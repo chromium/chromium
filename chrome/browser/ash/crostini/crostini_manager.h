@@ -172,6 +172,9 @@ class CrostiniManager : public KeyedService,
  public:
   using CrostiniResultCallback =
       base::OnceCallback<void(CrostiniResult result)>;
+  using BaguetteImageCallback =
+      base::OnceCallback<void(std::optional<base::ScopedFD> fd,
+                              CrostiniResult result)>;
   using ExportLxdContainerResultCallback =
       base::OnceCallback<void(CrostiniResult result,
                               uint64_t container_size,
@@ -238,7 +241,7 @@ class CrostiniManager : public KeyedService,
   void InstallTermina(CrostiniResultCallback callback);
 
   // Installs baguette using GS downloader or local file.
-  void InstallBaguette(CrostiniResultCallback callback);
+  void InstallBaguette(BaguetteImageCallback callback);
 
   // Try to cancel a previous InstallTermina call. This is done on a best-effort
   // basis. The callback passed to InstallTermina is still run upon completion.
@@ -259,6 +262,8 @@ class CrostiniManager : public KeyedService,
       // the image itself. The image name should match the
       // name of the VM that it will be used for.
       const std::string& vm_name,
+      // We may already have a disk image to use that has been downloaded.
+      std::optional<base::ScopedFD> disk_image,
       // The storage location for the disk image
       vm_tools::concierge::StorageLocation storage_location,
       // The logical size of the disk image, in bytes

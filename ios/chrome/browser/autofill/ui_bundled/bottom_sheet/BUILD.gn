@@ -40,6 +40,8 @@ source_set("bottom_sheet") {
     "payments_suggestion_bottom_sheet_mediator.mm",
     "save_card_bottom_sheet_coordinator.h",
     "save_card_bottom_sheet_coordinator.mm",
+    "save_card_bottom_sheet_mediator.h",
+    "save_card_bottom_sheet_mediator.mm",
   ]
   deps = [
     ":bottom_sheet_ui",
@@ -140,6 +142,7 @@ source_set("bottom_sheet_unit_tests") {
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

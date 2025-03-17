@@ -310,12 +310,6 @@ class PrivacySandboxService : public KeyedService {
   // Returns whether the RelatedWebsiteSets preference is managed.
   virtual bool IsRelatedWebsiteSetsDataAccessManaged() const = 0;
 
-  // DEPRECATED - Do not use in new code. It will be replaced with queries to
-  // the Related Website Sets that are in the browser-process.
-  // Virtual for mocking in tests.
-  virtual base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetSampleRelatedWebsiteSets() const = 0;
-
   // Returns the owner domain of the related website set that `site_url` is a
   // member of, or std::nullopt if `site_url` is not recognised as a member of
   // an RWS. Encapsulates logic about whether RWS information should be shown,

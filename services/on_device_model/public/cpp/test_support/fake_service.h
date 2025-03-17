@@ -71,7 +71,8 @@ struct FakeOnDeviceServiceSettings final {
 class FakeOnDeviceSession final : public mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                               FakeOnDeviceModel* model);
+                               FakeOnDeviceModel* model,
+                               const Capabilities& capabilities);
   ~FakeOnDeviceSession() override;
 
   // mojom::Session:
@@ -100,6 +101,7 @@ class FakeOnDeviceSession final : public mojom::Session {
   std::string adaptation_model_weight_;
   std::vector<mojom::AppendOptionsPtr> context_;
   raw_ptr<FakeOnDeviceModel> model_;
+  Capabilities capabilities_;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };

@@ -329,12 +329,15 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Whether login attempt is running.
   bool is_login_in_progress_ = false;
 
+  // Whether the user has empty password.
+  std::optional<bool> user_has_empty_password_;
+
   // Whether user signin is completed.
   bool is_signin_completed_ = false;
 
   // True if password has been changed for user who is completing sign in.
   // Set in OnLoginSuccess. Before that use LoginPerformer::password_changed().
-  bool password_changed_ = false;
+  bool password_changed_;
 
   // Set in OnLoginSuccess. Before that use LoginPerformer::auth_mode().
   // Initialized with `kExternal` as more restricted mode.

@@ -15,6 +15,7 @@ import android.widget.ScrollView;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -45,7 +46,7 @@ public class FadingEdgeScrollView extends ScrollView {
     @EdgeType private int mDrawTopEdge = EdgeType.FADING;
     @EdgeType private int mDrawBottomEdge = EdgeType.FADING;
 
-    public FadingEdgeScrollView(Context context, AttributeSet attrs) {
+    public FadingEdgeScrollView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
         mSeparatorColor = getContext().getColor(R.color.toolbar_shadow_color);

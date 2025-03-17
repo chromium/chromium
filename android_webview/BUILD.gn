@@ -381,15 +381,20 @@ if (android_64bit_target_cpu && defined(android_app_secondary_abi)) {
   }
 }
 
+component("android_webview") {
+  public_deps = [
+    "//android_webview/lib",
+    "//android_webview/nonembedded",
+  ]
+}
+
 # The shared library used by standalone WebView.
 template("libwebviewchromium_tmpl") {
   shared_library_with_jni(target_name) {
     forward_variables_from(invoker, "*")
     deps = [
-      "//android_webview/lib",
+      ":android_webview",
       "//android_webview/lib:webview_entry_point",
-      "//android_webview/nonembedded",
-      "//third_party/blink/public:blink",
     ]
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [
@@ -426,9 +431,8 @@ template("webview_alternate_library") {
   chrome_common_shared_library(target_name) {
     forward_variables_from(invoker, "*")
     deps = [
-      "//android_webview/lib",
+      ":android_webview",
       "//android_webview/lib:webview_entry_point",
-      "//android_webview/nonembedded",
     ]
     is_webview = true
     java_targets = webview_java_for_jni_targets

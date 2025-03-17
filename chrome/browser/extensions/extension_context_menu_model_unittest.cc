@@ -329,7 +329,7 @@ const Extension* ExtensionContextMenuModelTest::AddExtensionWithHostPermission(
           .Build();
   if (!extension.get())
     ADD_FAILURE();
-  service()->GrantPermissions(extension.get());
+  PermissionsUpdater(profile()).GrantActivePermissions(extension.get());
   service()->AddExtension(extension.get());
   return extension.get();
 }

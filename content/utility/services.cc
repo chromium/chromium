@@ -383,10 +383,9 @@ auto RunOOPArcVideoAcceleratorFactoryService(
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-auto RunStableVideoDecoderFactoryProcessService(
-    mojo::PendingReceiver<
-        media::stable::mojom::StableVideoDecoderFactoryProcess> receiver) {
-  return std::make_unique<media::StableVideoDecoderFactoryProcessService>(
+auto RunOOPVideoDecoderFactoryProcessService(
+    mojo::PendingReceiver<media::mojom::VideoDecoderFactoryProcess> receiver) {
+  return std::make_unique<media::OOPVideoDecoderFactoryProcessService>(
       std::move(receiver));
 }
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
@@ -417,7 +416,7 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
     (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
-  services.Add(RunStableVideoDecoderFactoryProcessService);
+  services.Add(RunOOPVideoDecoderFactoryProcessService);
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // (BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC))
 

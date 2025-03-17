@@ -56,7 +56,6 @@ const VOLUME_ICON_OFF_LEVEL = 0;
 // TODO(b/271871947): Match volume icon logic to QS revamp sliders.
 // Matches level calculated in unified_volume_view.cc.
 const VOLUME_ICON_LOUD_LEVEL = 34;
-const SETTINGS_20PX_ICON_PREFIX = 'settings20:';
 
 export class SettingsAudioElement extends SettingsAudioElementBase {
   static get is() {
@@ -340,18 +339,18 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
    */
   protected getOutputIcon_(): string {
     if (this.isOutputMuted_) {
-      return SETTINGS_20PX_ICON_PREFIX + 'volume-up-off';
+      return 'settings20:volume-up-off';
     }
 
     if (this.outputVolume_ === VOLUME_ICON_OFF_LEVEL) {
-      return SETTINGS_20PX_ICON_PREFIX + 'volume-zero';
+      return 'settings20:volume-zero';
     }
 
     if (this.outputVolume_ < VOLUME_ICON_LOUD_LEVEL) {
-      return SETTINGS_20PX_ICON_PREFIX + 'volume-down';
+      return 'settings20:volume-down';
     }
 
-    return SETTINGS_20PX_ICON_PREFIX + 'volume-up';
+    return 'settings20:volume-up';
   }
 
   /**

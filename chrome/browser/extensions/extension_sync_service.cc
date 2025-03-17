@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -490,8 +491,10 @@ void ExtensionSyncService::ApplySyncData(
       // matches our local one.
       bool grant_permissions = extension_sync_data.supports_disable_reasons() &&
                                (state == INSTALLED_MATCHING);
-      if (grant_permissions)
-        extension_service()->GrantPermissions(extension);
+      if (grant_permissions) {
+        extensions::PermissionsUpdater(profile_).GrantActivePermissions(
+            extension);
+      }
 
       // Only enable if the extension has all required permissions.
       // (Even if the version doesn't match - if the new version needs more

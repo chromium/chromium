@@ -76,11 +76,10 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
         /* offset */ view()->GetVisibleViewportSize().width() / 2 -
             kDisplayFeatureLength / 2,
         /* mask_length */ kDisplayFeatureLength};
-    view()->SetDisplayFeatureForTesting(&emulated_display_feature);
+    view()->OverrideDisplayFeatureForEmulation(&emulated_display_feature);
     FrameTreeNode* root = web_contents_impl()->GetPrimaryFrameTree().root();
     RenderWidgetHostImpl* root_widget =
         root->current_frame_host()->GetRenderWidgetHost();
-    root_widget->SynchronizeVisualProperties();
     // We need to wait that visual properties are updated before we test the
     // CSS APIs of Viewport Segments.
     while (root_widget->visual_properties_ack_pending_for_testing()) {
@@ -91,7 +90,7 @@ class FoldableAPIsOriginTrialBrowserTest : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     interceptor_.reset();
     ContentBrowserTest::TearDownOnMainThread();
-    view()->SetDisplayFeatureForTesting(nullptr);
+    view()->DisableDisplayFeatureOverrideForEmulation();
   }
 
   bool HasViewportSegmentsApi() {

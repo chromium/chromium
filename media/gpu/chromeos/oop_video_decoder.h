@@ -14,42 +14,39 @@
 #include "media/base/media_log.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/mojo/mojom/media_log.mojom.h"
+#include "media/mojo/mojom/video_decoder.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 namespace chromeos {
-class StableCdmContextImpl;
+class CdmContextForOOPVDImpl;
 }  // namespace chromeos
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
+class MediaLog;
 class MojoDecoderBufferWriter;
 
 // Proxy video decoder that connects with an out-of-process
 // video decoder via Mojo. This class should be operated and
 // destroyed on |decoder_task_runner_|.
 //
-// Note: MEDIA_GPU_EXPORT is necessary to expose the OOPVideoDecoder to the
-// MojoStableVideoDecoder.
-//
 // TODO(b/195769334): this class (or most of it) would be unnecessary if the
 // MailboxVideoFrameConverter lived together with the remote decoder in the same
 // process. Then, clients can communicate with that process without the GPU
 // process acting as a proxy.
-class MEDIA_GPU_EXPORT OOPVideoDecoder
-    : public VideoDecoderMixin,
-      public stable::mojom::VideoDecoderClient,
-      public stable::mojom::MediaLog {
+class OOPVideoDecoder : public VideoDecoderMixin,
+                        public mojom::VideoDecoderClient,
+                        public mojom::MediaLog {
  public:
   OOPVideoDecoder(const OOPVideoDecoder&) = delete;
   OOPVideoDecoder& operator=(const OOPVideoDecoder&) = delete;
 
   static std::unique_ptr<VideoDecoderMixin> Create(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-          pending_remote_decoder,
+      mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder,
       std::unique_ptr<media::MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
@@ -69,9 +66,8 @@ class MEDIA_GPU_EXPORT OOPVideoDecoder
   // will be called on the same sequence as the one NotifySupportKnown() is
   // called on.
   static void NotifySupportKnown(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-      base::OnceCallback<
-          void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb);
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb);
 
   // Returns the cached supported configurations of the out-of-process video
   // decoder if known (std::nullopt otherwise). This method is thread- and
@@ -100,23 +96,25 @@ class MEDIA_GPU_EXPORT OOPVideoDecoder
   void ApplyResolutionChange() override;
   bool NeedsTranscryption() override;
 
-  // stable::mojom::VideoDecoderClient implementation.
-  void OnVideoFrameDecoded(stable::mojom::VideoFramePtr frame,
-                           bool can_read_without_stalling,
-                           const base::UnguessableToken& release_token) final;
+  // mojom::VideoDecoderClient implementation.
+  void OnVideoFrameDecoded(
+      const scoped_refptr<VideoFrame>& frame,
+      bool can_read_without_stalling,
+      const std::optional<base::UnguessableToken>& release_token) final;
   void OnWaiting(WaitingReason reason) final;
+  void RequestOverlayInfo(bool restart_for_transitions) final;
 
-  // stable::mojom::MediaLog implementation.
+  // mojom::MediaLog implementation.
   void AddLogRecord(const MediaLogRecord& event) final;
 
   FrameResource* GetOriginalFrame(const base::UnguessableToken& tracking_token);
 
  private:
-  OOPVideoDecoder(std::unique_ptr<media::MediaLog> media_log,
-                  scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-                  base::WeakPtr<VideoDecoderMixin::Client> client,
-                  mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-                      pending_remote_decoder);
+  OOPVideoDecoder(
+      std::unique_ptr<media::MediaLog> media_log,
+      scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
+      base::WeakPtr<VideoDecoderMixin::Client> client,
+      mojo::PendingRemote<mojom::VideoDecoder> pending_remote_decoder);
   ~OOPVideoDecoder() override;
 
   void OnInitializeDone(const DecoderStatus& status,
@@ -186,17 +184,17 @@ class MEDIA_GPU_EXPORT OOPVideoDecoder
 
   base::OnceClosure reset_cb_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  mojo::AssociatedReceiver<stable::mojom::VideoDecoderClient> client_receiver_
+  mojo::AssociatedReceiver<mojom::VideoDecoderClient> client_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 
-  mojo::Receiver<stable::mojom::MediaLog> stable_media_log_receiver_
+  mojo::Receiver<mojom::MediaLog> media_log_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<chromeos::StableCdmContextImpl> stable_cdm_context_
+  std::unique_ptr<chromeos::CdmContextForOOPVDImpl> cdm_context_for_oopvd_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<mojo::Receiver<stable::mojom::StableCdmContext>>
-      stable_cdm_context_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<mojo::Receiver<mojom::CdmContextForOOPVD>>
+      cdm_context_for_oopvd_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   bool initialized_for_protected_content_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -209,13 +207,12 @@ class MEDIA_GPU_EXPORT OOPVideoDecoder
   VideoDecoderType remote_decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VideoDecoderType::kUnknown;
 
-  mojo::Remote<stable::mojom::StableVideoDecoder> remote_decoder_
+  mojo::Remote<mojom::VideoDecoder> remote_decoder_
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool has_error_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
-  mojo::Remote<stable::mojom::VideoFrameHandleReleaser>
-      stable_video_frame_handle_releaser_remote_
-          GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Remote<mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer_
       GUARDED_BY_CONTEXT(sequence_checker_);

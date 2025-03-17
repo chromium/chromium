@@ -74,9 +74,9 @@
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Windows and CrOS do not clip child widgets to their parents, so we don't have
-// to worry about resizing quite as much.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Windows, Mac and CrOS do not clip child widgets to their parents, so we
+// don't have to worry about resizing quite as much.
+#if BUILDFLAG(IS_LINUX)
 #define PLATFORM_CLIPS_CHILD_WINDOWS
 #endif
 

@@ -51,11 +51,11 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
                          GapFragmentData::GapGeometry* gap_geometry = nullptr) {
     auto grid_sizing_tree = algorithm.BuildGridSizingTree();
 
-    algorithm.InitializeTrackSizes(grid_sizing_tree);
-    algorithm.CompleteTrackSizingAlgorithm(grid_sizing_tree, kForColumns,
-                                           SizingConstraint::kLayout);
-    algorithm.CompleteTrackSizingAlgorithm(grid_sizing_tree, kForRows,
-                                           SizingConstraint::kLayout);
+    algorithm.InitializeTrackSizes(&grid_sizing_tree);
+    algorithm.CompleteTrackSizingAlgorithm(
+        kForColumns, SizingConstraint::kLayout, &grid_sizing_tree);
+    algorithm.CompleteTrackSizingAlgorithm(kForRows, SizingConstraint::kLayout,
+                                           &grid_sizing_tree);
 
     layout_data_ = std::move(grid_sizing_tree.LayoutData());
     for (const auto& grid_item : grid_sizing_tree.GetGridItems()) {

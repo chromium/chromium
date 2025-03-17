@@ -195,6 +195,15 @@ class AutocompleteProvider
   // Returns a string describing a particular AutocompleteProvider type.
   static const char* TypeToString(Type type);
 
+  // Returns a localized string date that is formatted based on whether
+  // `modified_time` is within the current day or year. For time within the
+  // current day, return the time of day. (Ex. '12:45 PM') For time within the
+  // current year, return the abbreviated date. (Ex. 'Jan 02') Otherwise, return
+  // the full date. (Ex. '10/7/24')
+  static const std::u16string LocalizedLastModifiedString(
+      base::Time now,
+      base::Time modified_time);
+
   // Used to communicate async matches to consumers (usually the
   // `AutocompleteController`). Consumers invoke `AddListener()` to register
   // their interest, while child `AutocompleteProvider` implementations invoke

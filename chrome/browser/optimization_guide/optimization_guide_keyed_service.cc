@@ -614,6 +614,14 @@ void OptimizationGuideKeyedService::
   }
 }
 
+on_device_model::Capabilities
+OptimizationGuideKeyedService::GetOnDeviceCapabilities() {
+  if (!model_execution_manager_) {
+    return {};
+  }
+  return model_execution_manager_->GetOnDeviceCapabilities();
+}
+
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(
     Profile* profile) {
   DCHECK(profile_observation_.IsObservingSource(profile));

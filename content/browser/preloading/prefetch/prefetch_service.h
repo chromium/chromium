@@ -22,6 +22,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "net/url_request/redirect_info.h"
@@ -188,6 +189,13 @@ class CONTENT_EXPORT PrefetchService {
   std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
   GetAllForUrlWithoutRefAndQueryForTesting(
       const PrefetchContainer::Key& key) const;
+
+  // Evicts completed and in-progress prefetches as part of
+  // Clear-Site-Data header and Clearing Browser Data if the prefetch's
+  // referring origin matches the storage_key_filter.
+  void EvictPrefetchesForBrowsingDataRemoval(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
+      PrefetchStatus status);
 
   // Returns candidate `PrefetchContainer`s and servable states for matching
   // process. Corresponds to 3.4. of

@@ -100,7 +100,8 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   gfx::Rect GetBoundsInRootWindow() override;
   gfx::Size GetRequestedRendererSize() override;
   std::optional<DisplayFeature> GetDisplayFeature() override;
-  void SetDisplayFeatureForTesting(
+  void DisableDisplayFeatureOverrideForEmulation() override;
+  void OverrideDisplayFeatureForEmulation(
       const DisplayFeature* display_feature) override;
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;

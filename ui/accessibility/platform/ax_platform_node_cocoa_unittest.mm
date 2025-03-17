@@ -432,17 +432,44 @@ TEST_P(AXPlatformNodeCocoaTest, TestRespondsToSelector) {
 }
 
 // respondsToSelector for `accessibilityPerformPress`.
-TEST_P(AXPlatformNodeCocoaTest, RespondsToSelectorAccessibilityPerformPress) {
+TEST_P(AXPlatformNodeCocoaTest, RespondsToSelectorAccessibilityPerform) {
   Init(std::string(R"HTML(
     ++1 kRootWebArea
-    ++++2 kButton
-    ++++3 kGenericContainer
+    ++++2 kGenericContainer
+    ++++3 kButton
+    ++++4 kSlider
+    ++++5 kComboBoxSelect
   )HTML"));
 
-  EXPECT_TRUE([GetCocoaNode(2)
-      respondsToSelector:@selector(accessibilityPerformPress)]);
-  EXPECT_FALSE([GetCocoaNode(3)
-      respondsToSelector:@selector(accessibilityPerformPress)]);
+  auto generic_node = GetCocoaNode(2);
+  auto button = GetCocoaNode(3);
+  auto slider = GetCocoaNode(4);
+  auto combobox = GetCocoaNode(5);
+
+  // accessibilityPerformPress
+  EXPECT_TRUE([button respondsToSelector:@selector(accessibilityPerformPress)]);
+  EXPECT_FALSE(
+      [generic_node respondsToSelector:@selector(accessibilityPerformPress)]);
+
+  // accessibilityPerformDecrement/accessibilityPerformIncrement
+  EXPECT_TRUE(
+      [slider respondsToSelector:@selector(accessibilityPerformDecrement)]);
+  EXPECT_TRUE(
+      [slider respondsToSelector:@selector(accessibilityPerformIncrement)]);
+  EXPECT_FALSE(
+      [button respondsToSelector:@selector(accessibilityPerformDecrement)]);
+  EXPECT_FALSE(
+      [button respondsToSelector:@selector(accessibilityPerformIncrement)]);
+
+  // accessibilityPerformShowMenu
+  EXPECT_TRUE(
+      [combobox respondsToSelector:@selector(accessibilityPerformShowMenu)]);
+  EXPECT_FALSE([generic_node
+      respondsToSelector:@selector(accessibilityPerformShowMenu)]);
+
+  // accessibilityPerformConfirm
+  EXPECT_FALSE(
+      [generic_node respondsToSelector:@selector(accessibilityPerformConfirm)]);
 }
 
 // Tests that -addTextAnnotations:to: correctly applies attributes to the

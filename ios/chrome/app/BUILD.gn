@@ -618,6 +618,7 @@ source_set("main") {
     "//base",
     "//build:blink_buildflags",
     "//components/component_updater",
+    "//components/crash/core/app",
     "//components/crash/core/common",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",

@@ -83,8 +83,11 @@ void InstalledAppController::OnGetManifestForRelatedApps(
     DCHECK(provider_.is_bound());
   }
 
+  bool add_saved_related_applications =
+      (result != mojom::blink::ManifestRequestResult::kSuccess);
+
   provider_->FilterInstalledApps(
-      std::move(mojo_related_apps), url,
+      std::move(mojo_related_apps), url, add_saved_related_applications,
       WTF::BindOnce(&InstalledAppController::OnFilterInstalledApps,
                     WrapPersistent(this), WrapPersistent(resolver)));
 }

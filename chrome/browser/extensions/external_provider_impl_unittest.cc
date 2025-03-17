@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/external_testing_loader.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -102,6 +103,10 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
   ~ExternalProviderImplTest() override = default;
 
+  ExternalProviderManager* external_provider_manager() {
+    return ExternalProviderManager::Get(profile());
+  }
+
   void InitService() {
 #if BUILDFLAG(IS_CHROMEOS)
     user_manager::ScopedUserManager scoped_user_manager(
@@ -132,11 +137,11 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         switches::kDisableDefaultApps);
 
     ProviderCollection providers;
-    ExternalProviderImpl::CreateExternalProviders(service_, profile_.get(),
-                                                  &providers);
+    ExternalProviderImpl::CreateExternalProviders(external_provider_manager(),
+                                                  profile_.get(), &providers);
 
     for (std::unique_ptr<ExternalProviderInterface>& provider : providers)
-      service_->AddProviderForTesting(std::move(provider));
+      external_provider_manager()->AddProviderForTesting(std::move(provider));
   }
 
   void OverrideExternalExtensionsPath() {
@@ -195,8 +200,9 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 
   void AwaitCheckForExternalUpdates() {
     base::RunLoop run_loop;
-    service_->set_external_updates_finished_callback_for_test(
-        run_loop.QuitWhenIdleClosure());
+    external_provider_manager()
+        ->set_external_updates_finished_callback_for_test(
+            run_loop.QuitWhenIdleClosure());
     service_->CheckForExternalUpdates();
     run_loop.Run();
   }
@@ -297,12 +303,13 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
       )",
       kGoodApp.app_id,
       test_server_->GetURL(kGoodApp.update_path).spec().c_str());
-  service_->AddProviderForTesting(std::make_unique<ExternalProviderImpl>(
-      service_,
-      base::MakeRefCounted<ExternalTestingLoader>(
-          json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
-      profile_.get(), mojom::ManifestLocation::kExternalPref,
-      mojom::ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS));
+  external_provider_manager()->AddProviderForTesting(
+      std::make_unique<ExternalProviderImpl>(
+          external_provider_manager(),
+          base::MakeRefCounted<ExternalTestingLoader>(
+              json, base::FilePath(FILE_PATH_LITERAL("//absolute/path"))),
+          profile_.get(), mojom::ManifestLocation::kExternalPref,
+          mojom::ManifestLocation::kExternalPrefDownload, Extension::NO_FLAGS));
 
   // App is not installed, we should not install if the flag is enabled.
   {

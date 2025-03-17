@@ -95,7 +95,6 @@ class TerminaInstallTest : public testing::Test {
     EXPECT_EQ(termina_installer_.GetDlcId(), "termina-dlc");
   }
 
- protected:
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
   ash::FakeDlcserviceClient fake_dlc_client_;

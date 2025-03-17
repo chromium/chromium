@@ -44,6 +44,9 @@
                   "setDevicePostureOverride",
                   "clearDevicePostureOverride",
 
+                  "setDisplayFeaturesOverride",
+                  "clearDisplayFeaturesOverride",
+
                   "setPressureSourceOverrideEnabled",
                   "setPressureStateOverride",
 

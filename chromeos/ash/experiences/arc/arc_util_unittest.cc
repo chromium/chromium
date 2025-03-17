@@ -348,11 +348,11 @@ TEST_F(ArcUtilTest, IsArcAllowedForUser) {
       user_manager::UserType::kChild)));
 
   // Set up public account user.
-  fake_user_manager->AddPublicAccountUser(
-      AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210")));
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210"));
+  fake_user_manager->AddPublicAccountUser(account_id);
   fake_user_manager->UserLoggedIn(
-      AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210")),
-      "test@test.com-hash", false /* browser_restart */, false /* is_child */);
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   const user_manager::User* ephemeral_user = fake_user_manager->GetActiveUser();
   ASSERT_TRUE(ephemeral_user);
   ASSERT_TRUE(fake_user_manager->IsUserCryptohomeDataEphemeral(

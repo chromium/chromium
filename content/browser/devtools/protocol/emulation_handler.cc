@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -20,6 +21,7 @@
 #include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/browser/device_posture/device_posture_provider_impl.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/devtools/protocol/emulation.h"
 #include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator_impl.h"
@@ -1081,6 +1083,65 @@ Response EmulationHandler::ClearDevicePostureOverride() {
         ->GetDevicePostureProvider()
         ->DisableDevicePostureOverrideForEmulation();
   }
+  return Response::Success();
+}
+
+Response EmulationHandler::SetDisplayFeaturesOverride(
+    std::unique_ptr<protocol::Array<protocol::Emulation::DisplayFeature>>
+        features) {
+  if (!host_->GetView()) {
+    return Response::InternalError();
+  }
+
+  // TODO(crbug.com/40113439): Chromium only supports one display feature at the
+  // moment.
+  if (features->size() > 1) {
+    return Response::InvalidParams("Only one display feature is supported");
+  }
+  protocol::Emulation::DisplayFeature& emu_display_feature =
+      CHECK_DEREF(features->front().get());
+  std::optional<content::DisplayFeature::Orientation> disp_orientation =
+      DisplayFeatureOrientationTypeFromString(
+          emu_display_feature.GetOrientation());
+  if (!disp_orientation) {
+    return Response::InvalidParams("Invalid display feature orientation type");
+  }
+  content::DisplayFeature::ParamErrorEnum error;
+  const gfx::Size viewport_size = host_->GetView()->GetVisibleViewportSize();
+  std::optional<content::DisplayFeature> content_display_feature =
+      content::DisplayFeature::Create(
+          *disp_orientation, emu_display_feature.GetOffset(),
+          emu_display_feature.GetMaskLength(), viewport_size.width(),
+          viewport_size.height(), &error);
+
+  if (!content_display_feature) {
+    switch (error) {
+      case content::DisplayFeature::ParamErrorEnum::
+          kDisplayFeatureWithZeroScreenSize:
+        return Response::InvalidParams(
+            "Cannot specify a display feature with zero width and height");
+      case content::DisplayFeature::ParamErrorEnum::
+          kNegativeDisplayFeatureParams:
+        return Response::InvalidParams("Negative display feature parameters");
+      case content::DisplayFeature::ParamErrorEnum::kOutsideScreenWidth:
+        return Response::InvalidParams(
+            "Display feature viewport segments outside screen width");
+      case content::DisplayFeature::ParamErrorEnum::kOutsideScreenHeight:
+        return Response::InvalidParams(
+            "Display feature viewport segments outside screen height");
+    }
+  }
+
+  host_->GetView()->OverrideDisplayFeatureForEmulation(
+      &content_display_feature.value());
+  return Response::Success();
+}
+
+Response EmulationHandler::ClearDisplayFeaturesOverride() {
+  if (!host_->GetView()) {
+    return Response::InternalError();
+  }
+  host_->GetView()->DisableDisplayFeatureOverrideForEmulation();
   return Response::Success();
 }
 

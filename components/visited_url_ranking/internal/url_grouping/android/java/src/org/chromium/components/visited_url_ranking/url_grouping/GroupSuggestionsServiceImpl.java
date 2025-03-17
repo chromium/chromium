@@ -8,8 +8,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.tab.TabLaunchType;
-
 /**
  * Java side of the JNI bridge between GroupSuggestionsServiceImpl in Java and C++. All method calls
  * are delegated to the native C++ class.
@@ -17,6 +15,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 @JNINamespace("visited_url_ranking")
 public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
     private long mNativePtr;
+
+    private final DelegateBridge mDelegateBridge = new DelegateBridge();
 
     @CalledByNative
     private static GroupSuggestionsServiceImpl create(long nativePtr) {
@@ -27,9 +27,25 @@ public class GroupSuggestionsServiceImpl implements GroupSuggestionsService {
         mNativePtr = nativePtr;
     }
 
+    @CalledByNative
+    private DelegateBridge getDelegateBridge() {
+        return mDelegateBridge;
+    }
+
     @Override
-    public void didAddTab(int tabId, @TabLaunchType int type) {
+    public void didAddTab(int tabId, int type) {
         GroupSuggestionsServiceImplJni.get().didAddTab(mNativePtr, tabId, type);
+    }
+
+    @Override
+    // TODO(crbug.com/397221723): Support registering delegate for specific window.
+    public void registerDelegate(GroupSuggestionsService.Delegate delegate, int windowId) {
+        mDelegateBridge.registerDelegate(delegate);
+    }
+
+    @Override
+    public void unregisterDelegate(GroupSuggestionsService.Delegate delegate) {
+        mDelegateBridge.unregisterDelegate(delegate);
     }
 
     @CalledByNative

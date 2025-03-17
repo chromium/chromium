@@ -202,7 +202,6 @@ browser_exposed_mojom_targets = [
   "//media/mojo/mojom:speech_recognition",
   "//media/mojo/mojom:web_speech_recognition",
   "//media/mojo/mojom/stable:native_pixmap_handle",
-  "//media/mojo/mojom/stable:stable_video_decoder",
   "//mojo/public/interfaces/bindings:bindings",
   "//mojo/public/mojom/base:base",
   "//mojo/public/mojom/base:protobuf_support",

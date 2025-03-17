@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
@@ -223,7 +224,8 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
     // provider and if there is something already registered there then it will
     // interfere with the tests. Those tests that need an external provider
     // will register one specifically.
-    service->ClearProvidersForTesting();
+    extensions::ExternalProviderManager::Get(profile)
+        ->ClearProvidersForTesting();
 
     service->Init();
 

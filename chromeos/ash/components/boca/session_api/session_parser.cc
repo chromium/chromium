@@ -33,6 +33,20 @@ namespace ash::boca {
   return ::boca::StudentStatus::STUDENT_STATE_UNKNOWN;
 }
 
+::boca::StudentDevice::StudentDeviceState DeviceStatusJsonToProto(
+    const std::string& status) {
+  if (status == "STUDENT_DEVICE_STATE_UNKNOWN") {
+    return ::boca::StudentDevice::STUDENT_DEVICE_STATE_UNKNOWN;
+  }
+  if (status == "ACTIVE") {
+    return ::boca::StudentDevice::ACTIVE;
+  }
+  if (status == "INACTIVE") {
+    return ::boca::StudentDevice::INACTIVE;
+  }
+  return ::boca::StudentDevice::STUDENT_DEVICE_STATE_UNKNOWN;
+}
+
 ::boca::Session::SessionState SessionStateJsonToProto(
     const std::string& state) {
   if (state == "SESSION_STATE_UNKNOWN") {
@@ -315,6 +329,9 @@ void ParseIndividualStudentStatusFromJson(
       if (auto* device_dict = device_iter.second.GetIfDict()) {
         auto& device_entry =
             (*student_status->mutable_devices())[device_iter.first];
+        if (auto* state_ptr = device_dict->FindString(kDeviceStatusState)) {
+          device_entry.set_state(DeviceStatusJsonToProto(*state_ptr));
+        }
         // Parse and set ActiveTab from StudentDeviceActivity
         if (auto* activity = device_dict->FindDict(kActivity)) {
           if (auto* active_tab_ptr = activity->FindDict(kActiveTab)) {
@@ -324,6 +341,7 @@ void ParseIndividualStudentStatusFromJson(
                     : "");
           }
         }
+
         if (::ash::features::IsBocaSpotlightEnabled()) {
           if (auto* view_screen_config_dict =
                   device_dict->FindDict(kViewScreenConfig)) {

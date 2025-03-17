@@ -25,11 +25,11 @@ class IdentityManager;
 
 namespace glic {
 class AuthController;
+class GlicActorController;
 class GlicEnabling;
 class GlicFocusedTabManager;
 class GlicMetrics;
 class GlicProfileManager;
-class GlicWindowController;
 class GlicWindowController;
 class GlicScreenshotCapturer;
 struct FocusedTabData;
@@ -62,7 +62,14 @@ class GlicKeyedService : public KeyedService {
                 bool prevent_close,
                 mojom::InvocationSource source);
 
+  // Forcibly close the UI. This is similar to Shutdown in that it causes the
+  // window controller to shutdown (and clear cached state), but unlike
+  // Shutdown, it doesn't unregister as the "active glic" with the profile
+  // manager.
+  void CloseUI();
+
   GlicEnabling& enabling() { return *enabling_.get(); }
+
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return *window_controller_; }
 
@@ -75,7 +82,9 @@ class GlicKeyedService : public KeyedService {
   // Called when a `GlicPageHandler` is about to be destroyed.
   void PageHandlerRemoved(GlicPageHandler* page_handler);
 
-  bool IsWindowShowing() const;
+  // Virtual for testing.
+  virtual bool IsWindowShowing() const;
+
   // Virtual for testing.
   virtual bool IsWindowDetached() const;
 
@@ -188,6 +197,7 @@ class GlicKeyedService : public KeyedService {
   GlicFocusedTabManager focused_tab_manager_;
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
+  std::unique_ptr<GlicActorController> actor_controller_;
   // Unowned
   raw_ptr<GlicProfileManager> profile_manager_;
   base::OnceCallbackList<void()> web_client_created_callbacks_;

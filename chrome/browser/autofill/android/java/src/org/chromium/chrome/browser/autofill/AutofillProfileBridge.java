@@ -12,7 +12,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
-import org.chromium.components.autofill.FieldType;
+import org.chromium.components.autofill.AutofillAddressUiComponent;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -92,37 +92,6 @@ public final class AutofillProfileBridge {
         List<Integer> requiredFields = new ArrayList<>();
         AutofillProfileBridgeJni.get().getRequiredFields(countryCode, requiredFields);
         return requiredFields;
-    }
-
-    /** Description of an address editor input field. */
-    public static class AutofillAddressUiComponent {
-        /** The type of the field, e.g., FieldType.NAME_FULL. */
-        public final @FieldType int id;
-
-        /** The localized display label for the field, e.g., "City." */
-        public final String label;
-
-        /** Whether the field is required. */
-        public final boolean isRequired;
-
-        /** Whether the field takes up the full line.*/
-        public final boolean isFullLine;
-
-        /**
-         * Builds a description of an address editor input field.
-         *
-         * @param id The type of the field, .e.g., FieldType.ADDRESS_HOME_CITY.
-         * @param label The localized display label for the field, .e.g., "City."
-         * @param isRequired Whether the field is required.
-         * @param isFullLine Whether the field takes up the full line.
-         */
-        public AutofillAddressUiComponent(
-                int id, String label, boolean isRequired, boolean isFullLine) {
-            this.id = id;
-            this.label = label;
-            this.isRequired = isRequired;
-            this.isFullLine = isFullLine;
-        }
     }
 
     /**

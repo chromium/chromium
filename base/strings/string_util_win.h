@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_util.h"
 
@@ -31,7 +32,8 @@ inline int vsnprintf(char* buffer,
                      size_t size,
                      const char* format,
                      va_list arguments) {
-  int length = vsnprintf_s(buffer, size, size - 1, format, arguments);
+  int length =
+      UNSAFE_TODO(vsnprintf_s(buffer, size, size - 1, format, arguments));
   if (length < 0) {
     return _vscprintf(format, arguments);
   }

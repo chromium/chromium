@@ -130,6 +130,10 @@ ExtensionService* GetExtensionService(content::BrowserContext* context) {
   return ExtensionSystem::Get(context)->extension_service();
 }
 
+ExtensionRegistrar* GetExtensionRegistrar(content::BrowserContext* context) {
+  return ExtensionRegistrar::Get(context);
+}
+
 std::string ReadFileToString(const base::FilePath& path) {
   std::string data;
   // This call can fail, but it doesn't matter for our purposes. If it fails,
@@ -546,10 +550,11 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
 
   if (path.MatchesExtension(FILE_PATH_LITERAL(".zip"))) {
     ExtensionService* service = GetExtensionService(browser_context());
+    ExtensionRegistrar* registrar = GetExtensionRegistrar(browser_context());
     ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
                              MakeRegisterInExtensionServiceCallback(service))
         ->InstallZipFileToUnpackedExtensionsDir(
-            path, service->unpacked_install_directory());
+            path, registrar->unpacked_install_directory());
   } else {
     auto prompt = std::make_unique<ExtensionInstallPrompt>(web_contents);
     scoped_refptr<CrxInstaller> crx_installer =

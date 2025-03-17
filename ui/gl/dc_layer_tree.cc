@@ -1245,9 +1245,6 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
         // of swap chain, gl image, etc.
         video_swap_chain = std::make_unique<SwapChainPresenter>(
             this, d3d11_device_, dcomp_device_);
-        if (frame_rate_ > 0) {
-          video_swap_chain->SetFrameRate(frame_rate_);
-        }
       }
       gfx::Transform transform;
       gfx::Rect clip_rect;
@@ -1303,12 +1300,6 @@ bool DCLayerTree::GetAttachedToRootFromPreviousFrameForTesting(
              : false;
 }
 #endif  // DCHECK_IS_ON()
-
-void DCLayerTree::SetFrameRate(float frame_rate) {
-  frame_rate_ = frame_rate;
-  for (size_t ii = 0; ii < video_swap_chains_.size(); ++ii)
-    video_swap_chains_[ii]->SetFrameRate(frame_rate);
-}
 
 bool DCLayerTree::SupportsDelegatedInk() {
   return ink_renderer_->DelegatedInkIsSupported(dcomp_device_);

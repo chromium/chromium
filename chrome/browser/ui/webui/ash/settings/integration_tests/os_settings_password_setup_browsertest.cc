@@ -80,9 +80,8 @@ class OSSettingsAuthFactorSetupTestWithManagedUser
     : public OSSettingsAuthFactorSetupTest {
  public:
   OSSettingsAuthFactorSetupTestWithManagedUser()
-      : OSSettingsAuthFactorSetupTest(ash::AshAuthFactor::kCryptohomePin,
+      : OSSettingsAuthFactorSetupTest(ash::AshAuthFactor::kGaiaPassword,
                                       LoggedInUserMixin::LogInType::kManaged) {
-    cryptohome_->set_supports_low_entropy_credentials(true);
     cryptohome_->set_enable_auth_check(false);
   }
 };

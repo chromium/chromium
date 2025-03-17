@@ -301,16 +301,21 @@ export class ProfilePickerMainViewElement extends
   }
 
   protected getTitle_(): TrustedHTML {
-    const titleStringResouce = this.isProfileListLoadedAndEmptyAndGlic_() ?
-        'glicTitleNoProfile' :
-        'mainViewTitle';
+    const titleStringResouce =
+        // <if expr="enable_glic">
+        this.isProfileListLoadedAndEmptyAndGlic_() ? 'glicTitleNoProfile' :
+        // </if>
+                                                     'mainViewTitle';
     // Special styling through 'class' attribute in some version of the title.
     return this.i18nAdvanced(titleStringResouce, {attrs: ['class']});
   }
 
   protected getSubtitle_(): TrustedHTML {
-    const subtitleStringResource = this.isProfileListLoadedAndEmptyAndGlic_() ?
+    const subtitleStringResource =
+        // <if expr="enable_glic">
+        this.isProfileListLoadedAndEmptyAndGlic_() ?
         'mainViewSubtitleGlicNoProfile' :
+        // </if>
         'mainViewSubtitle';
     // Special tagging through 'class' attribute in some version of the
     // subtitle.

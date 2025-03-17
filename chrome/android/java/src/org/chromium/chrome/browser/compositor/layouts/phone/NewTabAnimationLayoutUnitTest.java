@@ -43,6 +43,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout.ViewportMode;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -62,6 +63,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link NewTabAnimationLayout}. */
@@ -86,6 +89,7 @@ public class NewTabAnimationLayoutUnitTest {
 
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     @Mock private CompositorViewHolder mCompositorViewHolder;
+    @Mock private ToolbarManager mToolbarManager;
     @Mock private SceneLayer.Natives mSceneLayerJni;
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
     @Mock private LayoutUpdateHost mUpdateHost;
@@ -96,6 +100,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private Tab mCurrentTab;
     @Mock private Tab mNewTab;
     @Mock private LayoutTab mLayoutTab;
+    @Mock private ToggleTabStackButton mTabSwitcherButton;
 
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
@@ -136,7 +141,6 @@ public class NewTabAnimationLayoutUnitTest {
         when(mCurrentTab.getId()).thenReturn(CURRENT_TAB_ID);
         when(mNewTab.getId()).thenReturn(NEW_TAB_ID);
         when(mCompositorViewHolderSupplier.get()).thenReturn(mCompositorViewHolder);
-
         when(mLayoutTab.isInitFromHostNeeded()).thenReturn(true);
         doAnswer(
                         invocation -> {
@@ -161,9 +165,12 @@ public class NewTabAnimationLayoutUnitTest {
                                 mRenderHost,
                                 mContentContainer,
                                 mCompositorViewHolderSupplier,
-                                mAnimationHostView));
+                                mAnimationHostView,
+                                mToolbarManager));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
+        when(mAnimationHostView.findViewById(R.id.tab_switcher_button))
+                .thenReturn(mTabSwitcherButton);
         mNewTabAnimationLayout.onFinishNativeInitialization();
     }
 
@@ -291,6 +298,36 @@ public class NewTabAnimationLayoutUnitTest {
         assertFalse(mNewTabAnimationLayout.isRunningAnimations());
         verify(mAnimationHostView, times(1)).removeView(any());
         verify(mTabModelSelector).selectModel(false);
+        assertTrue(mNewTabAnimationLayout.isStartingToHide());
+    }
+
+    @Test
+    public void testOnTabCreated_tabCreatedInBackground() {
+        LayoutTab[] layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
+        assertNull(layoutTabs);
+        verify(mAnimationHostView, never()).addView(any());
+
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ true,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
+        assertEquals(1, layoutTabs.length);
+        assertEquals(CURRENT_TAB_ID, layoutTabs[0].getId());
+        verify(mNewTabAnimationLayout, times(1)).forceNewTabAnimationToFinish();
+        verify(mAnimationHostView, times(1)).addView(any());
+
+        ShadowLooper.runUiThreadTasks();
+
+        assertFalse(mNewTabAnimationLayout.isRunningAnimations());
+        verify(mAnimationHostView, times(1)).removeView(any());
+        verify(mTabModelSelector, never()).selectModel(false);
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
     }
     // TODO(crbug.com/40282469): Tests for forceAnimationToFinish, updateLayout, and

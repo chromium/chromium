@@ -968,6 +968,7 @@ try_.builder(
         configs = [
             "android_builder",
             "debug_try_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "arm64",
         ],
@@ -1308,6 +1309,7 @@ try_.builder(
         configs = [
             "android_builder",
             "debug_try_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "compile_only",
             "arm64",

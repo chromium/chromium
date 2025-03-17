@@ -12,8 +12,12 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/service_process_host.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
+#include "media/mojo/mojom/video_decoder.mojom.h"
+#include "media/mojo/mojom/video_decoder_factory_process.mojom.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
+
+// TODO(crbug.com/347331029): rename this file to oop_video_decoder_factory.cc.
 
 namespace content {
 
@@ -21,27 +25,24 @@ namespace content {
 
 namespace {
 
-// StableVideoDecoderFactoryProcessLauncher is a helper singleton class that
-// launches utility processes to host a
-// media::stable::mojom::StableVideoDecoderFactory once the gpu::GpuFeatureInfo
-// is known.
-class StableVideoDecoderFactoryProcessLauncher final
+// OOPVideoDecoderFactoryProcessLauncher is a helper singleton class that
+// launches utility processes to host a media::mojom::InterfaceFactory once
+// the gpu::GpuFeatureInfo is known.
+class OOPVideoDecoderFactoryProcessLauncher final
     : public GpuDataManagerObserver {
  public:
-  static StableVideoDecoderFactoryProcessLauncher& Instance() {
-    static base::NoDestructor<StableVideoDecoderFactoryProcessLauncher>
-        instance;
+  static OOPVideoDecoderFactoryProcessLauncher& Instance() {
+    static base::NoDestructor<OOPVideoDecoderFactoryProcessLauncher> instance;
     return *instance;
   }
 
-  StableVideoDecoderFactoryProcessLauncher(
-      const StableVideoDecoderFactoryProcessLauncher&) = delete;
-  StableVideoDecoderFactoryProcessLauncher& operator=(
-      const StableVideoDecoderFactoryProcessLauncher&) = delete;
+  OOPVideoDecoderFactoryProcessLauncher(
+      const OOPVideoDecoderFactoryProcessLauncher&) = delete;
+  OOPVideoDecoderFactoryProcessLauncher& operator=(
+      const OOPVideoDecoderFactoryProcessLauncher&) = delete;
 
   void LaunchWhenGpuFeatureInfoIsKnown(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
-          receiver) {
+      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
     if (gpu_preferences_.disable_accelerated_video_decode) {
       return;
     }
@@ -51,18 +52,18 @@ class StableVideoDecoderFactoryProcessLauncher final
     }
     // base::Unretained(this) is safe because *|this| is never destroyed.
     ui_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&StableVideoDecoderFactoryProcessLauncher::
+        FROM_HERE, base::BindOnce(&OOPVideoDecoderFactoryProcessLauncher::
                                       LaunchWhenGpuFeatureInfoIsKnownOnUIThread,
                                   base::Unretained(this), std::move(receiver)));
   }
 
  private:
-  friend class base::NoDestructor<StableVideoDecoderFactoryProcessLauncher>;
+  friend class base::NoDestructor<OOPVideoDecoderFactoryProcessLauncher>;
 
-  StableVideoDecoderFactoryProcessLauncher()
+  OOPVideoDecoderFactoryProcessLauncher()
       : ui_thread_task_runner_(GetUIThreadTaskRunner({})),
         gpu_preferences_(content::GetGpuPreferencesFromCommandLine()) {}
-  ~StableVideoDecoderFactoryProcessLauncher() final = default;
+  ~OOPVideoDecoderFactoryProcessLauncher() final = default;
 
   // GpuDataManagerObserver implementation.
   void OnGpuInfoUpdate() final {
@@ -72,9 +73,10 @@ class StableVideoDecoderFactoryProcessLauncher final
     }
     // base::Unretained(this) is safe because *|this| is never destroyed.
     ui_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&StableVideoDecoderFactoryProcessLauncher::
-                                      OnGpuInfoUpdateOnUIThread,
-                                  base::Unretained(this)));
+        FROM_HERE,
+        base::BindOnce(
+            &OOPVideoDecoderFactoryProcessLauncher::OnGpuInfoUpdateOnUIThread,
+            base::Unretained(this)));
   }
 
   void OnGpuInfoUpdateOnUIThread() {
@@ -94,8 +96,7 @@ class StableVideoDecoderFactoryProcessLauncher final
   }
 
   void LaunchWhenGpuFeatureInfoIsKnownOnUIThread(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
-          receiver) {
+      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
     if (gpu_feature_info_) {
@@ -108,8 +109,7 @@ class StableVideoDecoderFactoryProcessLauncher final
   }
 
   void LaunchOnUIThread(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
-          receiver) {
+      mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
     if (gpu_feature_info_
@@ -118,13 +118,12 @@ class StableVideoDecoderFactoryProcessLauncher final
       return;
     }
 
-    mojo::Remote<media::stable::mojom::StableVideoDecoderFactoryProcess>
-        process;
+    mojo::Remote<media::mojom::VideoDecoderFactoryProcess> process;
     ServiceProcessHost::Launch(
         process.BindNewPipeAndPassReceiver(),
         ServiceProcessHost::Options().WithDisplayName("Video Decoder").Pass());
-    process->InitializeStableVideoDecoderFactory(*gpu_feature_info_,
-                                                 std::move(receiver));
+    process->InitializeVideoDecoderFactory(*gpu_feature_info_,
+                                           std::move(receiver));
     processes_.Add(std::move(process));
   }
 
@@ -132,28 +131,27 @@ class StableVideoDecoderFactoryProcessLauncher final
   const gpu::GpuPreferences gpu_preferences_;
   SEQUENCE_CHECKER(ui_sequence_checker_);
 
-  // Each utility process launched by this class hosts a
-  // StableVideoDecoderFactoryProcess implementation which is used to broker a
-  // StableVideoDecoderFactory connection. The process stays alive until either
-  // a) the StableVideoDecoderFactoryProcess connection is lost, or b) it
+  // Each utility process launched by this class hosts an
+  // OOPVideoDecoderFactoryProcess implementation which is used to broker an
+  // InterfaceFactory connection. The process stays alive until either
+  // a) the OOPVideoDecoderFactoryProcess connection is lost, or b) it
   // crashes. Case (a) will typically happen when the client that uses the
-  // StableVideoDecoderFactory connection closes its endpoint (e.g., a renderer
+  // InterfaceFactory connection closes its endpoint (e.g., a renderer
   // process dies). In that situation, the utility process should detect that
-  // the StableVideoDecoderFactory connection got lost and subsequently close
-  // the StableVideoDecoderFactoryProcess connection which should cause the
+  // the InterfaceFactory connection got lost and subsequently close
+  // the OOPVideoDecoderFactoryProcess connection which should cause the
   // termination of the process. We need to keep the
-  // StableVideoDecoderFactoryProcess connection endpoint in a RemoteSet to keep
-  // the process alive until the StableVideoDecoderFactory connection is lost.
-  mojo::RemoteSet<media::stable::mojom::StableVideoDecoderFactoryProcess>
-      processes_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
+  // OOPVideoDecoderFactoryProcess connection endpoint in a RemoteSet to keep
+  // the process alive until the InterfaceFactory connection is lost.
+  mojo::RemoteSet<media::mojom::VideoDecoderFactoryProcess> processes_
+      GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
   std::optional<gpu::GpuFeatureInfo> gpu_feature_info_
       GUARDED_BY_CONTEXT(ui_sequence_checker_);
 
-  // This member holds onto any requests for a StableVideoDecoderFactory until
+  // This member holds onto any requests for an InterfaceFactory until
   // the gpu::GpuFeatureInfo is known.
-  base::queue<
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>>
+  base::queue<mojo::PendingReceiver<media::mojom::InterfaceFactory>>
       pending_factory_receivers_ GUARDED_BY_CONTEXT(ui_sequence_checker_);
 };
 
@@ -161,11 +159,10 @@ class StableVideoDecoderFactoryProcessLauncher final
 
 #endif  // BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
 
-void LaunchStableVideoDecoderFactory(
-    mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>
-        receiver) {
+void LaunchOOPVideoDecoderFactory(
+    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
 #if BUILDFLAG(ALLOW_HOSTING_OOP_VIDEO_DECODER)
-  StableVideoDecoderFactoryProcessLauncher::Instance()
+  OOPVideoDecoderFactoryProcessLauncher::Instance()
       .LaunchWhenGpuFeatureInfoIsKnown(std::move(receiver));
 #endif
 }

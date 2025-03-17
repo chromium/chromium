@@ -34,10 +34,10 @@ const InterpolableValue& TransitionInterpolation::CurrentInterpolableValue()
 const NonInterpolableValue*
 TransitionInterpolation::CurrentNonInterpolableValue() const {
   if (merge_) {
-    return merge_.non_interpolable_value.get();
+    return merge_.non_interpolable_value.Get();
   }
-  return cached_fraction_ < 0.5 ? start_.non_interpolable_value.get()
-                                : end_.non_interpolable_value.get();
+  return cached_fraction_ < 0.5 ? start_.non_interpolable_value.Get()
+                                : end_.non_interpolable_value.Get();
 }
 
 void TransitionInterpolation::Apply(

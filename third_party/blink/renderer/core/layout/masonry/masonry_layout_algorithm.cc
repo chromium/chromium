@@ -28,11 +28,11 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   wtf_size_t start_offset;
   const auto track_collection = BuildGridAxisTracks(
       line_resolver, SizingConstraint::kLayout, &start_offset);
-  Member<GridItems> masonry_items =
+  const auto masonry_items =
       BuildMasonryItems(line_resolver, track_collection, start_offset);
 
   LayoutUnit intrinsic_block_size;
-  PlaceMasonryItems(*masonry_items, track_collection, &intrinsic_block_size);
+  PlaceMasonryItems(masonry_items, track_collection, &intrinsic_block_size);
 
   // TODO(ethavar): Compute the actual block size for the fragment.
   container_builder_.SetFragmentsTotalBlockSize(intrinsic_block_size);
@@ -72,7 +72,7 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
   *intrinsic_block_size += BorderScrollbarPadding().BlockSum();
 }
 
-GridItems* MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
+GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
     const GridLineResolver& line_resolver,
     wtf_size_t* start_offset) const {
   DCHECK(start_offset);
@@ -81,7 +81,7 @@ GridItems* MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
       Node().CollectItemGroups(line_resolver, start_offset);
   DCHECK_GE(*start_offset, 0u);
 
-  GridItems* virtual_items = MakeGarbageCollected<blink::GridItems>();
+  GridItems virtual_items;
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
 
@@ -101,7 +101,7 @@ GridItems* MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
       // single virtual masonry item within the specified span.
       span.Translate(*start_offset);
       virtual_item->resolved_position.SetSpan(span, grid_axis_direction);
-      virtual_items->Append(std::move(virtual_item));
+      virtual_items.Append(virtual_item);
       continue;
     }
 
@@ -142,14 +142,14 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
 
   const auto& style = Style();
   const auto grid_axis_direction = style.MasonryTrackSizingDirection();
-  auto* virtual_items = BuildVirtualMasonryItems(line_resolver, start_offset);
+  auto virtual_items = BuildVirtualMasonryItems(line_resolver, start_offset);
 
   auto BuildRanges = [&]() {
     GridRangeBuilder range_builder(
         style, grid_axis_direction,
         line_resolver.AutoRepetitions(grid_axis_direction), *start_offset);
 
-    for (auto& virtual_item : *virtual_items) {
+    for (auto& virtual_item : virtual_items) {
       auto& range_indices = virtual_item.RangeIndices(grid_axis_direction);
       const auto& span = virtual_item.Span(grid_axis_direction);
 
@@ -167,14 +167,14 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
 
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,
-                                                       virtual_items);
+                                                       &virtual_items);
 
     // TODO(ethavar): Compute the min available size and use it here.
     const GridTrackSizingAlgorithm track_sizing_algorithm(
         style, ChildAvailableSize(), ChildAvailableSize(), sizing_constraint);
 
     track_sizing_algorithm.ComputeUsedTrackSizes(
-        ContributionSizeForVirtualItem, &track_collection, virtual_items);
+        ContributionSizeForVirtualItem, &track_collection, &virtual_items);
   }
 
   auto first_set_geometry = GridTrackSizingAlgorithm::ComputeFirstSetGeometry(
@@ -185,16 +185,16 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
   return track_collection;
 }
 
-GridItems* MasonryLayoutAlgorithm::BuildMasonryItems(
+GridItems MasonryLayoutAlgorithm::BuildMasonryItems(
     const GridLineResolver& line_resolver,
     const GridLayoutTrackCollection& track_collection,
     wtf_size_t start_offset) const {
-  auto* masonry_items =
+  auto masonry_items =
       Node().ConstructMasonryItems(line_resolver, start_offset);
 
   // TODO(celestepan): Implement placement algorithm here.
 
-  for (auto& masonry_item : *masonry_items) {
+  for (auto& masonry_item : masonry_items) {
     if (masonry_item.Span(track_collection.Direction()).IsIndefinite()) {
       // TODO(ethavar): Currently we need to skip over auto-placed items and
       // force their indices to the first set in the track collection.

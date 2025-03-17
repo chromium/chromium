@@ -19,6 +19,6 @@
 # - No target in this project depends on forwarded internal dependencies.
 
 # *** START OF LIST ***
-../androidx/cipd/build.gradle:androidx
+../androidx/build.gradle:androidx
 # Commented out until the first roll is done.
-#./autorolled/cipd/build.gradle:autorolled
+./autorolled/build.gradle:autorolled

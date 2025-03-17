@@ -95,7 +95,7 @@
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -201,7 +201,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       public metrics::HistogramChildProcess
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
     ,
-      public media::stable::mojom::StableVideoDecoderTracker
+      public media::mojom::VideoDecoderTracker
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 {
  public:
@@ -838,9 +838,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
       override;
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder> receiver)
-      override;
+  void CreateOOPVideoDecoder(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) override;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   void BindP2PSocketManager(
@@ -866,19 +865,17 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  using StableVideoDecoderFactoryCreationCB = base::RepeatingCallback<void(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoderFactory>)>;
-  static void SetStableVideoDecoderFactoryCreationCBForTesting(
-      StableVideoDecoderFactoryCreationCB cb);
+  using VideoDecoderFactoryCreationCB = base::RepeatingCallback<void(
+      mojo::PendingReceiver<media::mojom::InterfaceFactory>)>;
+  static void SetVideoDecoderFactoryCreationCBForTesting(
+      VideoDecoderFactoryCreationCB cb);
 
-  enum class StableVideoDecoderEvent {
+  enum class VideoDecoderEvent {
     kFactoryResetTimerStopped,
     kAllDecodersDisconnected,
   };
-  using StableVideoDecoderEventCB =
-      base::RepeatingCallback<void(StableVideoDecoderEvent)>;
-  static void SetStableVideoDecoderEventCBForTesting(
-      StableVideoDecoderEventCB cb);
+  using VideoDecoderEventCB = base::RepeatingCallback<void(VideoDecoderEvent)>;
+  static void SetVideoDecoderEventCBForTesting(VideoDecoderEventCB cb);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   void GetBoundInterfacesForTesting(std::vector<std::string>& out);
@@ -1255,9 +1252,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool AreAllRefCountsZero();
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void OnStableVideoDecoderDisconnected();
+  void OnVideoDecoderDisconnected();
 
-  void ResetStableVideoDecoderFactory();
+  void ResetVideoDecoderFactory();
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   mojo::OutgoingInvitation mojo_invitation_;
@@ -1432,24 +1429,22 @@ class CONTENT_EXPORT RenderProcessHostImpl
   std::unique_ptr<PermissionServiceContext> permission_service_context_;
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  // Connection to the StableVideoDecoderFactory that lives in a utility
+  // Connection to the InterfaceFactory that lives in a utility
   // process. This is only used for out-of-process video decoding.
-  mojo::Remote<media::stable::mojom::StableVideoDecoderFactory>
-      stable_video_decoder_factory_remote_;
+  mojo::Remote<media::mojom::InterfaceFactory> video_decoder_factory_remote_;
 
-  // Using |stable_video_decoder_trackers_|, we track the StableVideoDecoders
-  // that have been created using |stable_video_decoder_factory_remote_|. That
-  // way, we know when the remote StableVideoDecoder dies.
-  mojo::ReceiverSet<media::stable::mojom::StableVideoDecoderTracker>
-      stable_video_decoder_trackers_;
+  // Using |video_decoder_trackers_|, we track the VideoDecoders
+  // that have been created using |video_decoder_factory_remote_|. That way, we
+  // know when the remote VideoDecoder dies.
+  mojo::ReceiverSet<media::mojom::VideoDecoderTracker> video_decoder_trackers_;
 
-  // |stable_video_decoder_factory_reset_timer_| allows us to delay the reset()
-  // of |stable_video_decoder_factory_remote_|: after all StableVideoDecoders
-  // have disconnected, we wait for the timer to trigger, and if no request
-  // comes in to create a StableVideoDecoder before that, we reset the
-  // |stable_video_decoder_factory_remote_| which should cause the destruction
-  // of the remote video decoder utility process.
-  base::OneShotTimer stable_video_decoder_factory_reset_timer_;
+  // |video_decoder_factory_reset_timer_| allows us to delay the reset() of
+  // |video_decoder_factory_remote_|: after all VideoDecoders have disconnected,
+  // we wait for the timer to trigger, and if no request comes in to create a
+  // VideoDecoder before that, we reset the |video_decoder_factory_remote_|
+  // which should cause the destruction of the remote video decoder utility
+  // process.
+  base::OneShotTimer video_decoder_factory_reset_timer_;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_FUCHSIA)

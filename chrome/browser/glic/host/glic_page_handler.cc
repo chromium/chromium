@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/host/glic_page_handler.h"
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
@@ -161,6 +162,12 @@ class ActiveStateCalculator : public GlicWindowController::StateObserver {
   raw_ptr<Browser> attached_browser_ = nullptr;
 };
 
+mojom::WebClientSizingMode GetWebClientSizingMode() {
+  return base::FeatureList::IsEnabled(features::kGlicSizingFitWindow)
+             ? glic::mojom::WebClientSizingMode::kFitWindow
+             : glic::mojom::WebClientSizingMode::kNatural;
+}
+
 }  // namespace
 
 // WARNING: One instance of this class is created per WebUI navigated to
@@ -227,6 +234,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
+    system_permission_settings_observation_ =
+        system_permission_settings::Observe(base::BindRepeating(
+            &GlicWebClientHandler::OnOsPermissionSettingChanged,
+            base::Unretained(this)));
+
     auto state = glic::mojom::WebClientInitialState::New();
     state->chrome_version = version_info::GetVersion();
     state->microphone_permission_enabled =
@@ -235,6 +247,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         pref_service_->GetBoolean(prefs::kGlicGeolocationEnabled);
     state->tab_context_permission_enabled =
         pref_service_->GetBoolean(prefs::kGlicTabContextEnabled);
+    state->os_location_permission_enabled =
+        system_permission_settings::IsAllowed(ContentSettingsType::GEOLOCATION);
 
     state->panel_state =
         glic_service_->window_controller().GetPanelState().Clone();
@@ -243,6 +257,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         CreateFocusedTabData(glic_service_->GetFocusedTabData());
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
     state->panel_is_active = active_state_calculator_.IsActive();
+
+    state->sizing_mode = GetWebClientSizingMode();
 
     std::move(callback).Run(std::move(state));
     glic_service_->WebClientCreated();
@@ -454,13 +470,22 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OpenOsPermissionSettingsMenu(ContentSettingsType type) override {
-    if (type == ContentSettingsType::MEDIASTREAM_MIC ||
-        type == ContentSettingsType::GEOLOCATION) {
-      system_permission_settings::OpenSystemSettings(
-          page_handler_->webui_contents(), type);
-    } else {
-      NOTIMPLEMENTED();
+    if (type != ContentSettingsType::MEDIASTREAM_MIC &&
+        type != ContentSettingsType::GEOLOCATION) {
+      // This will terminate the render process.
+      mojo::ReportBadMessage(
+          "OpenOsPermissionSettingsMenu received for unsupported "
+          "OS permission.");
+      return;
     }
+    system_permission_settings::OpenSystemSettings(
+        page_handler_->webui_contents(), type);
+  }
+
+  void GetOsMicrophonePermissionStatus(
+      GetOsMicrophonePermissionStatusCallback callback) override {
+    std::move(callback).Run(system_permission_settings::IsAllowed(
+        ContentSettingsType::MEDIASTREAM_MIC));
   }
 
   // GlicWindowController::StateObserver implementation.
@@ -497,6 +522,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void ActiveStateChanged(bool is_active) override {
     if (web_client_) {
       web_client_->NotifyPanelActiveChange(is_active);
+    }
+  }
+
+  void OnOsPermissionSettingChanged(ContentSettingsType content_type,
+                                    bool is_blocked) {
+    // Ignore other content types.
+    if (content_type == ContentSettingsType::GEOLOCATION) {
+      web_client_->NotifyOsLocationPermissionStateChanged(!is_blocked);
     }
   }
 
@@ -557,6 +590,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   mojo::Remote<glic::mojom::WebClient> web_client_;
   std::unique_ptr<BrowserAttachObservation> browser_attach_observation_;
   std::unique_ptr<GlicAnnotationManager> annotation_manager_;
+  std::unique_ptr<system_permission_settings::ScopedObservation>
+      system_permission_settings_observation_;
 };
 
 GlicPageHandler::GlicPageHandler(

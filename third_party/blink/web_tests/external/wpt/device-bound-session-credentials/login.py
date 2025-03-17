@@ -22,11 +22,11 @@ def main(request, response):
     authorization_value = session_manager.find_for_request(request).get_authorization_value()
     authorization_header = ""
     if authorization_value is not None:
-        authorization_header = ';authorization="' + authorization_value + '"'
+        authorization_header = f';authorization="{authorization_value}"'
 
     registrations = []
     for i in range(num_sessions):
-        registrations.append(('Sec-Session-Registration', '(RS256);challenge="login_challenge_value";path="' + registration_url + '"' + authorization_header))
+        registrations.append(('Sec-Session-Registration', f'(RS256);challenge="login_challenge_value";path="{registration_url}"{authorization_header}'))
 
     if use_single_header:
         combined_registrations = [("Sec-Session-Registration", ", ".join([registration[1] for registration in registrations]))]

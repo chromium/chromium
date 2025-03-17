@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "net/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -82,7 +83,7 @@ void PageInfoSecurityContentView::SetIdentityInfo(
     security_view_->SetSummary(security_description->summary,
                                views::style::STYLE_BODY_3_MEDIUM);
   }
-  security_view_->SetDetails(
+  security_view_->SetDetailsWithLearnMore(
       security_description->details,
       base::BindRepeating(&PageInfoSecurityContentView::SecurityDetailsClicked,
                           base::Unretained(this)));
@@ -137,6 +138,39 @@ void PageInfoSecurityContentView::SetIdentityInfo(
             IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
             base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
             base::UTF8ToUTF16(certificate_->subject().country_name));
+      }
+    }
+
+    if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs)) {
+      // If QWAC info line has been added previously, remove the old one before
+      // recreating it. Re-adding it bumps it to the bottom of the
+      // container, but its unlikely that the user will notice, since other
+      // things are changing too.
+      if (one_qwac_view_) {
+        RemoveChildViewT(one_qwac_view_.get());
+      }
+      if (identity_info.identity_status ==
+              PageInfo::SITE_IDENTITY_STATUS_1QWAC_CERT &&
+          identity_info.connection_status ==
+              PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED) {
+        one_qwac_view_ = AddChildView(std::make_unique<SecurityInformationView>(
+            ChromeLayoutProvider::Get()
+                ->GetInsetsMetric(views::INSETS_DIALOG)
+                .left()));
+        one_qwac_view_->SetSummary(
+            l10n_util::GetStringUTF16(IDS_PAGE_INFO_QWAC_STATUS_TITLE),
+            views::style::STYLE_BODY_3_MEDIUM);
+        // TODO(crbug.com/392934324): import & use correct icon.
+        one_qwac_view_->SetIcon(
+            PageInfoViewFactory::GetImageModel(vector_icons::kCertificateIcon));
+        if (certificate_ &&
+            !certificate_->subject().organization_names.empty() &&
+            !certificate_->subject().country_name.empty()) {
+          one_qwac_view_->SetDetails(l10n_util::GetStringFUTF16(
+              IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED,
+              base::UTF8ToUTF16(certificate_->subject().organization_names[0]),
+              base::UTF8ToUTF16(certificate_->subject().country_name)));
+        }
       }
     }
 

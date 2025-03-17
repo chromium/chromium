@@ -25,6 +25,7 @@ component("growth") {
     "//ash/constants",
     "//ash/resources/vector_icons",
     "//ash/webui/mall/resources:resources_grit",
+    "//ash/webui/personalization_app/resources:resources_grit",
     "//ash/webui/print_management/resources:resources_grit",
     "//base",
     "//build:branding_buildflags",

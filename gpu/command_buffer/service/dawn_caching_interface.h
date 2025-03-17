@@ -97,8 +97,7 @@ class GPU_GLES2_EXPORT DawnCachingInterface
     : public dawn::platform::CachingInterface {
  public:
   using CacheBlobCallback =
-      base::RepeatingCallback<void(gpu::GpuDiskCacheType type,
-                                   const std::string& key,
+      base::RepeatingCallback<void(const std::string& key,
                                    const std::string& blob)>;
 
   ~DawnCachingInterface() override;

@@ -3052,6 +3052,12 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="3016" label="kAnnotationsCrashInfoMessage1"/>
   <int value="3017" label="kAnnotationsCrashInfoMessage2"/>
   <int value="3018" label="kAnnotationsDyldErrorString"/>
+  <int value="3019" label="kModuleExtraMemoryRegions"/>
+  <int value="3020" label="kModuleExtraMemoryRegionAddress"/>
+  <int value="3021" label="kModuleExtraMemoryRegionData"/>
+  <int value="3022" label="kModuleIntermediateDumpExtraMemoryRegions"/>
+  <int value="3023" label="kModuleIntermediateDumpExtraMemoryRegionAddress"/>
+  <int value="3024" label="kModuleIntermediateDumpExtraMemoryRegionData"/>
   <int value="4000" label="kProcessInfo"/>
   <int value="4001" label="kParentPID"/>
   <int value="4002" label="kPID"/>
@@ -9127,6 +9133,7 @@ from previous Chrome versions.
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1949364473" label="webview-disable-app-recovery"/>
   <int value="-1948236151" label="DrawPredictedInkPoint:disabled"/>
+  <int value="-1946713268" label="AdjustGetOrCreate2DCanvasProvider:enabled"/>
   <int value="-1946595906" label="enable-push-api-background-mode"/>
   <int value="-1946522787" label="VrCustomTabBrowsing:disabled"/>
   <int value="-1946496305" label="TailoredSecurityUpdatedMessages:enabled"/>
@@ -10790,6 +10797,8 @@ from previous Chrome versions.
   <int value="-1300934428" label="ExternalNavigationDebugLogs:enabled"/>
   <int value="-1300692087" label="SplitTabStrip:enabled"/>
   <int value="-1299599424" label="VcDlcUi:disabled"/>
+  <int value="-1298383654"
+      label="IsPaintableChecksResourceProviderInsteadOfBridge:enabled"/>
   <int value="-1298273481" label="http2-grease-settings"/>
   <int value="-1298067767" label="CalendarModelDebugMode:disabled"/>
   <int value="-1297664593" label="SafetyHubMagicStack:enabled"/>
@@ -11396,6 +11405,7 @@ from previous Chrome versions.
   <int value="-1060395248" label="PasswordSearchMobile:enabled"/>
   <int value="-1059478136" label="PreinstalledWebAppDuplicationFixer:enabled"/>
   <int value="-1057056167" label="VirtualKeyboardMultipaste:enabled"/>
+  <int value="-1056947847" label="OfflineItemsInNotifications:disabled"/>
   <int value="-1056860259"
       label="OmniboxEnableClipboardProviderImageSuggestions:enabled"/>
   <int value="-1056629722" label="AssistantIntentTranslateInfo:enabled"/>
@@ -11676,6 +11686,7 @@ from previous Chrome versions.
   <int value="-954972757"
       label="QuickAnswersAlwaysTriggerForSingleWord:enabled"/>
   <int value="-954789862" label="ProductivityLauncher:enabled"/>
+  <int value="-954302223" label="OfflineItemsInNotifications:enabled"/>
   <int value="-953440781" label="SimplifiedBookmarkSaveFlow:disabled"/>
   <int value="-953330528" label="UserAgentOverrideExperiment:disabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
@@ -12204,6 +12215,7 @@ from previous Chrome versions.
   <int value="-738957187" label="OmniboxUIExperimentSwapTitleAndUrl:disabled"/>
   <int value="-738264153" label="WaylandScreenCoordinatesEnabled:enabled"/>
   <int value="-737740161" label="SupportForAddPasswordsInSettings:enabled"/>
+  <int value="-737134288" label="AdjustGetOrCreate2DCanvasProvider:disabled"/>
   <int value="-737020263" label="EnterpriseProfileBadgingForAvatar:disabled"/>
   <int value="-736477364" label="HTMLParamElementUrlSupport:disabled"/>
   <int value="-735827773" label="PageInfoHistoryDesktop:enabled"/>
@@ -15817,6 +15829,8 @@ from previous Chrome versions.
   <int value="683013217" label="AllowPopupsDuringPageUnload:disabled"/>
   <int value="683366957" label="ExoSurroundingTextOffset:disabled"/>
   <int value="683433500" label="CommerceMerchantViewer:disabled"/>
+  <int value="683685658"
+      label="IsPaintableChecksResourceProviderInsteadOfBridge:disabled"/>
   <int value="683746280" label="PrivacyGuideAndroid:disabled"/>
   <int value="683826038" label="OmniboxQueryTilesInZPSOnNTP:enabled"/>
   <int value="684112629" label="BluetoothCoredump:disabled"/>
@@ -18936,6 +18950,8 @@ from previous Chrome versions.
   <int value="1870023694" label="AccessibilityDeprecateChromeVoxTabs:enabled"/>
   <int value="1870187746" label="TabStripTransitionInDesktopWindow:enabled"/>
   <int value="1870973833" label="AssistantEnableStereoAudioInput:enabled"/>
+  <int value="1871544744"
+      label="AdjustCanCreateCanvas2dResourceProvider:disabled"/>
   <int value="1871938175" label="FontSrcLocalMatching:disabled"/>
   <int value="1872185826" label="LocationHardReload:enabled"/>
   <int value="1872768755" label="BackgroundResourceFetch:disabled"/>
@@ -19399,6 +19415,8 @@ from previous Chrome versions.
   <int value="2053479012" label="PersistDeviceBoundSessions:disabled"/>
   <int value="2055184887" label="LocalHistoryZeroSuggestBeyondNTP:enabled"/>
   <int value="2056572020" label="EnableUsernameCorrection:disabled"/>
+  <int value="2057964838"
+      label="AdjustCanCreateCanvas2dResourceProvider:enabled"/>
   <int value="2058148069" label="UseMessagesStagingUrl:enabled"/>
   <int value="2058283872" label="CCTModuleCache:disabled"/>
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>
@@ -22358,6 +22376,12 @@ Called by update_net_error_codes.py.-->
       label="Tried to record metrics during a pending metrics recording task"/>
   <int value="1" label="Metrics were changed during recording"/>
   <int value="2" label="Failed to measure a particular metric value"/>
+</enum>
+
+<enum name="PreFreezeReadProcMapsType">
+  <int value="0" label="Failed to read /proc/self/maps"/>
+  <int value="1" label="/proc/self/maps is empty"/>
+  <int value="2" label="Read /proc/self/maps successfully"/>
 </enum>
 
 <enum name="PreloadingTriggeringOutcome">

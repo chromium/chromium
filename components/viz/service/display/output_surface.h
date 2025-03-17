@@ -264,8 +264,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
       const gfx::SwapResponse& response,
       std::vector<ui::LatencyInfo>* latency_info);
 
+#if BUILDFLAG(IS_ANDROID)
   // Notifies the OutputSurface of rate of content updates in frames per second.
   virtual void SetFrameRate(float frame_rate) {}
+#endif
 
   // Sends the pending delegated ink renderer receiver to GPU Main to allow the
   // browser process to send points directly there.
