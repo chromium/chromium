@@ -1634,6 +1634,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillAiIgnoreGeoIp",
                         "AutofillAiWithDataSchema"
                     ]
                 }

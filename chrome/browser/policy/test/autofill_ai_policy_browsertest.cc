@@ -45,6 +45,13 @@ class AutofillAiPolicyTest
     : public PolicyTest,
       public testing::WithParamInterface<ModelExecutionEnterprisePolicyValue> {
  public:
+  AutofillAiPolicyTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {autofill::features::kAutofillAiWithDataSchema,
+         autofill::features::kAutofillAiIgnoreGeoIp},
+        {});
+  }
+
   ModelExecutionEnterprisePolicyValue policy_value() const {
     return GetParam();
   }
@@ -103,8 +110,7 @@ class AutofillAiPolicyTest
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
