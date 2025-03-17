@@ -131,7 +131,7 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
       return;
     case kImage:
     case kText:
-      // TODO(crbug.com/398803565): Add the search actions for image and text.
+      [self.delegate didTapSearchInChromeShareExtensionSheet:self];
       return;
   }
 }
