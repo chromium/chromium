@@ -228,10 +228,8 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
         delegate_->HandleEnclaveTransactionError();
         return;
       }
-      if (base::FeatureList::IsEnabled(device::kWebAuthnUpdateLastUsed)) {
-        passkey_model_->UpdatePasskeyTimestamp(
-            selected_credential->credential_id(), base::Time::Now());
-      }
+      passkey_model_->UpdatePasskeyTimestamp(
+          selected_credential->credential_id(), base::Time::Now());
 
       if (use_unwrapped_secret) {
         std::tie(std::ignore, request->secret) =

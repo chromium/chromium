@@ -84,10 +84,6 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnPublishPrelinkingInfo);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Update the "last_used" timestamp in GPM passkeys when asserted.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnUpdateLastUsed);
-
 // Enables the WebAuthn Signal API for Windows Hello.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHelloSignal);

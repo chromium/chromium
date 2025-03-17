@@ -116,11 +116,6 @@ BASE_FEATURE(kWebAuthnPublishPrelinkingInfo,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Update the "last used" timestamp for GPM passkeys when asserted.
-BASE_FEATURE(kWebAuthnUpdateLastUsed,
-             "WebAuthenticationUpdateLastUsed",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disabled by default.
 BASE_FEATURE(kWebAuthnHelloSignal,
              "WebAuthenticationHelloSignal",
