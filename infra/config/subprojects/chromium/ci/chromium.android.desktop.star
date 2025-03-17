@@ -263,6 +263,9 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.desktop.emulator_15.android_browsertests.filter",
                 ],
+                # TODO(crbug.com/401854645): Re-enable the CQ when emulator
+                # flake rate subsides.
+                ci_only = True,
                 swarming = targets.swarming(
                     shards = 20,
                 ),
