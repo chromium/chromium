@@ -1780,6 +1780,11 @@ bool ContentBrowserClient::IsBlobUrlPartitioningEnabled(
   return true;
 }
 
+bool ContentBrowserClient::ShouldReduceAcceptLanguage(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
 bool ContentBrowserClient::UseOutermostMainFrameOrEmbedderForSubCaptureTargets()
     const {
   return false;

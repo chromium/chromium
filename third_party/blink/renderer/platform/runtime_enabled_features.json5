@@ -3525,11 +3525,11 @@
       name: "ReadableStreamAsyncIterable",
       status: "stable",
     },
-    // If enabled, the Accept-Language header will be reduced.
+    // If enabled, both Accept-Language HTTP header and JavaScript getter will
+    // be reduced.
     {
       name: "ReduceAcceptLanguage",
       base_feature: "none",
-      origin_trial_feature_name: "ReduceAcceptLanguage"
     },
     {
       // If enabled, the deviceModel will be reduced to "K" and the
