@@ -379,7 +379,12 @@ RenderWidgetHostViewChildFrame::GetDisplayFeature() {
   NOTREACHED();
 }
 
-void RenderWidgetHostViewChildFrame::SetDisplayFeatureForTesting(
+void RenderWidgetHostViewChildFrame::
+    DisableDisplayFeatureOverrideForEmulation() {
+  NOTREACHED();
+}
+
+void RenderWidgetHostViewChildFrame::OverrideDisplayFeatureForEmulation(
     const DisplayFeature*) {
   NOTREACHED();
 }

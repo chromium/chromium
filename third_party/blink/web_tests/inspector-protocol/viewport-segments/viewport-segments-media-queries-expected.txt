@@ -1,0 +1,12 @@
+Test the Viewport Segments Media Queries.
+matchMedia('(vertical-viewport-segments: 2)').matches :
+false
+matchMedia('(horizontal-viewport-segments: 2)').matches :
+false
+matchMedia('(horizontal-viewport-segments: 2)').matches :
+false
+Media Query change event horizontal matches: true
+matchMedia('(vertical-viewport-segments: 2)').matches :
+false
+Media Query change event vertical matches: true
+

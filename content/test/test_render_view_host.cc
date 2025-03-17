@@ -263,7 +263,11 @@ TestRenderWidgetHostView::CreateSyntheticGestureTarget() {
 
 void TestRenderWidgetHostView::UpdateBackgroundColor() {}
 
-void TestRenderWidgetHostView::SetDisplayFeatureForTesting(
+void TestRenderWidgetHostView::DisableDisplayFeatureOverrideForEmulation() {
+  display_feature_ = std::nullopt;
+}
+
+void TestRenderWidgetHostView::OverrideDisplayFeatureForEmulation(
     const DisplayFeature* display_feature) {
   if (display_feature)
     display_feature_ = *display_feature;
