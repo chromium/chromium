@@ -206,7 +206,7 @@
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
-#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -345,7 +345,7 @@ enum class ToolbarKind {
     PasswordSettingsCoordinatorDelegate,
     PasswordSuggestionCommands,
     PasswordSuggestionCoordinatorDelegate,
-    PriceNotificationsCommands,
+    PriceTrackedItemsCommands,
     PromosManagerCommands,
     PolicyChangeCommands,
     PreloadControllerDelegate,
@@ -823,7 +823,7 @@ enum class ToolbarKind {
   self.passwordSettingsCoordinator.delegate = nil;
   self.passwordSettingsCoordinator = nil;
 
-  [self hidePriceNotifications];
+  [self hidePriceTrackedItems];
 
   [self.unitConversionCoordinator stop];
   self.unitConversionCoordinator = nil;
@@ -864,7 +864,7 @@ enum class ToolbarKind {
 
 // Display price tracking menu, optionally showing the current page the user
 // is navigated to.
-- (void)showPriceNotifications:(BOOL)showCurrentPage {
+- (void)showPriceTrackedItems:(BOOL)showCurrentPage {
   self.priceNotificationsViewCoordinator =
       [[PriceNotificationsViewCoordinator alloc]
           initWithBaseViewController:self.viewController
@@ -1031,7 +1031,7 @@ enum class ToolbarKind {
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
     @protocol(PolicyChangeCommands),
-    @protocol(PriceNotificationsCommands),
+    @protocol(PriceTrackedItemsCommands),
     @protocol(QuickDeleteCommands),
     @protocol(SaveToDriveCommands),
     @protocol(SaveToPhotosCommands),
@@ -1539,7 +1539,7 @@ enum class ToolbarKind {
   [self.printCoordinator stop];
   self.printCoordinator = nil;
 
-  [self hidePriceNotifications];
+  [self hidePriceTrackedItems];
 
   [self.promosManagerCoordinator stop];
   self.promosManagerCoordinator = nil;
@@ -3141,22 +3141,22 @@ enum class ToolbarKind {
   [self.passwordSuggestionCoordinator start];
 }
 
-#pragma mark - PriceNotificationsCommands
+#pragma mark - PriceTrackedItemsCommands
 
-- (void)showPriceNotificationsWithCurrentPage {
-  [self showPriceNotifications:YES];
+- (void)showPriceTrackedItemsWithCurrentPage {
+  [self showPriceTrackedItems:YES];
 }
 
-- (void)showPriceNotifications {
-  [self showPriceNotifications:NO];
+- (void)showPriceTrackedItems {
+  [self showPriceTrackedItems:NO];
 }
 
-- (void)hidePriceNotifications {
+- (void)hidePriceTrackedItems {
   [self.priceNotificationsViewCoordinator stop];
   self.priceNotificationsViewCoordinator = nil;
 }
 
-- (void)presentPriceNotificationsWhileBrowsingIPH {
+- (void)presentPriceTrackedItemsWhileBrowsingIPH {
   [HandlerForProtocol(_dispatcher, HelpCommands)
       presentInProductHelpWithType:InProductHelpType::
                                        kPriceNotificationsWhileBrowsing];

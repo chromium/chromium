@@ -6,7 +6,6 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {CrToolbarSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -20,7 +19,6 @@ import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customizatio
 import type {MojoSearchResult} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorState} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('searchBoxTest', function() {
@@ -137,16 +135,6 @@ suite('searchBoxTest', function() {
   test('SearchBoxLoaded', () => {
     [searchBoxElement] = initSearchBoxElement();
     assertTrue(!!searchBoxElement);
-  });
-
-  test('Focus search input on open', async () => {
-    [searchBoxElement, searchFieldElement] = initSearchBoxElement();
-
-    waitAfterNextRender(searchBoxElement);
-    await flushTasks();
-
-    // The search input should be focused after the first render.
-    assertEquals(searchFieldElement.getSearchInput(), getDeepActiveElement());
   });
 
   test('SearchResultsPopulated', async () => {

@@ -4,9 +4,15 @@
 
 #include "chrome/browser/glic/glic_keyed_service.h"
 
+#include <memory>
+
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
@@ -20,13 +26,16 @@
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic_actor_controller.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -37,45 +46,6 @@
 #include "url/gurl.h"
 
 namespace glic {
-
-namespace {
-// TODO(https://crbug.com/402086021): Move acting code to its own file.
-mojom::ActInFocusedTabErrorReason ConvertErrorReason(
-    mojom::GetTabContextErrorReason error_reason) {
-  switch (error_reason) {
-    case mojom::GetTabContextErrorReason::kUnknown:
-      return mojom::ActInFocusedTabErrorReason::kUnknown;
-    case mojom::GetTabContextErrorReason::kWebContentsChanged:
-    case mojom::GetTabContextErrorReason::kPermissionDenied:
-    case mojom::GetTabContextErrorReason::kUnsupportedUrl:
-    case mojom::GetTabContextErrorReason::kNoFocusableTabs:
-      return mojom::ActInFocusedTabErrorReason::kGetContextFailed;
-  }
-  return mojom::ActInFocusedTabErrorReason::kUnknown;
-}
-
-void OnGetContextFromFocusedTab(
-    mojom::WebClientHandler::ActInFocusedTabCallback callback,
-    mojom::GetContextResultPtr tab_context_result) {
-  if (tab_context_result->is_error_reason()) {
-    mojom::ActInFocusedTabResultPtr result =
-        mojom::ActInFocusedTabResult::NewErrorReason(
-            ConvertErrorReason(tab_context_result->get_error_reason()));
-    UMA_HISTOGRAM_ENUMERATION("Glic.Action.ActInFocusedTabErrorReason",
-                              result->get_error_reason());
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  mojom::ActInFocusedTabResultPtr result =
-      mojom::ActInFocusedTabResult::NewActInFocusedTabResponse(
-          mojom::ActInFocusedTabResponse::New(
-              std::move(tab_context_result->get_tab_context())));
-
-  std::move(callback).Run(std::move(result));
-}
-
-}  // namespace
 
 GlicKeyedService::GlicKeyedService(Profile* profile,
                                    signin::IdentityManager* identity_manager,
@@ -108,6 +78,10 @@ GlicKeyedService::GlicKeyedService(Profile* profile,
     profile_->GetPrefs()->SetBoolean(prefs::kGlicCompletedFre, true);
   }
 
+  if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+    actor_controller_ = std::make_unique<GlicActorController>();
+  }
+
   // This is only used by automation for tests.
   profile_manager_->MaybeAutoOpenGlicPanel();
 }
@@ -122,8 +96,8 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 }
 
 void GlicKeyedService::Shutdown() {
-  window_controller_->Shutdown();
-  SetContextAccessIndicator(false);
+  CloseUI();
+  profile_manager_->OnServiceShutdown(this);
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
@@ -136,6 +110,11 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
 
   profile_manager_->SetActiveGlic(this);
   window_controller_->Toggle(bwi, prevent_close, source);
+}
+
+void GlicKeyedService::CloseUI() {
+  window_controller_->Shutdown();
+  SetContextAccessIndicator(false);
 }
 
 void GlicKeyedService::GuestAdded(content::WebContents* guest_contents) {
@@ -302,10 +281,30 @@ void GlicKeyedService::ActInFocusedTab(
     const std::vector<uint8_t>& action_proto,
     const mojom::GetTabContextOptions& options,
     mojom::WebClientHandler::ActInFocusedTabCallback callback) {
-  // TODO(https://crbug.com/402086021): Use actor tool service.
-  // For now, just call GetContextFromFocusedTab.
-  GetContextFromFocusedTab(
-      options, base::BindOnce(OnGetContextFromFocusedTab, std::move(callback)));
+  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    mojom::ActInFocusedTabResultPtr result =
+        mojom::ActInFocusedTabResult::NewErrorReason(
+            mojom::ActInFocusedTabErrorReason::kUnknown);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+    return;
+  }
+
+  optimization_guide::proto::BrowserAction action;
+  if (!action.ParseFromArray(action_proto.data(), action_proto.size())) {
+    mojom::ActInFocusedTabResultPtr result =
+        mojom::ActInFocusedTabResult::NewErrorReason(
+            mojom::ActInFocusedTabErrorReason::kInvalidActionProto);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+    return;
+  }
+
+  CHECK(actor_controller_);
+  actor_controller_->Act(GetFocusedTabData(), action, options,
+                         std::move(callback));
 }
 
 void GlicKeyedService::CaptureScreenshot(

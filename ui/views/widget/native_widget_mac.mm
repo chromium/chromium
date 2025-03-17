@@ -193,6 +193,18 @@ void NativeWidgetMac::OnWindowKeyStatusChanged(
   }
 }
 
+void NativeWidgetMac::OnWindowWillStartLiveResize() {
+  if (delegate_) {
+    delegate_->OnNativeWidgetUserResizeStarted();
+  }
+}
+
+void NativeWidgetMac::OnWindowDidEndLiveResize() {
+  if (delegate_) {
+    delegate_->OnNativeWidgetUserResizeEnded();
+  }
+}
+
 int32_t NativeWidgetMac::SheetOffsetY() {
   return 0;
 }

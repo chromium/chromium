@@ -100,7 +100,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
-    "//ios/chrome/browser/voice/ui_bundled:voice",
+    "//ios/chrome/browser/voice/ui_bundled",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",

@@ -47,6 +47,7 @@
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/context_factory.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -309,10 +310,7 @@ void BrowserWithTestWindowTest::LogIn(std::string_view email,
   const AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
   user_manager_->AddGaiaUser(account_id, user_manager::UserType::kRegular);
   user_manager_->UserLoggedIn(
-      account_id,
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-      /*browser_restart=*/false,
-      /*is_child=*/false);
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 }
 
 void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,

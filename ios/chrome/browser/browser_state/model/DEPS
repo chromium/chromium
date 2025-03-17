@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/optimization_guide/model",
-  "+ios/chrome/browser/page_info",
+  "+ios/chrome/browser/page_info/model",
   "+ios/chrome/browser/plus_addresses/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prefs/model",

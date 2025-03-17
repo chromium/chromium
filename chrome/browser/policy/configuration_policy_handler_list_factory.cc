@@ -1837,6 +1837,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGenAiChromeOsSmartActionsSettings,
     ash::prefs::kScannerEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
+  { key::kGenAIInlineImageSettings,
+    ash::prefs::kLobsterEnterprisePolicySettings,
+    base::Value::Type::INTEGER},
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
@@ -2379,6 +2382,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 
   { key::kWebAudioOutputBufferingEnabled,
     prefs::kWebAudioOutputBufferingEnabled,
+    base::Value::Type::BOOLEAN },
+  { key::kReduceAcceptLanguageEnabled,
+    prefs::kReduceAcceptLanguageEnabled,
     base::Value::Type::BOOLEAN },
 };
 // clang-format on
@@ -3351,6 +3357,9 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   gen_ai_default_policies.emplace_back(
       key::kGenAiChromeOsSmartActionsSettings,
       ash::prefs::kScannerEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(
+      key::kGenAIInlineImageSettings,
+      ash::prefs::kLobsterEnterprisePolicySettings);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   handlers->AddHandler(std::make_unique<GenAiDefaultSettingsPolicyHandler>(
       std::move(gen_ai_default_policies)));

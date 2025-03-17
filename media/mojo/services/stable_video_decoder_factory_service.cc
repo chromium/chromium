@@ -12,9 +12,9 @@
 #include "media/base/media_log.h"
 #include "media/base/media_util.h"
 #include "media/gpu/buildflags.h"
+#include "media/gpu/chromeos/default_video_frame_converter.h"
 #include "media/gpu/chromeos/frame_registry.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
-#include "media/gpu/chromeos/registered_frame_converter.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -34,11 +34,9 @@ namespace {
 // like its |gpu_task_runner_| and |media_gpu_channel_manager_| members.
 class MojoMediaClientImpl : public MojoMediaClient {
  public:
-  MojoMediaClientImpl(const gpu::GpuFeatureInfo& gpu_feature_info,
-                      scoped_refptr<FrameRegistry> frame_registry)
+  explicit MojoMediaClientImpl(const gpu::GpuFeatureInfo& gpu_feature_info)
       : gpu_driver_bug_workarounds_(
-            gpu_feature_info.enabled_gpu_driver_bug_workarounds),
-        frame_registry_(std::move(frame_registry)) {}
+            gpu_feature_info.enabled_gpu_driver_bug_workarounds) {}
   MojoMediaClientImpl(const MojoMediaClientImpl&) = delete;
   MojoMediaClientImpl& operator=(const MojoMediaClientImpl&) = delete;
   ~MojoMediaClientImpl() override = default;
@@ -66,7 +64,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
 #elif BUILDFLAG(USE_V4L2_CODEC)
     return VideoDecoderType::kV4L2;
 #else
-#error StableVideoDecoderFactoryService should only be built on platforms that
+#error OOPVideoDecoderFactoryService should only be built on platforms that
 #error support video decode acceleration through either VA-API or V4L2.
 #endif
   }
@@ -76,8 +74,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
-      final {
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder) final {
     // For out-of-process video decoding, |command_buffer_id| is not used and
     // should not be supplied.
     DCHECK(!command_buffer_id);
@@ -93,7 +90,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
         gpu_driver_bug_workarounds_,
         /*client_task_runner=*/std::move(task_runner),
         std::make_unique<PlatformVideoFramePool>(),
-        RegisteredFrameConverter::Create(frame_registry_),
+        DefaultFrameConverter::Create(),
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::move(log),
         /*oop_video_decoder=*/{},
@@ -107,23 +104,21 @@ class MojoMediaClientImpl : public MojoMediaClient {
 
 }  // namespace
 
-StableVideoDecoderFactoryService::StableVideoDecoderFactoryService(
+OOPVideoDecoderFactoryService::OOPVideoDecoderFactoryService(
     const gpu::GpuFeatureInfo& gpu_feature_info)
     : receiver_(this),
-      frame_registry_(base::MakeRefCounted<FrameRegistry>()),
       mojo_media_client_(
-          std::make_unique<MojoMediaClientImpl>(gpu_feature_info,
-                                                frame_registry_)) {
+          std::make_unique<MojoMediaClientImpl>(gpu_feature_info)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo_media_client_->Initialize();
 }
 
-StableVideoDecoderFactoryService::~StableVideoDecoderFactoryService() {
+OOPVideoDecoderFactoryService::~OOPVideoDecoderFactoryService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void StableVideoDecoderFactoryService::BindReceiver(
-    mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactory> receiver,
+void OOPVideoDecoderFactoryService::BindReceiver(
+    mojo::PendingReceiver<mojom::InterfaceFactory> receiver,
     base::OnceClosure disconnect_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The browser process should guarantee that BindReceiver() is only called
@@ -133,9 +128,10 @@ void StableVideoDecoderFactoryService::BindReceiver(
   receiver_.set_disconnect_handler(std::move(disconnect_cb));
 }
 
-void StableVideoDecoderFactoryService::CreateStableVideoDecoder(
-    mojo::PendingReceiver<stable::mojom::StableVideoDecoder> receiver,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker> tracker) {
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void OOPVideoDecoderFactoryService::CreateVideoDecoderWithTracker(
+    mojo::PendingReceiver<mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<mojom::VideoDecoderTracker> tracker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::unique_ptr<mojom::VideoDecoder> dst_video_decoder;
@@ -145,12 +141,44 @@ void StableVideoDecoderFactoryService::CreateStableVideoDecoder(
   } else {
     dst_video_decoder = std::make_unique<MojoVideoDecoderService>(
         mojo_media_client_.get(), &cdm_service_context_,
-        mojo::PendingRemote<stable::mojom::StableVideoDecoder>());
+        mojo::PendingRemote<mojom::VideoDecoder>());
   }
-  video_decoders_.Add(std::make_unique<StableVideoDecoderService>(
+  video_decoders_.Add(std::make_unique<OOPVideoDecoderService>(
                           std::move(tracker), std::move(dst_video_decoder),
-                          &cdm_service_context_, frame_registry_),
+                          &cdm_service_context_),
                       std::move(receiver));
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+
+// The client of the OOPVideoDecoderFactoryService is the browser process which
+// is up the trust gradient. The browser process should never use this service
+// for anything other than creating video decoders. Therefore, it's appropriate
+// to crash in the following methods via NOTREACHED().
+void OOPVideoDecoderFactoryService::CreateAudioDecoder(
+    mojo::PendingReceiver<mojom::AudioDecoder> receiver) {
+  NOTREACHED();
+}
+
+void OOPVideoDecoderFactoryService::CreateVideoDecoder(
+    mojo::PendingReceiver<mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) {
+  NOTREACHED();
+}
+
+void OOPVideoDecoderFactoryService::CreateAudioEncoder(
+    mojo::PendingReceiver<mojom::AudioEncoder> receiver) {
+  NOTREACHED();
+}
+
+void OOPVideoDecoderFactoryService::CreateDefaultRenderer(
+    const std::string& audio_device_id,
+    mojo::PendingReceiver<mojom::Renderer> receiver) {
+  NOTREACHED();
+}
+
+void OOPVideoDecoderFactoryService::CreateCdm(const CdmConfig& cdm_config,
+                                              CreateCdmCallback callback) {
+  NOTREACHED();
 }
 
 }  // namespace media

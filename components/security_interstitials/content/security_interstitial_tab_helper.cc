@@ -13,10 +13,11 @@
 
 namespace {
 
-bool IsInPrimaryMainFrameOrSubFrame(
+bool FrameTypeMayTriggerInterstitial(
     content::NavigationHandle* navigation_handle) {
   return (navigation_handle->GetNavigatingFrameType() ==
               content::FrameType::kPrimaryMainFrame ||
+          navigation_handle->IsGuestViewMainFrame() ||
           (navigation_handle->GetNavigatingFrameType() ==
                content::FrameType::kSubframe &&
            navigation_handle->GetParentFrame()->IsActive()));
@@ -30,7 +31,7 @@ SecurityInterstitialTabHelper::~SecurityInterstitialTabHelper() = default;
 void SecurityInterstitialTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSameDocument() ||
-      !IsInPrimaryMainFrameOrSubFrame(navigation_handle)) {
+      !FrameTypeMayTriggerInterstitial(navigation_handle)) {
     return;
   }
 
@@ -110,7 +111,7 @@ void SecurityInterstitialTabHelper::AssociateBlockingPage(
         blocking_page) {
   // An interstitial should not be shown in a prerendered page or in a fenced
   // frame. The prerender should just be canceled.
-  CHECK(IsInPrimaryMainFrameOrSubFrame(navigation_handle));
+  CHECK(FrameTypeMayTriggerInterstitial(navigation_handle));
 
   // CreateForWebContents() creates a tab helper if it doesn't yet exist for the
   // WebContents provided by |navigation_handle|.
@@ -164,6 +165,17 @@ bool SecurityInterstitialTabHelper::IsInterstitialCommittedForFrame(
     content::FrameTreeNodeId frame_tree_node_id) const {
   return base::Contains(blocking_documents_for_committed_navigations_,
                         frame_tree_node_id);
+}
+
+security_interstitials::SecurityInterstitialPage*
+SecurityInterstitialTabHelper::GetBlockingPageForFrame(
+    content::FrameTreeNodeId frame_tree_node_id) {
+  if (IsInterstitialCommittedForFrame(frame_tree_node_id)) {
+    return blocking_documents_for_committed_navigations_
+        .find(frame_tree_node_id)
+        ->second.get();
+  }
+  return nullptr;
 }
 
 security_interstitials::SecurityInterstitialPage*

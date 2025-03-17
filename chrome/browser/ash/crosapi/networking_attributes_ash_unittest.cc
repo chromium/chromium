@@ -25,6 +25,7 @@
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "dbus/object_path.h"
 #include "net/base/ip_address.h"
@@ -111,11 +112,9 @@ class NetworkingAttributesAshTest : public testing::Test {
   void AddUser(bool is_affiliated = true) {
     AccountId account_id =
         AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
-    const user_manager::User* user =
-        fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    fake_user_manager_->AddUserWithAffiliation(account_id, is_affiliated);
+    fake_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager_->SimulateUserProfileLoad(account_id);
   }
 

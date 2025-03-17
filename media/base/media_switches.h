@@ -486,15 +486,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kBackgroundListening);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-// Note: please use GetOutOfProcessVideoDecodingMode() to determine if OOP-VD is
-// enabled instead of directly checking this feature flag. The reason is that
+// Note: please use IsOutOfProcessVideoDecodingEnabled() to determine if OOP-VD
+// is enabled instead of directly checking this feature flag. The reason is that
 // that function may perform checks beyond the feature flag.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseOutOfProcessVideoDecoding);
-
-// Note: please use GetOutOfProcessVideoDecodingMode() to determine if GTFO
-// OOP-VD is enabled instead of directly checking this feature flag. The reason
-// is that that function may perform checks beyond the feature flag.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseGTFOOutOfProcessVideoDecoding);
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -563,12 +558,7 @@ MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-enum class OOPVDMode {
-  kDisabled,
-  kEnabledWithGpuProcessAsProxy,     // AKA "regular" OOP-VD; go/oop-vd-dd.
-  kEnabledWithoutGpuProcessAsProxy,  // AKA GTFO OOP-VD; go/oopvd-gtfo-dd.
-};
-MEDIA_EXPORT OOPVDMode GetOutOfProcessVideoDecodingMode();
+MEDIA_EXPORT bool IsOutOfProcessVideoDecodingEnabled();
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 // Return bitmask of audio formats supported by EDID.

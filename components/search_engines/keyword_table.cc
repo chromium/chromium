@@ -582,7 +582,7 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   // reading these out.  (GetKeywords() will delete these entries on return.)
   // NOTE: This code should only be needed as long as we might be reading such
   // potentially-old data and can be removed afterward.
-  if (s.ColumnString(4).empty()) {
+  if (s.ColumnStringView(4).empty()) {
     return std::nullopt;
   }
   data.SetURL(s.ColumnString(4));
@@ -596,7 +596,7 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.originating_url = GURL(s.ColumnStringView(6));
   data.safe_for_autoreplace = s.ColumnBool(5);
   data.input_encodings = base::SplitString(
-      s.ColumnString(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      s.ColumnStringView(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   data.id = s.ColumnInt64(0);
   data.date_created = s.ColumnTime(7);
   data.last_modified = s.ColumnTime(13);
@@ -614,7 +614,8 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   data.enforced_by_policy = s.ColumnBool(25);
   data.featured_by_policy = s.ColumnBool(26);
 
-  std::optional<base::Value> value(base::JSONReader::Read(s.ColumnString(15)));
+  std::optional<base::Value> value(
+      base::JSONReader::Read(s.ColumnStringView(15)));
   if (value && value->is_list()) {
     for (const base::Value& alternate_url : value->GetList()) {
       if (alternate_url.is_string()) {

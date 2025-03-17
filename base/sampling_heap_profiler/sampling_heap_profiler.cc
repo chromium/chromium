@@ -81,20 +81,21 @@ const char* GetAndLeakThreadName() {
   // enabled.
   int err = prctl(PR_GET_NAME, name);
   if (!err) {
-    return strdup(name);
+    return UNSAFE_TODO(strdup(name));
   }
 #elif BUILDFLAG(IS_APPLE)
   int err = pthread_getname_np(pthread_self(), name, kBufferLen);
   if (err == 0 && *name != '\0') {
-    return strdup(name);
+    return UNSAFE_TODO(strdup(name));
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
   // Use tid if we don't have a thread name.
-  snprintf(name, sizeof(name), "Thread %lu",
-           static_cast<unsigned long>(base::PlatformThread::CurrentId().raw()));
-  return strdup(name);
+  UNSAFE_TODO(snprintf(
+      name, sizeof(name), "Thread %lu",
+      static_cast<unsigned long>(base::PlatformThread::CurrentId().raw())));
+  return UNSAFE_TODO(strdup(name));
 }
 
 const char* UpdateAndGetThreadName(const char* name) {

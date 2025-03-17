@@ -1771,32 +1771,6 @@ TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsDisabledMetric) {
       kFirstPartySetsStateHistogram,
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsDisabled, 1);
 }
-
-TEST_F(PrivacySandboxServiceTest, SampleRwsData) {
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-      {{"use-sample-sets", "true"}});
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                       std::make_unique<base::Value>(true));
-
-  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
-                GURL("https://mail.google.com.au")),
-            u"google.com");
-  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
-                GURL("https://youtube.com")),
-            u"google.com");
-  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
-                GURL("https://muenchen.de")),
-            u"münchen.de");
-  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
-                GURL("https://example.com")),
-            std::nullopt);
-}
-
 TEST_F(PrivacySandboxServiceTest,
        GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledWhen3pcAllowed) {
   GURL associate1_gurl("https://associate1.test");
@@ -2136,18 +2110,11 @@ TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
       prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 }
 
-TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
-  // Confirm that when the FPS sample sets are provided, they are used to answer
-  // First-Party Sets queries instead of the actual sets.
-
-  // Set up state that fully enables the First-Party Sets for UI; blocking
-  // 3PC, and enabling the FPS UI feature and the FPS enabled pref.
-  //
-  // Note: this indicates that the sample sets should be used.
-  feature_list()->InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-                             {{"use-sample-sets", "true"}}}},
-      /*disabled_features=*/{});
+TEST_F(PrivacySandboxServiceTest, UsesConfiguredRelatedWebsiteSets) {
+  // Set up state that fully enables the RWS UI: blocking 3PC and enabling the
+  // FPS UI feature + FPS pref.
+  feature_list()->InitWithFeatures(
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -2190,32 +2157,6 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
 
   first_party_sets_policy_service()->InitForTesting();
 
-  // Expect queries to be resolved based on the RWS sample sets.
-  EXPECT_GT(privacy_sandbox_service()->GetSampleRelatedWebsiteSets().size(),
-            0u);
-  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwner(
-                GURL("https://youtube.com")),
-            net::SchemefulSite(GURL("https://google.com")));
-  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
-      net::SchemefulSite(GURL("https://googlesource.com"))));
-  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
-      net::SchemefulSite(GURL("https://google.de"))));
-
-  feature_list()->Reset();
-  feature_list()->InitWithFeatures(
-      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  CreateService();
-  ClearRwsUserPrefs(prefs());
-  prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
-                       std::make_unique<base::Value>(true));
-
-  // Expect queries to be resolved based on the RWS backend.
-  EXPECT_EQ(privacy_sandbox_service()->GetSampleRelatedWebsiteSets().size(),
-            0u);
   EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwner(youtube_gurl),
             youtube_primary_site);
   EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(

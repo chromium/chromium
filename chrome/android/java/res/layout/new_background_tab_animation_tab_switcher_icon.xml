@@ -7,8 +7,7 @@ found in the LICENSE file.
 <org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabFakeTabSwitcherButton
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
+    android:id="@+id/new_background_tab_fake_tab_switcher_button"
     android:layout_width="@dimen/toolbar_height_no_shadow"
     android:layout_height="@dimen/toolbar_height_no_shadow">
 

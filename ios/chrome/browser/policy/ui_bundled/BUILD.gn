@@ -68,9 +68,13 @@ source_set("management_util") {
     "//components/account_id",
     "//components/policy/core/common",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:authentication_service",
+    "//ui/base:base",
   ]
+  frameworks = [ "UIKit.framework" ]
 }

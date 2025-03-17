@@ -67,9 +67,7 @@ user_manager::User* ChromeQuickAnswersTestBase::StartUserSession() {
   // TODO(crbug.com/278643115): Use SessionManager.
   user_manager_->UserLoggedIn(
       user->GetAccountId(),
-      user_manager::FakeUserManager::GetFakeUsernameHash(user->GetAccountId()),
-      /*browser_restart=*/false,
-      /*is_child=*/false);
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   return user;
 }
 

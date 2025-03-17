@@ -4,18 +4,23 @@
 
 package org.chromium.chrome.browser.prefetch.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 
 /** Fragment containing Preload Pages settings. */
+@NullMarked
 public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBase
         implements RadioButtonGroupPreloadPagesSettings.OnPreloadPagesStateDetailsRequested,
                 Preference.OnPreferenceChangeListener {
@@ -43,19 +48,17 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     }
 
     @Override
-    protected void onCreatePreferencesInternal(Bundle bundle, String s) {
+    protected void onCreatePreferencesInternal(@Nullable Bundle bundle, @Nullable String s) {
         ManagedPreferenceDelegate managedPreferenceDelegate = createManagedPreferenceDelegate();
 
-        mPreloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
-        mPreloadPagesPreference.init(PreloadPagesSettingsBridge.getState(getProfile()));
-        mPreloadPagesPreference.setPreloadPagesStateDetailsRequestedListener(this);
-        mPreloadPagesPreference.setManagedPreferenceDelegate(managedPreferenceDelegate);
+        mPreloadPagesPreference = assumeNonNull(findPreference(PREF_PRELOAD_PAGES));
+        mPreloadPagesPreference.init(
+                PreloadPagesSettingsBridge.getState(getProfile()), this, managedPreferenceDelegate);
         mPreloadPagesPreference.setOnPreferenceChangeListener(this);
 
-        findPreference(PREF_MANAGED_DISCLAIMER_TEXT)
-                .setVisible(
-                        managedPreferenceDelegate.isPreferenceClickDisabled(
-                                mPreloadPagesPreference));
+        Preference disclaimerPref = assumeNonNull(findPreference(PREF_MANAGED_DISCLAIMER_TEXT));
+        disclaimerPref.setVisible(
+                managedPreferenceDelegate.isPreferenceClickDisabled(mPreloadPagesPreference));
     }
 
     @Override

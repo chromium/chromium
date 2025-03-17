@@ -1404,7 +1404,6 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
       return false;
     }
     DCHECK(decode_swap_chain_);
-    SetSwapChainPresentDuration();
 
     Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
     dcomp_device_.As(&desktop_device);
@@ -1470,8 +1469,8 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
     return false;
   }
 
-  UINT present_flags = DXGI_PRESENT_USE_DURATION;
-  hr = decode_swap_chain_->PresentBuffer(array_slice, 1, present_flags);
+  hr = decode_swap_chain_->PresentBuffer(array_slice, /*SyncInterval=*/1,
+                                         /*Flags=*/0);
   // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only indicates
   // that the window is occluded and we can stop rendering.
   if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
@@ -1671,7 +1670,6 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   HRESULT hr, device_removed_reason;
   if (first_present_) {
     first_present_ = false;
-    UINT flags = DXGI_PRESENT_USE_DURATION;
     // DirectComposition can display black for a swap chain between the first
     // and second time it's presented to - maybe the first Present can get lost
     // somehow and it shows the wrong buffer. In that case copy the buffers so
@@ -1679,7 +1677,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     // after this needs to have SyncInterval > 0, or else the workaround doesn't
     // help.
     for (size_t i = 0; i < swap_chain_buffer_count_ - 1; ++i) {
-      hr = swap_chain_->Present(0, flags);
+      hr = swap_chain_->Present(/*SyncInterval=*/0, /*Flags=*/0);
       // Ignore DXGI_STATUS_OCCLUDED since that's not an error but only
       // indicates that the window is occluded and we can stop rendering.
       if (FAILED(hr) && hr != DXGI_STATUS_OCCLUDED) {
@@ -1731,7 +1729,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
       base::debug::DumpWithoutCrashing();
     }
   }
-  UINT flags = DXGI_PRESENT_USE_DURATION;
+  UINT flags = 0;
   UINT interval = 1;
   if (DirectCompositionSwapChainTearingEnabled()) {
     flags |= DXGI_PRESENT_ALLOW_TEARING;
@@ -1792,11 +1790,6 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   last_overlay_image_ = std::move(params.overlay_image);
   RecordPresentationStatistics();
   return true;
-}
-
-void SwapChainPresenter::SetFrameRate(float frame_rate) {
-  frame_rate_ = frame_rate;
-  SetSwapChainPresentDuration();
 }
 
 void SwapChainPresenter::RecordPresentationStatistics() {
@@ -2366,7 +2359,6 @@ bool SwapChainPresenter::ReallocateSwapChain(
   LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
 
   swap_chain_format_ = swap_chain_format;
-  SetSwapChainPresentDuration();
 
   DXGI_ADAPTER_DESC adapter_desc;
   HRESULT hr = dxgi_adapter->GetDesc(&adapter_desc);
@@ -2392,41 +2384,6 @@ void SwapChainPresenter::OnBatteryPowerStatusChange(
 
 bool SwapChainPresenter::ShouldUseVideoProcessorScaling() {
   return (!is_on_battery_power_ && !layer_tree_->disable_vp_scaling());
-}
-
-void SwapChainPresenter::SetSwapChainPresentDuration() {
-  Microsoft::WRL::ComPtr<IDXGISwapChainMedia> swap_chain_media =
-      GetSwapChainMedia();
-  if (swap_chain_media) {
-    UINT duration_100ns = FrameRateToPresentDuration(frame_rate_);
-    UINT requested_duration = 0u;
-    if (duration_100ns > 0) {
-      UINT smaller_duration = 0u, larger_duration = 0u;
-      HRESULT hr = swap_chain_media->CheckPresentDurationSupport(
-          duration_100ns, &smaller_duration, &larger_duration);
-      if (FAILED(hr)) {
-        DLOG(ERROR) << "CheckPresentDurationSupport failed with error 0x"
-                    << std::hex << hr;
-        return;
-      }
-      constexpr UINT kDurationThreshold = 1000u;
-      // Smaller duration should be used to avoid frame loss. However, we want
-      // to take into consideration the larger duration is the same as the
-      // requested duration but was slightly different due to frame rate
-      // estimation errors.
-      if (larger_duration > 0 &&
-          larger_duration - duration_100ns < kDurationThreshold) {
-        requested_duration = larger_duration;
-      } else if (smaller_duration > 0) {
-        requested_duration = smaller_duration;
-      }
-    }
-    HRESULT hr = swap_chain_media->SetPresentDuration(requested_duration);
-    if (FAILED(hr)) {
-      DLOG(ERROR) << "SetPresentDuration failed with error 0x" << std::hex
-                  << hr;
-    }
-  }
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChainMedia>

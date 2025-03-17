@@ -128,7 +128,7 @@
                 <div class="bullet-line" id="blockThirdPartyIncognitoBulTwo">
                   <cr-icon icon="settings:block"></cr-icon>
                   <div class="secondary">
-                    [[getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_()]]
+                    $i18n{cookiePageBlockThirdIncognitoBulTwoRws}
                   </div>
                 </div>
               </div>
@@ -153,18 +153,16 @@
                   </div>
                 </div>
               </div>
-              <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
-                <div slot="noSelectionCollapse">
-                  <settings-toggle-button
-                      id="relatedWebsiteSetsToggle"
-                      pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-                      label="$i18n{cookiePageRwsLabel}"
-                      sub-label="$i18n{cookiePageRwsSubLabel}"
-                      disabled="[[relatedWebsiteSetsToggleDisabled_(
-                          prefs.profile.cookie_controls_mode.value)]]">
-                  </settings-toggle-button>
-                </div>
-              </template>
+              <div slot="noSelectionCollapse">
+                <settings-toggle-button
+                    id="relatedWebsiteSetsToggle"
+                    pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
+                    label="$i18n{cookiePageRwsLabel}"
+                    sub-label="$i18n{cookiePageRwsSubLabel}"
+                    disabled="[[relatedWebsiteSetsToggleDisabled_(
+                        prefs.profile.cookie_controls_mode.value)]]">
+                </settings-toggle-button>
+              </div>
             </settings-collapse-radio-button>
           </settings-radio-group>
         </template>
@@ -224,17 +222,15 @@
                   </div>
                 </div>
               </div>
-              <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
-                <div slot="noSelectionCollapse">
-                  <settings-toggle-button id="relatedWebsiteSetsToggle3pcSetting"
-                      pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
-                      label="$i18n{cookiePageRwsLabel}"
-                      sub-label="$i18n{cookiePageRwsSubLabel}"
-                      disabled="[[relatedWebsiteSetsToggle3pcSettingDisabled_(
-                                    prefs.generated.third_party_cookie_blocking_setting.value)]]">
-                  </settings-toggle-button>
-                </div>
-              </template>
+              <div slot="noSelectionCollapse">
+                <settings-toggle-button id="relatedWebsiteSetsToggle3pcSetting"
+                    pref="{{prefs.privacy_sandbox.first_party_sets_enabled}}"
+                    label="$i18n{cookiePageRwsLabel}"
+                    sub-label="$i18n{cookiePageRwsSubLabel}"
+                    disabled="[[relatedWebsiteSetsToggle3pcSettingDisabled_(
+                                  prefs.generated.third_party_cookie_blocking_setting.value)]]">
+                </settings-toggle-button>
+              </div>
             </settings-collapse-radio-button>
           </settings-radio-group>
         </template>

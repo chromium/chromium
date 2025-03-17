@@ -77,21 +77,15 @@ void SetBorderImageLengthBox(const CSSProperty& property,
 class CSSBorderImageLengthBoxSideNonInterpolableValue
     : public NonInterpolableValue {
  public:
-  static scoped_refptr<CSSBorderImageLengthBoxSideNonInterpolableValue> Create(
-      SideType side_type) {
-    DCHECK_NE(SideType::kLength, side_type);
-    return base::AdoptRef(
-        new CSSBorderImageLengthBoxSideNonInterpolableValue(side_type));
-  }
+  explicit CSSBorderImageLengthBoxSideNonInterpolableValue(
+      const SideType side_type)
+      : side_type_(side_type) {}
 
   SideType GetSideType() const { return side_type_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSBorderImageLengthBoxSideNonInterpolableValue(const SideType side_type)
-      : side_type_(side_type) {}
-
   const SideType side_type_;
 };
 
@@ -220,21 +214,20 @@ class InheritedSideTypesChecker
 InterpolationValue ConvertBorderImageNumberSide(double number) {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(number),
-      CSSBorderImageLengthBoxSideNonInterpolableValue::Create(
+      MakeGarbageCollected<CSSBorderImageLengthBoxSideNonInterpolableValue>(
           SideType::kNumber));
 }
 
 InterpolationValue ConvertBorderImageAutoSide() {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(0),
-      CSSBorderImageLengthBoxSideNonInterpolableValue::Create(SideType::kAuto));
+      MakeGarbageCollected<CSSBorderImageLengthBoxSideNonInterpolableValue>(
+          SideType::kAuto));
 }
 
 InterpolationValue ConvertBorderImageLengthBox(const BorderImageLengthBox& box,
                                                const CSSProperty& property,
                                                double zoom) {
-  Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
-      kSideIndexCount);
   std::array<const BorderImageLength*, kSideIndexCount> sides{};
   sides[kSideTop] = &box.Top();
   sides[kSideRight] = &box.Right();
@@ -318,8 +311,6 @@ InterpolationValue CSSBorderImageLengthBoxInterpolationType::MaybeConvertValue(
   if (!quad)
     return nullptr;
 
-  Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
-      kSideIndexCount);
   std::array<const CSSValue*, kSideIndexCount> sides{};
   sides[kSideTop] = quad->Top();
   sides[kSideRight] = quad->Right();
@@ -342,7 +333,8 @@ InterpolationValue CSSBorderImageLengthBoxInterpolationType::MaybeConvertValue(
               MakeGarbageCollected<InterpolableNumber>(
                   *To<CSSMathFunctionValue>(side_primitive_value)
                        ->ExpressionNode()),
-              CSSBorderImageLengthBoxSideNonInterpolableValue::Create(
+              MakeGarbageCollected<
+                  CSSBorderImageLengthBoxSideNonInterpolableValue>(
                   SideType::kNumber));
         }
 

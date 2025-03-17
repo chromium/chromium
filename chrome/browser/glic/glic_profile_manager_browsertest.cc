@@ -45,8 +45,12 @@ class MockGlicKeyedService : public GlicKeyedService {
   bool IsWindowDetached() const override { return detached_; }
   void SetWindowDetached() { detached_ = true; }
 
+  bool IsWindowShowing() const override { return showing_; }
+  void SetWindowShowing() { showing_ = true; }
+
  private:
   bool detached_ = false;
+  bool showing_ = false;
 };
 
 class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
@@ -119,6 +123,10 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 
   auto* profile_manager = GlicProfileManager::GetInstance();
   profile_manager->SetActiveGlic(service0);
+
+  // Tell the mock glic to pretend that the window is open (otherwise, we won't
+  // attempt to close it).
+  service0->SetWindowShowing();
 
   // Opening glic from a second profile should make the profile manager close
   // the first one.

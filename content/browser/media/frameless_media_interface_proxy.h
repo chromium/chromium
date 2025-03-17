@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/mojo/mojom/video_decoder.mojom.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
@@ -52,12 +52,11 @@ class FramelessMediaInterfaceProxy final
       mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) final;
   void CreateVideoDecoder(
       mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
-      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
-          dst_video_decoder) final;
+      mojo::PendingRemote<media::mojom::VideoDecoder> dst_video_decoder) final;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
-  void CreateStableVideoDecoder(
-      mojo::PendingReceiver<media::stable::mojom::StableVideoDecoder>
-          video_decoder) final;
+  void CreateVideoDecoderWithTracker(
+      mojo::PendingReceiver<media::mojom::VideoDecoder> receiver,
+      mojo::PendingRemote<media::mojom::VideoDecoderTracker> tracker) final;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void CreateAudioEncoder(
       mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) final;
@@ -106,15 +105,14 @@ class FramelessMediaInterfaceProxy final
   mojo::ReceiverSet<media::mojom::InterfaceFactory> receivers_;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Connection to the StableVideoDecoderFactory that lives in a utility
-  // process. This is only used for out-of-process video decoding and only when
-  // the FramelessMediaInterfaceProxy is created without a RenderProcessHost
+  // Connection to the InterfaceFactory that lives in a utility process.
+  // This is only used for out-of-process video decoding and only when the
+  // FramelessMediaInterfaceProxy is created without a RenderProcessHost
   // (e.g., to get the supported video decoder configurations). Note that we
   // make this a member instead of a local variable inside CreateVideoDecoder()
   // in order to keep the video decoder process alive for the lifetime of the
   // FramelessMediaInterfaceProxy.
-  mojo::Remote<media::stable::mojom::StableVideoDecoderFactory>
-      stable_vd_factory_remote_;
+  mojo::Remote<media::mojom::InterfaceFactory> vd_factory_remote_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // FramelessMediaInterfaceProxy is fully owned by the RenderProcessHostImpl,

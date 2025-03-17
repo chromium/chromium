@@ -334,10 +334,10 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     return test_controller_->model_adaptation_controllers_;
   }
 
-  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession() {
+  std::unique_ptr<OptimizationGuideModelExecutor::Session> CreateSession(
+      const std::optional<SessionConfigParams>& params = std::nullopt) {
     return test_controller_->CreateSession(kFeature, FailOnRemoteFallback(),
-                                           logger_.GetWeakPtr(),
-                                           /*config_params=*/std::nullopt);
+                                           logger_.GetWeakPtr(), params);
   }
 
   void ExpectFailedSession(OnDeviceModelEligibilityReason reason) {
@@ -2882,6 +2882,33 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_FALSE(CreateSession());
 }
 
+TEST_F(OnDeviceModelServiceControllerTest, GetCapabilities) {
+  FakeBaseModelAsset base_model({
+      .config = ExecutionConfigWithCapabilities(
+          {proto::OnDeviceModelCapability::
+               ON_DEVICE_MODEL_CAPABILITY_IMAGE_INPUT}),
+  });
+  Initialize({.base_model = &base_model});
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_controller_->GetCapabilities(),
+            on_device_model::Capabilities(
+                {on_device_model::CapabilityFlags::kImageInput}));
+
+  FakeBaseModelAsset next_model({
+      .config = ExecutionConfigWithCapabilities(
+          {proto::OnDeviceModelCapability::
+               ON_DEVICE_MODEL_CAPABILITY_AUDIO_INPUT}),
+  });
+  on_device_component_state_manager_.SetReady(next_model.path(),
+                                              next_model.version());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(test_controller_->GetCapabilities(),
+            on_device_model::Capabilities(
+                {on_device_model::CapabilityFlags::kAudioInput}));
+}
+
 TEST_F(OnDeviceModelServiceControllerTest,
        ModelValidationNewModelVersionCancelsPreviousValidation) {
   base::test::ScopedFeatureList feature_list;
@@ -3282,8 +3309,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
       .language = &standard_assets_.language,
       .adaptations = {&compose_asset},
   });
-  auto session = CreateSession();
-  ASSERT_TRUE(session);
   MultimodalMessage request((proto::ExampleForTestingRequest()));
   request.edit()
       .GetMutableMessage(RequestProto::kNested1FieldNumber)
@@ -3291,12 +3316,34 @@ TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
   request.edit()
       .GetMutableMessage(RequestProto::kNested2FieldNumber)
       .Set(NestedProto::kMediaFieldNumber, CreateBlackSkBitmap(1, 1));
-  session->SetInput(std::move(request));
-  session->ExecuteModel(proto::ExampleForTestingRequest(),
-                        response_.GetStreamingCallback());
-  ASSERT_TRUE(response_.GetFinalStatus());
-  EXPECT_EQ(*response_.value(),
-            "Context: <image> off:0 max:22\nContext: <image> off:0 max:1024\n");
+  {
+    ResponseHolder response;
+    auto session = CreateSession(SessionConfigParams{
+        .capabilities = {on_device_model::CapabilityFlags::kImageInput},
+    });
+    ASSERT_TRUE(session);
+    session->SetInput(request.Clone());
+    session->ExecuteModel(proto::ExampleForTestingRequest(),
+                          response.GetStreamingCallback());
+    ASSERT_TRUE(response.GetFinalStatus());
+    EXPECT_EQ(
+        *response.value(),
+        "Context: <image> off:0 max:22\nContext: <image> off:0 max:1024\n");
+  }
+
+  // Session without capabilities should not allow images.
+  {
+    ResponseHolder response;
+    auto session = CreateSession();
+    ASSERT_TRUE(session);
+    session->SetInput(std::move(request));
+    session->ExecuteModel(proto::ExampleForTestingRequest(),
+                          response.GetStreamingCallback());
+    ASSERT_TRUE(response.GetFinalStatus());
+    EXPECT_EQ(*response.value(),
+              "Context: <unsupported> off:0 max:22\nContext: <unsupported> "
+              "off:0 max:1024\n");
+  }
 }
 
 proto::SubstitutedString EmptySubstitution() {

@@ -372,22 +372,6 @@ void RecordUpgradePromoSigninStarted(
   [defaults setInteger:display_count forKey:kSigninPromoViewDisplayCountKey];
 }
 
-IdentitySigninState GetPrimaryIdentitySigninState(ProfileIOS* profile) {
-  AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/40066949): After phase 3 migration of kSync users, Remove
-  // this usage.
-  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync) &&
-      syncService->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
-    return IdentitySigninStateSignedInWithSyncEnabled;
-  } else if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    return IdentitySigninStateSignedInWithSyncDisabled;
-  } else {
-    return IdentitySigninStateSignedOut;
-  }
-}
-
 Tribool TriboolFromCapabilityResult(SystemIdentityCapabilityResult result) {
   switch (result) {
     case SystemIdentityCapabilityResult::kTrue:

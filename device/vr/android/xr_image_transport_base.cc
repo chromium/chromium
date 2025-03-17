@@ -89,7 +89,7 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
     return false;
   }
 
-  TRACE_EVENT0("gpu", __func__);
+  TRACE_EVENT0("gpu", "ResizeSharedBuffer");
   // Unbind previous image (if any).
   if (buffer->shared_image) {
     DVLOG(2) << ": DestroySharedImage, mailbox="

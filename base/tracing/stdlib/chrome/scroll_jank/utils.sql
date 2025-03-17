@@ -66,7 +66,6 @@ RETURNS DOUBLE AS
 -- difference in frame count for it to be no longer janky. We subtract 1e-9 as
 -- we want to output minimum amount required.
 SELECT
-  -- Otherwise return null
   coalesce(
     -- Could be null if next or previous is null.
     max(

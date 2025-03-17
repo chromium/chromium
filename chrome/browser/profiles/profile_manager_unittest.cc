@@ -311,10 +311,8 @@ class ProfileManagerTest : public testing::Test {
     }
 
     const std::string user_id_hash =
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-    user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash,
-                                                   false /* browser_restart */,
-                                                   false /* is_child */);
+        user_manager::TestHelper::GetFakeUsernameHash(account_id);
+    user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash);
     ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
     g_browser_process->profile_manager()->GetProfile(
         profile_helper->GetProfilePathByUserIdHash(user_id_hash));
@@ -334,7 +332,7 @@ class ProfileManagerTest : public testing::Test {
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(user_email, GaiaId("1"));
     const std::string user_id_hash =
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+        user_manager::TestHelper::GetFakeUsernameHash(account_id);
     const base::FilePath dest_path =
         profile_helper->GetProfilePathByUserIdHash(user_id_hash);
 
@@ -364,8 +362,7 @@ class ProfileManagerTest : public testing::Test {
                                       *arc_is_managed);
     }
 
-    user_manager->UserLoggedIn(account_id, user_id_hash,
-                               false /* browser_restart */, user_is_child);
+    user_manager->UserLoggedIn(account_id, user_id_hash);
     g_browser_process->profile_manager()->InitProfileUserPrefs(profile.get());
 
     return profile;
@@ -473,12 +470,11 @@ TEST_F(ProfileManagerTest, UserProfileLoading) {
   const AccountId account_id = AccountId::FromUserEmailGaiaId(
       "test-user@example.com", GaiaId("0123456789"));
   const std::string user_id_hash =
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
   auto* user_manager = user_manager::UserManager::Get();
   ASSERT_TRUE(
       user_manager::TestHelper(*user_manager).AddRegularUser(account_id));
-  user_manager->UserLoggedIn(account_id, user_id_hash,
-                             false /* browser_restart */, false /* is_child */);
+  user_manager->UserLoggedIn(account_id, user_id_hash);
 
   // Sign-in profile should be returned at this stage. Otherwise, login code
   // ends up in an invalid state. Strange things as in http://crbug.com/728683

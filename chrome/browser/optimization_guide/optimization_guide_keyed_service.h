@@ -145,6 +145,7 @@ class OptimizationGuideKeyedService
   void RemoveOnDeviceModelAvailabilityChangeObserver(
       optimization_guide::ModelBasedCapabilityKey feature,
       optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
+  on_device_model::Capabilities GetOnDeviceCapabilities() override;
 
   // optimization_guide::OptimizationGuideOnDeviceCapabilityProvider
   // implementation:

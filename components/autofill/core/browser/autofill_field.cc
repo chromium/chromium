@@ -160,8 +160,13 @@ bool PreferHeuristicOverHtml(FieldType heuristic_type,
 // can help the server to "learn" the correct classification for these fields.
 bool PreferHeuristicOverServer(FieldType heuristic_type,
                                FieldType server_type) {
+  // Until we gain confidence in the precision of AutofillAI predictions, they
+  // should not overrule local heuristics. The AutofillAI prediction itself can
+  // always be retrieved via `GetAutofillAiServerTypePredictions`.
   return base::Contains(kAutofillHeuristicsVsServerOverrides,
-                        std::make_pair(heuristic_type, server_type));
+                        std::make_pair(heuristic_type, server_type)) ||
+         (heuristic_type != UNKNOWN_TYPE &&
+          GroupTypeOfFieldType(server_type) == FieldTypeGroup::kAutofillAi);
 }
 
 // Util function for `ComputedType`. Returns the values of HtmlFieldType that

@@ -6,6 +6,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/test_helper.h"
 
 namespace policy {
 #include "google_apis/gaia/gaia_id.h"
@@ -27,14 +28,12 @@ void DlpFilesTestBase::SetUp() {
     testing_profile->SetIsNewProfile(true);
     profile_ = std::move(testing_profile);
   }
-  user_manager::User* user =
-      user_manager->AddUserWithAffiliationAndTypeAndProfile(
-          account_id,
-          /*is_affiliated=*/false, user_manager::UserType::kRegular,
-          profile_.get());
-  user_manager->UserLoggedIn(account_id, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
+      account_id,
+      /*is_affiliated=*/false, user_manager::UserType::kRegular,
+      profile_.get());
+  user_manager->UserLoggedIn(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   user_manager->SimulateUserProfileLoad(account_id);
   user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(user_manager));

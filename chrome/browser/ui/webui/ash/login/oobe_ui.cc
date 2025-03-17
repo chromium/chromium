@@ -360,9 +360,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeSoftwareUpdateEnabled",
                      features::IsOobeSoftwareUpdateEnabled());
 
-  source->AddBoolean("isPasswordlessGaiaEnabledForConsumers",
-                     features::IsPasswordlessGaiaEnabledForConsumers());
-
   source->AddBoolean("isRemoteActivityNotificationEnabled",
                      base::FeatureList::IsEnabled(
                          remoting::features::kEnableCrdAdminRemoteAccessV2));

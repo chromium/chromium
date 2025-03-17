@@ -315,7 +315,7 @@ DestinationRanking SortByUsage(
 
   // Keep stored ranking if it still exists.
   if (hasStoredRanking) {
-    historyUpdate->Set(kRankingKey, storedRanking.Clone());
+    historyUpdate->Set(kRankingKey, std::move(storedRanking));
   }
 
   // Flush the new usage history to Prefs.

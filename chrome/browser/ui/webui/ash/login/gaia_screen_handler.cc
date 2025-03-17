@@ -565,8 +565,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     params.Set("rart", gaia_reauth_request_token_);
   }
 
-  if (features::IsPasswordlessGaiaEnabledForConsumers() &&
-      !is_gaia_password_required_) {
+  if (!is_gaia_password_required_) {
     params.Set("pwl",
                static_cast<int>(PasswordlessSupportLevel::kConsumersOnly));
   }

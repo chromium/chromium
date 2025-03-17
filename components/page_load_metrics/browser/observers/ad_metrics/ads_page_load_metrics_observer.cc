@@ -1572,13 +1572,14 @@ void AdsPageLoadMetricsObserver::QueryAdUrlFrequencyInHistory(
     base::CancelableTaskTracker*
         query_ad_url_etld_plus_one_cancelable_task_tracker) {
   history::QueryOptions query_options;
+  query_options.SetRecentDayRange(/*days_ago=*/30);
 
   // Query ad url in history.
   history_service->QueryHistory(
       base::ASCIIToUTF16(ad_url.GetWithoutFilename().spec()), query_options,
       base::BindOnce([](history::QueryResults result) {
         base::UmaHistogramCounts1000(
-            "PageLoad.Clients.Ads.AdClick.HistoryQueryCount",
+            "PageLoad.Clients.Ads.AdClick.HistoryQueryCount2",
             GetTotalVisitCountsInHistoryQueryResults(result));
       }),
       query_ad_url_cancelable_task_tracker);
@@ -1588,7 +1589,7 @@ void AdsPageLoadMetricsObserver::QueryAdUrlFrequencyInHistory(
       base::ASCIIToUTF16(GetEtldPlusOne(ad_url)), query_options,
       base::BindOnce([](history::QueryResults result) {
         base::UmaHistogramCounts1000(
-            "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount",
+            "PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount2",
             GetTotalVisitCountsInHistoryQueryResults(result));
       }),
       query_ad_url_etld_plus_one_cancelable_task_tracker);

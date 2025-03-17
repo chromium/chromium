@@ -128,7 +128,6 @@ class ExtensionCleanupHandlerUnittest : public testing::Test {
 
   void TearDown() override {
     extension_cleanup_handler_.reset();
-    extensions::ExtensionSystem::Get(mock_profile_)->Shutdown();
     testing::Test::TearDown();
   }
 

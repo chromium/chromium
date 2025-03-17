@@ -2227,28 +2227,35 @@ class WebViewSSLErrorTest : public WebViewTest {
   // asserts the security interstitial is displayed within the guest instead of
   // through the embedder's WebContents.
   void SSLTestHelper() {
-    // Starts a HTTPS server so we can load a page with a SSL error inside
-    // guest.
-    net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-    https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
-    https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server.Start());
+    // Configures the HTTPS server so we can load a page with a SSL error inside
+    // a guest.
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
 
     LoadAndLaunchPlatformApp("web_view/ssl", "EmbedderLoaded");
 
     LoadEmptyGuest();
 
-    const auto target_url = https_server.GetURL(
+    const auto target_url = https_server_.GetURL(
         "/extensions/platform_apps/web_view/ssl/https_page.html");
     SetGuestURL(target_url, /*expect_successful_navigation=*/false);
 
     // Guest's `target_url` is served by an HTTP server with a cert error.
     // A security error within a guest should not cause an interstitial to be
     // shown in the embedder.
-    ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
-        GetFirstAppWindowWebContents()));
-
+    // Note: for the InnerWebContents case, the guest and the embedder will have
+    // different WebContents, so we don't expect the interstitial to be
+    // associated with the embedder's WebContents. But in the MPArch case,
+    // there's only one WebContents, so the guest's interstitial page is
+    // associated with the embedder's WebContents.
     auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+    ASSERT_EQ(GetParam(),
+              GetFirstAppWindowWebContents() == guest->web_contents());
+    ASSERT_EQ(GetFirstAppWindowWebContents() == guest->web_contents(),
+              chrome_browser_interstitials::IsShowingInterstitial(
+                  GetFirstAppWindowWebContents()));
+
     ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
     ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
         guest->web_contents()));
@@ -2290,7 +2297,7 @@ class WebViewSSLErrorTest : public WebViewTest {
       ASSERT_EQ(guest_navi_obs.last_net_error_code(), net::Error::OK);
       ASSERT_EQ(guest_navi_obs.last_committed_url(), guest_url);
     } else {
-      // `https_server` in `WebViewSSLErrorTest::SSLTestHelper` is configured
+      // `https_server_` in `WebViewSSLErrorTest::SSLTestHelper` is configured
       // with `CERT_MISMATCHED_NAME`.
       ASSERT_EQ(guest_navi_obs.last_net_error_code(),
                 net::Error::ERR_CERT_COMMON_NAME_INVALID);
@@ -2299,6 +2306,11 @@ class WebViewSSLErrorTest : public WebViewTest {
       ASSERT_EQ(guest_navi_obs.last_committed_url(), GURL());
     }
   }
+
+ protected:
+  // Starts a HTTPS server so we can load HTTPS pages, possibly with SSL errors,
+  // inside guests.
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -2315,8 +2327,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 #define MAYBE_ShowInterstitialForSSLError ShowInterstitialForSSLError
 #endif
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ShowInterstitialForSSLError) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   SSLTestHelper();
 }
 
@@ -2326,35 +2336,9 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_ShowInterstitialForSSLError) {
 // known-safe page used to navigate back from such interstitials when there's
 // no other page in history to go to).  See https://crbug.com/1444221.
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateBackFromSSLError) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
+  SSLTestHelper();
 
-  // Starts a HTTPS server so we can load a page with a SSL error inside a
-  // guest.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_MISMATCHED_NAME);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-
-  LoadAndLaunchPlatformApp("web_view/ssl", "EmbedderLoaded");
-
-  const auto failure_url = https_server.GetURL(
-      "/extensions/platform_apps/web_view/ssl/https_page.html");
-  EXPECT_TRUE(content::ExecJs(
-      GetFirstAppWindowWebContents(),
-      content::JsReplace("var w = document.createElement('webview');"
-                         "w.src = $1;"
-                         "document.body.appendChild(w);",
-                         failure_url)));
-  GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
   auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
-  GetGuestViewManager()->WaitUntilAttached(guest);
-
-  // The navigation should fail and show an interstitial in the guest.
-  EXPECT_FALSE(WaitForLoadStop(guest->web_contents()));
-  ASSERT_TRUE(guest->GetGuestMainFrame()->IsErrorDocument());
-  ASSERT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
-      guest->web_contents()));
-
   // Simulate invoking the "Back to safety" button.  This should dismiss the
   // interstitial and navigate the guest to a known safe URL that can always
   // load in a guest (in this case, about:blank).
@@ -2362,16 +2346,77 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateBackFromSSLError) {
       security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
           guest->web_contents());
   ASSERT_TRUE(helper);
-  auto* interstitial =
-      helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
+  auto* interstitial = helper->GetBlockingPageForFrame(
+      guest->GetGuestMainFrame()->GetFrameTreeNodeId());
   ASSERT_TRUE(interstitial);
+
+  // Set observers for the navigation
+  content::TestNavigationObserver nav_observer(guest->web_contents(), 1);
+  nav_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+  content::TestFrameNavigationObserver frame_nav_observer(
+      guest->GetGuestMainFrame());
+
+  // Give command to go back.
   interstitial->CommandReceived(base::NumberToString(
       security_interstitials::SecurityInterstitialCommand::CMD_DONT_PROCEED));
 
-  EXPECT_TRUE(WaitForLoadStop(guest->web_contents()));
+  if (GetParam()) {
+    frame_nav_observer.Wait();
+  } else {
+    nav_observer.Wait();
+  }
+
   ASSERT_FALSE(guest->GetGuestMainFrame()->IsErrorDocument());
   ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
       guest->web_contents()));
+
+  // We should be at the "safe" url now.
+  EXPECT_EQ(GURL(url::kAboutBlankURL),
+            guest->GetGuestMainFrame()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateThroughSSLError) {
+  SSLTestHelper();
+  // Recreate `target_url` for use outside SSLTestHelper.
+  const auto target_url = https_server_.GetURL(
+      "/extensions/platform_apps/web_view/ssl/https_page.html");
+
+  auto* guest = GetGuestViewManager()->GetLastGuestViewCreated();
+  // Simulate invoking the "proceed" button.  This should dismiss the
+  // interstitial and navigate the guest to the unsafe URL that was the target
+  // of the initial navigation.
+  security_interstitials::SecurityInterstitialTabHelper* helper =
+      security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+          guest->web_contents());
+  ASSERT_TRUE(helper);
+  auto* interstitial = helper->GetBlockingPageForFrame(
+      guest->GetGuestMainFrame()->GetFrameTreeNodeId());
+  ASSERT_TRUE(interstitial);
+
+  // Set observers for the navigation
+  content::TestNavigationObserver nav_observer(guest->web_contents(), 1);
+  nav_observer.set_wait_event(
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
+  content::TestFrameNavigationObserver frame_nav_observer(
+      guest->GetGuestMainFrame());
+
+  // Give command to proceed.
+  interstitial->CommandReceived(base::NumberToString(
+      security_interstitials::SecurityInterstitialCommand::CMD_PROCEED));
+
+  if (GetParam()) {
+    frame_nav_observer.Wait();
+  } else {
+    nav_observer.Wait();
+  }
+
+  ASSERT_FALSE(guest->GetGuestMainFrame()->IsErrorDocument());
+  ASSERT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      guest->web_contents()));
+
+  // Make sure that "proceeding" took us to the expected url.
+  EXPECT_EQ(target_url, guest->GetGuestMainFrame()->GetLastCommittedURL());
 }
 
 // Test makes sure that the interstitial is registered in the
@@ -2383,8 +2428,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, NavigateBackFromSSLError) {
 #define MAYBE_InterstitialPageRouteEvents InterstitialPageRouteEvents
 #endif
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageRouteEvents) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   SSLTestHelper();
 
   std::vector<content::RenderWidgetHostView*> hosts =
@@ -2409,8 +2452,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageRouteEvents) {
 #define MAYBE_InterstitialPageDetach InterstitialPageDetach
 #endif
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageDetach) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   SSLTestHelper();
 
   // Navigate to about:blank
@@ -2427,8 +2468,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialPageDetach) {
 #define MAYBE_InterstitialTearDown InterstitialTearDown
 #endif
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialTearDown) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   SSLTestHelper();
 
   // Now close the app while the interstitial is being shown in the guest.
@@ -2440,8 +2479,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, MAYBE_InterstitialTearDown) {
 // down while an interstitial is being shown in guest.
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest,
                        InterstitialTearDownOnBrowserShutdown) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   SSLTestHelper();
 
   // Now close the app while the interstitial is being shown in the guest.
@@ -2518,15 +2555,12 @@ IN_PROC_BROWSER_TEST_P(WebViewSafeBrowsingTest,
 // enabled doesn't crash nor shows error page.
 // Regression test for crbug.com/1233889
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, GuestLoadsHttpsWithoutError) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
                                                true);
 
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-  GURL guest_url = https_server.GetURL("/simple.html");
+  https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(https_server_.Start());
+  GURL guest_url = https_server_.GetURL("/simple.html");
   LoadAndLaunchPlatformApp("web_view/ssl", "EmbedderLoaded");
   LoadEmptyGuest();
   SetGuestURL(guest_url, /*expect_successful_navigation=*/true);
@@ -2546,8 +2580,6 @@ IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, GuestLoadsHttpsWithoutError) {
 // Tests that loading an HTTP page in a guest <webview> with HTTPS-First Mode
 // enabled doesn't crash and doesn't trigger the error page.
 IN_PROC_BROWSER_TEST_P(WebViewSSLErrorTest, GuestLoadsHttpWithoutError) {
-  SKIP_FOR_MPARCH();  // TODO(crbug.com/40202416): Enable test for MPArch.
-
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
                                                true);
 

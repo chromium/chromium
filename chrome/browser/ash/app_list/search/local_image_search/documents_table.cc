@@ -162,8 +162,8 @@ bool DocumentsTable::GetAllFiles(SqlDatabase* db,
   }
 
   while (statement->Step()) {
-    base::FilePath file_path(statement->ColumnString(0));
-    file_path = file_path.Append(statement->ColumnString(1));
+    base::FilePath file_path(statement->ColumnStringView(0));
+    file_path = file_path.Append(statement->ColumnStringView(1));
 
     DVLOG(1) << "GetAll : " << file_path;
     documents.emplace_back(base::FilePath(std::move(file_path)));
@@ -192,8 +192,8 @@ bool DocumentsTable::SearchByDirectory(
   statement->BindString(0, base::StrCat({directory.value(), "%"}));
 
   while (statement->Step()) {
-    base::FilePath file_path(statement->ColumnString(0));
-    file_path = file_path.Append(statement->ColumnString(1));
+    base::FilePath file_path(statement->ColumnStringView(0));
+    file_path = file_path.Append(statement->ColumnStringView(1));
     matched_paths.emplace_back(file_path);
   }
 

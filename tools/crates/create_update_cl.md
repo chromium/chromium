@@ -113,6 +113,16 @@ closest to `origin/main`):
 1. Follow the cargo vet instructions to inspect diffs and certify the results
     - Note that special guidelines may apply to
       [delta audits](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md#delta-audits-should-describe-the-final-version)
+    - When performing delta audits, <https://diff.rs/> may be a helpful
+      resource.
+    - The result of an audit can be recorded by simply editing `audits.toml`
+      directly, or running a command like the following:
+      ```
+      tools/crates/run_cargo_vet.py certify autocfg 1.2.0 1.4.0 \
+        --criteria=safe-to-deploy \
+        --criteria=does-not-implement-crypto \
+        --criteria=ub-risk-0
+      ```
 1. `git add third_party/rust/chromium_crates_io/supply-chain`.
 1. `git commit -m 'cargo vet'`
 1. `git cl upload -m 'cargo vet'`

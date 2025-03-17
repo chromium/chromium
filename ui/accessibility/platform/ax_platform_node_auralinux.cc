@@ -4016,6 +4016,30 @@ void AXPlatformNodeAuraLinux::OnAriaCurrentChanged() {
           aria_current != ax::mojom::AriaCurrentState::kFalse);
 }
 
+void AXPlatformNodeAuraLinux::OnAriaNotificationPosted(
+    const std::string& announcement,
+    ax::mojom::AriaNotificationPriority priority_property) {
+  AtkObject* atk_object = GetOrCreateAtkObject();
+  if (!atk_object) {
+    return;
+  }
+
+  // Only newer Atk versions support the notification signal type.
+  DCHECK(base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) >= 0);
+
+  auto MapPropertiesToAtkLiveType = [&]() -> AriaNotificationAtkLive {
+    switch (priority_property) {
+      case ax::mojom::AriaNotificationPriority::kNormal:
+        return AriaNotificationAtkLive::kPolite;
+      case ax::mojom::AriaNotificationPriority::kHigh:
+        return AriaNotificationAtkLive::kAssertive;
+    }
+    NOTREACHED();
+  };
+  g_signal_emit_by_name(atk_object, "notification", announcement.c_str(),
+                        MapPropertiesToAtkLiveType());
+}
+
 void AXPlatformNodeAuraLinux::OnAlertShown() {
   atk_object_notify_state_change(ATK_OBJECT(GetOrCreateAtkObject()),
                                  ATK_STATE_SHOWING, TRUE);

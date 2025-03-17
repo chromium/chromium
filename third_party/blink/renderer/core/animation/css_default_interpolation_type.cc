@@ -37,8 +37,9 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
   if (!css_value)
     return nullptr;
 
-  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
-                            CSSDefaultNonInterpolableValue::Create(css_value));
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableList>(0),
+      MakeGarbageCollected<CSSDefaultNonInterpolableValue>(css_value));
 }
 
 void CSSDefaultInterpolationType::Apply(

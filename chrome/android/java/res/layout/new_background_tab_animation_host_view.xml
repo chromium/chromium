@@ -6,12 +6,21 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedResources"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    android:layoutDirection="ltr">
 
+    <!-- Layout is visible when NewBackgroundTabAnimationHostView#mAnimationType is
+    AnimationType.DEFAULT, otherwise, the animators will change the visibility to Visible as the
+    animation is running.-->
+    <include
+        layout="@layout/new_background_tab_animation_tab_switcher_icon"
+        android:visibility="invisible"/>
+
+
+    <!--View is invisible to avoid displaying the icon prematurely. The reason is that one of the
+    animators updates the View.X and View.Y values, overwriting its screen location.-->
     <ImageView
         android:id="@+id/new_tab_background_animation_link_icon"
         android:importantForAccessibility="no"
@@ -21,5 +30,6 @@ found in the LICENSE file.
         android:background="@drawable/new_tab_animation_rounded_rect"
         android:elevation="@dimen/default_elevation_5"
         android:src="@drawable/ic_link"
-        android:padding="4dp"/>
+        android:padding="4dp"
+        android:visibility="invisible"/>
 </org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView>

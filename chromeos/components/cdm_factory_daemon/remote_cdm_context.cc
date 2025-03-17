@@ -14,6 +14,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/callback_registry.h"
 #include "media/cdm/cdm_context_ref_impl.h"
+#include "media/mojo/common/media_type_converters.h"
+#include "media/mojo/common/validation_utils.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -39,12 +41,13 @@ class RemoteCdmContextRef final : public media::CdmContextRef {
 }  // namespace
 
 class RemoteCdmContext::MojoSequenceState
-    : public media::stable::mojom::CdmContextEventCallback {
+    : public media::mojom::CdmContextEventCallback {
  public:
   explicit MojoSequenceState(
-      mojo::PendingRemote<media::stable::mojom::StableCdmContext>
-          pending_stable_cdm_context)
-      : pending_stable_cdm_context_(std::move(pending_stable_cdm_context)) {
+      mojo::PendingRemote<media::mojom::CdmContextForOOPVD>
+          pending_cdm_context_for_oopvd)
+      : pending_cdm_context_for_oopvd_(
+            std::move(pending_cdm_context_for_oopvd)) {
     sequence_checker_.DetachFromSequence();
   }
 
@@ -52,20 +55,20 @@ class RemoteCdmContext::MojoSequenceState
     CHECK(sequence_checker_.CalledOnValidSequence());
   }
 
-  mojo::Remote<media::stable::mojom::StableCdmContext>& GetStableCdmContext() {
+  mojo::Remote<media::mojom::CdmContextForOOPVD>& GetCdmContextForOOPVD() {
     CHECK(sequence_checker_.CalledOnValidSequence());
-    if (!stable_cdm_context_) {
-      stable_cdm_context_.Bind(std::move(pending_stable_cdm_context_));
+    if (!cdm_context_for_oopvd_) {
+      cdm_context_for_oopvd_.Bind(std::move(pending_cdm_context_for_oopvd_));
       mojo_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
     }
-    return stable_cdm_context_;
+    return cdm_context_for_oopvd_;
   }
 
   std::unique_ptr<media::CallbackRegistration> RegisterEventCB(
       EventCB event_cb) {
     CHECK(sequence_checker_.CalledOnValidSequence());
     if (!event_callback_receiver_.is_bound()) {
-      GetStableCdmContext()->RegisterEventCallback(
+      GetCdmContextForOOPVD()->RegisterEventCallback(
           event_callback_receiver_.BindNewPipeAndPassRemote());
     }
     auto registration = event_callbacks_.Register(std::move(event_cb));
@@ -82,8 +85,9 @@ class RemoteCdmContext::MojoSequenceState
     } else {
       // We're either on the right sequence or the |mojo_sequence_state| was
       // never bound to a sequence (i.e., it was constructed but never used).
-      DCHECK(task_runner || mojo_sequence_state->pending_stable_cdm_context_);
-      DCHECK(task_runner || !mojo_sequence_state->stable_cdm_context_);
+      DCHECK(task_runner ||
+             mojo_sequence_state->pending_cdm_context_for_oopvd_);
+      DCHECK(task_runner || !mojo_sequence_state->cdm_context_for_oopvd_);
       DCHECK(task_runner ||
              !mojo_sequence_state->event_callback_receiver_.is_bound());
       delete mojo_sequence_state;
@@ -91,27 +95,27 @@ class RemoteCdmContext::MojoSequenceState
   }
 
  private:
-  // media::stable::mojom::CdmContextEventCallback:
+  // media::mojom::CdmContextEventCallback:
   void EventCallback(media::CdmContext::Event event) override {
     CHECK(sequence_checker_.CalledOnValidSequence());
     event_callbacks_.Notify(std::move(event));
   }
 
   base::SequenceCheckerImpl sequence_checker_;
-  mojo::PendingRemote<media::stable::mojom::StableCdmContext>
-      pending_stable_cdm_context_;
-  mojo::Remote<media::stable::mojom::StableCdmContext> stable_cdm_context_;
-  mojo::Receiver<media::stable::mojom::CdmContextEventCallback>
+  mojo::PendingRemote<media::mojom::CdmContextForOOPVD>
+      pending_cdm_context_for_oopvd_;
+  mojo::Remote<media::mojom::CdmContextForOOPVD> cdm_context_for_oopvd_;
+  mojo::Receiver<media::mojom::CdmContextEventCallback>
       event_callback_receiver_{this};
   media::CallbackRegistry<EventCB::RunType> event_callbacks_;
   scoped_refptr<base::SequencedTaskRunner> mojo_task_runner_;
 };
 
 RemoteCdmContext::RemoteCdmContext(
-    mojo::PendingRemote<media::stable::mojom::StableCdmContext>
-        stable_cdm_context)
-    : mojo_sequence_state_(new MojoSequenceState(std::move(stable_cdm_context)),
-                           &MojoSequenceState::DeleteOnCorrectSequence) {}
+    mojo::PendingRemote<media::mojom::CdmContextForOOPVD> cdm_context_for_oopvd)
+    : mojo_sequence_state_(
+          new MojoSequenceState(std::move(cdm_context_for_oopvd)),
+          &MojoSequenceState::DeleteOnCorrectSequence) {}
 
 std::unique_ptr<media::CallbackRegistration> RemoteCdmContext::RegisterEventCB(
     EventCB event_cb) {
@@ -131,23 +135,27 @@ ChromeOsCdmContext* RemoteCdmContext::GetChromeOsCdmContext() {
 void RemoteCdmContext::GetHwKeyData(const media::DecryptConfig* decrypt_config,
                                     const std::vector<uint8_t>& hw_identifier,
                                     GetHwKeyDataCB callback) {
-  mojo_sequence_state_->GetStableCdmContext()->GetHwKeyData(
-      decrypt_config->Clone(), hw_identifier, std::move(callback));
+  CHECK(decrypt_config);
+  media::mojom::DecryptConfigPtr mojo_decrypt_config =
+      media::mojom::DecryptConfig::From(*decrypt_config);
+  CHECK(mojo_decrypt_config);
+  mojo_sequence_state_->GetCdmContextForOOPVD()->GetHwKeyData(
+      std::move(mojo_decrypt_config), hw_identifier, std::move(callback));
 }
 
 void RemoteCdmContext::GetHwConfigData(GetHwConfigDataCB callback) {
-  mojo_sequence_state_->GetStableCdmContext()->GetHwConfigData(
+  mojo_sequence_state_->GetCdmContextForOOPVD()->GetHwConfigData(
       std::move(callback));
 }
 
 void RemoteCdmContext::GetScreenResolutions(GetScreenResolutionsCB callback) {
-  mojo_sequence_state_->GetStableCdmContext()->GetScreenResolutions(
+  mojo_sequence_state_->GetCdmContextForOOPVD()->GetScreenResolutions(
       std::move(callback));
 }
 
 void RemoteCdmContext::AllocateSecureBuffer(uint32_t size,
                                             AllocateSecureBufferCB callback) {
-  mojo_sequence_state_->GetStableCdmContext()->AllocateSecureBuffer(
+  mojo_sequence_state_->GetCdmContextForOOPVD()->AllocateSecureBuffer(
       size, std::move(callback));
 }
 
@@ -156,7 +164,7 @@ void RemoteCdmContext::ParseEncryptedSliceHeader(
     uint32_t offset,
     const std::vector<uint8_t>& stream_data,
     ParseEncryptedSliceHeaderCB callback) {
-  mojo_sequence_state_->GetStableCdmContext()->ParseEncryptedSliceHeader(
+  mojo_sequence_state_->GetCdmContextForOOPVD()->ParseEncryptedSliceHeader(
       secure_handle, offset, stream_data, std::move(callback));
 }
 
@@ -176,8 +184,12 @@ void RemoteCdmContext::Decrypt(StreamType stream_type,
                                scoped_refptr<media::DecoderBuffer> encrypted,
                                DecryptCB decrypt_cb) {
   DCHECK_EQ(stream_type, Decryptor::kVideo);
-  mojo_sequence_state_->GetStableCdmContext()->DecryptVideoBuffer(
-      encrypted,
+  CHECK(encrypted);
+  media::mojom::DecoderBufferPtr encrypted_mojo_buffer =
+      media::mojom::DecoderBuffer::From(*encrypted);
+  CHECK(encrypted_mojo_buffer);
+  mojo_sequence_state_->GetCdmContextForOOPVD()->DecryptVideoBuffer(
+      std::move(encrypted_mojo_buffer),
       std::vector<uint8_t>(encrypted->data(),
                            encrypted->data() + encrypted->size()),
       base::BindOnce(&RemoteCdmContext::OnDecryptVideoBufferDone,
@@ -187,13 +199,21 @@ void RemoteCdmContext::Decrypt(StreamType stream_type,
 void RemoteCdmContext::OnDecryptVideoBufferDone(
     DecryptCB decrypt_cb,
     media::Decryptor::Status status,
-    const scoped_refptr<media::DecoderBuffer>& decoder_buffer,
+    media::mojom::DecoderBufferPtr decoder_buffer,
     const std::vector<uint8_t>& bytes) {
+  scoped_refptr<media::DecoderBuffer> media_decoder_buffer;
   if (decoder_buffer) {
-    CHECK_EQ(bytes.size(), decoder_buffer->size());
-    memcpy(decoder_buffer->writable_data(), bytes.data(), bytes.size());
+    media_decoder_buffer =
+        media::ValidateAndConvertMojoDecoderBuffer(std::move(decoder_buffer));
+    if (!media_decoder_buffer) {
+      CHECK(mojo::IsInMessageDispatch());
+      mojo::ReportBadMessage("Invalid DecoderBuffer received");
+      return;
+    }
+    CHECK_EQ(bytes.size(), media_decoder_buffer->size());
+    memcpy(media_decoder_buffer->writable_data(), bytes.data(), bytes.size());
   }
-  std::move(decrypt_cb).Run(status, decoder_buffer);
+  std::move(decrypt_cb).Run(status, media_decoder_buffer);
 }
 
 void RemoteCdmContext::CancelDecrypt(StreamType stream_type) {

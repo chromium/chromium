@@ -15,6 +15,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -61,8 +62,7 @@ TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
   user_manager().AddGaiaUser(kOwnerAccountId, user_manager::UserType::kRegular);
   user_manager().UserLoggedIn(
       kOwnerAccountId,
-      user_manager::FakeUserManager::GetFakeUsernameHash(kOwnerAccountId),
-      /*browser_restart=*/false, /*is_child=*/false);
+      user_manager::TestHelper::GetFakeUsernameHash(kOwnerAccountId));
   user_manager::User* user = user_manager().GetActiveUser();
   ASSERT_FALSE(user->GetProfilePrefs());
 
@@ -86,9 +86,7 @@ TEST_F(ProfileUserManagerControllerTest, AnnotateAccountId) {
   // Log in the user and create the profile.
   user_manager().AddGaiaUser(kAccountId, user_manager::UserType::kRegular);
   user_manager().UserLoggedIn(
-      kAccountId,
-      user_manager::FakeUserManager::GetFakeUsernameHash(kAccountId),
-      /*browser_restart=*/false, /*is_child=*/false);
+      kAccountId, user_manager::TestHelper::GetFakeUsernameHash(kAccountId));
   user_manager::User* user = user_manager().GetActiveUser();
   ASSERT_FALSE(user->GetProfilePrefs());
 

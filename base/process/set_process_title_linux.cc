@@ -91,7 +91,7 @@ void setproctitle(const char* fmt, ...) {
     // ""                   (on Linux --4.17)
     // "\0\0\0...\0\0\0.\0" (on Linux 4.18--5.2)
     // "\0"                 (on Linux 5.3--)
-    memset(g_argv_start, 0, avail_size + 1);
+    UNSAFE_TODO(memset(g_argv_start, 0, avail_size + 1));
     UNSAFE_TODO(g_argv_end[-1]) = '.';
 
     std::string cmdline;
@@ -102,7 +102,7 @@ void setproctitle(const char* fmt, ...) {
     return cmdline.size() >= 2;
   }();
 
-  memset(g_argv_start, 0, avail_size + 1);
+  UNSAFE_TODO(memset(g_argv_start, 0, avail_size + 1));
 
   size_t size;
   va_start(ap, fmt);
@@ -111,7 +111,7 @@ void setproctitle(const char* fmt, ...) {
         UNSAFE_TODO(vsnprintf(g_argv_start, avail_size, &fmt[1], ap)));
   } else {
     size = base::checked_cast<size_t>(
-        snprintf(g_argv_start, avail_size, "%s ", g_orig_argv0));
+        UNSAFE_TODO(snprintf(g_argv_start, avail_size, "%s ", g_orig_argv0)));
     if (size < avail_size) {
       size += base::checked_cast<size_t>(UNSAFE_TODO(
           vsnprintf(&g_argv_start[size], avail_size - size, fmt, ap)));

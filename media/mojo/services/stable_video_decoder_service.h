@@ -10,8 +10,8 @@
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_log.mojom.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
@@ -20,71 +20,78 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+// TODO(crbug.com/347331029): rename this file to oop_video_decoder_service.h.
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/cdm_factory_daemon/remote_cdm_context.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
-class FrameRegistry;
-// A StableVideoDecoderService serves as an adapter between the
-// stable::mojom::StableVideoDecoder interface and the mojom::VideoDecoder
-// interface. This allows us to provide hardware video decoding capabilities to
-// clients that may be using a different version of the
-// stable::mojom::StableVideoDecoder interface, e.g., LaCrOS. A
-// StableVideoDecoderService is intended to live in a video decoder process.
-// This process can host multiple StableVideoDecoderServices, but the assumption
-// is that they don't distrust each other. For example, they should all be
-// serving the same renderer process.
+// An OOPVideoDecoderService is a "frontend" for a media::mojom::VideoDecoder
+// that lives in a utility process. This utility process can host multiple
+// OOPVideoDecoderServices, but the assumption is that they don't distrust each
+// other. For example, they should all be serving the same renderer process.
 //
-// TODO(b/195769334): a StableVideoDecoderService should probably be responsible
-// for checking incoming data to address issues that may arise due to the stable
-// nature of the stable::mojom::StableVideoDecoder interface. For example,
-// suppose the StableVideoDecoderService implements an older version of the
-// interface relative to the one used by the client. If the client Initialize()s
-// the StableVideoDecoderService with a VideoCodecProfile that's unsupported by
-// the older version of the interface, the StableVideoDecoderService should
-// reject that initialization. Conversely, the client of the
-// StableVideoDecoderService should also check incoming data due to similar
-// concerns.
-class MEDIA_MOJO_EXPORT StableVideoDecoderService
-    : public stable::mojom::StableVideoDecoder,
-      public stable::mojom::VideoFrameHandleReleaser,
+// A previous version of this class used to serve as an adapter between the
+// stable version of media::mojom::VideoDecoder (the now removed
+// media::stable::mojom::StableVideoDecoder) and media::mojom::VideoDecoder.
+// Since that stable version is no longer needed, the role of
+// OOPVideoDecoderService is much more narrow: it needs to transform
+// InitializeWithCdmContext() calls into Initialize() calls -- the client of
+// OOPVideoDecoderService in the GPU process can't use Initialize() directly
+// because the |cdm_id| in that call can't be used to find the corresponding
+// CdmContext outside of the GPU process.
+//
+// TODO(crbug.com/347331029): consider handling the InitializeWithCdmContext()
+// call directly in the MojoVideoDecoderService. If we can do that, we can
+// probably remove the OOPVideoDecoderService class (thus also removing the
+// in-process Mojo hop that we currently have just to abide by the requirements
+// of associated interfaces, see the documentation of |dst_video_decoder_| in
+// the class declaration).
+class MEDIA_MOJO_EXPORT OOPVideoDecoderService
+    : public mojom::VideoDecoder,
+      public mojom::VideoFrameHandleReleaser,
       public mojom::VideoDecoderClient,
       public mojom::MediaLog {
  public:
-  StableVideoDecoderService(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker>
-          tracker_remote,
+  OOPVideoDecoderService(
+      mojo::PendingRemote<mojom::VideoDecoderTracker> tracker_remote,
       std::unique_ptr<mojom::VideoDecoder> dst_video_decoder,
-      MojoCdmServiceContext* cdm_service_context,
-      scoped_refptr<const FrameRegistry> frame_registry);
-  StableVideoDecoderService(const StableVideoDecoderService&) = delete;
-  StableVideoDecoderService& operator=(const StableVideoDecoderService&) =
-      delete;
-  ~StableVideoDecoderService() override;
+      MojoCdmServiceContext* cdm_service_context);
+  OOPVideoDecoderService(const OOPVideoDecoderService&) = delete;
+  OOPVideoDecoderService& operator=(const OOPVideoDecoderService&) = delete;
+  ~OOPVideoDecoderService() override;
 
-  // stable::mojom::StableVideoDecoder implementation.
+  // mojom::VideoDecoder implementation.
   void GetSupportedConfigs(GetSupportedConfigsCallback callback) final;
-  void Construct(
-      mojo::PendingAssociatedRemote<stable::mojom::VideoDecoderClient>
-          stable_video_decoder_client_remote,
-      mojo::PendingRemote<stable::mojom::MediaLog> stable_media_log_remote,
-      mojo::PendingReceiver<stable::mojom::VideoFrameHandleReleaser>
-          stable_video_frame_handle_releaser_receiver,
-      mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
-      const gfx::ColorSpace& target_color_space) final;
-  void Initialize(
+  void Construct(mojo::PendingAssociatedRemote<mojom::VideoDecoderClient>
+                     video_decoder_client_remote,
+                 mojo::PendingRemote<mojom::MediaLog> media_log_remote,
+                 mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
+                     video_frame_handle_releaser_receiver,
+                 mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
+                 mojom::CommandBufferIdPtr command_buffer_id,
+                 const gfx::ColorSpace& target_color_space) final;
+  void Initialize(const VideoDecoderConfig& config,
+                  bool low_delay,
+                  const std::optional<base::UnguessableToken>& cdm_id,
+                  InitializeCallback callback) final;
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  void InitializeWithCdmContext(
       const VideoDecoderConfig& config,
       bool low_delay,
-      mojo::PendingRemote<stable::mojom::StableCdmContext> cdm_context,
-      InitializeCallback callback) final;
-  void Decode(const scoped_refptr<DecoderBuffer>& buffer,
-              DecodeCallback callback) final;
+      mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
+      InitializeWithCdmContextCallback callback) final;
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  void Decode(mojom::DecoderBufferPtr buffer, DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
+  void OnOverlayInfoChanged(const OverlayInfo& overlay_info) final;
 
-  // mojom::stable::VideoFrameHandleReleaser implementation.
-  void ReleaseVideoFrame(const base::UnguessableToken& release_token) final;
+  // mojom::VideoFrameHandleReleaser implementation.
+  void ReleaseVideoFrame(
+      const base::UnguessableToken& release_token,
+      const std::optional<gpu::SyncToken>& release_sync_token) final;
 
   // mojom::VideoDecoderClient implementation.
   void OnVideoFrameDecoded(
@@ -98,41 +105,41 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderService
   void AddLogRecord(const MediaLogRecord& event) final;
 
  private:
-  void OnInitializeDone(InitializeCallback init_cb,
+  void OnInitializeDone(InitializeWithCdmContextCallback init_cb,
                         bool needs_transcryption,
                         const DecoderStatus& status,
                         bool needs_bitstream_conversion,
                         int32_t max_decode_requests,
                         VideoDecoderType decoder_type);
 
-  mojo::Remote<stable::mojom::StableVideoDecoderTracker> tracker_remote_
+  mojo::Remote<mojom::VideoDecoderTracker> tracker_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Incoming calls from the |dst_video_decoder_| to
   // |video_decoder_client_receiver_| are forwarded to
-  // |stable_video_decoder_client_remote_|.
+  // |video_decoder_client_remote_|.
   mojo::AssociatedReceiver<mojom::VideoDecoderClient>
       video_decoder_client_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
-  mojo::AssociatedRemote<stable::mojom::VideoDecoderClient>
-      stable_video_decoder_client_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::AssociatedRemote<mojom::VideoDecoderClient> video_decoder_client_remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Incoming calls from the |dst_video_decoder_| to |media_log_receiver_| are
-  // forwarded to |stable_media_log_remote_|.
+  // forwarded to |media_log_remote_|.
   mojo::Receiver<mojom::MediaLog> media_log_receiver_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  mojo::Remote<stable::mojom::MediaLog> stable_media_log_remote_
+  mojo::Remote<mojom::MediaLog> media_log_remote_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Incoming requests from the client to
-  // |stable_video_frame_handle_releaser_receiver_| are forwarded to
+  // |video_frame_handle_releaser_receiver_| are forwarded to
   // |video_frame_handle_releaser_remote_|.
-  mojo::Receiver<stable::mojom::VideoFrameHandleReleaser>
-      stable_video_frame_handle_releaser_receiver_
+  mojo::Receiver<mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_receiver_
           GUARDED_BY_CONTEXT(sequence_checker_);
   mojo::Remote<mojom::VideoFrameHandleReleaser>
       video_frame_handle_releaser_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // The incoming stable::mojom::StableVideoDecoder requests are forwarded to
+  // The incoming mojom::VideoDecoder requests are forwarded to
   // |dst_video_decoder_receiver_| through |dst_video_decoder_remote_|.
   //
   // Note: the implementation behind |dst_video_decoder_receiver_| (i.e.,
@@ -155,10 +162,6 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderService
   scoped_refptr<chromeos::RemoteCdmContext> remote_cdm_context_
       GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Used by OnVideoFrameDecoded() to convert media VideoFrames to a
-  // stable::mojo::VideoFrame.
-  const scoped_refptr<const FrameRegistry> frame_registry_;
 
   std::optional<base::UnguessableToken> cdm_id_
       GUARDED_BY_CONTEXT(sequence_checker_);

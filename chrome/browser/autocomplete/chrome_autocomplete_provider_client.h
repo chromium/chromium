@@ -124,6 +124,10 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   void PromptPageTranslation() override;
   bool OpenJourneys(const std::string& query) override;
   void OpenLensOverlay() override;
+  void IssueContextualSearchRequest(
+      const GURL& destination_url,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion) override;
 
   // For testing.
   void set_storage_partition(content::StoragePartition* storage_partition) {

@@ -290,6 +290,9 @@ class PermissionsClient {
   // IDR_INFOBAR_TRANSLATE) to an Android drawable resource ID.
   // Returns 0 if a mapping wasn't found.
   virtual int MapToJavaDrawableId(int resource_id);
+
+  // Gets the name of the embedder.
+  virtual const std::u16string GetClientApplicationName() const = 0;
 #else
   // Creates a permission prompt.
   // TODO(crbug.com/40107932): Move the desktop permission prompt

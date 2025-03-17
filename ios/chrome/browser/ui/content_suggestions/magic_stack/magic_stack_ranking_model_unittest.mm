@@ -250,6 +250,8 @@ class MagicStackRankingModelTest : public PlatformTest {
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
+    builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
+                              TipsManagerIOSFactory::GetDefaultFactory());
 
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 

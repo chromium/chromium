@@ -19,13 +19,9 @@ namespace blink {
 
 class CSSAspectRatioNonInterpolableValue final : public NonInterpolableValue {
  public:
+  explicit CSSAspectRatioNonInterpolableValue(EAspectRatioType type)
+      : type_(type) {}
   ~CSSAspectRatioNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSAspectRatioNonInterpolableValue> Create(
-      StyleAspectRatio aspect_ratio) {
-    return base::AdoptRef(
-        new CSSAspectRatioNonInterpolableValue(aspect_ratio.GetType()));
-  }
 
   EAspectRatioType GetAspectRatioType() const { return type_; }
 
@@ -39,9 +35,6 @@ class CSSAspectRatioNonInterpolableValue final : public NonInterpolableValue {
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSAspectRatioNonInterpolableValue(EAspectRatioType type)
-      : type_(type) {}
-
   EAspectRatioType type_;
 };
 
@@ -104,7 +97,8 @@ InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertInitial(
       state.GetDocument().GetStyleResolver().InitialStyle().AspectRatio();
   return InterpolationValue(
       CreateInterpolableAspectRatio(initial_ratio),
-      CSSAspectRatioNonInterpolableValue::Create(initial_ratio));
+      MakeGarbageCollected<CSSAspectRatioNonInterpolableValue>(
+          initial_ratio.GetType()));
 }
 
 InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertInherit(
@@ -113,7 +107,8 @@ InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertInherit(
   if (!state.ParentStyle())
     return nullptr;
 
-  StyleAspectRatio inherited_aspect_ratio = state.ParentStyle()->AspectRatio();
+  const StyleAspectRatio& inherited_aspect_ratio =
+      state.ParentStyle()->AspectRatio();
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedAspectRatioChecker>(
           inherited_aspect_ratio));
@@ -122,7 +117,8 @@ InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertInherit(
 
   return InterpolationValue(
       CreateInterpolableAspectRatio(inherited_aspect_ratio),
-      CSSAspectRatioNonInterpolableValue::Create(inherited_aspect_ratio));
+      MakeGarbageCollected<CSSAspectRatioNonInterpolableValue>(
+          inherited_aspect_ratio.GetType()));
 }
 
 InterpolationValue
@@ -130,7 +126,8 @@ CSSAspectRatioInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   return InterpolationValue(
       CreateInterpolableAspectRatio(style.AspectRatio()),
-      CSSAspectRatioNonInterpolableValue::Create(style.AspectRatio()));
+      MakeGarbageCollected<CSSAspectRatioNonInterpolableValue>(
+          style.AspectRatio().GetType()));
 }
 
 InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertValue(
@@ -139,8 +136,10 @@ InterpolationValue CSSAspectRatioInterpolationType::MaybeConvertValue(
     ConversionCheckers&) const {
   StyleAspectRatio ratio =
       StyleBuilderConverter::ConvertAspectRatio(*state, value);
-  return InterpolationValue(CreateInterpolableAspectRatio(ratio),
-                            CSSAspectRatioNonInterpolableValue::Create(ratio));
+  return InterpolationValue(
+      CreateInterpolableAspectRatio(ratio),
+      MakeGarbageCollected<CSSAspectRatioNonInterpolableValue>(
+          ratio.GetType()));
 }
 
 void CSSAspectRatioInterpolationType::ApplyStandardPropertyValue(

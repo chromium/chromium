@@ -1885,13 +1885,13 @@ Tab* TabStrip::GetAdjacentSplitTab(const Tab* tab) {
 
   // TODO(agale): In the future this might need to support more than two tab
   // splits.
-  Tab* const left_tab = tab->controller()->GetAdjacentTab(tab, -1);
-  if (left_tab && left_tab->split()) {
-    return left_tab;
+  Tab* const start_tab = tab->controller()->GetAdjacentTab(tab, -1);
+  if (start_tab && start_tab->split()) {
+    return start_tab;
   }
-  Tab* const right_tab = tab->controller()->GetAdjacentTab(tab, 1);
-  if (right_tab && right_tab->split()) {
-    return right_tab;
+  Tab* const end_tab = tab->controller()->GetAdjacentTab(tab, 1);
+  if (end_tab && end_tab->split()) {
+    return end_tab;
   }
 
   return nullptr;

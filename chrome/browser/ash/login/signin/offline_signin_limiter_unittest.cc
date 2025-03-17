@@ -27,6 +27,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/quota_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,18 +134,18 @@ FakeChromeUserManager* OfflineSigninLimiterTest::GetFakeChromeUserManager() {
 user_manager::User* OfflineSigninLimiterTest::AddGaiaUser() {
   auto* user = fake_user_manager_->AddUser(test_gaia_account_id_);
   profile_->set_profile_name(kTestGaiaUser);
-  fake_user_manager_->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                                   /*browser_restart=*/false,
-                                   /*is_child=*/false);
+  fake_user_manager_->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   return user;
 }
 
 user_manager::User* OfflineSigninLimiterTest::AddSAMLUser() {
   auto* user = fake_user_manager_->AddSamlUser(test_saml_account_id_);
   profile_->set_profile_name(kTestSAMLUser);
-  fake_user_manager_->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                                   /*browser_restart=*/false,
-                                   /*is_child=*/false);
+  fake_user_manager_->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   return user;
 }
 

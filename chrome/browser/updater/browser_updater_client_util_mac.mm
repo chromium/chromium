@@ -232,7 +232,7 @@ std::string CurrentlyInstalledVersion() {
       info_plist[@"CFBundleShortVersionString"]));
 }
 
-updater::UpdaterScope GetUpdaterScope() {
+updater::UpdaterScope GetBrowserUpdaterScope() {
   std::optional<uid_t> owner = GetBundleOwner();
   return owner && (*owner == 0 || *owner != geteuid())
              ? updater::UpdaterScope::kSystem
@@ -248,7 +248,7 @@ void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&GetUpdaterScope),
+      base::BindOnce(&GetBrowserUpdaterScope),
       base::BindOnce(
           [](base::OnceClosure prompt, base::OnceClosure complete,
              updater::UpdaterScope scope) {

@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">開咗之後，網站可以要求使用 NFC 裝置。閂咗之後，網站唔可以使用 NFC 裝置。</translation>
 <translation id="1660204651932907780">允許網站播放音效 (建議)</translation>
 <translation id="1677097821151855053">系統會使用 Cookie 和其他網站資料記住您的身分，例如登入帳戶或個人化廣告。如要管理所有網站的 Cookie，請參閱「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
+<translation id="1679305402657584804">網站可以要求使用 NFC 裝置</translation>
 <translation id="1686785653877010442">網站通常會傳送通知，讓你掌握突發新聞或即時通訊訊息。</translation>
 <translation id="169515064810179024">禁止網站存取動作感應器</translation>
 <translation id="1703666494654169921">不允許網站使用虛擬實境﻿裝置或資料</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">這會刪除網站或主畫面上的應用程式儲存的資料和 Cookie，共 <ph name="DATASIZE" />。</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2215727959747642672">檔案編輯</translation>
+<translation id="2218389616572918761">網站可以要求使用麥克風</translation>
 <translation id="2228071138934252756">如要讓 <ph name="APP_NAME" /> 存取您的相機，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238944249568001759">根據最近開啟的分頁提供搜尋建議</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">啟動 Chrome 時將焦點置於網址列，縮短低階裝置的啟動時間。</translation>
 <translation id="2750481671343847896">網站可顯示來自身分服務的登入提示。</translation>
 <translation id="2787357173144933081">快速開啟網址列</translation>
+<translation id="2789132527330338807">網站可以要求建立你周遭環境的 3D 地圖或追蹤攝影機位置</translation>
 <translation id="2790501146643349491">開咗之後，最近閂咗嘅網站可以完成傳送同接收資料。閂咗之後，最近閂咗嘅網站唔可以完成傳送同接收資料。</translation>
 <translation id="2795716239552913152">網站通常會使用您的位置以提供相關功能或資料，例如本地新聞或附近商店</translation>
+<translation id="2802908157808345702">不允許網站傳送彈出式視窗和使用重新導向</translation>
 <translation id="2814830417943086299">Chrome 現在會於裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="2822354292072154809">確定要重設「<ph name="CHOSEN_OBJECT_NAME" />」的所有網站權限嗎？</translation>
 <translation id="2850913818900871965">要求使用流動裝置檢視模式</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">在無痕模式下，網站無法使用 Cookie 瞭解您的跨網站瀏覽活動 (即使是相關網站)，因此無法根據瀏覽活動提供個人化廣告等服務。部分網站的功能可能會無法正常運作。</translation>
 <translation id="461356340001513807">讓你使用具有身分識別服務的帳戶來登入網站</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
+<translation id="4635969503923889910">不允許網站使用 NFC 裝置</translation>
 <translation id="4644713492825682049">刪除並重設</translation>
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">收合所有要求</translation>
 <translation id="5884085660368669834">網站偏好設定</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
+<translation id="5908617755156109052">不允許網站建立你周遭環境的 3D 地圖或追蹤攝影機位置</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5922853908706496913">正在分享螢幕畫面</translation>
 <translation id="5922967540311291836">封鎖第三方 Cookie：</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">清除輸入</translation>
 <translation id="8681886425883659911">已在網站上封鎖已知的滋擾性或誤導廣告。</translation>
 <translation id="868929229000858085">搜尋您的聯絡人</translation>
+<translation id="8707904142362025782">網站可以要求使用攝影機</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="8715862698998036666">從頂端拖曳並從左側或右側輕掃，即可離開全螢幕。</translation>
 <translation id="8719283222052720129">請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中為 <ph name="APP_NAME" /> 啟用此權限。</translation>

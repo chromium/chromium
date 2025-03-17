@@ -358,6 +358,20 @@ struct DriversLicenseOptions {
 EntityInstance GetDriversLicenseEntityInstance(
     DriversLicenseOptions options = {});
 
+struct VehicleOptions {
+  const char16_t* name = u"Knecht Ruprecht";
+  const char16_t* plate = u"123456";
+  const char16_t* number = u"12312345";
+  const char16_t* make = u"BMW";
+  const char16_t* model = u"Series 2";
+  const char16_t* year = u"2025";
+  const char16_t* state = u"California";
+  std::string_view guid = "00000000-0000-4000-8000-200000000000";
+  std::string_view nickname = "Vehicle";
+};
+
+EntityInstance GetVehicleEntityInstance(VehicleOptions options = {});
+
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types);

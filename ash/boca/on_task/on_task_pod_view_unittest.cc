@@ -138,7 +138,7 @@ TEST_F(OnTaskPodViewTest, PinTabStripButtonClickTriggersShowOrHideTabStrip) {
   LeftClickOn(pin_tab_strip_button);
 }
 
-TEST_F(OnTaskPodViewTest, SnapPodButtonClickTogglesSnapLocation) {
+TEST_F(OnTaskPodViewTest, PodPositionSliderButtonClickChangesPodLocation) {
   Sequence s;
   EXPECT_CALL(mock_on_task_pod_controller_,
               SetSnapLocation(OnTaskPodSnapLocation::kTopRight))
@@ -148,10 +148,12 @@ TEST_F(OnTaskPodViewTest, SnapPodButtonClickTogglesSnapLocation) {
               SetSnapLocation(OnTaskPodSnapLocation::kTopLeft))
       .Times(1)
       .InSequence(s);
-  auto* const snap_pod_button =
-      on_task_pod_view_->snap_pod_button_for_testing();
-  LeftClickOn(snap_pod_button);
-  LeftClickOn(snap_pod_button);
+  auto* const dock_right_button =
+      on_task_pod_view_->dock_right_button_for_testing();
+  auto* const dock_left_button =
+      on_task_pod_view_->dock_left_button_for_testing();
+  LeftClickOn(dock_right_button);
+  LeftClickOn(dock_left_button);
 }
 
 }  // namespace

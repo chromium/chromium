@@ -220,6 +220,9 @@
       <message name="IDS_LEARN_MORE" desc="Generic label for menu item to learn more about a feature. [CHAR_LIMIT=32]">
         Learn more
       </message>
+      <message name="IDS_LEARN_MORE_ABOUT_SETTING" desc="Learn more lable combined with a setting title.">
+        Learn more about <ph name="SETTING_TITLE">%1$s<ex>protected content</ex></ph>
+      </message>
       <message name="IDS_MORE" desc="Generic label for a button to show more items or options. [CHAR_LIMIT=20]">
         More
       </message>

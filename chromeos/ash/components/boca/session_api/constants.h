@@ -71,6 +71,7 @@ inline constexpr char kCaptionsEnabled[] = "captionsEnabled";
 inline constexpr char kTranslationsEnabled[] = "translationsEnabled";
 inline constexpr char kStudentStatus[] = "studentStatuses";
 inline constexpr char kStudentStatusState[] = "state";
+inline constexpr char kDeviceStatusState[] = "state";
 inline constexpr char kUrl[] = "url";
 inline constexpr char kTitle[] = "title";
 inline constexpr char kFavIcon[] = "faviconUrl";

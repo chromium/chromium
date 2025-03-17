@@ -572,7 +572,8 @@ void ArCoreGl::RecalculateUvsAndProjection() {
 void ArCoreGl::GetFrameData(
     mojom::XRFrameDataRequestOptionsPtr options,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  TRACE_EVENT1("gpu", __func__, "frame", webxr_->PeekNextFrameIndex());
+  TRACE_EVENT1("gpu", "ArCoreGl::GetFrameData", "frame",
+               webxr_->PeekNextFrameIndex());
 
   if (!CanStartNewAnimatingFrame()) {
     pending_getframedata_ =
@@ -658,7 +659,8 @@ void ArCoreGl::GetFrameData(
 
   frame_data->render_info->frame_id = webxr_->StartFrameAnimating();
   DVLOG(3) << __func__ << " frame=" << frame_data->render_info->frame_id;
-  TRACE_EVENT1("gpu", __func__, "frame", frame_data->render_info->frame_id);
+  TRACE_EVENT1("gpu", "ArCoreGl::GetFrameData-StartAnimating", "frame",
+               frame_data->render_info->frame_id);
 
   WebXrFrame* xrframe = webxr_->GetAnimatingFrame();
 
@@ -923,7 +925,7 @@ void ArCoreGl::FinishRenderingFrame(WebXrFrame* frame) {
   }
   DVLOG(3) << __func__ << " frame=" << frame->index;
 
-  TRACE_EVENT1("gpu", __func__, "frame", frame->index);
+  TRACE_EVENT1("gpu", "ArCoreGl::FinishRenderingFrame", "frame", frame->index);
 
   // Even though we may be told that the frame is done, it may still actually
   // be in use. In this case, we'll have received sync tokens to wait on until
@@ -956,7 +958,8 @@ void ArCoreGl::FinishRenderingFrame(WebXrFrame* frame) {
 void ArCoreGl::OnReclaimedGpuFenceAvailable(
     WebXrFrame* frame,
     std::vector<std::unique_ptr<gfx::GpuFence>> gpu_fences) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame->index);
+  TRACE_EVENT1("gpu", "ArCoreGl::OnReclaimedGpuFenceAvailable", "frame",
+               frame->index);
   DVLOG(3) << __func__ << ": frame=" << frame->index;
 
   for (auto& gpu_fence : gpu_fences) {
@@ -975,7 +978,7 @@ void ArCoreGl::OnReclaimedGpuFenceAvailable(
 }
 
 void ArCoreGl::ClearRenderingFrame(WebXrFrame* frame) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame->index);
+  TRACE_EVENT1("gpu", "ArCoreGl::ClearRenderingFrame", "frame", frame->index);
   DVLOG(3) << __func__ << ": frame=" << frame->index;
 
   // Ensure that we're totally finished with the rendering frame, then collect
@@ -998,7 +1001,7 @@ void ArCoreGl::FinishFrame(int16_t frame_index) {
   // SharedBuffer mode handles it's transitions/rendering separately from this.
   DCHECK(!ar_compositor_);
 
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "ArCoreGl::FinishFrame", "frame", frame_index);
   DVLOG(3) << __func__;
   surface_->SwapBuffers(base::DoNothing(), gfx::FrameData());
 
@@ -1084,27 +1087,31 @@ void ArCoreGl::GetRenderedFrameStats(WebXrFrame* frame) {
   static uint32_t frame_id_for_tracing = 0;
   uint32_t trace_id = ++frame_id_for_tracing;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "xr", "Animating", trace_id, frame->time_pose, "frame", frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1("xr", "Animating", trace_id,
-                                                 frame->time_js_submit, "frame",
-                                                 frame->index);
-
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1("xr", "Processing", trace_id,
-                                                   frame->time_js_submit,
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1("xr", "ArCoreGl::Animating",
+                                                   trace_id, frame->time_pose,
                                                    "frame", frame->index);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-      "xr", "Processing", trace_id, frame->time_copied, "frame", frame->index);
+      "xr", "ArCoreGl::Animating", trace_id, frame->time_js_submit, "frame",
+      frame->index);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "xr", "Rendering", trace_id, frame->time_copied, "frame", frame->index);
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-      "xr", "Rendering", trace_id, completion_time, "frame", frame->index);
+      "xr", "ArCoreGl::Processing", trace_id, frame->time_js_submit, "frame",
+      frame->index);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1("xr", "ArCoreGl::Processing",
+                                                 trace_id, frame->time_copied,
+                                                 "frame", frame->index);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1("xr", "ArCoreGl::Rendering",
+                                                   trace_id, frame->time_copied,
+                                                   "frame", frame->index);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1("xr", "ArCoreGl::Rendering",
+                                                 trace_id, completion_time,
+                                                 "frame", frame->index);
 }
 
 void ArCoreGl::SubmitFrameMissing(int16_t frame_index,
                                   const gpu::SyncToken& sync_token) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "ArCoreGl::SubmitFrameMissing", "frame", frame_index);
   DVLOG(2) << __func__;
 
   if (!IsSubmitFrameExpected(frame_index))
@@ -1203,7 +1210,8 @@ void ArCoreGl::TransitionProcessingFrameToRendering() {
 void ArCoreGl::SubmitFrameDrawnIntoTexture(int16_t frame_index,
                                            const gpu::SyncToken& sync_token,
                                            base::TimeDelta time_waited) {
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "ArCoreGl::SubmitFrameDrawnIntoTexture", "frame",
+               frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
   DCHECK(ar_compositor_);
 
@@ -1234,7 +1242,7 @@ void ArCoreGl::SubmitVizFrame(int16_t frame_index,
   // we didn't get a shutdown triggered in the meantime.
   if (pending_shutdown_)
     return;
-  TRACE_EVENT1("gpu", __func__, "frame", frame_index);
+  TRACE_EVENT1("gpu", "ArCoreGl::SubmitVizFrame", "frame", frame_index);
   DCHECK(webxr_->HaveProcessingFrame());
   DCHECK(ar_compositor_);
 
@@ -1742,7 +1750,8 @@ void ArCoreGl::OnBeginFrame(const viz::BeginFrameArgs& args,
   // request any frames unless we actually have a frame to animate.
   DCHECK(webxr_->HaveAnimatingFrame());
 
-  TRACE_EVENT1("gpu", __func__, "frame", webxr_->GetAnimatingFrame()->index);
+  TRACE_EVENT1("gpu", "ArCoreGl::OnBeginFrame", "frame",
+               webxr_->GetAnimatingFrame()->index);
   DVLOG(3) << __func__;
   webxr_->GetAnimatingFrame()->begin_frame_args =
       std::make_unique<viz::BeginFrameArgs>(args);

@@ -701,7 +701,7 @@ public final class SafetyHubTest {
                 safetyHubFragment
                         .getResources()
                         .getQuantityString(
-                                R.plurals.safety_check_passwords_compromised_exist,
+                                R.plurals.safety_hub_account_passwords_compromised_exist,
                                 compromisedPasswordsCount,
                                 compromisedPasswordsCount);
         scrollToExpandedPreference(passwordsTitle);
@@ -727,7 +727,8 @@ public final class SafetyHubTest {
         safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
 
         passwordsTitle =
-                safetyHubFragment.getString(R.string.safety_hub_no_compromised_passwords_title);
+                safetyHubFragment.getString(
+                        R.string.safety_hub_no_compromised_account_passwords_title);
         scrollToPreference(withText(passwordsTitle));
         verifyButtonsNextToTextVisibility(passwordsTitle, false);
 
@@ -786,7 +787,7 @@ public final class SafetyHubTest {
                 safetyHubFragment
                         .getResources()
                         .getQuantityString(
-                                R.plurals.safety_check_passwords_compromised_exist,
+                                R.plurals.safety_hub_account_passwords_compromised_exist,
                                 compromisedPasswordsCount,
                                 compromisedPasswordsCount);
         scrollToExpandedPreference(compromisedPasswordsTitle);
@@ -836,7 +837,8 @@ public final class SafetyHubTest {
 
         // Verify that the password module is still expanded, but now with the unavailable title.
         String weakPasswordsTitle =
-                safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
+                safetyHubFragment.getString(
+                        R.string.safety_hub_account_password_check_unavailable_title);
         scrollToExpandedPreference(weakPasswordsTitle);
         verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
 

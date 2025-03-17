@@ -93,9 +93,6 @@ if (is_android) {
   android_library("public_java") {
     sources = [ "url_grouping/android/java/src/org/chromium/components/visited_url_ranking/url_grouping/GroupSuggestionsService.java" ]
 
-    deps = [
-      "//chrome/browser/tab:java",
-      "//third_party/jni_zero:jni_zero_java",
-    ]
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
   }
 }

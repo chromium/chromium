@@ -213,40 +213,22 @@ std::string_view MimeToDescription(const std::string_view& mime_type) {
 // For time within the current day, return the time of day. (Ex. '12:45 PM')
 // For time within the current year, return the abbreviated date. (Ex. 'Jan 02')
 // Otherwise, return the full date. (Ex. '10/7/24')
-// TODO(crbug.com/402549325): Use `GenerateLastModifiedString()` from
-//   `DocumentProvider` instead.
-std::string UpdateTimeToString(std::optional<int> time) {
+const std::u16string UpdateTimeToString(std::optional<int> time) {
   if (!time) {
-    return "";
+    return u"";
   }
 
   std::time_t unix_time = static_cast<std::time_t>(time.value());
   std::tm* local_time = std::localtime(&unix_time);
   if (!local_time) {
-    return "";
+    return u"";
   }
 
   // Get current time to check if `unix_time` is in the current day or year.
   base::Time check_time = base::Time::FromTimeT(unix_time);
   base::Time now = base::Time::Now();
-  base::Time::Exploded check_time_exploded;
-  base::Time::Exploded now_exploded;
-  check_time.UTCExplode(&check_time_exploded);
-  now.UTCExplode(&now_exploded);
 
-  bool is_current_year = check_time_exploded.year == now_exploded.year;
-  bool is_current_day =
-      is_current_year && check_time_exploded.month == now_exploded.month &&
-      check_time_exploded.day_of_month == now_exploded.day_of_month;
-
-  const std::string& format_string = is_current_day    ? "%I:%M%p"
-                                     : is_current_year ? "%b %d"
-                                                       : "%m/%d/%Y";
-
-  std::stringstream ss;
-  ss << std::put_time(local_time, format_string.c_str());
-
-  return ss.fail() ? "" : ss.str();
+  return AutocompleteProvider::LocalizedLastModifiedString(now, check_time);
 }
 
 // Helper for getting the correct `TemplateURL` based on the input.
@@ -764,7 +746,8 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
         result.FindIntByDottedPath("document.derivedStructData.updated_time");
     // TODO (crbug.com/402436108): Localize the `last_updated` time below
     //   similar to how it is done in `DocumentProvider::GetMatchDescription()`.
-    const std::string last_updated = UpdateTimeToString(response_time);
+    const std::string last_updated =
+        base::UTF16ToUTF8(UpdateTimeToString(response_time));
     const std::string owner = ptr_to_string(
         result.FindStringByDottedPath("document.derivedStructData.owner"));
     const std::string mime_description = std::string(

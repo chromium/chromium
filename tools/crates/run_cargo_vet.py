@@ -42,7 +42,10 @@ def main():
     parser.add_argument('--rust-sysroot',
                         default=DEFAULT_SYSROOT,
                         help='use cargo and rustc from here')
-    (args, unrecognized_args) = parser.parse_known_args()
+    parser.add_argument('vet_args',
+                        nargs='*',
+                        help='additional args to pass through to cargo vet')
+    args = parser.parse_args()
 
     # Avoid clobbering `config.toml` - see
     # https://github.com/mozilla/cargo-vet/issues/589 and note that `gnrt
@@ -58,9 +61,8 @@ def main():
         '--cargo-arg=-Zbindeps',
         '--no-registry-suggestions'
     ]
-    success = RunCargo(
-        args.rust_sysroot, None,
-        _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)
+    success = RunCargo(args.rust_sysroot, None,
+                       _CARGO_ARGS + ['vet'] + args.vet_args + _EXTRA_VET_ARGS)
 
     # Unclober `config.toml` changes if desirable.
     with open(_CONFIG_TOML_PATH, 'r') as f:

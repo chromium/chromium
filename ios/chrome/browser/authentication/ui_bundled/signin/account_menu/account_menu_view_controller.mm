@@ -664,7 +664,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
                         avatarImage:self.dataSource.primaryAccountAvatar
                                name:self.dataSource.primaryAccountUserFullName
                               email:self.dataSource.primaryAccountEmail
-                    managementState:self.dataSource.managementState
+              managementDescription:self.dataSource.managementDescription
                     useLargeMargins:NO
          addManageYourAccountButton:_hideEllipsisMenu
       manageYourAccountButtonAction:manageYourAccountButtonAction];

@@ -45,6 +45,7 @@ static_library("arc") {
     "//chrome/browser/ash/arc/app_shortcuts",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/arc/boot_phase_monitor",
+    "//chrome/browser/ash/arc/dlc_installer",
     "//chrome/browser/ash/arc/enterprise",
     "//chrome/browser/ash/arc/extensions",
     "//chrome/browser/ash/arc/fileapi",

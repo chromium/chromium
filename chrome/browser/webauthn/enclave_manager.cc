@@ -1976,10 +1976,8 @@ class EnclaveManager::StateMachine {
       auto wrapped_pin = std::make_unique<EnclaveLocalState::WrappedPIN>();
       if (wrapped_pin->ParseFromString(metadata.wrapped_pin) &&
           !CheckPINInvariants(*wrapped_pin).has_value()) {
-        if (metadata.public_key.has_value() &&
-            (!user_->has_wrapped_pin() ||
-             user_->wrapped_pin().generation() != wrapped_pin->generation())) {
-          FIDO_LOG(EVENT) << "GPM PIN updated prior to change";
+        if (metadata.public_key.has_value()) {
+          FIDO_LOG(EVENT) << "Updating GPM PIN data";
           *user_->mutable_wrapped_pin() = std::move(*wrapped_pin);
           user_->set_pin_public_key(std::move(*metadata.public_key));
         }

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_VISIT_ANNOTATIONS_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISIT_ANNOTATIONS_DATABASE_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -159,7 +160,7 @@ class VisitAnnotationsDatabase {
   // the serialized format is already being synced, the implementation of these
   // functions should not be changed.
   static std::vector<VisitContentModelAnnotations::Category>
-  GetCategoriesFromStringColumn(const std::string& column_value);
+  GetCategoriesFromStringColumn(std::string_view column_value);
 
   // Serializes a vector of strings into a string separated by null character
   // that can be stored in the db. As the serialized format is already being
@@ -171,7 +172,7 @@ class VisitAnnotationsDatabase {
   // of strings. As the serialized format is already being synced, the
   // implementation of these functions should not be changed.
   static std::vector<std::string> DeserializeFromStringColumn(
-      const std::string& column_value);
+      std::string_view column_value);
 
  protected:
   // Returns the database for the functions in this interface.

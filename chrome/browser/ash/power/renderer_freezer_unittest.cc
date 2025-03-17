@@ -243,8 +243,6 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
         false /* autoupdate_enabled*/);
   }
   void TearDown() override {
-    extensions::ExtensionSystem::Get(profile_)->Shutdown();
-
     profile_ = nullptr;
 
     profile_manager_->DeleteAllTestingProfiles();

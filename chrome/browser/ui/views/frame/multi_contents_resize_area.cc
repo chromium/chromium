@@ -41,7 +41,7 @@ MultiContentsResizeHandle::MultiContentsResizeHandle() {
       kDragHandleIcon, kColorSidePanelResizeAreaHandle, kHandleWidth));
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_BY_SIDE_RESIZE));
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS_RESIZE));
   SetProperty(views::kElementIdentifierKey,
               kMultiContentsResizeHandleElementId);
 }

@@ -31,6 +31,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -97,10 +98,9 @@ class CrosapiUtilTest : public testing::Test {
 
   void AddRegularUser(const std::string& email) {
     AccountId account_id = AccountId::FromUserEmail(email);
-    const User* user = fake_user_manager_->AddUser(account_id);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager_->OnUserProfileCreated(account_id, &pref_service_);
     profile_created_accounts_.push_back(account_id);
   }
@@ -145,11 +145,10 @@ TEST_F(CrosapiUtilTest,
        IsSigninProfileOrBelongsToAffiliatedUserAffiliatedUser) {
   AccountId account_id =
       AccountId::FromUserEmail(TestingProfile::kDefaultProfileUserName);
-  const User* user = fake_user_manager_->AddUserWithAffiliation(
-      account_id, /*is_affiliated=*/true);
-  fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                   /*browser_restart=*/false,
-                                   /*is_child=*/false);
+  fake_user_manager_->AddUserWithAffiliation(account_id,
+                                             /*is_affiliated=*/true);
+  fake_user_manager_->UserLoggedIn(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
 
   EXPECT_TRUE(
       browser_util::IsSigninProfileOrBelongsToAffiliatedUser(testing_profile_));

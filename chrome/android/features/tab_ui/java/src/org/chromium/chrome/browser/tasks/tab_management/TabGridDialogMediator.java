@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridItemTouchHelperCallback.CancelLongPressTabItemEventListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
@@ -1231,10 +1232,12 @@ public class TabGridDialogMediator
 
     // OnLongPressTabItemEventListener implementation
     @Override
-    public void onLongPressEvent(int tabId) {
+    public @Nullable CancelLongPressTabItemEventListener onLongPressEvent(
+            int tabId, @Nullable View cardView) {
         if (setupAndShowTabListEditor(tabId)) {
             RecordUserAction.record("TabMultiSelectV2.OpenLongPressInDialog");
         }
+        return null;
     }
 
     private boolean setupAndShowTabListEditor(int currentTabId) {

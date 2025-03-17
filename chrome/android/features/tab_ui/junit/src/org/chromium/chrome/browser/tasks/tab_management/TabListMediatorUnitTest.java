@@ -1833,7 +1833,7 @@ public class TabListMediatorUnitTest {
 
         createTabGroup(List.of(mTab1, mTab2), TAB1_ID, TAB_GROUP_ID);
 
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB1_ID)).thenReturn(TAB1_ID);
+        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID)).thenReturn(TAB1_ID);
         mTabGroupModelFilterObserverCaptor.getValue().didMergeTabToGroup(mTab2);
 
         assertThat(mModelList.size(), equalTo(2));

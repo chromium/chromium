@@ -155,7 +155,6 @@ class LockScreenStartReauthDialog
 
   std::unique_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_;
 
-  // Once Lacros is shipped, this will no longer be necessary.
   std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
 
   // Callbacks and flags that are used in tests to check that the corresponding

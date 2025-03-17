@@ -17,6 +17,7 @@
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
@@ -958,6 +959,7 @@ XrResult OpenXrApiWrapper::BeginSession() {
 }
 
 XrResult OpenXrApiWrapper::BeginFrame() {
+  TRACE_EVENT0("xr", "BeginFrame");
   DCHECK(HasSession());
   DCHECK(HasColorSwapChain());
 
@@ -982,7 +984,10 @@ XrResult OpenXrApiWrapper::BeginFrame() {
     frame_state.next = &secondary_view_frame_states;
   }
 
+  TRACE_EVENT_BEGIN0("xr", "xrWaitFrame");
   RETURN_IF_XR_FAILED(xrWaitFrame(session_, &wait_frame_info, &frame_state));
+  TRACE_EVENT_END0("xr", "xrWaitFrame");
+
   frame_state_ = frame_state;
 
   if (try_recreate_local_floor_) {
@@ -1119,7 +1124,9 @@ XrResult OpenXrApiWrapper::EndFrame() {
     end_frame_info.next = &secondary_view_end_frame_info;
   }
 
+  TRACE_EVENT_BEGIN0("xr", "xrEndFrame");
   RETURN_IF_XR_FAILED(xrEndFrame(session_, &end_frame_info));
+  TRACE_EVENT_END0("xr", "xrEndFrame");
   pending_frame_ = false;
 
   return XR_SUCCESS;
@@ -1271,6 +1278,7 @@ std::vector<mojom::XRViewPtr> OpenXrApiWrapper::GetDefaultViews() const {
 }
 
 mojom::VRPosePtr OpenXrApiWrapper::GetViewerPose() const {
+  TRACE_EVENT0("xr", "GetViewerPose");
   XrSpaceLocation local_from_viewer = {XR_TYPE_SPACE_LOCATION};
   if (XR_FAILED(xrLocateSpace(view_space_, local_space_,
                               frame_state_.predictedDisplayTime,
@@ -1533,7 +1541,8 @@ std::optional<gfx::Transform> OpenXrApiWrapper::GetLocalFromFloor() {
     return std::nullopt;
   }
 
-  return GetBaseSpaceFromSpace(local_space_, local_floor_space_);
+  return GetBaseSpaceFromSpace(mojom::XRReferenceSpaceType::kLocal,
+                               mojom::XRReferenceSpaceType::kLocalFloor);
 }
 
 std::optional<gfx::Transform> OpenXrApiWrapper::GetLocalFromStage() {
@@ -1545,12 +1554,17 @@ std::optional<gfx::Transform> OpenXrApiWrapper::GetLocalFromStage() {
     return std::nullopt;
   }
 
-  return GetBaseSpaceFromSpace(local_space_, stage_space_);
+  return GetBaseSpaceFromSpace(mojom::XRReferenceSpaceType::kLocal,
+                               mojom::XRReferenceSpaceType::kBoundedFloor);
 }
 
 std::optional<gfx::Transform> OpenXrApiWrapper::GetBaseSpaceFromSpace(
-    XrSpace base_space,
-    XrSpace space) {
+    mojom::XRReferenceSpaceType base_space_type,
+    mojom::XRReferenceSpaceType space_type) {
+  TRACE_EVENT2("xr", "GetBaseSpaceFromSpace", "base_space", base_space_type,
+               "space", space_type);
+  auto base_space = GetReferenceSpace(base_space_type);
+  auto space = GetReferenceSpace(space_type);
   XrSpaceLocation base_space_from_space_location = {XR_TYPE_SPACE_LOCATION};
   if (XR_FAILED(xrLocateSpace(space, base_space,
                               frame_state_.predictedDisplayTime,

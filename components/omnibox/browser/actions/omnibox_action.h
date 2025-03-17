@@ -94,6 +94,14 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
 
     // Opens the lens overlay.
     virtual void OpenLensOverlay() = 0;
+
+    // Passes the contextual search request to Lens to handle fulfillment. Lens
+    // uses the destination URL to grab the query and keep any additional
+    // params that are attached to the URL.
+    virtual void IssueContextualSearchRequest(
+        const GURL& destination_url,
+        AutocompleteMatchType::Type match_type,
+        bool is_zero_prefix_suggestion) = 0;
   };
 
   // ExecutionContext provides the necessary structure for Action

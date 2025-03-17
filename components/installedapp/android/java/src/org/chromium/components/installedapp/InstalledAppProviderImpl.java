@@ -160,6 +160,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
     public void filterInstalledApps(
             final RelatedApplication[] relatedApps,
             final Url manifestUrl,
+            final boolean addSavedRelatedApplications,
             final FilterInstalledApps_Response callback) {
         GURL url = mRenderFrameHost.getLastCommittedURL();
         final GURL frameUrl = url == null ? GURL.emptyGURL() : url;

@@ -355,6 +355,13 @@ class CONTENT_EXPORT ServiceWorkerClient final
   void InheritControllerFrom(ServiceWorkerClient& creator_host,
                              const GURL& client_url);
 
+  // For Window service worker clients served by ServiceWorker-controlled
+  // prefetch. Inherits the controller used for prefetching from
+  // `client_for_prefetch`, while setting `navigation_url`, similar to
+  // `InheritControllerFrom()`.
+  void InheritControllerFromPrefetch(ServiceWorkerClient& client_for_prefetch,
+                                     const GURL& navigation_url);
+
   void SetContainerReady();
 
   bool is_inherited() const { return is_inherited_; }

@@ -76,6 +76,38 @@ class D3D12VideoEncodeH264DelegateTest
           return S_OK;
         });
     ON_CALL(*video_device3_.Get(),
+            CheckFeatureSupport(
+                D3D12_FEATURE_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT, _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+          EXPECT_EQ(
+              size,
+              sizeof(
+                  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT));
+          if (size !=
+              sizeof(
+                  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT)) {
+            return E_INVALIDARG;
+          }
+          auto* config = static_cast<
+              D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT*>(
+              data);
+          EXPECT_EQ(config->Codec, D3D12_VIDEO_ENCODER_CODEC_H264);
+          config->IsSupported = config->Codec == D3D12_VIDEO_ENCODER_CODEC_H264;
+          EXPECT_EQ(
+              config->CodecSupportLimits.DataSize,
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264));
+          if (config->CodecSupportLimits.DataSize !=
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264)) {
+            return E_INVALIDARG;
+          }
+          config->CodecSupportLimits.pH264Support->SupportFlags =
+              D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_NONE;
+          config->CodecSupportLimits.pH264Support
+              ->DisableDeblockingFilterSupportedModes =
+              D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_SLICES_DEBLOCKING_MODE_FLAG_NONE;
+          return S_OK;
+        });
+    ON_CALL(*video_device3_.Get(),
             CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_SUPPORT, _, _))
         .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
           EXPECT_EQ(size, sizeof(D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT));

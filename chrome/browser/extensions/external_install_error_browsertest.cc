@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/external_install_manager.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/global_error/global_error_waiter.h"
@@ -65,11 +66,13 @@ class ExternalInstallErrorTest : public ExtensionBrowserTest {
       test::GlobalErrorWaiter waiter(profile());
       TestExtensionRegistryObserver observer(registry);
 
+      ExternalProviderManager* external_provider_manager =
+          ExternalProviderManager::Get(profile());
       auto provider = std::make_unique<MockExternalProvider>(
-          extension_service(), mojom::ManifestLocation::kExternalPref);
+          external_provider_manager, mojom::ManifestLocation::kExternalPref);
       provider->UpdateOrAddExtension(provided_extension_id, version,
                                      test_data_dir_.AppendASCII(crx_path));
-      extension_service()->AddProviderForTesting(std::move(provider));
+      external_provider_manager->AddProviderForTesting(std::move(provider));
       extension_service()->CheckForExternalUpdates();
 
       auto extension = observer.WaitForExtensionInstalled();

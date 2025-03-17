@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.price_tracking;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotifier.NotificationData;
 import org.chromium.chrome.browser.price_tracking.proto.Notifications.Action;
@@ -77,7 +78,18 @@ public class PriceTrackingNotificationBridgeUnitTest {
                         Mockito.anyString());
         mPriceTrackingNotificationBridge =
                 new PriceTrackingNotificationBridge(0, mNotifier, mPriceDropNotificationManager);
-        when(mPriceDropNotificationManager.canPostNotification()).thenReturn(true);
+        setCanPostNotification(true);
+    }
+
+    private void setCanPostNotification(boolean canPost) {
+        doAnswer(
+                        (invocation) -> {
+                            Callback<Boolean> callback = invocation.getArgument(0);
+                            callback.onResult(canPost);
+                            return null;
+                        })
+                .when(mPriceDropNotificationManager)
+                .canPostNotification(Mockito.any(Callback.class));
     }
 
     // Creates a ChromeNotification.Builder that sets a valid ChromeNotification proto.
@@ -154,7 +166,7 @@ public class PriceTrackingNotificationBridgeUnitTest {
 
     @Test
     public void testShowNotification_ChannelNotCreated() {
-        when(mPriceDropNotificationManager.canPostNotification()).thenReturn(false);
+        setCanPostNotification(false);
         mPriceTrackingNotificationBridge.showNotification(
                 createValidChromeNotification().build().toByteArray());
         verify(mNotifier, times(0)).showNotification(any());

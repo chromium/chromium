@@ -16,7 +16,6 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/audio_decoder.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -91,9 +90,7 @@ class RenderMediaClient : public media::MediaClient {
   [[maybe_unused]] mojo::Remote<viz::mojom::Gpu> gpu_for_supported_profiles_
       GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 
-  [[maybe_unused]] absl::variant<
-      mojo::SharedRemote<media::mojom::VideoDecoder>,
-      mojo::SharedRemote<media::stable::mojom::StableVideoDecoder>>
+  [[maybe_unused]] mojo::SharedRemote<media::mojom::VideoDecoder>
       video_decoder_for_supported_profiles_
           GUARDED_BY_CONTEXT(main_thread_sequence_checker_);
 

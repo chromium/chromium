@@ -111,6 +111,7 @@ WITH
       m.suite_name,
       m.test_name,
       m.mark_type
+    -- Join with _chrome_speedometer_2_1_mark_name to look only at slices with expected names.
     FROM slice AS s
     JOIN _chrome_speedometer_2_1_mark_name AS m
       USING (name)

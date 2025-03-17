@@ -3766,37 +3766,45 @@ using UserFeedbackDataCallback =
 
   __block std::unique_ptr<ScopedUIBlocker> uiBlocker =
       std::make_unique<ScopedUIBlocker>(self.sceneState);
-  __weak SceneController* weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   self.signinCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        if (!weakSelf) {
-          return;
-        }
-        __typeof(self) strongSelf = weakSelf;
-        [strongSelf stopSigninCoordinator];
-        uiBlocker.reset();
-
-        if (completion) {
-          completion(result, identity);
-        }
-
-        if (!weakSelf.dismissingSigninPromptFromExternalTrigger) {
-          // If the coordinator isn't stopped by an external trigger, sign-in
-          // is done. Otherwise, there might be extra steps to be done before
-          // considering sign-in as done. This is up to the handler that sets
-          // `self.dismissingSigninPromptFromExternalTrigger` to YES to set
-          // back `signinInProgress` to NO.
-          weakSelf.sceneState.signinInProgress = NO;
-        }
-
-        if (IsSigninForcedByPolicy()) {
-          // Handle intents after sign-in is done when the forced sign-in policy
-          // is enabled.
-          [strongSelf handleExternalIntents];
-        }
+        [weakSelf signinCompletedWithResult:result
+                                   identity:identity
+                                  uiBlocker:std::move(uiBlocker)
+                                 completion:completion];
       };
 
   [self.signinCoordinator start];
+}
+
+// Completion block for Signin coordinators.
+- (void)signinCompletedWithResult:(SigninCoordinatorResult)result
+                         identity:(id<SystemIdentity>)identity
+                        uiBlocker:(std::unique_ptr<ScopedUIBlocker>)uiBlocker
+                       completion:
+                           (SigninCoordinatorCompletionCallback)completion {
+  [self stopSigninCoordinator];
+  uiBlocker.reset();
+
+  if (completion) {
+    completion(result, identity);
+  }
+
+  if (!self.dismissingSigninPromptFromExternalTrigger) {
+    // If the coordinator isn't stopped by an external trigger, sign-in
+    // is done. Otherwise, there might be extra steps to be done before
+    // considering sign-in as done. This is up to the handler that sets
+    // `self.dismissingSigninPromptFromExternalTrigger` to YES to set
+    // back `signinInProgress` to NO.
+    self.sceneState.signinInProgress = NO;
+  }
+
+  if (IsSigninForcedByPolicy()) {
+    // Handle intents after sign-in is done when the forced sign-in policy
+    // is enabled.
+    [self handleExternalIntents];
+  }
 }
 
 #pragma mark - WebStateListObserving

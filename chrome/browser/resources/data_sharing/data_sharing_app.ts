@@ -12,7 +12,6 @@ import './dummy_data_sharing_sdk.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import {AbslStatusCode} from '//resources/mojo/mojo/public/mojom/base/absl_status.mojom-webui.js';
 import {assert} from 'chrome-untrusted://resources/js/assert.js';
 import {CustomElement} from 'chrome-untrusted://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
@@ -20,7 +19,7 @@ import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getTemplate} from './data_sharing_app.html.js';
-import type {DataSharingSdk, DataSharingSdkGetLinkParams, DataSharingSdkSitePreview, DynamicMessageParams, Logger, LoggingEvent, TranslationMap} from './data_sharing_sdk_types.js';
+import type {DataSharingSdk, DataSharingSdkGetLinkParams, DynamicMessageParams, Logger, LoggingEvent, TranslationMap} from './data_sharing_sdk_types.js';
 import {Code, DataSharingMemberRoleEnum, DynamicMessageKey, LearnMoreUrlType, LoggingIntent, Progress, StaticMessageKey} from './data_sharing_sdk_types.js';
 
 // Param names in loaded URL. Should match those in
@@ -357,9 +356,9 @@ export class DataSharingApp extends CustomElement implements Logger {
     if (event.intentType === LoggingIntent.STOP_SHARING) {
       assert(this.tabGroupId_);
       if (event.progress === Progress.STARTED) {
-        this.aboutToUnShareTabGroup(this.tabGroupId_);
+        this.browserProxy_.aboutToUnShareTabGroup(this.tabGroupId_);
       } else if (event.progress === Progress.SUCCEEDED) {
-        this.onTabGroupUnShareComplete(this.tabGroupId_);
+        this.browserProxy_.onTabGroupUnShareComplete(this.tabGroupId_);
       }
     }
   }
@@ -417,60 +416,6 @@ export class DataSharingApp extends CustomElement implements Logger {
     return DataSharingIntentType.UNKNOWN;
   }
 
-  // Called with when the owner presses copy link in share dialog.
-  private makeTabGroupShared(tabGroupId: string, groupId: string) {
-    this.browserProxy_.handler!.associateTabGroupWithGroupId(
-        tabGroupId, groupId);
-  }
-
-  private aboutToUnShareTabGroup(tabGroupId: string) {
-    this.browserProxy_.handler!.aboutToUnShareTabGroup(tabGroupId);
-  }
-
-  private onTabGroupUnShareComplete(tabGroupId: string) {
-    this.browserProxy_.handler!.onTabGroupUnShareComplete(tabGroupId);
-  }
-
-  private getShareLink(params: DataSharingSdkGetLinkParams): Promise<string> {
-    return this.browserProxy_.handler!
-        .getShareLink(params.groupId, params.tokenSecret!)
-        .then(res => res.url.url);
-  }
-
-  private getTabGroupPreview(groupId: string, tokenSecret: string):
-      Promise<DataSharingSdkSitePreview[]> {
-    return new Promise((resolve) => {
-      const previews: DataSharingSdkSitePreview[] = [];
-      this.browserProxy_.handler!.getTabGroupPreview(groupId, tokenSecret)
-          .then((res) => {
-            if (res.groupPreview.statusCode !== AbslStatusCode.kOk) {
-              // TODO(crbug.com/368634445): Ask Chrome to handle different
-              // errors in addition to closing the WebUI.
-              this.browserProxy_.handler!.closeUI(Code.UNKNOWN);
-            }
-
-            res.groupPreview.sharedTabs.map((sharedTab) => {
-              previews.push({
-                url: sharedTab.displayUrl,
-                faviconUrl: this.getFaviconServiceUrl(sharedTab.faviconUrl.url)
-                                .toString(),
-              });
-            });
-            resolve(previews);
-          });
-    });
-  }
-
-  // TODO(crbug.com/392965221): Use function from icon.ts instead.
-  private getFaviconServiceUrl(pageUrl: string): URL {
-    const url: URL = new URL('chrome-untrusted://favicon2');
-    url.searchParams.set('size', '16');
-    url.searchParams.set('scaleFactor', '1x');
-    url.searchParams.set('allowGoogleServerFallback', '1');
-    url.searchParams.set('pageUrl', pageUrl);
-    return url;
-  }
-
   private processUrl() {
     const currentUrl = urlForTesting ? urlForTesting : window.location.href;
     const params = new URL(currentUrl).searchParams;
@@ -496,8 +441,10 @@ export class DataSharingApp extends CustomElement implements Logger {
               translatedMessages: this.translationMap_,
               getShareLink: (params: DataSharingSdkGetLinkParams):
                   Promise<string> => {
-                    this.makeTabGroupShared(tabGroupId!, params.groupId);
-                    return this.getShareLink(params);
+                    this.browserProxy_.makeTabGroupShared(
+                        tabGroupId!, params.groupId);
+                    return this.browserProxy_.getShareLink(
+                        params.groupId, params.tokenSecret!);
                   },
               // TODO(crbug.com/376348102): Provide group name to share flow.
               groupName: '',
@@ -522,7 +469,8 @@ export class DataSharingApp extends CustomElement implements Logger {
                 this.browserProxy_.handler!.openTabGroup(groupId!);
               },
               fetchPreviewData: () => {
-                return this.getTabGroupPreview(groupId!, tokenSecret!);
+                return this.browserProxy_.getTabGroupPreview(
+                    groupId!, tokenSecret!);
               },
               logger: this,
             })
@@ -547,7 +495,8 @@ export class DataSharingApp extends CustomElement implements Logger {
               groupId: groupId!,
               getShareLink: (params: DataSharingSdkGetLinkParams):
                   Promise<string> => {
-                    return this.getShareLink(params);
+                    return this.browserProxy_.getShareLink(
+                        params.groupId, params.tokenSecret!);
                   },
               learnMoreUrlMap,
               activityLogCallback: () => {

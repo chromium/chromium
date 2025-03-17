@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.price_tracking;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.net.Uri;
@@ -44,6 +46,8 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -69,6 +73,9 @@ import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for {@link PriceDropNotificationManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -150,8 +157,7 @@ public class PriceDropNotificationManagerTest {
     public void testCanPostNotification_FeatureDisabled() {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
-        assertFalse(mPriceDropNotificationManager.canPostNotification());
-        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        verifyCanPostNotification(false);
     }
 
     @Test
@@ -160,8 +166,7 @@ public class PriceDropNotificationManagerTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         NotificationProxyUtils.setNotificationEnabledForTest(false);
         assertFalse(mPriceDropNotificationManager.areAppNotificationsEnabled());
-        assertFalse(mPriceDropNotificationManager.canPostNotification());
-        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        verifyCanPostNotification(false);
     }
 
     @Test
@@ -171,18 +176,28 @@ public class PriceDropNotificationManagerTest {
         NotificationProxyUtils.setNotificationEnabledForTest(true);
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 
-        assertNull(mPriceDropNotificationManager.getNotificationChannel());
-        assertFalse(mPriceDropNotificationManager.canPostNotification());
-        assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        AtomicBoolean callbackComplete = new AtomicBoolean(false);
+        AtomicReference<NotificationChannel> channelRef = new AtomicReference<>();
+        mPriceDropNotificationManager.getNotificationChannel(
+                (result) -> {
+                    channelRef.set(result);
+                    callbackComplete.set(true);
+                });
+        CriteriaHelper.pollInstrumentationThread(callbackComplete::get);
+        assertNull(channelRef.get());
+        verifyCanPostNotification(false);
 
         mPriceDropNotificationManager.createNotificationChannel();
-        assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
-        assertEquals(
-                NotificationManager.IMPORTANCE_DEFAULT,
-                mPriceDropNotificationManager.getNotificationChannel().getImportance());
-
-        assertTrue(mPriceDropNotificationManager.canPostNotification());
-        assertTrue(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
+        callbackComplete.set(false);
+        mPriceDropNotificationManager.getNotificationChannel(
+                (result) -> {
+                    channelRef.set(result);
+                    callbackComplete.set(true);
+                });
+        CriteriaHelper.pollInstrumentationThread(callbackComplete::get);
+        assertNotNull(channelRef.get());
+        assertEquals(NotificationManager.IMPORTANCE_DEFAULT, channelRef.get().getImportance());
+        verifyCanPostNotification(true);
     }
 
     @Test
@@ -344,5 +359,25 @@ public class PriceDropNotificationManagerTest {
         assertEquals(
                 true,
                 mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
+    }
+
+    private void verifyCanPostNotification(boolean expectation) {
+        AtomicBoolean canPost = new AtomicBoolean(!expectation);
+        AtomicBoolean canPostWithMetrics = new AtomicBoolean(!expectation);
+        mPriceDropNotificationManager.canPostNotification(
+                (result) -> {
+                    canPost.set(result);
+                });
+        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded(
+                (result) -> {
+                    canPostWithMetrics.set(result);
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            (canPost.get() == expectation)
+                                    && (canPostWithMetrics.get() == expectation),
+                            is(true));
+                });
     }
 }

@@ -30,6 +30,7 @@ source_set("model") {
     "//components/crash/core/app",
     "//components/crash/core/browser",
     "//components/crash/core/common",
+    "//components/gwp_asan/crash_handler",
     "//components/previous_session_info",
     "//components/upload_list",
     "//ios/chrome/app:tests_hook",

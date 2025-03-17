@@ -10,6 +10,7 @@
 #include "chrome/browser/media/media_engagement_score_details.mojom.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom.h"
 #include "chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals_ui.h"
 #include "chrome/browser/ui/webui/browsing_topics/browsing_topics_internals_ui.h"
@@ -103,6 +104,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/history/history_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
@@ -516,33 +518,62 @@ void PopulateChromeWebUIFrameBinders(
       most_visited::mojom::MostVisitedPageHandlerFactory, NewTabPageUI,
       NewTabPageThirdPartyUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
-                                         HistoryUI>(map);
+  if (HistorySidePanelCoordinator::IsSupported()) {
+    RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
+                                           HistorySidePanelUI, HistoryUI>(map);
+  } else {
+    RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
+                                           HistoryUI>(map);
+  }
 
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(
           render_frame_host->GetProcess()->GetBrowserContext());
   if (history_clusters_service &&
       history_clusters_service->is_journeys_feature_flag_enabled()) {
-    RegisterWebUIControllerInterfaceBinder<history_clusters::mojom::PageHandler,
-                                           HistoryUI,
-                                           HistoryClustersSidePanelUI>(map);
+    if (HistorySidePanelCoordinator::IsSupported()) {
+      RegisterWebUIControllerInterfaceBinder<
+          history_clusters::mojom::PageHandler, HistoryUI, HistorySidePanelUI>(
+          map);
+    } else {
+      RegisterWebUIControllerInterfaceBinder<
+          history_clusters::mojom::PageHandler, HistoryUI,
+          HistoryClustersSidePanelUI>(map);
+    }
   }
   if (history_embeddings::IsHistoryEmbeddingsFeatureEnabled()) {
     if (history_clusters_service &&
         history_clusters_service->is_journeys_feature_flag_enabled()) {
-      RegisterWebUIControllerInterfaceBinder<
-          history_embeddings::mojom::PageHandler, HistoryUI,
-          HistoryClustersSidePanelUI>(map);
+      if (HistorySidePanelCoordinator::IsSupported()) {
+        RegisterWebUIControllerInterfaceBinder<
+            history_embeddings::mojom::PageHandler, HistoryUI,
+            HistorySidePanelUI>(map);
+      } else {
+        RegisterWebUIControllerInterfaceBinder<
+            history_embeddings::mojom::PageHandler, HistoryUI,
+            HistoryClustersSidePanelUI>(map);
+      }
     } else {
-      RegisterWebUIControllerInterfaceBinder<
-          history_embeddings::mojom::PageHandler, HistoryUI>(map);
+      if (HistorySidePanelCoordinator::IsSupported()) {
+        RegisterWebUIControllerInterfaceBinder<
+            history_embeddings::mojom::PageHandler, HistorySidePanelUI,
+            HistoryUI>(map);
+      } else {
+        RegisterWebUIControllerInterfaceBinder<
+            history_embeddings::mojom::PageHandler, HistoryUI>(map);
+      }
     }
   }
 
-  RegisterWebUIControllerInterfaceBinder<
-      page_image_service::mojom::PageImageServiceHandler, HistoryUI,
-      HistoryClustersSidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
+  if (HistorySidePanelCoordinator::IsSupported()) {
+    RegisterWebUIControllerInterfaceBinder<
+        page_image_service::mojom::PageImageServiceHandler, HistoryUI,
+        HistorySidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
+  } else {
+    RegisterWebUIControllerInterfaceBinder<
+        page_image_service::mojom::PageImageServiceHandler, HistoryUI,
+        HistoryClustersSidePanelUI, NewTabPageUI, BookmarksSidePanelUI>(map);
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   RegisterWebUIControllerInterfaceBinder<whats_new::mojom::PageHandlerFactory,

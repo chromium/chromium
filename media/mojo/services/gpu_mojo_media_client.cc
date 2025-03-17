@@ -77,7 +77,7 @@ VideoDecoderTraits::VideoDecoderTraits(
     const gfx::ColorSpace* target_color_space,
     GetConfigCacheCB get_cached_configs_cb,
     GetCommandBufferStubCB get_command_buffer_stub_cb,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder)
     : task_runner(std::move(task_runner)),
       media_log(std::move(media_log)),
       request_overlay_info_cb(request_overlay_info_cb),
@@ -204,9 +204,8 @@ GpuMojoMediaClient::GetSupportedVideoDecoderConfigs() {
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 void GpuMojoMediaClient::NotifyDecoderSupportKnown(
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-    base::OnceCallback<
-        void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+    base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
 #if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
   // TODO(b/195769334): this call should ideally be guarded only by
   // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER) because eventually, the GPU process
@@ -227,7 +226,7 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     mojom::CommandBufferIdPtr command_buffer_id,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder) {
   // Always respect GPU features.
   if (gpu_preferences_.disable_accelerated_video_decode ||
       (gpu_feature_info_

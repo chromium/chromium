@@ -30,6 +30,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -44,6 +45,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -248,6 +250,8 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    // TODO(crbug.com/404233668)
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testVirtualKeyboardDefaultResizeModeWithPref() throws Throwable {
         startMainActivityWithURL("/chrome/test/data/android/about.html");
         ThreadUtils.runOnUiThreadBlocking(
@@ -396,6 +400,8 @@ public class VirtualKeyboardResizeTest {
      */
     @Test
     @MediumTest
+    // TODO(crbug.com/404233668)
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     public void testResizesLayoutMetaTag() throws Throwable {
         startMainActivityWithURL(
                 "/chrome/test/data/android/page_with_editable.html?resizes-content");

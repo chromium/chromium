@@ -151,6 +151,15 @@ export declare interface GlicBrowserHost {
       Promise<void>;
 
   /**
+   * Returns true if the web client should resize its content to fit the
+   * window.
+   *
+   * @todo This should be the default sizing mode. Remove after the manual
+   * resizing is landed. crbug.com/402795394.
+   */
+  shouldFitWindow?(): Promise<boolean>;
+
+  /**
    * Set the areas of the glic window from which it should be draggable. If
    * `areas` is empty, a default draggable area will be created.
    *
@@ -304,6 +313,9 @@ export declare interface GlicBrowserHost {
   /** Returns the state of the tab context permission. */
   getTabContextPermissionState?(): ObservableValue<boolean>;
 
+  /** Returns the state of the OS granted location permission. */
+  getOsLocationPermissionState?(): ObservableValue<boolean>;
+
   /**
    * Set the state of the microphone permission in settings. Returns a promise
    * that resolves when the browser has stored the new pref value.
@@ -384,6 +396,11 @@ export declare interface GlicBrowserHost {
    * Supports `media` for microphone ad `geolocation` for location.
    */
   openOsPermissionSettingsMenu?(permission: string): void;
+
+  /**
+   * Get the status of the OS Microphone permission currently granted to Chrome.
+   */
+  getOsMicrophonePermissionStatus?(): Promise<boolean>;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */

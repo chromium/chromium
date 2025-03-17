@@ -505,6 +505,7 @@
 <translation id="310900540163454140">删除 <ph name="WEBSITE" /> 的密码？</translation>
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3119874402040566234">您将退出账号，而且浏览数据将被删除</translation>
+<translation id="3124568093781685165">与家人分享您的密码</translation>
 <translation id="3130863904455712965">历史记录和其他内容</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
 <translation id="3138611310073113613">舍弃所做选择</translation>
@@ -1004,6 +1005,7 @@
 <translation id="5352128922772839949">保存文件</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
 <translation id="537853552771686272">管理您感兴趣的主题和网站</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} 个已关闭}other{{count} 个已关闭}}</translation>
 <translation id="5394975111793637642">隐藏“为您推荐的商品评价”卡片</translation>
 <translation id="5395707839134961196">隐藏搜索引擎详细信息</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
@@ -1133,6 +1135,7 @@
 <translation id="5897749768294722429">同步标签页和历史记录，快速访问您浏览过的网站。</translation>
 <translation id="5898848375214731122">质量</translation>
 <translation id="5899314093904173337">若要与附近的人分享，请让他们用相机或二维码扫描器应用扫描此二维码</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} 个新标签页}other{{count} 个新标签页}}</translation>
 <translation id="5911030830365207728">Google 翻译</translation>
 <translation id="5917913282764181683">自动删除下载内容</translation>
 <translation id="5922999516621365983">将标签页拖到此处即可固定。</translation>
@@ -1675,6 +1678,7 @@
 <translation id="8131740175452115882">确认</translation>
 <translation id="8132598642024322408">现价 <ph name="PRICE" />，原价 <ph name="PREVIOUS_PRICE" />。</translation>
 <translation id="813370552429173916">请为每个网站或应用分别使用专用密码。如果有人发现了您重复使用的密码，就能利用此密码访问您的其他账号。点击可立即打开相应网站并更改密码。</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} 个标签页已关闭}other{{count} 个标签页已关闭}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
 <translation id="8150167929304790980">姓名</translation>
 <translation id="8152331954420209374">开启智能镜头</translation>

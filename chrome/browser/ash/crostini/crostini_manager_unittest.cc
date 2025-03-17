@@ -265,7 +265,7 @@ TEST_F(CrostiniManagerTest, CreateDiskImageEmptyNameError) {
   TestFuture<CrostiniResult, const base::FilePath&> result_future;
 
   crostini_manager()->CreateDiskImage(
-      "", vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
+      "", {}, vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
       result_future.GetCallback());
   EXPECT_TRUE(result_future.Wait());
 
@@ -277,7 +277,7 @@ TEST_F(CrostiniManagerTest, CreateDiskImageStorageLocationError) {
   TestFuture<CrostiniResult, const base::FilePath&> result_future;
 
   crostini_manager()->CreateDiskImage(
-      kVmName,
+      kVmName, {},
       vm_tools::concierge::StorageLocation_INT_MIN_SENTINEL_DO_NOT_USE_,
       kDiskSizeBytes, result_future.GetCallback());
   EXPECT_TRUE(result_future.Wait());
@@ -290,7 +290,7 @@ TEST_F(CrostiniManagerTest, CreateDiskImageSuccess) {
   TestFuture<CrostiniResult, const base::FilePath&> result_future;
 
   crostini_manager()->CreateDiskImage(
-      kVmName, vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
+      kVmName, {}, vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT, kDiskSizeBytes,
       result_future.GetCallback());
   EXPECT_TRUE(result_future.Wait());
 

@@ -2088,6 +2088,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_ENHANCED_SAFE_BROWSING_PROMO_SUBTITLE" desc="Subtitle of the fullscreen Enhanced Safe Browsing promo which shows users how to enable Enhanced Safe Browsing.">
         Add an extra layer of protection against online threats.
       </message>
+      <message name="IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED" desc="Text displayed to inform the user that the account is managed by Enterprise policies (without link). [iOS only]">
+        This account is managed
+      </message>
       <message name="IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION" desc="Text displayed to inform the user that the browser is managed by Enterprise policies (without link). [iOS only]">
         Managed by your organization
       </message>

@@ -187,6 +187,8 @@ chromium-metrics-reviews@google.com.
       label="ClientDownloadRequest not sent: Unsupported URL scheme"/>
   <int value="8" label="ClientDownloadRequest not sent: Remote file"/>
   <int value="9" label="ClientDownloadRequest not sent: Local file"/>
+  <int value="10"
+      label="ClientDownloadRequest not sent: Service misconfigured"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/safe_browsing/android/download_protection_metrics_data.h:AndroidDownloadProtectionOutcome) -->

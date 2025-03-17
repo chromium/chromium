@@ -83,7 +83,7 @@ class PaintPreviewBaseService : public KeyedService {
     bool capture_links;
 
     // Cap the perframe SkPicture size to |max_per_capture_size| if non-zero.
-    size_t max_per_capture_size;
+    size_t max_per_capture_size{0};
 
     // Limit on the maximum size of a decoded image that can be serialized.
     // Any images with a decoded size exceeding this value will be discarded.

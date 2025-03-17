@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.privacy.secure_dns;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.net.SecureDnsManagementMode;
 import org.chromium.net.SecureDnsMode;
 
@@ -15,15 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** Reads and writes preferences related to Secure DNS. */
+@NullMarked
 class SecureDnsBridge {
     /**
-     * An Entry represents the subset of a net::DohProviderEntry that is relevant
-     * for display in the UI.
+     * An Entry represents the subset of a net::DohProviderEntry that is relevant for display in the
+     * UI.
      */
     static class Entry {
-        public final @NonNull String name; // Display name
-        public final @NonNull String config; // DoH config, or "" for the custom entry.
-        public final @NonNull String privacy; // Privacy policy link
+        public final String name; // Display name
+        public final String config; // DoH config, or "" for the custom entry.
+        public final String privacy; // Privacy policy link
 
         Entry(String name, String config, String privacy) {
             this.name = name;

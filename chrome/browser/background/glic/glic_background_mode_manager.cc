@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/background/glic/glic_status_icon.h"
@@ -74,6 +75,13 @@ void GlicBackgroundModeManager::OnKeyPressed(
   CHECK(accelerator == actual_registered_hotkey_);
   CHECK(actual_registered_hotkey_ == expected_registered_hotkey_);
   controller_->Toggle(mojom::InvocationSource::kOsHotkey);
+  // Record hotkey usage.
+  const ui::Accelerator default_hotkey =
+      GlicLauncherConfiguration::GetDefaultHotkey();
+  base::UmaHistogramEnumeration("Glic.Usage.Hotkey",
+                                accelerator == default_hotkey
+                                    ? glic::HotkeyUsage::kDefault
+                                    : glic::HotkeyUsage::kCustom);
 }
 
 void GlicBackgroundModeManager::ExecuteCommand(

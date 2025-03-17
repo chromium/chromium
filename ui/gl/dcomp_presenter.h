@@ -69,7 +69,6 @@ class GL_EXPORT DCompPresenter : public Presenter,
   // An overlay plane must be scheduled before every `Present` to remain in the
   // layer tree. The primary plane should be included in `overlays`.
   void ScheduleDCLayers(std::vector<DCLayerOverlayParams> overlays) override;
-  void SetFrameRate(float frame_rate) override;
 
   void Present(SwapCompletionCallback completion_callback,
                PresentationCallback presentation_callback,

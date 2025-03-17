@@ -9,14 +9,17 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
@@ -38,7 +41,7 @@ import java.lang.annotation.RetentionPolicy;
  * a visible toolbar so this fake representation would need to exist regardless.
  */
 public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implements RunOnNextLayout {
-    @VisibleForTesting protected static final long ANIMATION_DURATION_MS = 100L;
+    @VisibleForTesting protected static final long ANIMATION_DURATION_MS = 300L;
 
     @IntDef({
         TranslateDirection.UP,
@@ -57,6 +60,7 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     private ImageView mForegroundView;
     private TabSwitcherDrawable mTabSwitcherDrawable;
 
+    private @BrandedColorScheme int mBrandedColorScheme;
     private int mTabCount;
     private boolean mIsIncognito;
     private boolean mHasOutstandingAnimator;
@@ -71,13 +75,14 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mBrandedColorScheme = BrandedColorScheme.LIGHT_BRANDED_THEME;
+        mTabCount = 0;
+        mIsIncognito = false;
         mTabSwitcherDrawable =
                 TabSwitcherDrawable.createTabSwitcherDrawable(
-                        getContext(),
-                        BrandedColorScheme.LIGHT_BRANDED_THEME,
-                        TabSwitcherDrawableLocation.TAB_TOOLBAR);
-        setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
-        setTabCount(0, false);
+                        getContext(), mBrandedColorScheme, TabSwitcherDrawableLocation.TAB_TOOLBAR);
+        setBrandedColorScheme(mBrandedColorScheme);
+        setTabCount(mTabCount, mIsIncognito);
         setNotificationIconStatus(false);
 
         mInnerContainer = findViewById(R.id.new_tab_indicator_inner_container);
@@ -87,6 +92,7 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     }
 
     /* package */ void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
+        mBrandedColorScheme = brandedColorScheme;
         mTabSwitcherDrawable.setTint(
                 ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme));
         mTabSwitcherDrawable.setNotificationBackground(brandedColorScheme);
@@ -103,9 +109,22 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         mTabSwitcherDrawable.setNotificationIconStatus(shouldShow);
     }
 
+    /**
+     * Sets the background color for the fake tab switcher button container to cover the real tab
+     * switcher button.
+     *
+     * @param color The {@link ColorInt} for the {@link #mInnerContainer} background color.
+     */
+    /* package */ void setButtonColor(@ColorInt int color) {
+        mInnerContainer.setBackgroundColor(color);
+    }
+
     /* package */ AnimatorSet getRotateAnimator(boolean incrementCount) {
         assert !mHasOutstandingAnimator;
 
+        // TODO(crbug.com/40282469): Add spin out + fade animation (it currently has the spin and
+        // the fade out running at the same time rather than one initial spin + spin out with fade
+        // out). Also, use proper duration and interpolators.
         mHasOutstandingAnimator = true;
         setBackgroundVisibility(true);
         mBackgroundView.setAlpha(0f);
@@ -187,14 +206,43 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         return mHasOutstandingAnimator;
     }
 
+    /**
+     * Gets the center location for the button.
+     *
+     * @param location Array to store the x and y position.
+     * @param yOffset y-offset to account for the status bar.
+     */
+    /* package */ void getButtonLocation(int[] location, int yOffset) {
+        assert location.length == 2;
+        // Difficult for test environment.
+        if (!BuildConfig.IS_FOR_TEST) {
+            assert mForegroundView.getMeasuredWidth() != 0;
+            assert mForegroundView.getMeasuredHeight() != 0;
+        }
+
+        mForegroundView.getLocationInWindow(location);
+        location[0] += mForegroundView.getMeasuredWidth() / 2;
+        location[1] += mForegroundView.getMeasuredHeight() / 2 - yOffset;
+    }
+
+    /**
+     * Returns the side padding between the fake tab switcher button ImageView and the inner
+     * container.
+     */
+    /* package */ int getInnerSidePadding() {
+        FrameLayout.LayoutParams innerContainer =
+                (FrameLayout.LayoutParams) mInnerContainer.getLayoutParams();
+        FrameLayout.LayoutParams foregroundView =
+                (FrameLayout.LayoutParams) mForegroundView.getLayoutParams();
+
+        return (innerContainer.width - foregroundView.width) / 2;
+    }
+
     private void incrementTabCount() {
         setTabCount(mTabCount + 1, mIsIncognito);
     }
 
     private void resetState() {
-        // TODO(crbug.com/40282469): when positioned over the toolbar we might need the background
-        // to be the color of the toolbar rather than invisible to mask the real tab switcher
-        // button.
         setBackgroundVisibility(false);
         mBackgroundView.setAlpha(0f);
         mBackgroundView.setRotation(0f);
@@ -226,5 +274,24 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
     @Override
     public void runOnNextLayoutRunnables() {
         mRunOnNextLayoutDelegate.runOnNextLayoutRunnables();
+    }
+
+    /* package */ @BrandedColorScheme
+    int getBrandedColorSchemeForTesting() {
+        return mBrandedColorScheme;
+    }
+
+    /* package */ int getTabCountForTesting() {
+        return mTabCount;
+    }
+
+    /* package */ @ColorInt
+    int getButtonColorForTesting() {
+        ColorDrawable background = (ColorDrawable) mInnerContainer.getBackground();
+        return background.getColor();
+    }
+
+    /* package */ boolean getShowIconNotificationStatusForTesting() {
+        return mTabSwitcherDrawable.getShowIconNotificationStatus();
     }
 }

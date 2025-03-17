@@ -38,6 +38,7 @@ ts_modules = [
   "ui_manager.ts",
   "prefs_manager.ts",
   "select_to_speak.ts",
+  "offscreen.ts",
 ]
 
 # Root dir must be the parent directory so it can reach common.
@@ -61,7 +62,9 @@ ts_library("ts_build") {
     "../../definitions/extensions.d.ts",
     "../../definitions/extension_types.d.ts",
     "../../definitions/i18n.d.ts",
+    "../../definitions/offscreen.d.ts",
     "../../definitions/runtime.d.ts",
+    "../../definitions/scripting.d.ts",
     "../../definitions/settings_private_mv2.d.ts",
     "../../definitions/storage_mv2.d.ts",
     "../../definitions/tabs.d.ts",
@@ -91,6 +94,8 @@ run_jsbundler("copied_files") {
     "background.html",
     "checked.png",
     "earcons/null_selection.ogg",
+    "gdocs_script.js",
+    "offscreen.html",
     "select_to_speak-2x.svg",
     "sts-icon-128.png",
     "sts-icon-16.png",

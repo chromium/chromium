@@ -30,6 +30,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -203,8 +204,9 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   auto* user_manager = GetFakeUserManager();
   auto* user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   // Calculate time from one hour from now and set the reboot policy to
   // happen daily at that time.
@@ -243,8 +245,9 @@ TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfMonthlyRebootIsScheduledForKiosk) {
   auto* user_manager = GetFakeUserManager();
   auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   // Set the first reboot to happen 1 hour from now.
   base::TimeDelta delay_from_now = base::Hours(1);
@@ -280,8 +283,8 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   auto* kiosk_user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
   user_manager->UserLoggedIn(kiosk_user->GetAccountId(),
-                             kiosk_user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+                             user_manager::TestHelper::GetFakeUsernameHash(
+                                 kiosk_user->GetAccountId()));
   user_manager->SwitchActiveUser(kiosk_user->GetAccountId());
   expected_scheduled_reboots += 1;
   expected_reboot_requests += 1;
@@ -349,8 +352,9 @@ TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
   auto* user_manager = GetFakeUserManager();
   auto* user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   // Calculate time 30 minutes from now and set the reboot policy to
   // happen daily at that time.
@@ -383,8 +387,9 @@ TEST_F(DeviceScheduledRebootHandlerTest,
        EnableForceRebootFeatureNonKioskSession) {
   auto* user_manager = GetFakeUserManager();
   auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   EXPECT_FALSE(prefs_->GetBoolean(ash::prefs::kShowPostRebootNotification));
 
   // Set device uptime to 10 minutes and schedule reboot in 30 minutes. Apply
@@ -436,8 +441,9 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 TEST_F(DeviceScheduledRebootHandlerTest, SimulateNotificationButtonClick) {
   auto* user_manager = GetFakeUserManager();
   auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   /// Schedule reboot to happen in 3 hours.
   base::TimeDelta delay_from_now = base::Hours(3);

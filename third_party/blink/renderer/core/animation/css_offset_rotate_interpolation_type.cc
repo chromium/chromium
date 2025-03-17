@@ -20,22 +20,16 @@ namespace blink {
 
 class CSSOffsetRotationNonInterpolableValue : public NonInterpolableValue {
  public:
+  explicit CSSOffsetRotationNonInterpolableValue(
+      OffsetRotationType rotation_type)
+      : rotation_type_(rotation_type) {}
   ~CSSOffsetRotationNonInterpolableValue() override = default;
-
-  static scoped_refptr<CSSOffsetRotationNonInterpolableValue> Create(
-      OffsetRotationType rotation_type) {
-    return base::AdoptRef(
-        new CSSOffsetRotationNonInterpolableValue(rotation_type));
-  }
 
   OffsetRotationType RotationType() const { return rotation_type_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  CSSOffsetRotationNonInterpolableValue(OffsetRotationType rotation_type)
-      : rotation_type_(rotation_type) {}
-
   OffsetRotationType rotation_type_;
 };
 
@@ -92,7 +86,8 @@ InterpolationValue ConvertOffsetRotate(const StyleOffsetRotation& rotation) {
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(
           rotation.angle, CSSPrimitiveValue::UnitType::kDegrees),
-      CSSOffsetRotationNonInterpolableValue::Create(rotation.type));
+      MakeGarbageCollected<CSSOffsetRotationNonInterpolableValue>(
+          rotation.type));
 }
 
 }  // namespace
@@ -176,7 +171,7 @@ InterpolationValue CSSOffsetRotateInterpolationType::MaybeConvertValue(
   }
   return InterpolationValue(
       MakeGarbageCollected<InterpolableNumber>(*angle),
-      CSSOffsetRotationNonInterpolableValue::Create(type));
+      MakeGarbageCollected<CSSOffsetRotationNonInterpolableValue>(type));
 }
 
 PairwiseInterpolationValue CSSOffsetRotateInterpolationType::MaybeMergeSingles(

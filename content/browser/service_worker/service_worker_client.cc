@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -1156,6 +1157,28 @@ void ServiceWorkerClient::InheritControllerFrom(
                               false /* notify_controllerchange */);
   }
   creator_host.SetInherited();
+}
+
+void ServiceWorkerClient::InheritControllerFromPrefetch(
+    ServiceWorkerClient& client_for_prefetch,
+    const GURL& navigation_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(features::kPrefetchServiceWorker));
+  CHECK(IsContainerForWindowClient());
+  CHECK(client_for_prefetch.IsContainerForWindowClient());
+
+  UpdateUrls(navigation_url, client_for_prefetch.top_frame_origin(),
+             client_for_prefetch.key());
+
+  // Inherit the controller used for prefetching from `client_for_prefetch`.
+  if (client_for_prefetch.controller_registration()) {
+    AddMatchingRegistration(client_for_prefetch.controller_registration());
+    // `client_for_prefetch` shouldn't be in back forward cache because it's for
+    // prefetch.
+    CHECK(!client_for_prefetch.is_in_back_forward_cache());
+    SetControllerRegistration(client_for_prefetch.controller_registration(),
+                              false /* notify_controllerchange */);
+  }
 }
 
 mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>

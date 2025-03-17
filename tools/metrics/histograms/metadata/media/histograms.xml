@@ -3592,18 +3592,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.GPU.OutputFormat" enum="OutputFormat"
-    expires_after="2025-07-13">
-  <owner>hitawala@chromium.org</owner>
-  <owner>vasilyt@chromium.org</owner>
-  <owner>shared-image-team@google.com</owner>
-  <summary>
-    Records the format used for creating video frames with GpuMemoryBuffers.
-    Result is an enum that represents OutputFormat in
-    GpuVideoAcceleratorFactoriesImpl. Recorded once per VideoFrame creation.
-  </summary>
-</histogram>
-
 <histogram name="Media.GPU.OutputFormatHardwareGmb" enum="OutputFormat"
     expires_after="2025-07-13">
   <owner>hitawala@chromium.org</owner>

@@ -78,6 +78,13 @@ mojom("mojom") {
     ]
   }
 
+  if (allow_oop_video_decoder) {
+    sources += [
+      "cdm_context_for_oopvd.mojom",
+      "video_decoder_factory_process.mojom",
+    ]
+  }
+
   public_deps = [
     ":audio_data",
     ":encryption_pattern",
@@ -85,7 +92,6 @@ mojom("mojom") {
     ":web_speech_recognition",
     "//gpu/ipc/common:interfaces",
     "//media/learning/mojo/public/mojom",
-    "//media/mojo/mojom/stable:stable_video_decoder",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
     "//services/media_session/public/mojom",
@@ -707,6 +713,24 @@ mojom("mojom") {
       traits_headers = [ "media_types_enum_mojom_traits.h" ]
     },
   ]
+
+  if (is_chromeos) {
+    shared_typemaps += [
+      {
+        types = [
+          {
+            mojom = "media.mojom.DecryptStatus"
+            cpp = "::media::Decryptor::Status"
+          },
+          {
+            mojom = "media.mojom.CdmContextEvent"
+            cpp = "::media::CdmContext::Event"
+          },
+        ]
+        traits_headers = [ "cdm_context_for_oopvd_types_mojom_traits.h" ]
+      },
+    ]
+  }
 
   if (is_win) {
     cpp_typemaps += [

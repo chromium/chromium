@@ -156,9 +156,15 @@ class InteractiveGlicTestT : public T {
     glic_page_path_ = glic_page_path;
   }
 
-  // Ensures that the WebContents for some combination of glic host and contents
-  // are instrumented, per `instrument_mode`.
   auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode) {
+    return WaitForAndInstrumentGlic(instrument_mode, window_controller());
+  }
+
+  // Ensures that the WebContents for some combination of glic host and contents
+  // are instrumented, per `instrument_mode`. Takes a window controller, to
+  // permit instrumenting for a different profile.
+  auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode,
+                                GlicWindowController& window_controller) {
     // NOTE: The use of "Api::" here is required because this is a template
     // class with weakly-specified base class; it is not necessary in derived
     // test classes.
@@ -170,7 +176,7 @@ class InteractiveGlicTestT : public T {
             Api::UninstrumentWebContents(kGlicContentsElementId, false),
             Api::UninstrumentWebContents(kGlicHostElementId, false),
             Api::ObserveState(internal::kGlicWindowControllerState,
-                              std::ref(window_controller())),
+                              std::ref(window_controller)),
             Api::InAnyContext(Api::Steps(
                 Api::InstrumentNonTabWebView(
                     kGlicHostElementId, GlicView::kWebViewElementIdForTesting),
@@ -186,7 +192,7 @@ class InteractiveGlicTestT : public T {
         steps = Api::Steps(
             Api::UninstrumentWebContents(kGlicHostElementId, false),
             Api::ObserveState(internal::kGlicWindowControllerState,
-                              std::ref(window_controller())),
+                              std::ref(window_controller)),
             Api::InAnyContext(Api::InstrumentNonTabWebView(
                 kGlicHostElementId, GlicView::kWebViewElementIdForTesting)),
             Api::WaitForState(

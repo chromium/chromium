@@ -5227,6 +5227,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSysUiShouldHoldbackTaskManagementName,
      flag_descriptions::kSysUiShouldHoldbackTaskManagementDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSysUiShouldHoldbackTaskManagement)},
+    {"offline-items-in-notifications",
+     flag_descriptions::kOfflineItemsInNotificationsName,
+     flag_descriptions::kOfflineItemsInNotificationsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kOfflineItemsInNotifications)},
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
@@ -11815,6 +11819,26 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableAmountExtractionDesktopLogging)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+    {"adjust-can-create-canvas2d-resource-provider",
+     flag_descriptions::kAdjustCanCreateCanvas2DResourceProviderName,
+     flag_descriptions::kAdjustCanCreateCanvas2DResourceProviderDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kAdjustCanCreateCanvas2dResourceProvider)},
+
+    {"adjust-get-or-create-2dcanvas-provider",
+     flag_descriptions::kAdjustGetOrCreate2DCanvasProviderName,
+     flag_descriptions::kAdjustGetOrCreate2DCanvasProviderDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kAdjustGetOrCreate2DCanvasProvider)},
+
+    {"is-paintable-checks-resource-provider",
+     flag_descriptions::kIsPaintableChecksResourceProviderInsteadOfBridgeName,
+     flag_descriptions::
+         kIsPaintableChecksResourceProviderInsteadOfBridgeDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         blink::features::kIsPaintableChecksResourceProviderInsteadOfBridge)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

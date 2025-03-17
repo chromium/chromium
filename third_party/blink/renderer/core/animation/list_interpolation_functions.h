@@ -85,19 +85,20 @@ class CORE_EXPORT ListInterpolationFunctions {
 
 class CORE_EXPORT NonInterpolableList final : public NonInterpolableValue {
  public:
+  NonInterpolableList() = default;
+  explicit NonInterpolableList(
+      HeapVector<Member<const NonInterpolableValue>>&& list)
+      : list_(list) {}
   ~NonInterpolableList() final = default;
 
-  static scoped_refptr<NonInterpolableList> Create() {
-    return base::AdoptRef(new NonInterpolableList());
-  }
-  static scoped_refptr<NonInterpolableList> Create(
-      Vector<scoped_refptr<const NonInterpolableValue>>&& list) {
-    return base::AdoptRef(new NonInterpolableList(std::move(list)));
+  void Trace(Visitor* visitor) const override {
+    NonInterpolableValue::Trace(visitor);
+    visitor->Trace(list_);
   }
 
   wtf_size_t length() const { return list_.size(); }
   const NonInterpolableValue* Get(wtf_size_t index) const {
-    return list_[index].get();
+    return list_[index].Get();
   }
 
   // This class can update the NonInterpolableList of an UnderlyingValue with
@@ -113,21 +114,17 @@ class CORE_EXPORT NonInterpolableList final : public NonInterpolableValue {
     AutoBuilder(UnderlyingValue&);
     ~AutoBuilder();
 
-    void Set(wtf_size_t index, scoped_refptr<const NonInterpolableValue>);
+    void Set(wtf_size_t index, const NonInterpolableValue*);
 
    private:
     UnderlyingValue& underlying_value_;
-    Vector<scoped_refptr<const NonInterpolableValue>> list_;
+    HeapVector<Member<const NonInterpolableValue>> list_;
   };
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  NonInterpolableList() = default;
-  NonInterpolableList(Vector<scoped_refptr<const NonInterpolableValue>>&& list)
-      : list_(list) {}
-
-  Vector<scoped_refptr<const NonInterpolableValue>> list_;
+  HeapVector<Member<const NonInterpolableValue>> list_;
 };
 
 template <>
@@ -147,7 +144,7 @@ InterpolationValue ListInterpolationFunctions::CreateList(
   if (length == 0)
     return CreateEmptyList();
   auto* interpolable_list = MakeGarbageCollected<InterpolableList>(length);
-  Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
+  HeapVector<Member<const NonInterpolableValue>> non_interpolable_values(
       length);
   for (wtf_size_t i = 0; i < length; i++) {
     InterpolationValue item = create_item(i);
@@ -156,9 +153,9 @@ InterpolationValue ListInterpolationFunctions::CreateList(
     interpolable_list->Set(i, std::move(item.interpolable_value));
     non_interpolable_values[i] = std::move(item.non_interpolable_value);
   }
-  return InterpolationValue(
-      interpolable_list,
-      NonInterpolableList::Create(std::move(non_interpolable_values)));
+  return InterpolationValue(interpolable_list,
+                            MakeGarbageCollected<NonInterpolableList>(
+                                std::move(non_interpolable_values)));
 }
 
 }  // namespace blink

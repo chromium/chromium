@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +35,10 @@
 @synthesize subject;
 @synthesize sharedItem = _sharedItem;
 
+- (NSString*)menuItemTitle {
+  return @"Test";
+}
+
 - (void)performWithItems:(NSArray*)items {
   self.sharedItem = items.firstObject;
 }
@@ -50,6 +55,10 @@ MockSharingService* MakeMockSharingService() {
              }];
 }
 }  // namespace
+
+@interface ShareMenuController (ExposedForTesting)
+- (NSMenuItem*)menuItemForService:(NSSharingService*)service;
+@end
 
 class ShareMenuControllerTest : public InProcessBrowserTest {
  public:
@@ -71,21 +80,10 @@ class ShareMenuControllerTest : public InProcessBrowserTest {
   // the target/action of real menu items created by
   // |controller_|
   void PerformShare(NSSharingService* service) {
-    NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Share"];
-
-    [controller_ menuNeedsUpdate:menu];
-
-    NSMenuItem* mock_menu_item = [[NSMenuItem alloc] initWithTitle:@"test"
-                                                            action:nil
-                                                     keyEquivalent:@""];
-    mock_menu_item.representedObject = service;
-
-    NSMenuItem* first_menu_item = [menu itemAtIndex:0];
-    id target = first_menu_item.target;
-    SEL action = first_menu_item.action;
+    NSMenuItem* menu_item = [controller_ menuItemForService:service];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    [target performSelector:action withObject:mock_menu_item];
+    [menu_item.target performSelector:menu_item.action withObject:menu_item];
 #pragma clang diagnostic pop
   }
   GURL url_;
@@ -108,11 +106,20 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, PopulatesMenu) {
 
   NSSharingService* reading_list_service = [NSSharingService
       sharingServiceNamed:NSSharingServiceNameAddToSafariReadingList];
+  NSSharingService* email_service =
+      [NSSharingService sharingServiceNamed:NSSharingServiceNameComposeEmail];
+  bool direct_email =
+      base::FeatureList::IsEnabled(features::kMacDirectEmailShare);
 
-  NSUInteger i = 0;
+  // If the `kMacDirectEmailShare` feature is enabled, the first menu item
+  // doesn't use the share system.
+  NSUInteger i = direct_email ? 1 : 0;
   // Ensure there's a menu item for each service besides reading list.
   for (NSSharingService* service in sharing_services_for_url) {
     if ([service isEqual:reading_list_service]) {
+      continue;
+    }
+    if (direct_email && [service isEqual:email_service]) {
       continue;
     }
     NSMenuItem* menu_item = [menu itemAtIndex:i];

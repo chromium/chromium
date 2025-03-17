@@ -17,6 +17,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -101,11 +102,9 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByAccountId) {
   const AccountId account_id =
       AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
   const std::string username_hash =
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
   fake_user_manager->AddGaiaUser(account_id, user_manager::UserType::kRegular);
-  fake_user_manager->UserLoggedIn(account_id, username_hash,
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
+  fake_user_manager->UserLoggedIn(account_id, username_hash);
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
@@ -141,12 +140,10 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser) {
   const AccountId account_id =
       AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
   const std::string username_hash =
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
   const user_manager::User* user = fake_user_manager->AddGaiaUser(
       account_id, user_manager::UserType::kRegular);
-  fake_user_manager->UserLoggedIn(account_id, username_hash,
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
+  fake_user_manager->UserLoggedIn(account_id, username_hash);
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);
@@ -183,10 +180,8 @@ TEST_P(BrowserContextHelperAccountIdTest, GetBrowserContextByUser_Guest) {
   const user_manager::User* user = fake_user_manager->AddGuestUser();
   const AccountId& account_id = user->GetAccountId();
   const std::string username_hash =
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  fake_user_manager->UserLoggedIn(account_id, username_hash,
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
+  fake_user_manager->UserLoggedIn(account_id, username_hash);
 
   auto* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
@@ -221,12 +216,10 @@ TEST_P(BrowserContextHelperAccountIdTest, GetUserByBrowserContext) {
   const AccountId account_id =
       AccountId::FromUserEmailGaiaId("test@test", GaiaId("fakegaia"));
   const std::string username_hash =
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
   const user_manager::User* user = fake_user_manager->AddGaiaUser(
       account_id, user_manager::UserType::kRegular);
-  fake_user_manager->UserLoggedIn(account_id, username_hash,
-                                  /*browser_restart=*/false,
-                                  /*is_child=*/false);
+  fake_user_manager->UserLoggedIn(account_id, username_hash);
   content::BrowserContext* browser_context = delegate_ptr->CreateBrowserContext(
       delegate_ptr->GetUserDataDir()->Append("u-" + username_hash),
       /*is_off_the_record=*/false);

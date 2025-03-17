@@ -4,6 +4,7 @@
 
 #include "device/vr/openxr/openxr_input_helper.h"
 
+#include "base/trace_event/trace_event.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -95,6 +96,7 @@ XrResult OpenXRInputHelper::Initialize(
 
 std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
     XrTime predicted_display_time) {
+  TRACE_EVENT0("xr", "GetInputState");
   std::vector<mojom::XRInputSourceStatePtr> input_states;
   if (XR_FAILED(SyncActions(predicted_display_time))) {
     for (OpenXrControllerState& state : controller_states_) {
@@ -106,6 +108,8 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXRInputHelper::GetInputState(
 
   for (uint32_t i = 0; i < controller_states_.size(); i++) {
     device::OpenXrController* controller = &controller_states_[i].controller;
+    TRACE_EVENT1("xr", "ParseController", "Handedness",
+                 controller->GetHandness());
 
     std::optional<GamepadButton> menu_button =
         controller->GetButton(OpenXrButtonType::kMenu);

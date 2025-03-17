@@ -183,7 +183,7 @@ bool AddLegacyAutofillProfileNamesToProfile(sql::Database* db,
            kConjunctionLastNameStatus, kSecondLastName, kSecondLastNameStatus,
            kLastName, kLastNameStatus, kFullName, kFullNameStatus},
           profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
 
     int index = 1;
     for (FieldType type :
@@ -230,7 +230,7 @@ bool AddLegacyAutofillProfileAddressesToProfile(sql::Database* db,
                     kFloor,
                     kFloorStatus},
                    profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
     std::u16string street_address = s.ColumnString16(1);
     std::u16string dependent_locality = s.ColumnString16(13);
     std::u16string city = s.ColumnString16(15);
@@ -292,7 +292,7 @@ bool AddLegacyAutofillProfileEmailsToProfile(sql::Database* db,
   sql::Statement s;
   if (SelectByGuid(db, s, kAutofillProfileEmailsTable, {kGuid, kEmail},
                    profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
     profile->SetRawInfo(EMAIL_ADDRESS, s.ColumnString16(1));
   }
   return s.Succeeded();
@@ -309,7 +309,7 @@ bool AddLegacyAutofillProfilePhonesToProfile(sql::Database* db,
   sql::Statement s;
   if (SelectByGuid(db, s, kAutofillProfilePhonesTable, {kGuid, kNumber},
                    profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
     profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, s.ColumnString16(1));
   }
   return s.Succeeded();

@@ -15,7 +15,7 @@
 
 @protocol BookmarksCommands;
 @protocol PriceNotificationsAlertPresenter;
-@protocol PriceNotificationsCommands;
+@protocol PriceTrackedItemsCommands;
 @protocol PriceNotificationsConsumer;
 @protocol PriceInsightsConsumer;
 class PushNotificationService;
@@ -60,7 +60,7 @@ class WebState;
 
 @property(nonatomic, weak) id<PriceInsightsConsumer> priceInsightsConsumer;
 
-@property(nonatomic, weak) id<PriceNotificationsCommands> handler;
+@property(nonatomic, weak) id<PriceTrackedItemsCommands> handler;
 
 @property(nonatomic, weak) id<PriceNotificationsAlertPresenter> presenter;
 

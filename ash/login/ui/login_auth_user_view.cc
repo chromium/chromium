@@ -1452,18 +1452,8 @@ void LoginAuthUserView::UpdateInputFieldMode() {
   }
 
   const int pin_length = auth_metadata_.autosubmit_pin_length;
-  const bool is_auto_submit_supported =
-      LoginPinInputView::IsAutosubmitSupported(pin_length);
-
   if (!HasAuthMethod(AUTH_PASSWORD)) {
     input_field_mode_ = GetPinInputMode(/*has_password*/ false, pin_length);
-    return;
-  }
-
-  // Uses combined password/pin if autosubmit is disabled.
-  if (!is_auto_submit_supported &&
-      !features::IsSeparatePasswordAndPinOnLoginEnabled()) {
-    input_field_mode_ = InputFieldMode::kPasswordAndPin;
     return;
   }
 
@@ -1575,10 +1565,6 @@ std::u16string LoginAuthUserView::GetPinPasswordToggleText() const {
 }
 
 std::u16string LoginAuthUserView::GetPasswordViewPlaceholder() const {
-  if (input_field_mode_ == InputFieldMode::kPasswordAndPin) {
-    return l10n_util::GetStringUTF16(
-        IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER);
-  }
   if (ShouldAuthenticateWithPin()) {
     return l10n_util::GetStringUTF16(IDS_ASH_LOGIN_POD_PIN_PLACEHOLDER);
   }

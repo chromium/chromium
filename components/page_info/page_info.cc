@@ -60,6 +60,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
@@ -976,7 +977,15 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   if (certificate_ &&
       (!net::IsCertStatusError(visible_security_state.cert_status))) {
     // No major or minor errors.
-    if (visible_security_state.cert_status & net::CERT_STATUS_IS_EV) {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    if (base::FeatureList::IsEnabled(net::features::kVerifyQWACs) &&
+        visible_security_state.cert_status & net::CERT_STATUS_IS_QWAC) {
+      // 1-QWAC HTTPS page. A page might have both IS_QWAC and IS_EV
+      // cert_status, so IS_QWAC must be checked first.
+      site_identity_status_ = SITE_IDENTITY_STATUS_1QWAC_CERT;
+    } else
+#endif
+        if (visible_security_state.cert_status & net::CERT_STATUS_IS_EV) {
       // EV HTTPS page.
       site_identity_status_ = SITE_IDENTITY_STATUS_EV_CERT;
     } else {

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -143,17 +144,15 @@ testing::Matcher<std::optional<T>> CreateOptionalMatcher(
 class VideoCaptureDeviceClientTest : public ::testing::Test {
  public:
   void InitWithSharedMemoryBufferPool() {
-    scoped_refptr<VideoCaptureBufferPoolImpl> buffer_pool(
-        new VideoCaptureBufferPoolImpl(VideoCaptureBufferType::kSharedMemory,
-                                       2));
+    auto buffer_pool = base::MakeRefCounted<VideoCaptureBufferPoolImpl>(
+        VideoCaptureBufferType::kSharedMemory, 2);
     Init(std::move(buffer_pool));
   }
 
   void InitWithGmbBufferPool() {
-    scoped_refptr<VideoCaptureBufferPoolImpl> buffer_pool(
-        new VideoCaptureBufferPoolImpl(
-            VideoCaptureBufferType::kSharedMemory, 2,
-            std::make_unique<FakeVideoCaptureBufferTrackerFactory>()));
+    auto buffer_pool = base::MakeRefCounted<VideoCaptureBufferPoolImpl>(
+        VideoCaptureBufferType::kSharedMemory, 2,
+        std::make_unique<FakeVideoCaptureBufferTrackerFactory>());
     Init(std::move(buffer_pool));
   }
 

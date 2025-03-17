@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

@@ -12,9 +12,8 @@ import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDe
 import android.app.NotificationChannel;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
-
 import org.chromium.base.BuildInfo;
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TwaDisclosureUi;
@@ -23,7 +22,8 @@ import org.chromium.chrome.browser.browserservices.ui.view.DisclosureNotificatio
 import org.chromium.chrome.browser.browserservices.ui.view.DisclosureSnackbar;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /**
@@ -39,6 +39,8 @@ public class DisclosureUiPicker implements NativeInitObserver {
     private final Supplier<DisclosureSnackbar> mDisclosureSnackbar;
     private final Supplier<DisclosureNotification> mDisclosureNotification;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
+    private final BaseNotificationManagerProxy mNotificationManagerProxy =
+            BaseNotificationManagerProxyFactory.create();
 
     public DisclosureUiPicker(
             Supplier<DisclosureInfobar> disclosureInfobar,
@@ -64,32 +66,45 @@ public class DisclosureUiPicker implements NativeInitObserver {
 
         if (mIntentDataProvider.getTwaDisclosureUi() == TwaDisclosureUi.V1_INFOBAR) {
             mDisclosureInfobar.get().showIfNeeded();
-        } else if (areHeadsUpNotificationsEnabled()) {
-            mDisclosureNotification.get().onStartWithNative();
         } else {
-            mDisclosureSnackbar.get().showIfNeeded();
+            areHeadsUpNotificationsEnabled(
+                    (enabled) -> {
+                        if (enabled) {
+                            mDisclosureNotification.get().onStartWithNative();
+                        } else {
+                            mDisclosureSnackbar.get().showIfNeeded();
+                        }
+                    });
         }
     }
 
-    private boolean areHeadsUpNotificationsEnabled() {
-        if (!NotificationProxyUtils.areNotificationsEnabled()) return false;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
+    private void areHeadsUpNotificationsEnabled(Callback<Boolean> callback) {
+        if (!NotificationProxyUtils.areNotificationsEnabled()) {
+            callback.onResult(false);
+            return;
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            callback.onResult(true);
+            return;
+        }
         // Android Automotive doesn't currently allow heads-up notifications.
-        if (BuildInfo.getInstance().isAutomotive) return false;
+        if (BuildInfo.getInstance().isAutomotive) {
+            callback.onResult(false);
+            return;
+        }
 
-        return isChannelEnabled(WEBAPPS) && isChannelEnabled(WEBAPPS_QUIET);
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private boolean isChannelEnabled(String channelId) {
-        NotificationChannel channel =
-                NotificationManagerProxyImpl.getInstance().getNotificationChannel(channelId);
-
-        // If the Channel is null we've not created it yet. Since we know that Chrome notifications
-        // are not disabled in general, we know that once the channel is created it should be
-        // enabled.
-        if (channel == null) return true;
-
-        return channel.getImportance() != IMPORTANCE_NONE;
+        mNotificationManagerProxy.getNotificationChannels(
+                (channels) -> {
+                    boolean isWebAppsEnabled = true;
+                    boolean isWebAppsQuietEnabled = true;
+                    for (NotificationChannel channel : channels) {
+                        if (WEBAPPS.equals(channel.getId())) {
+                            isWebAppsEnabled = (channel.getImportance() != IMPORTANCE_NONE);
+                        } else if (WEBAPPS_QUIET.equals(channel.getId())) {
+                            isWebAppsQuietEnabled = (channel.getImportance() != IMPORTANCE_NONE);
+                        }
+                    }
+                    callback.onResult(isWebAppsEnabled && isWebAppsQuietEnabled);
+                });
     }
 }

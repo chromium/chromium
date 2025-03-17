@@ -66,10 +66,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
               IsRelatedWebsiteSetsDataAccessManaged,
               (),
               (const, override));
-  MOCK_METHOD((base::flat_map<net::SchemefulSite, net::SchemefulSite>),
-              GetSampleRelatedWebsiteSets,
-              (),
-              (const, override));
   MOCK_METHOD(std::optional<net::SchemefulSite>,
               GetRelatedWebsiteSetOwner,
               (const GURL& site_url),

@@ -7,10 +7,10 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/unit_conversion/model/unit_conversion_service.h"
+#import "ios/chrome/browser/unit_conversion/model/unit_conversion_service_factory.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_mediator.h"
 #import "ios/chrome/browser/unit_conversion/ui_bundled/unit_conversion_view_controller.h"
-#import "ios/chrome/browser/unit_conversion/unit_conversion_service.h"
-#import "ios/chrome/browser/unit_conversion/unit_conversion_service_factory.h"
 
 namespace {
 

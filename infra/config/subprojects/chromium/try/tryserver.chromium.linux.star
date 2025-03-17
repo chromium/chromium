@@ -187,8 +187,6 @@ try_.builder(
     gn_args = "ci/linux-cast-arm64-rel",
     contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    # TODO(http://b/403148474): Enable this.
-    siso_remote_linking = False,
     tryjob = try_.job(
         location_filters = [
             "chromecast/.+",
