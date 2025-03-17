@@ -9,6 +9,7 @@
 #include <sys/system_properties.h>
 
 #include "base/android/sys_utils.h"
+#include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -38,8 +39,8 @@ void GetOsVersionStringAndNumbers(std::string* version_string,
 
   if (os_version_str[0]) {
     // Try to parse out the version numbers from the string.
-    int num_read = sscanf(os_version_str, "%d.%d.%d", major_version,
-                          minor_version, bugfix_version);
+    int num_read = UNSAFE_TODO(sscanf(os_version_str, "%d.%d.%d", major_version,
+                                      minor_version, bugfix_version));
 
     if (num_read > 0) {
       // If we don't have a full set of version numbers, make the extras 0.

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -121,11 +122,12 @@ void EsParserH264Test::InsertAUD() {
     access_units_with_aud[k].offset = offset;
     access_units_with_aud[k].size = access_units_[k].size + sizeof(aud);
 
-    memcpy(&stream_with_aud[offset], aud, sizeof(aud));
+    UNSAFE_TODO(memcpy(&stream_with_aud[offset], aud, sizeof(aud)));
     offset += sizeof(aud);
 
-    memcpy(&stream_with_aud[offset],
-           &stream_[access_units_[k].offset], access_units_[k].size);
+    UNSAFE_TODO(memcpy(&stream_with_aud[offset],
+                       &stream_[access_units_[k].offset],
+                       access_units_[k].size));
     offset += access_units_[k].size;
   }
 
