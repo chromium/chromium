@@ -8,11 +8,11 @@
 #include <map>
 #include <set>
 #include <string>
+#include <variant>
 
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace extensions {
 
@@ -72,10 +72,10 @@ class IdentityTokenCacheValue {
 
   base::Time expiration_time_;
 
-  absl::variant<absl::monostate,
-                RemoteConsentResolutionData,
-                std::string,
-                TokenValue>
+  std::variant<std::monostate,
+               RemoteConsentResolutionData,
+               std::string,
+               TokenValue>
       value_;
 };
 
