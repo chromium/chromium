@@ -259,7 +259,7 @@ class AutomationTestSupport {
    * @private
    */
   notifyCcTests_(params) {
-    window.domAutomationController.send(params);
+    chrome.test.sendScriptResult(params);
   }
 }
 

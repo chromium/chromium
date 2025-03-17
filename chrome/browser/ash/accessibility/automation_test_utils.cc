@@ -163,14 +163,12 @@ void AutomationTestUtils::WaitForNodeWithClassNameAndValue(
 
 std::string AutomationTestUtils::ExecuteScriptInExtensionPage(
     const std::string& script) {
-  // Note SpokenFeedbackTest uses ExecuteScriptInBackgroundPageDeprecated.
-  // It seems that we must use the same method / callback style here for
-  // this to run successfully in the ChromeVox extension.
-  // TODO(b/290096429): Use non-deprecated method.
-  return extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-      /*context=*/AccessibilityManager::Get()->profile(),
-      /*extension_id=*/extension_id_,
-      /*script=*/script);
+  base::Value value =
+      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+          /*context=*/AccessibilityManager::Get()->profile(),
+          /*extension_id=*/extension_id_,
+          /*script=*/script);
+  return value.GetString();
 }
 
 }  // namespace ash
