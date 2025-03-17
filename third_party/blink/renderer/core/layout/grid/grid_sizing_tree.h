@@ -80,27 +80,15 @@ class CORE_EXPORT GridSizingTree {
   STACK_ALLOCATED();
 
  public:
-  struct GridTreeNode : public GarbageCollected<GridTreeNode> {
-   public:
+  struct GridTreeNode {
+    DISALLOW_NEW();
+
     void Trace(Visitor* visitor) const { visitor->Trace(grid_items); }
 
-    GridItems& GetGridItems() const {
-      if (!grid_items) {
-        grid_items = MakeGarbageCollected<GridItems>();
-      }
-      return *grid_items;
-    }
-
-    void SetGridItems(GridItems* new_grid_items) {
-      grid_items = new_grid_items;
-    }
-
+    GridItems grid_items;
     GridLayoutData layout_data;
     wtf_size_t subtree_size{1};
     WritingMode writing_mode;
-
-   private:
-    mutable Member<GridItems> grid_items;
   };
 
   GridSizingTree() = default;
@@ -112,24 +100,13 @@ class CORE_EXPORT GridSizingTree {
   void AddToPreorderTraversal(const BlockNode& grid_node);
 
   void SetSizingNodeData(const BlockNode& grid_node,
-                         GridItems* grid_items,
+                         GridItems&& grid_items,
                          GridLayoutData&& layout_data);
 
-  GridItems& GetGridItems(wtf_size_t index = 0) const {
-    DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index]->GetGridItems();
-  }
+  GridItems& GetGridItems(wtf_size_t index = 0) { return At(index).grid_items; }
 
-  GridLayoutData& LayoutData(wtf_size_t index = 0) const {
-    DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index]->layout_data;
-  }
-
-  wtf_size_t Size() const { return tree_data_.size(); }
-
-  wtf_size_t SubtreeSize(wtf_size_t index) const {
-    DCHECK_LT(index, tree_data_.size());
-    return tree_data_[index]->subtree_size;
+  GridLayoutData& LayoutData(wtf_size_t index = 0) {
+    return At(index).layout_data;
   }
 
   // Creates a copy of the current grid geometry for the entire tree in a new
@@ -141,15 +118,26 @@ class CORE_EXPORT GridSizingTree {
 
   wtf_size_t LookupSubgridIndex(const BlockNode& grid_node) const;
 
+  wtf_size_t Size() const { return tree_data_.size(); }
+
+  wtf_size_t SubtreeSize(wtf_size_t index) const {
+    return At(index).subtree_size;
+  }
+
  private:
   struct SubgriddedItemIndices {
     wtf_size_t item_index_in_parent;
     wtf_size_t parent_grid_index;
   };
 
-  GridTreeNode& At(wtf_size_t index) const {
+  GridTreeNode& At(wtf_size_t index) {
     DCHECK_LT(index, tree_data_.size());
-    return *(tree_data_[index]);
+    return tree_data_[index];
+  }
+
+  const GridTreeNode& At(wtf_size_t index) const {
+    DCHECK_LT(index, tree_data_.size());
+    return tree_data_[index];
   }
 
   // Stores a subgrid's index in the grid sizing tree; this is useful when we
@@ -163,7 +151,7 @@ class CORE_EXPORT GridSizingTree {
   HeapHashMap<Member<const LayoutBox>, SubgriddedItemIndices>
       subgridded_item_data_lookup_map_;
 
-  HeapVector<Member<GridTreeNode>, 16> tree_data_;
+  HeapVector<GridTreeNode, 16> tree_data_;
 };
 
 // This class represents a subtree in a `GridSizingTree` and provides seamless
@@ -174,10 +162,10 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
  public:
   GridSizingSubtree() = default;
 
-  explicit GridSizingSubtree(const GridSizingTree& sizing_tree,
+  explicit GridSizingSubtree(GridSizingTree* sizing_tree,
                              wtf_size_t subtree_root = 0)
-      : sizing_tree_(&sizing_tree) {
-    SetSubtreeRoot(sizing_tree, subtree_root);
+      : sizing_tree_(sizing_tree) {
+    SetSubtreeRoot(*sizing_tree, subtree_root);
   }
 
   GridSizingSubtree FirstChild() const {
@@ -204,10 +192,9 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
       const GridItemData& subgrid_data) const {
     DCHECK(subgrid_data.IsSubgrid());
 
-    const auto& sizing_tree = SizingTree();
     return GridSizingSubtree(
-        sizing_tree,
-        /*subtree_root=*/sizing_tree.LookupSubgridIndex(subgrid_data.node));
+        sizing_tree_,
+        /*subtree_root=*/SizingTree().LookupSubgridIndex(subgrid_data.node));
   }
 
   // This method is only intended to be used to validate that the given grid
@@ -231,16 +218,16 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
   }
 
  private:
-  GridSizingSubtree(const GridSizingTree* sizing_tree, GridSubtree subtree)
+  GridSizingSubtree(GridSizingTree* sizing_tree, GridSubtree subtree)
       : GridSubtree(std::move(subtree)), sizing_tree_(sizing_tree) {}
 
-  const GridSizingTree& SizingTree() const {
+  GridSizingTree& SizingTree() const {
     DCHECK(sizing_tree_);
     return *sizing_tree_;
   }
 
   // Pointer to the sizing tree shared by multiple subtree instances.
-  const GridSizingTree* sizing_tree_{nullptr};
+  GridSizingTree* sizing_tree_{nullptr};
 };
 
 inline constexpr GridSizingSubtree kNoGridSizingSubtree;

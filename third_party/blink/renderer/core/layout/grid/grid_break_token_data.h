@@ -28,7 +28,7 @@ struct GridItemPlacementData {
 struct GridBreakTokenData final : BlockBreakTokenData {
   GridBreakTokenData(
       const BlockBreakTokenData* break_token_data,
-      GridItems* grid_items,
+      GridItems&& grid_items,
       GridLayoutSubtree grid_layout_subtree,
       LayoutUnit intrinsic_block_size,
       LayoutUnit offset_in_stitched_container,
@@ -37,7 +37,7 @@ struct GridBreakTokenData final : BlockBreakTokenData {
       const Vector<EBreakBetween>& row_break_between,
       const HeapVector<Member<LayoutBox>>& oof_children)
       : BlockBreakTokenData(kGridBreakTokenData, break_token_data),
-        grid_items(grid_items),
+        grid_items(std::move(grid_items)),
         grid_layout_subtree(std::move(grid_layout_subtree)),
         intrinsic_block_size(intrinsic_block_size),
         offset_in_stitched_container(offset_in_stitched_container),
@@ -52,7 +52,7 @@ struct GridBreakTokenData final : BlockBreakTokenData {
     BlockBreakTokenData::Trace(visitor);
   }
 
-  Member<GridItems> grid_items;
+  GridItems grid_items;
   GridLayoutSubtree grid_layout_subtree;
   LayoutUnit intrinsic_block_size;
 
