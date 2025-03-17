@@ -1367,11 +1367,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnableWithDownload",
                     "enable_features": [
-                        "AsyncNotificationManager"
-                    ],
-                    "disable_features": [
+                        "AsyncNotificationManager",
                         "AsyncNotificationManagerForDownload"
                     ]
                 }
