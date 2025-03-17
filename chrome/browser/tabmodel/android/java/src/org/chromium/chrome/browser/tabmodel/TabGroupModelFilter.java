@@ -54,10 +54,9 @@ public interface TabGroupModelFilter extends TabList {
     int getTabGroupCount();
 
     /**
-     * This method returns the number of tabs in a tab group with reference to {@code tabRootId} as
-     * root id.
+     * This method returns the number of tabs in a tab group with reference to {@code rootId}.
      *
-     * @param tabRootId The tab root id that is used to find the related group.
+     * @param rootId The tab root id that is used to find the related group.
      * @return The number of related tabs.
      * @deprecated Use {@link #getTabCountForGroup(Token)}. This method returns 1 in the event the
      *     group was not found or a tab is not in a group which is confusing. Any existing usages of
@@ -65,7 +64,7 @@ public interface TabGroupModelFilter extends TabList {
      *     doesn't exist will be fixed as part of the migration.
      */
     @Deprecated
-    int getRelatedTabCountForRootId(@TabId int tabRootId);
+    int getRelatedTabCountForRootId(@TabId int rootId);
 
     /**
      * Returns the number of tabs in the tab group with {@code tabGroupId} or 0 if the tab group
@@ -115,12 +114,17 @@ public interface TabGroupModelFilter extends TabList {
     List<@TabId Integer> getRelatedTabIds(@TabId int tabId);
 
     /**
-     * This method returns all tabs in a tab group with reference to {@code tabRootId} as root id.
+     * This method returns all tabs in a tab group with reference to {@code rootId}.
      *
-     * @param tabRootId The tab root id that is used to find the related group.
+     * @param rootId The tab root id that is used to find the related group.
      * @return An unmodifiable list of {@link Tab} that relate with the given tab root id.
+     * @deprecated Use {@link #getRelatedTabList(int)} or {@link getTabsInGroup(Token)} instead.
      */
-    List<Tab> getRelatedTabListForRootId(@TabId int tabRootId);
+    @Deprecated
+    List<Tab> getRelatedTabListForRootId(@TabId int rootId);
+
+    /** Returns the list of tabs in a tab group or an empty list if the group does not exist. */
+    List<Tab> getTabsInGroup(@Nullable Token tabGroupId);
 
     /** Returns whether the given {@link Tab} is in a tab group. */
     boolean isTabInTabGroup(Tab tab);
