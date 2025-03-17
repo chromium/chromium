@@ -335,7 +335,7 @@ std::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
   return std::nullopt;
 }
 
-void DisableDisplayFeatureOverrideForEmulation() {}
+void RenderWidgetHostViewIOS::DisableDisplayFeatureOverrideForEmulation() {}
 
 void RenderWidgetHostViewIOS::OverrideDisplayFeatureForEmulation(
     const DisplayFeature* display_feature) {}
