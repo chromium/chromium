@@ -136,6 +136,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   int MapToJavaDrawableId(int resource_id) override;
   favicon::FaviconService* GetFaviconService(
       content::BrowserContext* browser_context) override;
+  const std::u16string GetClientApplicationName() const override;
 #else
   std::unique_ptr<permissions::PermissionPrompt> CreatePrompt(
       content::WebContents* web_contents,

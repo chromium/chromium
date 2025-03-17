@@ -28,8 +28,6 @@ const CGFloat kEnterpriseIconSpacing = 4.0;
 const CGFloat kLabelVerticalSpacing = 2.0;
 // The button padding.
 const CGFloat kButtonPadding = 8.0;
-// The button corner radius.
-const CGFloat kButtonCornerRadius = 15.0;
 
 // Returns a tinted version of the enterprise building icon.
 UIImage* GetEnterpriseIcon() {
@@ -318,12 +316,9 @@ UIImage* GetEnterpriseIcon() {
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonPadding, 2 * kButtonPadding, kButtonPadding, 2 * kButtonPadding);
-  configuration.background.backgroundColor =
-      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   configuration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
-  configuration.background.cornerRadius = kButtonCornerRadius;
 
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
   NSDictionary* attributes = @{NSFontAttributeName : font};
   NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
       initWithString:

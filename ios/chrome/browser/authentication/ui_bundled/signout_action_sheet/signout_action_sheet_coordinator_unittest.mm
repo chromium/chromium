@@ -13,7 +13,6 @@
 #import "base/test/mock_callback.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "base/test/test_future.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -147,12 +146,10 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
       // tricky to replicate in a unit test; it's done here by first converting
       // the (single) test profile to a managed profile, then marking it as the
       // personal profile again.
-      base::test::TestFuture<void> conversion_done;
       GetApplicationContext()
           ->GetAccountProfileMapper()
           ->MakePersonalProfileManagedWithGaiaID(
-              GaiaId(managed_identity_.gaiaID), conversion_done.GetCallback());
-      ASSERT_TRUE(conversion_done.Wait());
+              GaiaId(managed_identity_.gaiaID));
 
       authentication_service()->SignIn(managed_identity_,
                                        signin_metrics::AccessPoint::kUnknown);

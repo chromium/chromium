@@ -19,6 +19,8 @@ namespace media {
 class CAPTURE_EXPORT V4L2CaptureDevice
     : public base::RefCountedThreadSafe<V4L2CaptureDevice> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   virtual int open(const char* device_name, int flags) = 0;
   virtual int close(int fd) = 0;
   virtual int ioctl(int fd, int request, void* argp) = 0;
@@ -33,10 +35,8 @@ class CAPTURE_EXPORT V4L2CaptureDevice
   virtual int poll(struct pollfd* ufds, unsigned int nfds, int timeout) = 0;
 
  protected:
-  virtual ~V4L2CaptureDevice() {}
-
- private:
   friend class base::RefCountedThreadSafe<V4L2CaptureDevice>;
+  virtual ~V4L2CaptureDevice() = default;
 };
 
 }  // namespace media

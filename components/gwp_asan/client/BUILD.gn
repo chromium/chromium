@@ -98,7 +98,7 @@ component("client") {
 
   configs += [ ":gwp_asan_implementation" ]
 
-  if (is_android) {
+  if (is_android || is_ios) {
     deps += [ "//components/crash/core/app" ]
   }
 }

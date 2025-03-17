@@ -929,6 +929,7 @@
 <translation id="5286263799730375393">ສີຂອງແສງພື້ນຫຼັງ</translation>
 <translation id="5292579816060236070">ຮູບພື້ນຫຼັງຕາເວັນຂຶ້ນ</translation>
 <translation id="5294769550414936029">ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300172019534884676">ເປີດ/ປິດການເຂົ້າເຖິງກ້ອງ</translation>
 <translation id="5300814202279832142">ຍ້າຍໜ້າຈໍໄປຍັງໂຕະ</translation>
 <translation id="5302048478445481009">ພາ​ສາ</translation>
 <translation id="5303837385540978511">ຮູບພື້ນຫຼັງແບບພິເສດຈາກ <ph name="PRODUCT_NAME" /></translation>
@@ -1396,6 +1397,7 @@
 <translation id="7388345524791662148">ຕົວເລືອກເພີ່ມເຕີມສຳລັບ <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">ແຜ່ນສຳຜັດໃນຕົວ</translation>
 <translation id="7397270852490618635">ປິດຮູບແບບສີສັນແຈ້ງ</translation>
+<translation id="7400166052988585408">ຄູຂອງທ່ານຈະລັອກໜ້າຈໍຂອງທ່ານໃນ <ph name="NUM_SECONDS" /> ວິນາທີ</translation>
 <translation id="7401543881546089382">ລຶບ​ທາງລັດ</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ພ້ອມອັບເດດແລ້ວ</translation>
 <translation id="741244894080940828">ການປ່ຽນ</translation>

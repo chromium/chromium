@@ -168,6 +168,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/tips_manager/model:factory",
     "//ios/chrome/test:test_support",
     "//ios/web",
     "//ios/web/public/test",

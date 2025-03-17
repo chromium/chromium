@@ -672,7 +672,7 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(3, mTabGroupModelFilter.getTabGroupCount());
         assertEquals(tabGroupId, mTab1.getTabGroupId());
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
-        assertEquals(1, mTabGroupModelFilter.getRelatedTabCountForRootId(mTab1.getRootId()));
+        assertEquals(1, mTabGroupModelFilter.getTabCountForGroup(mTab1.getTabGroupId()));
     }
 
     @Test
@@ -693,7 +693,7 @@ public class TabGroupModelFilterImplUnitTest {
         assertEquals(mTab1.getRootId(), newTab.getRootId());
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(newTab));
-        assertEquals(2, mTabGroupModelFilter.getRelatedTabCountForRootId(mTab1.getRootId()));
+        assertEquals(2, mTabGroupModelFilter.getTabCountForGroup(mTab1.getTabGroupId()));
     }
 
     @Test
@@ -2038,6 +2038,16 @@ public class TabGroupModelFilterImplUnitTest {
                 mTabGroupModelFilter.getRelatedTabListForRootId(TAB5_ROOT_ID).toArray(), group2);
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabListForRootId(TAB6_ROOT_ID).toArray(), group2);
+    }
+
+    @Test
+    public void testGetTabsInGroup() {
+        Tab[] group1 = new Tab[] {mTab2, mTab3};
+        Tab[] group2 = new Tab[] {mTab5, mTab6};
+        assertArrayEquals(mTabGroupModelFilter.getTabsInGroup(TAB2_TAB_GROUP_ID).toArray(), group1);
+        assertArrayEquals(mTabGroupModelFilter.getTabsInGroup(TAB3_TAB_GROUP_ID).toArray(), group1);
+        assertArrayEquals(mTabGroupModelFilter.getTabsInGroup(TAB5_TAB_GROUP_ID).toArray(), group2);
+        assertArrayEquals(mTabGroupModelFilter.getTabsInGroup(TAB6_TAB_GROUP_ID).toArray(), group2);
     }
 
     @Test

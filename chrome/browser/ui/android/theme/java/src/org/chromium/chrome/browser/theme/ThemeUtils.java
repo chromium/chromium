@@ -257,4 +257,24 @@ public class ThemeUtils {
         int hairlineColor = ContextCompat.getColor(context, R.color.toolbar_hairline_overlay);
         return ColorUtils.overlayColor(toolbarColor, hairlineColor);
     }
+
+    /**
+     * Returns the {@link BrandedColorScheme} for the toolbar.
+     *
+     * @param context The context to get the toolbar surface color.
+     * @param toolbarColor The background color of the toolbar.
+     * @param isIncognito true if the current tab is an incognito tab.
+     */
+    public static @BrandedColorScheme int getBrandedColorScheme(
+            Context context, @ColorInt int toolbarColor, boolean isIncognito) {
+        if (isIncognito) return BrandedColorScheme.INCOGNITO;
+
+        boolean isDefaultColor = isUsingDefaultToolbarColor(context, isIncognito, toolbarColor);
+        if (isDefaultColor) return BrandedColorScheme.APP_DEFAULT;
+
+        boolean isDarkTheme = ColorUtils.shouldUseLightForegroundOnBackground(toolbarColor);
+        return isDarkTheme
+                ? BrandedColorScheme.DARK_BRANDED_THEME
+                : BrandedColorScheme.LIGHT_BRANDED_THEME;
+    }
 }

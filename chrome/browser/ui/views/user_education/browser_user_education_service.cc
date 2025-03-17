@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -74,6 +75,7 @@
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
@@ -259,8 +261,11 @@ void MaybeRegisterChromeFeaturePromos(
                 chrome::ShowSettingsSubPage(browser,
                                             chrome::kAutofillAiSubPage);
               }))
+          .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(IDS_AUTOFILL_AI_OPT_IN_IPH_CLOSE)
           .SetBubbleTitleText(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .AddPreconditionExemption(kUserNotActivePrecondition)
           .SetMetadata(136, "brunobraga@google.com",
                        "Displayed on input fields that are eligible for "
                        "AutofillAI. These can be input fields on any website "

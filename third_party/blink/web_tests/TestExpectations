@@ -9092,8 +9092,8 @@ crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding
 
 #Gardener 2025-03-17
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
-crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure ]
-crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure ]
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure Pass ]
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure Pass ]
 crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-name-000-print.html [ Failure ]
 crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-visibility-hidden-001-print.html [ Failure ]
 crbug.com/404069999 [ Debug Linux ] virtual/scalefactor200/external/wpt/css/printing/zero-size-001-print.tentative.html [ Failure ]

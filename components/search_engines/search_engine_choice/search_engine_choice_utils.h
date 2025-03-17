@@ -234,12 +234,6 @@ class ChoiceScreenData {
   const ChoiceScreenDisplayState display_state_;
 };
 
-// Returns whether the provided `country_id` is eligible for the EEA default
-// search engine choice prompt.
-// See `//components/country_codes` for the Country ID format.
-// TODO(b:328040066): Move to `//components/regional_capabilities`.
-bool IsEeaChoiceCountry(int country_id);
-
 // Records the specified choice screen condition at profile initialization.
 void RecordChoiceScreenProfileInitCondition(
     SearchEngineChoiceScreenConditions event);

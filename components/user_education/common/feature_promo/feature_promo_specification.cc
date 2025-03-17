@@ -131,11 +131,9 @@ bool IsAllowedPreconditionExemption(const base::Feature& promo_feature) {
     return true;
   }
 
-  // Add exceptions here:
-  // static constexpr auto kAllowedPromoNames =
-  //     base::MakeFixedFlatSet<std::string_view>({ });
-  // return kAllowedPromoNames.contains(promo_feature.name);
-  return false;
+  static constexpr auto kAllowedPromoNames =
+      base::MakeFixedFlatSet<std::string_view>({"IPH_AutofillAiOptIn"});
+  return kAllowedPromoNames.contains(promo_feature.name);
 }
 
 // Common check logic for gating reshow-ability of promos. Generates an error if

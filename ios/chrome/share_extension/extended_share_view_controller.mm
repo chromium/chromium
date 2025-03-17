@@ -101,7 +101,7 @@ const CGFloat kShareSheetCornerRadius = 20;
 #pragma mark - ShareExtensionDelegate
 
 - (void)didTapCloseShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheetSheet {
+    (ShareExtensionSheet*)shareExtensionSheet {
   __weak ExtendedShareViewController* weakSelf = self;
   [self
       queueActionItemURL:nil
@@ -120,7 +120,7 @@ const CGFloat kShareSheetCornerRadius = 20;
 }
 
 - (void)didTapOpenInChromeShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheetSheet {
+    (ShareExtensionSheet*)shareExtensionSheet {
   __weak ExtendedShareViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
       initWithSourceApp:app_group::kOpenCommandSourceShareExtension
@@ -140,7 +140,7 @@ const CGFloat kShareSheetCornerRadius = 20;
 }
 
 - (void)didTapMoreOptionsShareExtensionSheet:
-    (ShareExtensionSheet*)shareExtensionSheetSheet {
+    (ShareExtensionSheet*)shareExtensionSheet {
   UIAlertController* moreActionsAlertController = [UIAlertController
       alertControllerWithTitle:nil
                        message:nil
@@ -159,6 +159,32 @@ const CGFloat kShareSheetCornerRadius = 20;
   [self.shareSheet presentViewController:moreActionsAlertController
                                 animated:YES
                               completion:nil];
+}
+
+- (void)didTapSearchInChromeShareExtensionSheet:
+    (ShareExtensionSheet*)shareExtensionSheet {
+  CHECK(!self.shareURL);
+  __weak ExtendedShareViewController* weakSelf = self;
+  AppGroupCommand* command = [[AppGroupCommand alloc]
+      initWithSourceApp:app_group::kOpenCommandSourceShareExtension
+         URLOpenerBlock:^(NSURL* openURL) {
+           ExtensionOpenURL(openURL, weakSelf, nil);
+         }];
+  if (self.shareText) {
+    [command prepareToSearchText:self.shareText];
+    [command executeInApp];
+    [self queueActionItemURL:_shareURL
+                       title:_shareText
+                      // TODO(crbug.com/398803565): Add and handle search text
+                      // and image in ShareExtensionItemType.
+                      action:app_group::OPEN_IN_CHROME_ITEM
+                      cancel:NO
+                  completion:^{
+                    [weakSelf dismissAndReturnItem:weakSelf.shareItem
+                                             error:nil];
+                  }];
+    return;
+  }
 }
 
 #pragma mark - Private methods

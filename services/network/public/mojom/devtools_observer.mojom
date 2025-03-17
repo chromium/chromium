@@ -208,10 +208,10 @@ interface DevToolsObserver {
 
   // Called when an error occurs when parsing or validating SRI Message
   // Signatures through `Signature` and `Signature-Input` headers.
-  OnSRIMessageSignatureError(
+  OnSRIMessageSignatureIssue(
     string devtool_request_id,
     url.mojom.Url url,
-    SRIMessageSignatureError error);
+    array<SRIMessageSignatureIssue> issues);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

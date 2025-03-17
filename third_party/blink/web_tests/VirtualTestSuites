@@ -1316,7 +1316,7 @@
       "--enable-features=InterestGroupStorage,PrivacySandboxAdsAPIsOverride,FencedFrames:implementation_type/mparch,FledgeConsiderKAnonymity",
       "--disable-features=CookieDeprecationFacilitatedTesting,FledgeEnforceKAnonymity"
     ],
-    "expires": "Mar 1, 2025"
+    "expires": "Jul 14, 2025"
   },
   {
     "prefix": "fledge-bidding-and-auction",
@@ -1337,7 +1337,7 @@
     "args": [
       "--enable-features=EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}"
     ],
-    "expires": "Mar 14, 2025"
+    "expires": "Jul 14, 2025"
   },
   {
     "prefix": "fledge-bidding-and-auction-kanonymity",
@@ -1358,7 +1358,7 @@
       "--enable-features=FledgeConsiderKAnonymity,FledgeEnforceKAnonymity,EnableBandAKAnonEnforcement,EnableBandATriggeredUpdates,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fweb-platform.test%22%3A%22https%3A%2F%2Fweb-platform.test%3A8444%2Ffledge%2Ftentative%2Fresources%2Fba-public-keys\"}",
       "--disable-features=CookieDeprecationFacilitatedTesting"
     ],
-    "expires": "Mar 14, 2025"
+    "expires": "Jul 14, 2025"
   },
   {
     "prefix": "fledge-bidding-and-auction-private-aggregation",

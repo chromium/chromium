@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
+#include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
@@ -494,33 +495,38 @@ void NetworkServiceDevToolsObserver::OnSharedDictionaryError(
   devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 
-void NetworkServiceDevToolsObserver::OnSRIMessageSignatureError(
+void NetworkServiceDevToolsObserver::OnSRIMessageSignatureIssue(
     const std::string& devtool_request_id,
     const GURL& url,
-    network::mojom::SRIMessageSignatureError error) {
+    std::vector<network::mojom::SRIMessageSignatureIssuePtr> issues) {
   RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
   if (!rfhi) {
     return;
   }
-  auto affected_request = protocol::Audits::AffectedRequest::Create()
-                              .SetRequestId(devtool_request_id)
-                              .SetUrl(url.spec())
-                              .Build();
-  auto issue_details =
-      protocol::Audits::SRIMessageSignatureIssueDetails::Create()
-          .SetError(ConvertToDevtoolsEnum(error))
-          .SetRequest(std::move(affected_request))
-          .Build();
-  auto details =
-      protocol::Audits::InspectorIssueDetails::Create()
-          .SetSriMessageSignatureIssueDetails(std::move(issue_details))
-          .Build();
-  auto issue = protocol::Audits::InspectorIssue::Create()
-                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
-                                SRIMessageSignatureIssue)
-                   .SetDetails(std::move(details))
-                   .Build();
-  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
+  for (const auto& issue : issues) {
+    auto affected_request = protocol::Audits::AffectedRequest::Create()
+                                .SetRequestId(devtool_request_id)
+                                .SetUrl(url.spec())
+                                .Build();
+    auto issue_details =
+        protocol::Audits::SRIMessageSignatureIssueDetails::Create()
+            .SetError(ConvertToDevtoolsEnum(issue->error))
+            .SetRequest(std::move(affected_request))
+            .SetSignatureBase(issue->signature_base.value_or(""))
+            .Build();
+    auto details =
+        protocol::Audits::InspectorIssueDetails::Create()
+            .SetSriMessageSignatureIssueDetails(std::move(issue_details))
+            .Build();
+    auto devtools_issue =
+        protocol::Audits::InspectorIssue::Create()
+            .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                         SRIMessageSignatureIssue)
+            .SetDetails(std::move(details))
+            .Build();
+    devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi,
+                                                          devtools_issue.get());
+  }
 }
 
 void NetworkServiceDevToolsObserver::Clone(

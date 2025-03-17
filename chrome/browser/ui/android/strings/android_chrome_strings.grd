@@ -1816,6 +1816,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORDS_CHECKING_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the check is in progress.">
         Checking passwords on this device…
       </message>
+      <message name="IDS_SAFETY_HUB_ACCOUNT_PASSWORDS_COMPROMISED_EXIST" desc="Title for the account password check row in the Safety Check page indicating that the user has account passwords which have been compromised.">
+        {NUM_PASSWORDS, plural,
+        =1 {1 compromised password in your Google Account}
+        other {# compromised passwords in your Google Account}}
+      </message>
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORDS_COMPROMISED_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the user has local passwords which have been compromised.">
         {NUM_PASSWORDS, plural,
         =1 {1 compromised password on this device}
@@ -1869,20 +1874,20 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_CHECKED_RECENTLY" desc="Subtitle for the card at the very top of the Safety Check page, this informs the user that Safety Check has ran checkups for modules recently.">
         Checked recently
       </message>
+      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_ACCOUNT_PASSWORDS_TITLE" desc="Title for the account password check row in the Safety Check page indicating that the checkup did not find any account compromised passwords.">
+        No compromised passwords in your Google Account
+      </message>
       <message name="IDS_SAFETY_HUB_NO_COMPROMISED_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the checkup did not find any local compromised passwords.">
         No compromised passwords on this device
       </message>
       <message name="IDS_SAFETY_HUB_NO_COMPROMISED_LOCAL_PASSWORDS_SUMMARY" desc="Summary for the local password check row in the Safety Check page indicating that the checkup didn't find any compromised local passwords">
         If your passwords are compromised, we’ll let you know
       </message>
-      <message name="IDS_SAFETY_HUB_NO_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user does not have any passwords saved to their Google account.">
-        No saved passwords
+      <message name="IDS_SAFETY_HUB_NO_ACCOUNT_PASSWORDS_TITLE" desc="Title for the account password check row in the Safety Check page indicating that the user does not have any account passwords saved to their Google account.">
+        No saved passwords in your Google Account
       </message>
       <message name="IDS_SAFETY_HUB_NO_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the user does not have any local passwords saved.">
         No saved passwords on this device
-      </message>
-      <message name="IDS_SAFETY_HUB_NO_COMPROMISED_PASSWORDS_TITLE" desc="Title for the password check row in the Safety Check page indicating that the checkup did not find any compromised passwords.">
-        No compromised passwords
       </message>
       <message name="IDS_SAFETY_HUB_NO_PASSWORDS_SUMMARY" desc="Summary for the password check row in the Safety Check page indicating that the user has no passwords saved and that Safety check will start checking for breached passwords when they save them.">
         Chrome can check your passwords when you save them
@@ -1916,8 +1921,8 @@ Your Google account may have other forms of browsing history like searches and a
         =1 {You should change this now}
         other {You should change these now}}
       </message>
-      <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the password check row in the Safety Check page indicating that the password checkup could not be completed.">
-        Can't check passwords
+      <message name="IDS_SAFETY_HUB_ACCOUNT_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the account password check row in the Safety Check page indicating that the account password checkup could not be completed.">
+        Can’t check passwords in your Google Account
       </message>
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORD_CHECK_UNAVAILABLE_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the local password checkup could not be completed.">
         Can’t check passwords on this device
@@ -1937,8 +1942,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_PASSWORD_CHECK_TIME_RECENTLY" desc="Summary for the password check row in the Safety Check page indicating that the checkup was ran recently for the passwords in the user's Google account.">
         Recently checked passwords saved to <ph name="USERNAME">%1$s<ex>elisa.becket@gmail.com</ex></ph>
       </message>
-      <message name="IDS_SAFETY_HUB_REUSED_WEAK_PASSWORDS_TITLE" desc="Title for the password hub row in the Safety Check page indicating that the checkup found reused or/and weak passwords.">
-        Strengthen your passwords
+      <message name="IDS_SAFETY_HUB_REUSED_WEAK_ACCOUNT_PASSWORDS_TITLE" desc="Title for the account password hub row in the Safety Check page indicating that the checkup found reused or/and weak account passwords.">
+        Strengthen your passwords in your Google Account
       </message>
       <message name="IDS_SAFETY_HUB_REUSED_WEAK_LOCAL_PASSWORDS_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the checkup found reused or/and weak local passwords.">
         Strengthen your passwords on this device

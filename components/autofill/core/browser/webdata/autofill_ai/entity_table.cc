@@ -44,7 +44,7 @@ void* GetKey() {
 namespace version {
 constexpr char kTableName[] = "entities_version";
 constexpr char kVersion[] = "version";
-constexpr int kCurrentVersion = 7;
+constexpr int kCurrentVersion = 8;
 }  // namespace version
 
 namespace attributes {

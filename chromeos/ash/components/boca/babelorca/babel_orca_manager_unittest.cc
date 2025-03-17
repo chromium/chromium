@@ -12,12 +12,15 @@
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_controller.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
+#include "chromeos/ash/components/boca/babelorca/pref_names.h"
 #include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_constants.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_request_data_provider.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"
@@ -55,6 +58,8 @@ class BabelOrcaManagerTest : public testing::Test {
     account_info_ = identity_test_env_.MakeAccountAvailable("test@school.edu");
     identity_test_env_.SetPrimaryAccount(account_info_.email,
                                          signin::ConsentLevel::kSignin);
+    pref_service_.registry()->RegisterStringPref(
+        babelorca::prefs::kTachyonClientUuid, "");
   }
 
   void AddSuccessfulSigninGaiaResponse(
@@ -72,7 +77,20 @@ class BabelOrcaManagerTest : public testing::Test {
         network::URLLoaderCompletionStatus(net::Error::ERR_NETWORK_CHANGED));
   }
 
+  babelorca::SignInGaiaRequest GetSignInGaiaRequest() {
+    url_loader_factory_.WaitForRequest(GURL(babelorca::kSigninGaiaUrl));
+    const network::ResourceRequest& request =
+        (*url_loader_factory_.pending_requests())[0].request;
+    babelorca::SignInGaiaRequest request_body;
+    request_body.ParseFromString(request.request_body->elements()
+                                     ->at(0)
+                                     .As<network::DataElementBytes>()
+                                     .AsStringPiece());
+    return request_body;
+  }
+
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
   AccountInfo account_info_;
   network::TestURLLoaderFactory url_loader_factory_;
@@ -89,9 +107,9 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithSuccess) {
         request_data_provider = data_provider;
         return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
   AddSuccessfulSigninGaiaResponse();
 
   manager.SigninToTachyonAndRespond(test_future.GetCallback());
@@ -113,9 +131,9 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondSecondTime) {
           -> std::unique_ptr<babelorca::BabelOrcaController> {
         return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
 
   AddSuccessfulSigninGaiaResponse();
   manager.SigninToTachyonAndRespond(first_test_future.GetCallback());
@@ -146,9 +164,9 @@ TEST_F(BabelOrcaManagerTest, SigninResetOnSessionEnd) {
           -> std::unique_ptr<babelorca::BabelOrcaController> {
         return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
 
   AddSuccessfulSigninGaiaResponse();
   manager.SigninToTachyonAndRespond(first_test_future.GetCallback());
@@ -171,6 +189,51 @@ TEST_F(BabelOrcaManagerTest, SigninResetOnSessionEnd) {
   EXPECT_EQ(second_token.value(), kSecondTachyonToken);
 }
 
+TEST_F(BabelOrcaManagerTest, SigninToTachyonSetClientUuidPref) {
+  auto controller_factory = base::BindLambdaForTesting(
+      [](babelorca::TokenManager*,
+         babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+      });
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
+
+  manager.SigninToTachyonAndRespond(base::DoNothing());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "oauth_token", base::Time::Max());
+  babelorca::SignInGaiaRequest request_body = GetSignInGaiaRequest();
+  const std::string& pref_client_uuid =
+      pref_service_.GetString(babelorca::prefs::kTachyonClientUuid);
+
+  EXPECT_FALSE(pref_client_uuid.empty());
+  EXPECT_EQ(request_body.register_data().device_id().id(), pref_client_uuid);
+}
+
+TEST_F(BabelOrcaManagerTest, SigninToTachyonUseClientUuidPrefIfSet) {
+  const std::string kClientUuid = "tachyon-client-uuid";
+  pref_service_.SetString(babelorca::prefs::kTachyonClientUuid, kClientUuid);
+  auto controller_factory = base::BindLambdaForTesting(
+      [](babelorca::TokenManager*,
+         babelorca::TachyonRequestDataProvider* data_provider)
+          -> std::unique_ptr<babelorca::BabelOrcaController> {
+        return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
+      });
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
+
+  manager.SigninToTachyonAndRespond(base::DoNothing());
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "oauth_token", base::Time::Max());
+  babelorca::SignInGaiaRequest request_body = GetSignInGaiaRequest();
+
+  EXPECT_EQ(pref_service_.GetString(babelorca::prefs::kTachyonClientUuid),
+            kClientUuid);
+  EXPECT_EQ(request_body.register_data().device_id().id(), kClientUuid);
+}
+
 TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithFailure) {
   base::test::TestFuture<bool> test_future;
   auto controller_factory = base::BindLambdaForTesting(
@@ -178,9 +241,9 @@ TEST_F(BabelOrcaManagerTest, SigninToTachyonAndRespondWithFailure) {
           -> std::unique_ptr<babelorca::BabelOrcaController> {
         return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
 
   AddFailedSigninGaiaResponse();
 
@@ -204,9 +267,9 @@ TEST_F(BabelOrcaManagerTest, OnSessionStarted) {
         controller_ptr = controller.get();
         return controller;
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
 
   ::boca::UserIdentity producer;
   producer.set_email(kSenderEmail);
@@ -231,9 +294,9 @@ TEST_F(BabelOrcaManagerTest, OnSessionEnded) {
         controller_ptr = controller.get();
         return controller;
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
   ::boca::UserIdentity producer;
   // Set email and session id.
   producer.set_email(kSenderEmail);
@@ -272,9 +335,9 @@ TEST_F(BabelOrcaManagerTest, OnSessionCaptionConfigUpdated) {
         controller_ptr = controller.get();
         return controller;
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
   ::boca::CaptionsConfig captions_config;
   captions_config.set_captions_enabled(true);
   EXPECT_CALL(*controller_ptr, OnSessionCaptionConfigUpdated(true, false))
@@ -304,9 +367,9 @@ TEST_F(BabelOrcaManagerTest, OnLocalCaptionConfigUpdated) {
         controller_ptr = controller.get();
         return controller;
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
   ::boca::CaptionsConfig captions_config;
   captions_config.set_captions_enabled(true);
   EXPECT_CALL(*controller_ptr, OnLocalCaptionConfigUpdated(true)).Times(1);
@@ -329,9 +392,9 @@ TEST_F(BabelOrcaManagerTest, OnLocalCaptionClosed) {
         controller_ptr = controller.get();
         return controller;
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
 
   EXPECT_CALL(*controller_ptr, OnLocalCaptionConfigUpdated(false)).Times(1);
   manager.OnLocalCaptionClosed();
@@ -348,9 +411,9 @@ TEST_F(BabelOrcaManagerTest, RequestDataProviderIsTheManager) {
         request_data_provider = data_provider;
         return std::make_unique<testing::NiceMock<MockBabelOrcaController>>();
       });
-  BabelOrcaManager manager(identity_test_env_.identity_manager(),
-                           url_loader_factory_.GetSafeWeakWrapper(),
-                           std::move(controller_factory));
+  BabelOrcaManager manager(
+      &pref_service_, identity_test_env_.identity_manager(),
+      url_loader_factory_.GetSafeWeakWrapper(), std::move(controller_factory));
 
   EXPECT_EQ(&manager, request_data_provider);
 }

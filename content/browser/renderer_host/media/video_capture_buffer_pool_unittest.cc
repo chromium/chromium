@@ -117,12 +117,12 @@ class VideoCaptureBufferPoolTest
     DCHECK(dxgi_device_manager);
     d3d11_device_ = dxgi_device_manager->GetDevice().Get();
     DCHECK(d3d11_device_);
-    pool_ = new media::VideoCaptureBufferPoolImpl(
+    pool_ = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
         GetBufferType(), kTestBufferPoolSize,
         std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(
             std::move(dxgi_device_manager)));
 #else
-    pool_ = new media::VideoCaptureBufferPoolImpl(
+    pool_ = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
         media::VideoCaptureBufferType::kSharedMemory, kTestBufferPoolSize);
 #endif
   }

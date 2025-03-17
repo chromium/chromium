@@ -71,7 +71,6 @@ class CAPTURE_EXPORT VideoCaptureBufferPoolImpl
   void RelinquishConsumerHold(int buffer_id, int num_clients) override;
 
  private:
-  friend class base::RefCountedThreadSafe<VideoCaptureBufferPoolImpl>;
   ~VideoCaptureBufferPoolImpl() override;
 
   VideoCaptureDevice::Client::ReserveResult ReserveForProducerInternal(

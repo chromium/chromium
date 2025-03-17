@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -118,6 +119,19 @@ TEST_P(AutofillAiPermissionUtilsTest, ModelFeatureOff) {
       (GetParam() != AutofillAiAction::kIphForOptIn);
 
   feature_list.InitAndDisableFeature(features::kAutofillAiServerModel);
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that the opt-in IPH cannot be shown if its feature is off.
+TEST_P(AutofillAiPermissionUtilsTest, OptInIphFeatureOff) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      feature_engagement::kIPHAutofillAiOptInFeature);
+
+  const bool is_allowed = GetParam() == AutofillAiAction::kOptIn;
+  client().GetPrefs()->SetBoolean(prefs::kAutofillPredictionImprovementsEnabled,
+                                  false);
+
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 

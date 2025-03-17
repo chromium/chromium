@@ -24,7 +24,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/side_swipe/ui_bundled",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
-    "//ios/chrome/browser/voice/ui_bundled:voice",
+    "//ios/chrome/browser/voice/ui_bundled",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",

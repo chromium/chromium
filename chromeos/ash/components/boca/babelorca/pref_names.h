@@ -13,6 +13,9 @@ inline constexpr char kCaptionBubbleExpanded[] =
 inline constexpr char kTranslateTargetLanguageCode[] =
     "ash.babelorca.translate_target_language_code";
 
+inline constexpr char kTachyonClientUuid[] =
+    "ash.babelorca.tachyon_client_uuid";
+
 }  // namespace ash::babelorca::prefs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_PREF_NAMES_H_

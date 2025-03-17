@@ -73,14 +73,14 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCards) {
       {features::kSegmentationPlatformTipsEphemeralCard}, {});
   registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
 
-  ASSERT_EQ(8u, registry_->all_output_labels().size());
+  ASSERT_EQ(6u, registry_->all_output_labels().size());
   ASSERT_EQ(0u, registry_->get_label_index(kPlaceholderEphemeralModuleLabel));
   ASSERT_EQ(2u,
             registry_->get_label_index(kLensEphemeralModuleSearchVariation));
-  ASSERT_EQ(18u, registry_->all_cards_input_size());
+  ASSERT_EQ(12u, registry_->all_cards_input_size());
   const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
       registry_->get_all_cards_by_priority();
-  ASSERT_EQ(5u, all_cards.size());
+  ASSERT_EQ(3u, all_cards.size());
 
   // Verify that the Lens card is registered.
   ASSERT_TRUE(std::any_of(all_cards.begin(), all_cards.end(),

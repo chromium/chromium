@@ -1,0 +1,32 @@
+Test the Viewport Segments Segments Property.
+Initial layout for viewport size : 800x600
+Main frame segments:
+0
+Iframe segments:
+0
+matchMedia('(horizontal-viewport-segments: 2)').matches :
+false
+Media Query change event horizontal matches: true
+Horizontal layout
+Main frame segments:
+2
+0 0 395 600
+405 0 395 600
+Iframe segments:
+0
+matchMedia('(vertical-viewport-segments: 2)').matches :
+false
+Media Query change event vertical matches: true
+Vertical layout
+Main frame segments:
+2
+0 0 800 295
+0 305 800 295
+Iframe segments:
+0
+Clearing the display feature should clear the segments property
+Main frame segments:
+0
+Iframe segments:
+0
+

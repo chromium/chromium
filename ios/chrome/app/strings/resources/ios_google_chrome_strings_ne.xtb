@@ -6,6 +6,7 @@
 <translation id="1143896152279775643">तपाईंको पासवर्ड <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिने छ।</translation>
 <translation id="1146503048444965320">Chrome मा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="1166460004393506534">Chrome को ब्राउजिङ डेटा मेटाउनुहोस्</translation>
+<translation id="1171255741903316750">"तपाईंले Chrome बन्द गर्दा इन्कोग्निटो ट्याबहरू लक गर्नुहोस्" सेटिङ अन गर्नुहोस्</translation>
 <translation id="1179527450541388808">iPad को होम स्क्रिन डकबाट Chrome अझ छिटो एक्सेस गर्नुहोस्।</translation>
 <translation id="1180362651362502943">आफ्नो Google खातामा भएको Chrome को डेटा प्रयोग गरिराख्नुहोस्।</translation>
 <translation id="1200396280085622191">जुनसुकै बेला म्यासेज र अन्य एपहरूमा भएका लिंकहरूमा ट्याप गरेर Chrome प्रयोग गर्नुहोस्।</translation>
@@ -45,6 +46,7 @@
 <translation id="1917964099031477364">यो खाता र सेभ नगरिएका सबै डेटा Chrome र यो डिभाइसमा भएका Google का अन्य एपहरूबाट हटाइने छन्।</translation>
 <translation id="1919130412786645364">Chrome मा साइन इन गर्ने अनुमति दिनुहोस्</translation>
 <translation id="1965935827552890526">तपाईंले Chrome मा खुला रहेको अर्को विन्डोमा गरिरहनुभएको कार्य पूरा गर्नुहोस्।</translation>
+<translation id="1973910962341002002">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" सेटिङमा गई "Chrome" अन गर्नुहोस्</translation>
 <translation id="1984705450038014246">Chrome को आफ्नो डेटा सिंक गर्नुहोस्</translation>
 <translation id="1987779152850321833">Chrome बाट बढीभन्दा बढी फाइदा लिन तल सुझाव दिइएका यी कारबाहीहरू पूरा गर्नुहोस्।</translation>
 <translation id="2055826352861631739">Chrome for iPad स्वतः प्रयोग गर्नुहोस्</translation>
@@ -96,10 +98,13 @@
 <translation id="3282568296779691940">Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="3303503998967553377">iOS मा Chrome सम्बन्धित कारबाही प्रयोग गर्नुहोस्</translation>
 <translation id="3348862487678490430">रिडिङ लिस्टमा भएको सामग्री Chrome मा हाल्नुहोस्</translation>
+<translation id="3357827134511189025">Chrome को अटोफिल सुविधा प्रयोग गरेर कुनै पनि एपको सेभ गरिएको पासवर्ड र पासकी प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="3360031466389132716">{THRESHOLD,plural, =1{Chrome {THRESHOLD} मिनेटसम्म प्रयोग नगरिएका खण्डमा यस्तो हुन्छ}other{Chrome {THRESHOLD} मिनेटसम्म प्रयोग नगरिएका खण्डमा यस्तो हुन्छ}}</translation>
 <translation id="3367797402528056312">Chrome सेटअप गर्ने प्रक्रिया पूरा गर्नुहोस्</translation>
 <translation id="3371064404604898522">Chrome लाई डिफल्ट ब्राउजरका रूपमा सेट गर्नुहोस्</translation>
 <translation id="3399930248910934354">Chrome का सेटिङ खोल्नुहोस्</translation>
+<translation id="3440830787838130530">Google पासवर्ड म्यानेजरमा आफ्ना पारिवारिक समूहसँग सुरक्षित तरिकाले सजिलैसँग पासवर्डको कपी सेयर गर्नुहोस्</translation>
+<translation id="3460369101684070455">अन्य एपहरूमा सेभ गरिएका पासवर्डहरू सजिलैसँग प्रयोग गर्न Chrome को अटोफिल सुविधा छान्नुहोस्</translation>
 <translation id="3472587960215700950">Chrome ले तपाईंलाई पत्ता लगाइएका ठेगानाहरूमा जाने बाटो तथा त्यहाँको स्थानीय जानकारी दिन Google नक्सा प्रयोग गर्छ।</translation>
 <translation id="3503014945441706099">यो Chromium प्रोफाइलका हकमा पनि परिष्कृत Safe Browsing प्राप्त गर्नुहोस्</translation>
 <translation id="3522659714780527202">आफूले Chrome प्रयोग गर्ने सबै डिभाइसमा खोलिएका ट्याबहरू हेर्न सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
@@ -179,6 +184,7 @@
 <translation id="5998675059699164418">तपाईंको सङ्गठनको नीतिअनुसार तपाईंले Chrome चलाउन साइन इन गर्नु पर्ने हुन्छ।</translation>
 <translation id="6021312115739110405">Google ले तपाईंका लागि बनाएको कस्टम फिड। समाचार, खेलकुद र मौसमसहित।</translation>
 <translation id="6022659036123304283">Chrome लाई आफ्नै बनाउनुहोस्</translation>
+<translation id="6132075343662013154">Chrome ले तपाईंको पासवर्ड सेभ गरिदिने अनुरोध गर्ने छ</translation>
 <translation id="6132149203299792222">आफ्ना पासवर्ड तथा बुकमार्कलगायतका कुराहरू सिंक गर्न आफ्नो Google खातामार्फत साइन इन गर्नुहोस्।</translation>
 <translation id="6145223986912084844">chrome</translation>
 <translation id="6177442314419606057">Chrome मा खोज्नुहोस्</translation>
@@ -226,6 +232,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7061455974939528301">Chrome आइकन थिचिराख्नुहोस् र "होम स्क्रिनमा परिवर्तनहरू गर्नुहोस्" मा क्लिक गर्नुहोस्</translation>
 <translation id="7065813315247345131">Move Chrome लाई सारेर डकमा लैजानुहोस्</translation>
 <translation id="7124339256045485976">Chrome अपडेट राख्नुहोस्</translation>
+<translation id="7145599899567697473">Chrome मा पासवर्डहरू सेभ गर्नुहोस र स्वतः भर्नुहोस्</translation>
 <translation id="7161390184744336561">Google Chrome पुरानो भइसकेको छ</translation>
 <translation id="7165736900384873061">Google Chrome QR स्क्यानरको प्रयोग गर्न थाल्नुहोस्</translation>
 <translation id="7175129790242719365">Chrome सम्बन्धी सुझाव: Chrome मा साइन इन गर्नुहोस्</translation>
@@ -259,6 +266,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7693590760643069321">तपाईंले अब कुनै म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंकमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्।</translation>
 <translation id="7698568245838009292">Chrome क्यामेरामाथि पहुँच राख्न चाहन्छ</translation>
 <translation id="7707877166818730835">Chrome मा "मेरो पछिल्लो ट्याब" खोल्नुहोस्</translation>
+<translation id="7747746207470479571">Chrome को अटोफिल सुविधा प्रयोग गरी आफ्ना पासवर्ड र पासकीहरू सजिलैसँग एक्सेस गर्नुहोस्</translation>
 <translation id="776305366874821582">iPhone को होम स्क्रिन डकबाट Chrome अझ छिटो एक्सेस गर्नुहोस्।</translation>
 <translation id="7780154209050837198">Chrome बाट बढीभन्दा बढी फाइदा लिन Chrome मा आफ्नो Google खातामार्फत साइन इन गर्नुहोस्।</translation>
 <translation id="7787205077729386167">iOS मा Chrome का सेटिङ खोल्नुहोस्, त्यसपछि "डिफल्ट ब्राउजर एप" मा ट्याप गर्नुहोस् र "Chrome" चयन गर्नुहोस्।</translation>
@@ -279,6 +287,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8136856065410661948">Chrome तथा Google लेन्समार्फत Apple पात्रोमा कार्यक्रमहरू बनाउने प्रयोजनका लागि यो एप प्रयोग गरिने छ।</translation>
 <translation id="8154120522323162874">ब्राउजर सेटअप गर्ने कार्य जारी राखेर Chrome बाट बढीभन्दा बढी फाइदा लिनुहोस्।</translation>
 <translation id="8160472928944011082">Chrome अपडेट गर्न सकिएन</translation>
+<translation id="8245080522851805544">तपाईंले Chrome बन्द गर्दा डिभाइस पुष्टि गरेर आफ्नो ब्राउजिङ गोप्य राख्नुहोस्</translation>
 <translation id="8248887045858762645">Chrome सम्बन्धी सुझाव</translation>
 <translation id="8265730590513812063">Chrome मेनु खोल्नुहोस्</translation>
 <translation id="8317674518145175158">भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैनन्। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।

@@ -144,6 +144,10 @@ class EmulationHandler : public DevToolsDomainHandler,
   Response SetDevicePostureOverride(
       std::unique_ptr<protocol::Emulation::DevicePosture> posture) override;
   Response ClearDevicePostureOverride() override;
+  Response SetDisplayFeaturesOverride(
+      std::unique_ptr<protocol::Array<protocol::Emulation::DisplayFeature>>
+          features) override;
+  Response ClearDisplayFeaturesOverride() override;
 
   Response SetPressureSourceOverrideEnabled(
       bool enabled,

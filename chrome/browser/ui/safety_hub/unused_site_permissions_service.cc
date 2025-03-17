@@ -751,7 +751,7 @@ UnusedSitePermissionsService::GetRevokedPermissions() {
     const base::Value::List* type_list =
         stored_value.GetDict().FindList(permissions::kRevokedKey);
     CHECK(type_list);
-    for (base::Value& type_value : type_list->Clone()) {
+    for (const base::Value& type_value : *type_list) {
       // To avoid crashes for unknown types skip integer values.
       if (type_value.is_int()) {
         continue;

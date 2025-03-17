@@ -331,13 +331,6 @@ SearchEngineChoiceService::GetDynamicChoiceScreenConditions(
 #endif
 }
 
-int SearchEngineChoiceService::GetCountryId() {
-  return regional_capabilities_service_->GetCountryId().GetRestricted(
-      regional_capabilities::CountryAccessKey(
-          regional_capabilities::CountryAccessReason::
-              kSearchEngineChoiceServiceDeprecatedForwardCall));
-}
-
 std::unique_ptr<search_engines::ChoiceScreenData>
 SearchEngineChoiceService::GetChoiceScreenData(
     const SearchTermsData& search_terms_data) {

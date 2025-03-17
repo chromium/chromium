@@ -119,9 +119,6 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
                                   // feature enabled.
     kPinWithToggleAutosubmitOff,  // PIN field with toggle, auto-submit feature
                                   // disabled.
-    // TODO(b/357606198): Separate password and PIN field.
-    kPasswordAndPin,  // Both password and PIN are set, PIN auto-submit feature
-                      // disabled.
   };
 
   // TestApi is used for tests to get internal implementation details.

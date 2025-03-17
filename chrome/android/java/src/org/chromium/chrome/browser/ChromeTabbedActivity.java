@@ -866,7 +866,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             mRootUiCoordinator::getTopUiThemeColorProvider,
                             createHubLayoutDependencyHolder(),
                             getCompositorViewHolderSupplier(),
-                            getContentView());
+                            getContentView(),
+                            getToolbarManager());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

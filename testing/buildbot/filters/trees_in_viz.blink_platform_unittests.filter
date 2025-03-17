@@ -1,2 +1,3 @@
-# TODO(crbug.com/401453195): Diagnose and fix these failures.
+# TODO(crbug.com/394137303): Wire SurfaceLayerImpl's callback for video from
+# Viz.
 -VideoFrameCompositorTest.SetIsSurfaceVisible

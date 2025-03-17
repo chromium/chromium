@@ -776,7 +776,7 @@ void RenderWidgetHostViewAura::ObserveDevicePosturePlatformProvider() {
 
 void RenderWidgetHostViewAura::OnDisplayFeatureBoundsChanged(
     const gfx::Rect& display_feature_bounds) {
-  if (display_feature_overridden_for_testing_) {
+  if (display_feature_overridden_for_emulation_) {
     return;
   }
 
@@ -797,7 +797,7 @@ void RenderWidgetHostViewAura::OnDisplayFeatureBoundsChanged(
 
 void RenderWidgetHostViewAura::ComputeDisplayFeature() {
   if (display_feature_bounds_.IsEmpty() ||
-      display_feature_overridden_for_testing_) {
+      display_feature_overridden_for_emulation_) {
     return;
   }
 
@@ -848,14 +848,29 @@ std::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
   return display_feature_;
 }
 
-void RenderWidgetHostViewAura::SetDisplayFeatureForTesting(
+void RenderWidgetHostViewAura::DisableDisplayFeatureOverrideForEmulation() {
+  if (!display_feature_overridden_for_emulation_) {
+    return;
+  }
+
+  display_feature_overridden_for_emulation_ = false;
+  display_feature_ = std::nullopt;
+  // Restore the platform display feature if there is one.
+  ComputeDisplayFeature();
+  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                              window_->GetLocalSurfaceId());
+}
+
+void RenderWidgetHostViewAura::OverrideDisplayFeatureForEmulation(
     const DisplayFeature* display_feature) {
   if (display_feature) {
     display_feature_ = *display_feature;
   } else {
     display_feature_ = std::nullopt;
   }
-  display_feature_overridden_for_testing_ = true;
+  display_feature_overridden_for_emulation_ = true;
+  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                              window_->GetLocalSurfaceId());
 }
 
 void RenderWidgetHostViewAura::WindowTitleChanged() {

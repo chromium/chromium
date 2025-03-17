@@ -443,7 +443,13 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual RenderWidgetHost::InputEventObserver*
   GetInputTransferHandlerObserver();
 
-  virtual void SetDisplayFeatureForTesting(
+  // Disable the DisplayFeature emulation (if used) and restore the
+  // DisplayFeature of the device (if there is).
+  virtual void DisableDisplayFeatureOverrideForEmulation() = 0;
+
+  // Override the DisplayFeature provided by the device (if there is) and
+  // replace it with the provided one.
+  virtual void OverrideDisplayFeatureForEmulation(
       const DisplayFeature* display_feature) = 0;
 
   DevicePosturePlatformProvider* GetDevicePosturePlatformProvider();

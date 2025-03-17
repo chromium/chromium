@@ -110,7 +110,7 @@ TEST(AutofillEntityTypeTest, DataType) {
   AttributeType b = AttributeType(kPassportCountry);
   AttributeType c = AttributeType(kDriversLicenseIssueDate);
   AttributeType d = AttributeType(kDriversLicenseState);
-  AttributeType e = AttributeType(kVehicleOwner);
+  AttributeType e = AttributeType(kVehicleMake);
   EXPECT_EQ(a.data_type(), AttributeType::DataType::kName);
   EXPECT_EQ(b.data_type(), AttributeType::DataType::kCountry);
   EXPECT_EQ(c.data_type(), AttributeType::DataType::kDate);

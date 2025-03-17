@@ -3039,7 +3039,7 @@ void RenderWidgetHostViewAndroid::ObserveDevicePosturePlatformProvider() {
 
 void RenderWidgetHostViewAndroid::OnDisplayFeatureBoundsChanged(
     const gfx::Rect& display_feature_bounds) {
-  if (display_feature_overridden_for_testing_) {
+  if (display_feature_overridden_for_emulation_) {
     return;
   }
 
@@ -3065,7 +3065,7 @@ void RenderWidgetHostViewAndroid::SetDisplayFeatureBoundsForTesting(
 }
 
 void RenderWidgetHostViewAndroid::ComputeDisplayFeature() {
-  if (display_feature_overridden_for_testing_) {
+  if (display_feature_overridden_for_emulation_) {
     return;
   }
 
@@ -3115,14 +3115,28 @@ std::optional<DisplayFeature> RenderWidgetHostViewAndroid::GetDisplayFeature() {
   return display_feature_;
 }
 
-void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
+void RenderWidgetHostViewAndroid::DisableDisplayFeatureOverrideForEmulation() {
+  if (!display_feature_overridden_for_emulation_) {
+    return;
+  }
+
+  display_feature_overridden_for_emulation_ = false;
+  // Restore the platform display feature if there is one.
+  ComputeDisplayFeature();
+  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                              std::nullopt);
+}
+
+void RenderWidgetHostViewAndroid::OverrideDisplayFeatureForEmulation(
     const DisplayFeature* display_feature) {
   if (display_feature) {
     display_feature_ = *display_feature;
   } else {
     display_feature_ = std::nullopt;
   }
-  display_feature_overridden_for_testing_ = true;
+  display_feature_overridden_for_emulation_ = true;
+  SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                              std::nullopt);
 }
 
 void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(

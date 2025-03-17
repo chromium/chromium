@@ -2334,7 +2334,9 @@ RuleIndexList* StyleResolver::PseudoCSSRulesForElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name,
     unsigned rules_to_include) {
-  DCHECK(element);
+  if (!element || !element->isConnected()) {
+    return nullptr;
+  }
   StyleResolverState state(GetDocument(), *element);
   MatchResult match_result;
   StyleRecalcContext style_recalc_context =
