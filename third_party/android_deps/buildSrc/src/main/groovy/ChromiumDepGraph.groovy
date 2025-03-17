@@ -274,6 +274,7 @@ class ChromiumDepGraph {
     Project[] projects
     Logger logger
     boolean skipLicenses
+    boolean warnOnStaleDeps
 
     private static String makeModuleIdInner(String group, String module, String version) {
         // Does not include version because by default the resolution strategy for gradle is to use the newest version
@@ -436,10 +437,9 @@ class ChromiumDepGraph {
                 }
                 dep.versionFilter = overrides.versionFilter
             } else {
-                // TODO: only output this warning if we are in the main project,
-                // since it is expected that subprojects do not have all the
-                // deps.
-                logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
+                if (warnOnStaleDeps) {
+                    logger.warn('PROPERTY_OVERRIDES has stale dep: ' + id)
+                }
             }
         }
     }
@@ -853,6 +853,32 @@ class ChromiumDepGraph {
         // When set, //third_party/android_deps/fetch_common.py will only versions that contain this string to be valid.
         // This variable is not used in groovy code.
         String versionFilter
+
+        String getDirectoryPath() {
+            return BuildConfigGenerator.LIBS_DIRECTORY + '/' + directoryName
+        }
+
+        String getPrefixedDirectoryPath(String prefix) {
+            if (prefix) {
+                return "$prefix/$directoryPath"
+            }
+            return directoryPath
+        }
+
+        boolean getIsAndroidx() {
+            return id.startsWith('androidx')
+        }
+
+        // This indicates which BUILD.gn file this target lives in.
+        String getProjectPath() {
+            if (isAndroidx) {
+                return BuildConfigGenerator.ANDROIDX_PROJECT_PATH
+            }
+            if (isAutorolled) {
+                return BuildConfigGenerator.AUTOROLLED_PROJECT_PATH
+            }
+            return BuildConfigGenerator.MAIN_PROJECT_PATH
+        }
     }
 
     static class LicenseSpec {
