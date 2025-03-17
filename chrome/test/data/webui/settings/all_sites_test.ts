@@ -20,7 +20,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
-suite('DisableRelatedWebsiteSets', function() {
+suite('WithoutRelatedWebsiteSetsData', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
@@ -55,10 +55,6 @@ suite('DisableRelatedWebsiteSets', function() {
 
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
-
-    loadTimeData.overrideValues({
-      firstPartySetsUIEnabled: false,
-    });
   });
 
   suiteTeardown(function() {
@@ -1106,10 +1102,6 @@ suite('EnableRelatedWebsiteSets', function() {
 
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
-
-    loadTimeData.overrideValues({
-      firstPartySetsUIEnabled: true,
-    });
   });
 
   suiteTeardown(function() {
