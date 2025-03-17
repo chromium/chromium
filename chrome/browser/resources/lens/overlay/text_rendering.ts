@@ -7,7 +7,30 @@ import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
-import type {Word} from './text.mojom-webui.js';
+import type {Line, Paragraph, Word} from './text.mojom-webui.js';
+
+// A struct representing a text response from the server. Used instead of the
+// mojo Text struct so text can be easily extracted using common functions that
+// also apply to the regular text layer.
+export interface TextResponse {
+  // The content language received from OnTextReceived.
+  contentLanguage: string;
+  // The words received.
+  receivedWords: Word[];
+  // An array that corresponds 1:1 to receivedWords, where paragraphNumbers[i]
+  // is the paragraph number for receivedWords[i]. In addition, the index at
+  // paragraphNumbers[i] corresponds to the Paragraph in paragraphs[i] that the
+  // word belongs in.
+  paragraphNumbers: number[];
+  // An array that corresponds 1:1 to receivedWords, where lineNumbers[i] is the
+  // line number for receivedWords[i]. In addition, the index at lineNumbers[i]
+  // corresponds to the Line in lines[i] that the word belongs in.
+  lineNumbers: number[];
+  // The lines received from OnTextReceived.
+  lines: Line[];
+  // The paragraphs received from OnTextReceived.
+  paragraphs: Paragraph[];
+}
 
 // Returns true if the word has a valid bounding box and is renderable by the
 // TextLayer.
