@@ -23,6 +23,7 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -382,11 +383,10 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool CanShowActionButtons() const override { return true; }
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
   bool NeedsDisclaimerOnInit() const override {
-    // Return true if Scanner is enabled and the disclaimer has not already been
-    // accepted.
+    // Return true if Scanner is enabled and the disclaimer should be shown.
     return ScannerController::CanShowUiForShell() &&
-           !capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-               prefs::kSunfishConsentDisclaimerAccepted);
+           ShouldShowScannerDisclaimer(
+               *capture_mode_util::GetActiveUserPrefService());
   }
   bool ShouldAnnounceCaptureModeUIOnDisclaimerDismissed() const override {
     return true;

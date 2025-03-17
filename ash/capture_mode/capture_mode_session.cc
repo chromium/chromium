@@ -46,6 +46,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -1561,8 +1562,8 @@ void CaptureModeSession::AddSmartActionsButton() {
 void CaptureModeSession::MaybeShowScannerDisclaimer(
     base::RepeatingClosure accept_callback,
     base::RepeatingClosure decline_callback) {
-  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-          prefs::kSunfishConsentDisclaimerAccepted)) {
+  if (!ShouldShowScannerDisclaimer(
+          *capture_mode_util::GetActiveUserPrefService())) {
     if (accept_callback) {
       std::move(accept_callback).Run();
     }
@@ -1669,8 +1670,7 @@ void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
 void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerAccepted);
-  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
-      prefs::kSunfishConsentDisclaimerAccepted, true);
+  SetScannerDisclaimerAcked(*capture_mode_util::GetActiveUserPrefService());
 
   disclaimer_.reset();
 
