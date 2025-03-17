@@ -307,7 +307,24 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
     }
   }
 
-  if (config.output_profile != H264PROFILE_BASELINE) {
+  D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264 config_support_h264;
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT config_support{
+      .Codec = D3D12_VIDEO_ENCODER_CODEC_H264,
+      .Profile = {.DataSize = sizeof(h264_profile_),
+                  .pH264Profile = &h264_profile_},
+      .CodecSupportLimits = {.DataSize = sizeof(config_support_h264),
+                             .pH264Support = &config_support_h264},
+  };
+  status = CheckD3D12VideoEncoderCodecConfigurationSupport(video_device_.Get(),
+                                                           &config_support);
+  if (!status.is_ok()) {
+    return status;
+  }
+
+  // Enable entropy_coding_mode_flag when allowed and supported.
+  if (config.output_profile != H264PROFILE_BASELINE &&
+      config_support_h264.SupportFlags &
+          D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_CABAC_ENCODING_SUPPORT) {
     codec_config_h264_.ConfigurationFlags |=
         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_ENABLE_CABAC_ENCODING;
   }
@@ -364,7 +381,9 @@ EncoderStatus D3D12VideoEncodeH264Delegate::InitializeVideoEncoder(
                     ? H264LevelIDCToD3D12VideoEncoderLevelsH264(
                           config.h264_output_level.value())
                     : suggested_level;
-  if (h264_level_ >= D3D12_VIDEO_ENCODER_LEVELS_H264_3) {
+  if (h264_level_ >= D3D12_VIDEO_ENCODER_LEVELS_H264_3 &&
+      config_support_h264.SupportFlags &
+          D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_SUPPORT_H264_FLAG_ADAPTIVE_8x8_TRANSFORM_ENCODING_SUPPORT) {
     codec_config_h264_.ConfigurationFlags |=
         D3D12_VIDEO_ENCODER_CODEC_CONFIGURATION_H264_FLAG_USE_ADAPTIVE_8x8_TRANSFORM;
   }
