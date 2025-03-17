@@ -100,10 +100,12 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
   void SetPageContent(base::OnceClosure quit_closure,
                       std::optional<AIPageContentResult> page_content) {
     page_content_ = std::move(page_content->proto);
+    metadata_ = std::move(page_content->metadata);
     std::move(quit_closure).Run();
   }
 
   const proto::AnnotatedPageContent& page_content() { return *page_content_; }
+  const AIPageContentMetadata& metadata() { return *metadata_; }
 
   void LoadData(blink::mojom::AIPageContentOptionsPtr request =
                     DefaultAIPageContentOptions()) {
@@ -138,6 +140,7 @@ class PageContentProtoProviderBrowserTest : public content::ContentBrowserTest {
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::optional<proto::AnnotatedPageContent> page_content_;
+  std::optional<AIPageContentMetadata> metadata_;
 };
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AIPageContent) {
@@ -541,6 +544,38 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestFencedFrame,
   const auto& b_geometry = b_frame.content_attributes().geometry();
   AssertRectsEqual(b_geometry.outer_bounding_box(),
                    b_geometry.visible_bounding_box());
+}
+
+IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
+                       AIPageContentMetadata) {
+  // TODO(crbug.com/403325367) When remote frames are supported, this same test
+  // should also work with cross-site iframes ("/iframe_cross_site.html").
+  LoadPage(https_server()->GetURL("a.com", "/iframe_same_site.html"),
+           /* with_page_content = */ false);
+
+  auto options = blink::mojom::AIPageContentOptions::New();
+  options->max_meta_elements = 32;
+  LoadData(std::move(options));
+
+  EXPECT_EQ(metadata().frame_metadata.size(), 3u);
+
+  const auto& main_frame_metadata = metadata().frame_metadata[0];
+  EXPECT_EQ(main_frame_metadata.url.host(), "a.com");
+  EXPECT_EQ(main_frame_metadata.meta_tags.size(), 1u);
+  EXPECT_EQ(main_frame_metadata.meta_tags[0].name, "author");
+  EXPECT_EQ(main_frame_metadata.meta_tags[0].content, "George");
+
+  const auto& child_frame_metadata1 = metadata().frame_metadata[1];
+  EXPECT_EQ(child_frame_metadata1.url.host(), "a.com");
+  EXPECT_EQ(child_frame_metadata1.meta_tags.size(), 1u);
+  EXPECT_EQ(child_frame_metadata1.meta_tags[0].name, "author");
+  EXPECT_EQ(child_frame_metadata1.meta_tags[0].content, "Gary");
+
+  const auto& child_frame_metadata2 = metadata().frame_metadata[2];
+  EXPECT_EQ(child_frame_metadata2.url.host(), "a.com");
+  EXPECT_EQ(child_frame_metadata2.meta_tags.size(), 1u);
+  EXPECT_EQ(child_frame_metadata2.meta_tags[0].name, "author");
+  EXPECT_EQ(child_frame_metadata2.meta_tags[0].content, "Gary");
 }
 
 }  // namespace

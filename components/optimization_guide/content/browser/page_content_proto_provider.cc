@@ -89,6 +89,7 @@ std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
   // 2. about:blank inherits its origin from the initiator while the URL doesn't
   //    convey that.
   render_frame_info.source_origin = render_frame_host->GetLastCommittedOrigin();
+  render_frame_info.url = render_frame_host->GetLastCommittedURL();
   return render_frame_info;
 }
 
