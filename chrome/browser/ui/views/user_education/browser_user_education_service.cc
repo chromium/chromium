@@ -259,6 +259,8 @@ void MaybeRegisterChromeFeaturePromos(
                 chrome::ShowSettingsSubPage(browser,
                                             chrome::kAutofillAiSubPage);
               }))
+          .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(IDS_AUTOFILL_AI_OPT_IN_IPH_CLOSE)
           .SetBubbleTitleText(IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetMetadata(136, "brunobraga@google.com",
