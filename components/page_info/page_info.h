@@ -79,6 +79,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
     SITE_IDENTITY_STATUS_CERT,
     // The website provided a valid EV certificate.
     SITE_IDENTITY_STATUS_EV_CERT,
+    // The website provided a valid 1-QWAC certificate.
+    SITE_IDENTITY_STATUS_1QWAC_CERT,
     // Site identity could not be verified because the site did not provide a
     // certificate. This is the expected state for HTTP connections.
     SITE_IDENTITY_STATUS_NO_CERT,
