@@ -12661,6 +12661,24 @@
             ]
         }
     ],
+    "IOSTabResumptionThumbnails": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "tr-images-type": "thumbnails"
+                    },
+                    "enable_features": [
+                        "TabResumptionImages"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUpdateFirstRunSequence": [
         {
             "platforms": [
