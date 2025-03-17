@@ -568,6 +568,7 @@ if (is_android) {
 
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromeUnitTest.java",
+      "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewBackgroundTabAnimationHostViewUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewTabAnimationLayoutUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/CompositorSurfaceManagerImplTest.java",
       "src/org/chromium/chrome/browser/compositor/CompositorViewHolderUnitTest.java",

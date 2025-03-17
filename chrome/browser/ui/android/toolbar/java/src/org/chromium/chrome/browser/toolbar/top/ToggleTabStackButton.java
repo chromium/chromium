@@ -165,4 +165,9 @@ public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherD
     private void onUpdateNotificationDot(boolean showDot) {
         mTabSwitcherButtonDrawable.setNotificationIconStatus(showDot);
     }
+
+    /** Returns whether the button should show a notification icon. */
+    public boolean shouldShowNotificationIcon() {
+        return mTabSwitcherButtonDrawable.getShowIconNotificationStatus();
+    }
 }
