@@ -147,6 +147,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private final TabSwitcherContextMenuCoordinator mContextMenuCoordinator;
     private final @Nullable TabGroupLabeller mTabGroupLabeller;
     private final ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
     /** Lazily initialized when shown. */
     private @Nullable TabGridDialogCoordinator mTabGridDialogCoordinator;
@@ -402,7 +403,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             TabGroupCreationDialogManager tabGroupCreationDialogManager =
                     new TabGroupCreationDialogManager(
                             activity, modalDialogManager, onTabGroupCreation);
-            TabGroupListBottomSheetCoordinator coordinator =
+            mTabGroupListBottomSheetCoordinator =
                     new TabGroupListBottomSheetCoordinator(
                             activity,
                             profile,
@@ -420,7 +421,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             activity,
                             tabBookmarker,
                             filter::getTabModel,
-                            coordinator,
+                            mTabGroupListBottomSheetCoordinator,
                             shareDelegateSupplier,
                             tabListEditorManager);
         }
@@ -448,6 +449,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabGroupLabeller != null) {
             mTabGroupLabeller.destroy();
         }
+        mTabGroupListBottomSheetCoordinator.destroy();
     }
 
     /** Post native initialization. */

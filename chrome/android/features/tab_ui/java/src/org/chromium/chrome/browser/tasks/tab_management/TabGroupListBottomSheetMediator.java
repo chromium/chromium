@@ -49,7 +49,6 @@ public class TabGroupListBottomSheetMediator {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
                     mBottomSheetController.removeObserver(mBottomSheetObserver);
-                    mDelegate.onSheetClosed();
                     mModelList.clear();
                 }
 

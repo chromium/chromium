@@ -15,6 +15,7 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -62,6 +63,8 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
                     }
                 }
             };
+
+    private @Nullable TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
 
     /**
      * Create an action for adding one or more tabs to a tab group.
@@ -173,10 +176,10 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
                     mTabGroupCreationDialogManager.showDialog(rootId, filter);
                 };
 
-        TabGroupListBottomSheetCoordinator coordinator =
+        mTabGroupListBottomSheetCoordinator =
                 mFactory.create(
                         mActivity, profile, groupCreationCallback, filter, controller, true);
-        coordinator.showBottomSheet(tabs);
+        mTabGroupListBottomSheetCoordinator.showBottomSheet(tabs);
     }
 
     private void createNewTabGroup(List<Tab> tabs, TabGroupModelFilter filter, Tab destinationTab) {
@@ -192,6 +195,9 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         TabGroupModelFilter filter = getTabGroupModelFilter();
         filter.removeTabGroupObserver(mFilterObserver);
         filter.getTabModel().removeObserver(mTabModelObserver);
+        if (mTabGroupListBottomSheetCoordinator != null) {
+            mTabGroupListBottomSheetCoordinator.destroy();
+        }
     }
 
     private boolean hasTabGroups() {
