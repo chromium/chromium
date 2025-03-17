@@ -417,6 +417,11 @@ BASE_FEATURE(kGlicUserResize,
              "GlicUserResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the web client should resize itself to fit the window.
+BASE_FEATURE(kGlicSizingFitWindow,
+             "GlicSizingFitWindow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWarming, "GlicWarming", base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

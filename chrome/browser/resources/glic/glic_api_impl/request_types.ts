@@ -346,6 +346,9 @@ export type WebClientInitialStatePrivate =
       scrollToEnabled: boolean,
       actInFocusedTabEnabled: boolean,
       loggingEnabled: boolean,
+      // Whether or not the web client should resize the content to fit the
+      // window size.
+      fitWindow: boolean,
     }>;
 
 // TabData format for postMessage transport.

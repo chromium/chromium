@@ -156,6 +156,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   private permissionStateTabContext =
       ObservableValueImpl.withNoValue<boolean>();
   panelActiveValue = ObservableValueImpl.withNoValue<boolean>();
+  private fitWindow = false;
   private metrics: GlicBrowserHostMetricsImpl;
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
@@ -204,6 +205,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     this.canAttachPanelValue.assignAndSignal(state.canAttach);
     this.chromeVersion = state.chromeVersion;
     this.panelActiveValue.assignAndSignal(state.panelIsActive);
+    this.fitWindow = state.fitWindow;
 
     if (!state.scrollToEnabled) {
       (this as GlicBrowserHost).scrollTo = undefined;
@@ -242,6 +244,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getChromeVersion() {
     return Promise.resolve(this.chromeVersion!);
+  }
+
+  shouldFitWindow() {
+    return Promise.resolve(this.fitWindow);
   }
 
   async createTab(
