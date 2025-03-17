@@ -61,7 +61,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   base::Time GetLastUpdateTime() const override;
   const std::optional<BackendServerError>& GetLastBackendServerError()
       const override;
-  std::string GetFailureMessage() const override;
+  std::string GetFailureMessageWithPii() const override;
 
  private:
   friend class CertProvisioningSerializer;

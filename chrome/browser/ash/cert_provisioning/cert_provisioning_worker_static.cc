@@ -272,7 +272,7 @@ CertProvisioningWorkerStatic::GetLastBackendServerError() const {
   return last_backend_server_error_;
 }
 
-std::string CertProvisioningWorkerStatic::GetFailureMessage() const {
+std::string CertProvisioningWorkerStatic::GetFailureMessageWithPii() const {
   return failure_message_ui_.value_or(failure_message_);
 }
 
