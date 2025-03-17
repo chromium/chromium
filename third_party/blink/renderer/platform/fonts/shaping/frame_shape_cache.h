@@ -11,10 +11,13 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector_backed_linked_list.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
+class PlainTextItem;
 class PlainTextNode;
+class ShapeResult;
 
 // FrameShapeCache manages a cache for PlainTextNode, and a cache for
 // ShapeResult and ink bounds. A PlainTextPainter instance owns multiple
@@ -61,6 +64,31 @@ class FrameShapeCache : public GarbageCollected<FrameShapeCache> {
                          PlainTextNode* node,
                          NodeEntry* entry);
 
+  // Cache entry for the ShapeResult cache.
+  // Clients must not access `list_index`.
+  struct ShapeEntry {
+    DISALLOW_NEW();
+
+   public:
+    // Cached data.
+    Member<const ShapeResult> shape_result;
+    gfx::RectF ink_bounds;
+    // A field for LRU management. It's kNotFound for entries created
+    // in the initial frame.
+    wtf_size_t list_index;
+
+    void Trace(Visitor* visitor) const;
+  };
+
+  // Find a ShapeResult cache entry for the specified `text` and `direction`.
+  // If it's not found, new entry is created.
+  ShapeEntry* FindOrCreateShapeEntry(const String& word,
+                                     TextDirection direction);
+
+  // This should be called if FindOrCreateShapeEntry() didn't find an
+  // existing entry.
+  void RegisterShapeEntry(const PlainTextItem& item, ShapeEntry* entry);
+
  private:
   using KeyType = std::pair<String, TextDirection>;
   struct ListKey {
@@ -82,6 +110,9 @@ class FrameShapeCache : public GarbageCollected<FrameShapeCache> {
 
   HeapHashMap<KeyType, NodeEntry> node_map_;
   LruList node_lru_list_;
+
+  HeapHashMap<KeyType, ShapeEntry> shape_map_;
+  LruList shape_lru_list_;
 
   static constexpr uint32_t kInitialFrame = 0;
   uint32_t frame_generation_ = kInitialFrame;

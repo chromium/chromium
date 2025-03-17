@@ -10,7 +10,6 @@ import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
-import "chromeos/crosapi/mojom/cert_database.mojom";
 import "chromeos/crosapi/mojom/cert_provisioning.mojom";
 import "chromeos/crosapi/mojom/chaps_service.mojom";
 import "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom";
@@ -18,11 +17,9 @@ import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
-import "chromeos/crosapi/mojom/device_local_account_extension_service.mojom";
 import "chromeos/crosapi/mojom/device_oauth2_token_service.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
-import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/echo_private.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
@@ -57,7 +54,6 @@ import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "services/device/public/mojom/hid.mojom";
 import "services/media_session/public/mojom/audio_focus.mojom";
 import "services/media_session/public/mojom/media_controller.mojom";
-import "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom";
 
 // Crosapi defines the APIs that live in ash-chrome and are accessed from
 // client applications (such as lacros-chrome). When adding a major new API
@@ -95,10 +91,7 @@ interface Crosapi {
 
   // BindCecPrivate@140 was removed.
 
-  // Binds the CertDatabase interface for initializing certificate database in
-  // client applications.
-  // Added in M89.
-  [MinVersion=7] BindCertDatabase@12(pending_receiver<CertDatabase> receiver);
+  // BindCertDatabase@12 was removed.
 
   // Binds the CertProvisioning interface for implementing certificate
   // provisioning UI.
@@ -175,12 +168,7 @@ interface Crosapi {
   [MinVersion=77] BindDocumentScan@80(pending_receiver<DocumentScan> receiver);
 
   // BindDownloadController@33 was removed.
-
-  // Binds the DriveIntegrationService interface for getting information about
-  // the local Google Drive mount.
-  // Added in M93.
-  [MinVersion=29] BindDriveIntegrationService@34(
-      pending_receiver<DriveIntegrationService> receiver);
+  // BindDriveIntegrationService@34 was removed.
 
   // EchoPrivate is a service used to provide trusted websites a mechanism to
   // confirm the device is a ChromeOS device.
@@ -188,13 +176,7 @@ interface Crosapi {
       pending_receiver<EchoPrivate> receiver);
 
   // BindEditorPanelManager@120 was removed.
-
-  // Binds the accessibility helper client factory interface which allows Lacros
-  // to send information to Ash needed for accessibility features.
-  [MinVersion=115]
-  BindEmbeddedAccessibilityHelperClientFactory@118(
-      pending_receiver<EmbeddedAccessibilityHelperClientFactory> receiver);
-
+  // BindEmbeddedAccessibilityHelperClientFactory@118 was removed.
   // BindEmojiPicker@89 was removed.
   // BindExtensionInfoPrivate@75 was removed.
   // REMOVED_105@105 was removed.
@@ -460,12 +442,7 @@ interface Crosapi {
       pending_receiver<ChromeAppKioskService> receiver);
 
   // BindWebKioskService@114 was removed.
-
-  // Binds the extension service for device local accounts. This service manages
-  // the cached install of extensions into Lacros.
-  [MinVersion=96] BindDeviceLocalAccountExtensionService@100(
-      pending_receiver<DeviceLocalAccountExtensionService> receiver);
-
+  // BindDeviceLocalAccountExtensionService@100 was removed.
   // BindVolumeManager@94 was removed.
 
   // Binds the vpn service. This service is used to facilirate

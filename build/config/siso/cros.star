@@ -91,7 +91,7 @@ def __filegroups(ctx):
         }
         fg[path.join(toolchain, "usr/lib64") + ":libs"] = {
             "type": "glob",
-            "includes": ["*.so", "*.so.*", "*.a", "*.o"],
+            "includes": ["*.so", "*.so.*", "*.a", "*.o", "cfi_ignorelist.txt"],
         }
         fg[path.join(toolchain, "usr/armv7a-cros-linux-gnueabihf") + ":libs"] = {
             "type": "glob",

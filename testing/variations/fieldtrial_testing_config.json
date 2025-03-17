@@ -1634,6 +1634,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillAiIgnoreGeoIp",
                         "AutofillAiWithDataSchema"
                     ]
                 }
@@ -10934,11 +10935,14 @@
             ],
             "experiments": [
                 {
-                    "name": "TripleBrowserReservation",
+                    "name": "EnabledLowerTotalPages",
                     "params": {
-                        "BrowserMaxAllocations": "2048",
-                        "BrowserMaxMetadata": "2048",
-                        "BrowserTotalPages": "6144"
+                        "AllocationSamplingMultiplier": "2000",
+                        "AllocationSamplingRange": "20",
+                        "MaxAllocations": "2048",
+                        "MaxMetadata": "2048",
+                        "ProcessSamplingProbability": "0.015",
+                        "TotalPages": "6144"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
@@ -19858,8 +19862,7 @@
                         "throttle-frame-rate-on-initialization": "true"
                     },
                     "enable_features": [
-                        "RenderBlockingFullFrameRate",
-                        "RenderThrottleFrameRate"
+                        "RenderBlockingFullFrameRate"
                     ]
                 }
             ]
@@ -26313,21 +26316,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "WebViewLazyFetchHandWritingIcon"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebViewPartitionedCookiesExcluded": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewPartitionedCookiesExcluded"
                     ]
                 }
             ]

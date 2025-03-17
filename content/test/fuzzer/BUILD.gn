@@ -73,6 +73,9 @@ fuzzer_test("renderer_proto_tree_fuzzer") {
     ":html_tree_proto",
     "//third_party/libprotobuf-mutator",
   ]
+
+  # Increase the memory limit, since the fuzzer exceeds it in Debug builds.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
 
 proto_library("html_tree_proto") {

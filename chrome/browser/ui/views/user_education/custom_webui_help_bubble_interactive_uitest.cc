@@ -41,6 +41,9 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/events/event_modifiers.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/webui/resources/cr_components/help_bubble/custom_help_bubble.mojom.h"
 #include "ui/webui/webui_util.h"
 
@@ -327,6 +330,29 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_Snooze) {
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
       CheckSnoozeCount(kCustomWebUIHelpBubbleTestFeature, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_PressEsc) {
+  gfx::NativeView native_view = gfx::NativeView();
+  RunTestSequence(
+      MaybeShowPromo(kCustomWebUIHelpBubbleTestFeature,
+                     CustomHelpBubbleShown{
+                         CustomWebUIHelpBubble::kHelpBubbleIdForTesting}),
+      InstrumentNonTabWebView(kWebViewElementId,
+                              CustomWebUIHelpBubble::kWebViewIdForTesting),
+      IfView(
+          CustomWebUIHelpBubble::kHelpBubbleIdForTesting,
+          [&native_view](const views::View* view) {
+            native_view = view->GetWidget()->GetNativeView();
+            return !view->GetWidget()->IsActive();
+          },
+          Then(ObserveState(views::test::kCurrentWidgetFocus),
+               WaitForState(views::test::kCurrentWidgetFocus,
+                            std::ref(native_view)))),
+      SendAccelerator(CustomWebUIHelpBubble::kHelpBubbleIdForTesting,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(CustomWebUIHelpBubble::kHelpBubbleIdForTesting),
+      CheckIsDismissed(kCustomWebUIHelpBubbleTestFeature, true));
 }
 
 IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest, ShowPromo_Abort) {

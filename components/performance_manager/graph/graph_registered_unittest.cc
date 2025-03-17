@@ -119,7 +119,13 @@ TEST_F(GraphRegisteredTest, GraphRegistrationWorks) {
 
   // At this point if the graph is torn down it should explode because foo
   // hasn't been unregistered.
-  EXPECT_CHECK_DEATH(TearDownAndDestroyGraph());
+  // TODO(pbos): Figure out why the DCHECK build dies in a different place (a
+  // DCHECK) and see if these can be consolidated into one EXPECT_DCHECK_DEATH.
+  if (DCHECK_IS_ON()) {
+    EXPECT_DCHECK_DEATH(TearDownAndDestroyGraph());
+  } else {
+    EXPECT_CHECK_DEATH(TearDownAndDestroyGraph());
+  }
 
   graph()->UnregisterObject(&foo);
 }

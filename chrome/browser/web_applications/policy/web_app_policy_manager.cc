@@ -885,6 +885,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
       case policy::SystemFeature::kUnknownSystemFeature:
       case policy::SystemFeature::kBrowserSettings:
       case policy::SystemFeature::kWebStore:
+      case policy::SystemFeature::kTextEditor:
       case policy::SystemFeature::kGoogleNewsDeprecated:
         break;
     }

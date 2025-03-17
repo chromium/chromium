@@ -47654,6 +47654,7 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessage feature."/>
   <suffix name="AutoDarkUserEducationMessageOptIn"
       label="For AutoDarkUserEducationMessageOptIn feature."/>
+  <suffix name="AutofillAiOptIn" label="For AutofillAiOptIn feature."/>
   <suffix name="AutofillBnplAffirmOrZipSuggestion"
       label="For AutofillBnplAffirmOrZipSuggestion IPH feature."/>
   <suffix name="AutofillCardInfoRetrievalSuggestion"
@@ -47664,8 +47665,6 @@ should be able to be added at any place in this file.
       label="For AutofillDisabledVirtualCardSuggestion feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
-  <suffix name="AutofillPredictionImprovements"
-      label="For AutofillPredictionImprovements feature."/>
   <suffix name="AutofillVirtualCardCVCSuggestion"
       label="For autofill suggestion of virtual cards."/>
   <suffix name="AutofillVirtualCardSuggestion"

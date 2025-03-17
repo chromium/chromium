@@ -51,6 +51,12 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, no GeoIp requirements are imposed for AutfillAi. Intended for
+// Dogfood and testing only.
+BASE_FEATURE(kAutofillAiIgnoreGeoIp,
+             "AutofillAiIgnoreGeoIp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the client may trigger the server model for AutofillAI type
 // predictions.
 BASE_FEATURE(kAutofillAiServerModel,

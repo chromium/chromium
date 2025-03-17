@@ -217,7 +217,17 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   // FeatureList must be initialized before WTF::Partitions::Initialize(),
   // because WTF::Partitions::Initialize() uses base::FeatureList to obtain
   // PartitionOptions.
+  // NOTE: InitScopedFeatureListForTesting() deliberately removes
+  // `--enable-features` and `--disable-features` from the command line of the
+  // current process after processing them. However, here that behavior is
+  // undesirable: This helper object is used by Blink test suites to configure
+  // their environment before they run their tests via the base::TestSuite
+  // infrastructure, which itself queries `--enable-features` and
+  // `--disable-features` from the command line in order to configure the
+  // environment that the tests run in.
+  base::CommandLine command_line = *base::CommandLine::ForCurrentProcess();
   base::test::InitScopedFeatureListForTesting(scoped_feature_list_);
+  *base::CommandLine::ForCurrentProcess() = command_line;
 
   // TODO(yutak): The initialization steps below are essentially a subset of
   // Platform::Initialize() steps with a few modifications for tests.

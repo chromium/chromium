@@ -31,19 +31,19 @@
 // EXPECT/ASSERT_DCHECK_DEATH tests verify that a DCHECK is hit ("Check failed"
 // is part of the error message). Optionally you may specify part of the message
 // to verify which DCHECK (or LOG(DFATAL)) is being hit.
-#define EXPECT_DCHECK_DEATH(statement) EXPECT_DEATH(statement, "Check failed")
+#define EXPECT_DCHECK_DEATH(statement) EXPECT_DEATH(statement, "DCHECK failed")
 #define EXPECT_DCHECK_DEATH_WITH(statement, msg) EXPECT_DEATH(statement, msg)
-#define ASSERT_DCHECK_DEATH(statement) ASSERT_DEATH(statement, "Check failed")
+#define ASSERT_DCHECK_DEATH(statement) ASSERT_DEATH(statement, "DCHECK failed")
 #define ASSERT_DCHECK_DEATH_WITH(statement, msg) ASSERT_DEATH(statement, msg)
 
 #else
 
 #define EXPECT_DCHECK_DEATH(statement) \
-  GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", )
+  GTEST_UNSUPPORTED_DEATH_TEST(statement, "DCHECK failed", )
 #define EXPECT_DCHECK_DEATH_WITH(statement, msg) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, msg, )
 #define ASSERT_DCHECK_DEATH(statement) \
-  GTEST_UNSUPPORTED_DEATH_TEST(statement, "Check failed", return)
+  GTEST_UNSUPPORTED_DEATH_TEST(statement, "DCHECK failed", return)
 #define ASSERT_DCHECK_DEATH_WITH(statement, msg) \
   GTEST_UNSUPPORTED_DEATH_TEST(statement, msg, return)
 

@@ -369,26 +369,6 @@ int _itoa_s(int value, char* buffer, size_t size_in_chars, int radix) {
   return 0;
 }
 
-int _itow_s(int value, char16_t* buffer, size_t size_in_chars, int radix) {
-  if (radix != 10)
-    return EINVAL;
-
-  // No more than 12 characters will be required for a 32-bit integer.
-  // Add an extra byte for the terminating null.
-  char temp[13];
-  int written = snprintf(temp, sizeof(temp), "%d", value);
-  if (static_cast<size_t>(written) >= size_in_chars) {
-    // Output was truncated, or written was negative.
-    return EINVAL;
-  }
-
-  for (int i = 0; i < written; ++i) {
-    buffer[i] = static_cast<char16_t>(temp[i]);
-  }
-  buffer[written] = '\0';
-  return 0;
-}
-
 #endif  // !WIN32
 
 }  // namespace url

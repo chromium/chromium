@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -26,6 +28,7 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -40,6 +43,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/mock_sync_service.h"
+#include "components/sync_bookmarks/switches.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -77,7 +81,10 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
                                         OnWillCreateBrowserContextServices,
                                     base::Unretained(this)));
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kImprovedSigninUIOnDesktop},
+        /*enabled_features=*/
+        {switches::kImprovedSigninUIOnDesktop,
+         switches::kSyncEnableBookmarksInTransportMode,
+         switches::kSyncMinimizeDeletionsDuringBookmarkBatchUpload},
         /*disabled_features=*/{});
   }
 
@@ -258,8 +265,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // This would move the password to account storage.
   EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::PASSWORDS, _))
-      .Times(1);
+                                       syncer::PASSWORDS, _));
 
   // Simulate a sign in event with the correct access point, which should call
   // `SelectTypeAndMigrateLocalDataItemsWhenActive()`.
@@ -312,8 +318,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // This would move the password to account storage.
   EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::PASSWORDS, _))
-      .Times(1);
+                                       syncer::PASSWORDS, _));
 
   // Wait for the bubble to be replaced with the sign in promo and click the
   // sign in button. This should directly sign the user in and trigger the data
@@ -413,8 +418,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // This would move the password to account storage.
   EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::PASSWORDS, _))
-      .Times(1);
+                                       syncer::PASSWORDS, _));
 
   // Set a new refresh token for the primary account, which verifies the
   // user's identity and signs them back in. This triggers the local data
@@ -485,8 +489,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   // This would move the address to account storage.
   std::vector<syncer::LocalDataItemModel::DataId> items{address.guid()};
   EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::CONTACT_INFO, items))
-      .Times(1);
+                                       syncer::CONTACT_INFO, items));
 
   // Simulate a sign in event with the correct access point, which will move the
   // address.
@@ -536,8 +539,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   // This would move the address to account storage.
   std::vector<syncer::LocalDataItemModel::DataId> items{address.guid()};
   EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::CONTACT_INFO, items))
-      .Times(1);
+                                       syncer::CONTACT_INFO, items));
 
   // Accept the save bubble, wait for the save bubble to be replaced with the
   // sign in promo and click the sign in button. This should directly sign the
@@ -637,8 +639,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   // This would move the address to account storage.
   std::vector<syncer::LocalDataItemModel::DataId> items{address.guid()};
   EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
-                                       syncer::CONTACT_INFO, items))
-      .Times(1);
+                                       syncer::CONTACT_INFO, items));
 
   // Set a new refresh token for the primary account, which verifies the
   // user's identity and signs them back in. This would trigger the data
@@ -730,4 +731,228 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectBucketCount(
       "Signin.SignInPromo.DismissedCloseButton",
       signin_metrics::AccessPoint::kAddressBubble, 1);
+}
+
+/////////////////////////////////////////////////////////////////
+///// Bookmark Sign in Promo
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
+                       BookmarkSignInPromoNoAccountPresent) {
+  base::HistogramTester histogram_tester;
+
+  // Trigger the bookmark bubble.
+  const GURL kUrl("http://test.com");
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bookmark =
+      model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
+  browser()->window()->ShowBookmarkBubble(kUrl, false);
+  ASSERT_EQ(1u, model->other_node()->children().size());
+
+  // Click the sign in button.
+  RunTestSequence(
+      EnsurePresent(kBookmarkBubbleFrameViewId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "6329378"),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+
+  // Check that clicking the sign in button navigated to a sign in page.
+  EXPECT_TRUE(IsSignInURL());
+
+  // Check that there is a helper attached to the sign in tab, because the
+  // bookmark still needs to be moved.
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
+                  *browser()->tab_strip_model()->GetActiveWebContents())
+                  ->IsInitializedForTesting());
+
+  // This would move the bookmark to account storage.
+  std::vector<syncer::LocalDataItemModel::DataId> items{bookmark->id()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::BOOKMARKS, items));
+
+  // Simulate a sign in event with the correct access point, which will move the
+  // bookmark.
+  SignIn(signin_metrics::AccessPoint::kBookmarkBubble);
+
+  // Check that the sign in was successful.
+  EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - Offered/Started/Completed are recorded, but no values for
+  // WebSignin (WithDefault).
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kBookmarkBubble,
+      1);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
+                       BookmarkSignInPromoWithWebSignedInAccount) {
+  base::HistogramTester histogram_tester;
+
+  // Sign in with an account, but only on the web. The primary account is not
+  // set.
+  AccountInfo info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build("test@email.com"));
+  ExtendAccountInfo(info);
+
+  // Trigger the bookmark bubble.
+  const GURL kUrl("http://test.com");
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bookmark =
+      model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
+  browser()->window()->ShowBookmarkBubble(kUrl, false);
+  ASSERT_EQ(1u, model->other_node()->children().size());
+
+  // This would move the bookmark to account storage.
+  std::vector<syncer::LocalDataItemModel::DataId> items{bookmark->id()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::BOOKMARKS, items));
+
+  // Click the sign in button. This should directly sign the user in and move
+  // the bookmark.
+  ActivateSyncService();
+  RunTestSequence(
+      EnsurePresent(kBookmarkBubbleFrameViewId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "6329378"),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+
+  // Check that there is no helper attached to the sign in tab, because the
+  // password was already moved.
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  // Check that the sign in was successful.
+  EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kBookmarkBubble,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.WithDefault",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.WebSignin.SourceToChromeSignin",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
+                       BookmarkSignInPromoWithAccountSignInPending) {
+  // Sign in with an account, and put its refresh token into an error
+  // state. This simulates the "sign in pending" state.
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
+  ExtendAccountInfo(info);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // The promo in sign in pending state is only shown if account storage for
+  // bookmarks is already enabled.
+  ON_CALL(*sync_service_mock().GetMockUserSettings(), GetSelectedTypes())
+      .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));
+
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
+
+  // Trigger the bookmark bubble.
+  const GURL kUrl("http://test.com");
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bookmark =
+      model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
+  browser()->window()->ShowBookmarkBubble(kUrl, false);
+  ASSERT_EQ(1u, model->other_node()->children().size());
+
+  // Click the sign in button.
+  RunTestSequence(
+      EnsurePresent(kBookmarkBubbleFrameViewId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "6329378"),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+
+  // Check that clicking the sign in button navigated to a sign in page.
+  EXPECT_TRUE(IsSignInURL());
+
+  // Check that there is no helper attached to the sign in tab, because the
+  // bookmark will be moved automatically upon sign in.
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  // This would try to move a bookmark to account storage. Should not be called.
+  std::vector<syncer::LocalDataItemModel::DataId> items{bookmark->id()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::BOOKMARKS, items))
+      .Times(0);
+
+  // Set a new refresh token for the primary account, which verifies the
+  // user's identity and signs them back in. This would trigger the automatic
+  // upload.
+  ActivateSyncService();
+  identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
+      info.gaia, info.email, "dummy_refresh_token",
+      /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::kBookmarkBubble,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
+
+  // Check that the sign in was successful.
+  EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - nothing should be recorded for reauth.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
 }

@@ -289,6 +289,11 @@ bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
         switches::kEnableExtensionsExplicitBrowserSignin);
   }
 
+  if (access_point == signin_metrics::AccessPoint::kBookmarkBubble) {
+    return base::FeatureList::IsEnabled(
+        switches::kSyncEnableBookmarksInTransportMode);
+  }
+
   return false;
 }
 

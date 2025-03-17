@@ -173,10 +173,6 @@ bool ShouldUseInactiveTabsDemoThreshold();
 // tabs are immediately considered inactive.
 bool ShouldUseInactiveTabsTestThreshold();
 
-// Returns the override for Tab Resumption decoration.
-// Returns nil is not set.
-NSString* GetTabResumptionDecorationOverride();
-
 // Whether the first party incognito experience should be simulated.
 bool ShouldOpenInIncognitoOverride();
 

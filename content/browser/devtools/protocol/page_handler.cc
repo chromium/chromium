@@ -492,22 +492,6 @@ struct PageHandler::PendingScreenshotRequest {
   gfx::Size requested_image_size;
 };
 
-struct PageHandler::PendingNavigation {
-  PendingNavigation(const std::string& frame_id,
-                    const std::string& url,
-                    const std::string& loader_id,
-                    const std::string& navigation_type)
-      : frame_id(frame_id),
-        url(url),
-        loader_id(loader_id),
-        navigation_type(navigation_type) {}
-
-  std::string frame_id;
-  std::string url;
-  std::string loader_id;
-  std::string navigation_type;
-};
-
 PageHandler::PageHandler(
     EmulationHandler* emulation_handler,
     BrowserHandler* browser_handler,
@@ -660,11 +644,22 @@ void PageHandler::DidCloseJavaScriptDialog(bool success,
 
 Response PageHandler::Enable(
     std::optional<bool> enable_file_chooser_opened_event) {
-  if (this->pending_navigation_) {
-    // Pending navigation was created while Page Handler was disabled. Emit the
-    // event.
-    EmitFrameStartedNavigatingEvent(*this->pending_navigation_);
-    this->pending_navigation_.reset();
+  if (!enabled_ && !host_->GetParentOrOuterDocument() &&
+      host_->frame_tree_node() &&
+      host_->frame_tree_node()->navigation_request()) {
+    // If the Page domain was not enabled, the page is the top level frame, and
+    // there is a penging navigation, emit `FrameStartedNavigating` event.
+    FrameTreeNode* frame_tree_node = host_->frame_tree_node();
+    NavigationRequest* navigation_request =
+        host_->frame_tree_node()->navigation_request();
+    frontend_->FrameStartedNavigating(
+        frame_tree_node->current_frame_host()
+            ->devtools_frame_token()
+            .ToString(),
+        navigation_request->common_params().url.spec(),
+        navigation_request->devtools_navigation_token().ToString(),
+        GetFrameStartedNavigatingNavigationTypeString(
+            navigation_request->common_params().navigation_type));
   }
 
   enabled_ = true;
@@ -983,28 +978,15 @@ void PageHandler::DidStartNavigating(
     const GURL& url,
     const base::UnguessableToken& loader_id,
     const blink::mojom::NavigationType& navigation_type) {
-  std::unique_ptr<const PendingNavigation> pending_navigation =
-      std::make_unique<const PendingNavigation>(
-          ftn.current_frame_host()->devtools_frame_token().ToString(),
-          url.spec(), loader_id.ToString(),
-          GetFrameStartedNavigatingNavigationTypeString(navigation_type));
-
   if (!enabled_) {
-    // If Page Handler is disabled, cache the pending navigation.
-    this->pending_navigation_ = std::move(pending_navigation);
     return;
   }
 
-  // Remove pending navigation if any.
-  this->pending_navigation_.reset();
-  EmitFrameStartedNavigatingEvent(*pending_navigation);
-}
-
-void PageHandler::EmitFrameStartedNavigatingEvent(
-    const PendingNavigation& pending_navigation) {
   frontend_->FrameStartedNavigating(
-      pending_navigation.frame_id, pending_navigation.url,
-      pending_navigation.loader_id, pending_navigation.navigation_type);
+      ftn.current_frame_host()->devtools_frame_token().ToString(),
+      url.spec(),
+      loader_id.ToString(),
+      GetFrameStartedNavigatingNavigationTypeString(navigation_type));
 }
 
 void PageHandler::OnFrameDetached(const base::UnguessableToken& frame_id) {

@@ -400,6 +400,8 @@ std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
       return mojom::NamedDomKey::kCapsLock;
     case ui::DomKey::CONTROL:
       return mojom::NamedDomKey::kControl;
+    case ui::DomKey::DEL:
+      return mojom::NamedDomKey::kDelete;
     case ui::DomKey::SHIFT:
       return mojom::NamedDomKey::kShift;
     case ui::DomKey::ENTER:

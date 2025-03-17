@@ -113,7 +113,7 @@ TEST_F(PerformanceManagerRegistryImplDeathTest, BrowserChildProcessNodes) {
   // create two simultaneous copies.
   utility_process.SimulateLaunch();
   EXPECT_TRUE(registry->GetBrowserChildProcessNode(utility_process.GetId()));
-  EXPECT_DCHECK_DEATH(utility_process.SimulateLaunch());
+  EXPECT_CHECK_DEATH(utility_process.SimulateLaunch());
 
   // `gpu_node` still exists. It should be safely deleted during teardown.
 }

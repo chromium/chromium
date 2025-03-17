@@ -325,7 +325,8 @@ bool DialogDelegate::EscShouldCancelDialog() const {
   // Use cancel as the Esc action if there's no defined "close" action. If the
   // delegate has either specified a closing action or a close-x they can expect
   // it to be called on Esc.
-  return !close_callback_ && !ShouldShowCloseButton();
+  return esc_should_cancel_dialog_override_.value_or(!close_callback_ &&
+                                                     !ShouldShowCloseButton());
 }
 
 // static

@@ -1578,10 +1578,6 @@
       origin_trial_allows_third_party: true,
       base_feature: "none",
     },
-    {
-      name: "DisableSelectAllForEmptyText",
-      status: "stable",
-    },
     // This feature will represent the extension of a deprecation trial that
     // allows first parties to temporarily use unpartitioned storage in embeds
     // loaded on their site. It replaces an old DT named

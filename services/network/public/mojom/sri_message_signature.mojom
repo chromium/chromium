@@ -100,20 +100,10 @@ enum SRIMessageSignatureError {
   kValidationFailedSignatureMismatch,
 };
 
-// Represents an issue we'll deliver to devtools to help developers
-// debug their code.
-struct SRIMessageSignatureIssue {
-  SRIMessageSignatureError error;
-
-  // kValidationFailedSignatureMismatch will populate the signature base over
-  // which signature verification failed.
-  string? signature_base;
-};
-
 // Contains the set of valid message signatures for a given response, along with
 // any parsing errors which were handled while parsing `Signature-Input` and
 // `Signature` headers.
 struct SRIMessageSignatures {
   array<SRIMessageSignature> signatures;
-  array<SRIMessageSignatureIssue> issues;
+  array<SRIMessageSignatureError> errors;
 };

@@ -90,6 +90,8 @@ static_library("app") {
 
   if (is_ios) {
     deps -= [ "//content/public/common:content_descriptors" ]
+    deps += [ "//third_party/crashpad/crashpad/handler:common" ]
+    public_deps += [ "//third_party/crashpad/crashpad/client" ]
   }
 
   if (is_android) {

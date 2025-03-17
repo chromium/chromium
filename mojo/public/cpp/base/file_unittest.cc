@@ -137,7 +137,7 @@ TEST(FileTest, NonPhysicalFileDeath) {
 #if defined(OFFICIAL_BUILD)
   const char kPhysicalFileCheckFailedRegex[] = "";
 #else
-  const char kPhysicalFileCheckFailedRegex[] = "Check failed: IsPhysicalFile";
+  const char kPhysicalFileCheckFailedRegex[] = "DCHECK failed: IsPhysicalFile";
 #endif
 
   base::SyncSocket sync_a;

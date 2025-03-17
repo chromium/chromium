@@ -132,8 +132,10 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
         kMaxRank},
        /*gemm_a=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*gemm_c=*/{webnn::SupportedDataTypes::All(), kMaxRank},
-       /*gru_input=*/{webnn::OperandDataType::kFloat32},
-       /*gru_cell_input=*/{webnn::OperandDataType::kFloat32},
+       /*gru_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*gru_bias=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*gru_cell_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*gru_cell_bias=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*hard_sigmoid_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*hard_swish_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*instance_normalization_input=*/
@@ -144,9 +146,14 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*leaky_relu_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*linear_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
-       /*lstm_input=*/{webnn::OperandDataType::kFloat32},
+       /*lstm_input=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
+       /*lstm_bias=*/{{webnn::OperandDataType::kFloat32}, kMaxRank},
        /*lstm_cell_input=*/
-       {webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
+       /*lstm_cell_bias=*/
+       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
+        kMaxRank},
        /*matmul_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
        /*pad_input=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
@@ -223,13 +230,13 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
   webnn::ContextProperties output(
       webnn::InputOperandLayout::kNhwc, webnn::Resample2DAxes::kChannelsFirst,
       /*tensor_byte_length_limit=*/0,
-      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+      {{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

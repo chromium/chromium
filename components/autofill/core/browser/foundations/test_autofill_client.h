@@ -471,6 +471,7 @@ class TestAutofillClientTemplate : public T {
         identity_test_environment().MakePrimaryAccountAvailable(
             "foo@gmail.com", signin::ConsentLevel::kSignin);
     SetCanUseModelExecutionFeatures(true);
+    SetVariationConfigCountryCode(GeoIpCountryCode("US"));
   }
 
   // Updates whether the currently signed in primary account can use model

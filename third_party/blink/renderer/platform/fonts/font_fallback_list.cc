@@ -51,6 +51,7 @@ void FontFallbackList::Trace(Visitor* visitor) const {
   visitor->Trace(font_list_);
   visitor->Trace(cached_primary_simple_font_data_with_space_);
   visitor->Trace(cached_primary_simple_font_data_with_digit_zero_);
+  visitor->Trace(cached_primary_simple_font_data_with_cjk_water_);
   visitor->Trace(font_selector_);
   visitor->Trace(shape_cache_);
 }

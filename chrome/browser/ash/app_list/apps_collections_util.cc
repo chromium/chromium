@@ -33,7 +33,6 @@ AppCollectionMap GetAppCollectionsMap() {
 
       // Essentials.
       {app_constants::kChromeAppId, ash::AppCollection::kEssentials},
-      {app_constants::kLacrosAppId, ash::AppCollection::kEssentials},
       {arc::kPlayStoreAppId, ash::AppCollection::kEssentials},
       {extension_misc::kFilesManagerAppId, ash::AppCollection::kEssentials},
       {file_manager::kFileManagerSwaAppId, ash::AppCollection::kEssentials},

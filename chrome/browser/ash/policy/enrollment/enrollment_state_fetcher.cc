@@ -49,8 +49,8 @@ namespace {
 
 namespace em = enterprise_management;
 
-RlwePlaintextId ConstructPlainttextId(const std::string& rlz_brand_code,
-                                      const std::string& serial_number) {
+RlwePlaintextId ConstructPlaintextId(const std::string& rlz_brand_code,
+                                     const std::string& serial_number) {
   RlwePlaintextId rlwe_id;
   // See http://shortn/_tkT6f7xV0F for format specification.
   const std::string rlz_brand_code_hex = base::HexEncode(rlz_brand_code);
@@ -255,7 +255,7 @@ class RlweOprf {
 
     context.psm_rlwe_client = context.rlwe_client_factory.Run(
         private_membership::rlwe::CROS_DEVICE_STATE_UNIFIED,
-        ConstructPlainttextId(context.rlz_brand_code, context.serial_number));
+        ConstructPlaintextId(context.rlz_brand_code, context.serial_number));
     const auto oprf_request = context.psm_rlwe_client->CreateOprfRequest();
     if (!oprf_request.ok()) {
       LOG(ERROR) << "Failed to create PSM RLWE OPRF request: "
@@ -942,7 +942,7 @@ class EnrollmentStateFetcherImpl::Sequence {
     }
 
     RlwePlaintextId psm_id =
-        ConstructPlainttextId(context_.rlz_brand_code, context_.serial_number);
+        ConstructPlaintextId(context_.rlz_brand_code, context_.serial_number);
     // Use WARNING level to preserve PSM ID in the logs.
     LOG(WARNING) << "PSM determination successful. Identifier "
                  << psm_id.sensitive_id() << " is"

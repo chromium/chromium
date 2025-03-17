@@ -1153,8 +1153,6 @@ crbug.com/1240236 external/wpt/css/css-fonts/system-ui-zh.html [ Failure ]
 crbug.com/1269537 [ Mac ] fast/css-generated-content/quotes-lang.html [ Failure Pass ]
 crbug.com/1375884 external/wpt/css/css-fonts/rlh-in-monospace.html [ Failure ]
 
-crbug.com/1317062 external/wpt/html/rendering/non-replaced-elements/phrasing-content-0/br-wbr-content/content-property.tentative.html [ Failure ]
-
 # Flaky layout tests
 crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failure Pass ]
 
@@ -2621,6 +2619,16 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
+crbug.com/403967924 [ Win ] external/wpt/css/css-ui/caret-eol-001.html [ Failure ]
+crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-002.html [ Failure ]
+crbug.com/403967924 [ Win ] external/wpt/css/css-ui/caret-eol-002.html [ Failure ]
+crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-003.html [ Failure ]
+crbug.com/403967924 [ Win ] external/wpt/css/css-ui/caret-eol-003.html [ Failure ]
+crbug.com/403967924 [ Linux ] external/wpt/css/css-ui/caret-eol-004.tentative.html [ Failure ]
+crbug.com/403967924 [ Win ] external/wpt/css/css-ui/caret-eol-004.tentative.html [ Failure ]
+[ Win11-arm64 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
+[ Mac15 ] virtual/threaded/wpt_internal/view-transition/browser-controls-root-offset-new.html [ Failure ]
 crbug.com/403345128 [ Linux ] external/wpt/css/css-page/monolithic-overflow-029-print.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-020.html [ Failure ]
 crbug.com/403345125 external/wpt/css/css-writing-modes/available-size-021.html [ Failure ]
@@ -3615,7 +3623,6 @@ crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-inline-end.html [ Fai
 crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-inline-start.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-inline.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-box/margin-trim/grid-trim-ignores-collapsed-tracks.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-values/ic-unit-015.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/animation/translate-animation-on-svg.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/dedicated-worker/mediasource-worker-detach-element.html [ Timeout ]
@@ -9082,3 +9089,11 @@ crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-side
 crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Failure ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
+
+#Gardener 2025-03-17
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-2-test [ Failure ]
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-4-test [ Failure ]
+crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-name-000-print.html [ Failure ]
+crbug.com/404069999 [ Debug Linux ] external/wpt/css/css-page/page-visibility-hidden-001-print.html [ Failure ]
+crbug.com/404069999 [ Debug Linux ] virtual/scalefactor200/external/wpt/css/printing/zero-size-001-print.tentative.html [ Failure ]

@@ -152,7 +152,7 @@ TEST_F(SRIMessageSignatureParserTest, NoHeaders) {
   mojom::SRIMessageSignaturesPtr result =
       ParseSRIMessageSignaturesFromHeaders(*headers);
   EXPECT_EQ(0u, result->signatures.size());
-  EXPECT_EQ(0u, result->issues.size());
+  EXPECT_EQ(0u, result->errors.size());
 }
 
 TEST_F(SRIMessageSignatureParserTest, NoSignatureHeader) {
@@ -160,9 +160,9 @@ TEST_F(SRIMessageSignatureParserTest, NoSignatureHeader) {
   mojom::SRIMessageSignaturesPtr result =
       ParseSRIMessageSignaturesFromHeaders(*headers);
   EXPECT_EQ(0u, result->signatures.size());
-  ASSERT_EQ(1u, result->issues.size());
+  ASSERT_EQ(1u, result->errors.size());
   EXPECT_EQ(mojom::SRIMessageSignatureError::kMissingSignatureHeader,
-            result->issues[0]->error);
+            result->errors[0]);
 }
 
 TEST_F(SRIMessageSignatureParserTest, NoSignatureInputHeader) {
@@ -170,9 +170,9 @@ TEST_F(SRIMessageSignatureParserTest, NoSignatureInputHeader) {
   mojom::SRIMessageSignaturesPtr result =
       ParseSRIMessageSignaturesFromHeaders(*headers);
   EXPECT_EQ(0u, result->signatures.size());
-  ASSERT_EQ(1u, result->issues.size());
+  ASSERT_EQ(1u, result->errors.size());
   EXPECT_EQ(mojom::SRIMessageSignatureError::kMissingSignatureInputHeader,
-            result->issues[0]->error);
+            result->errors[0]);
 }
 
 TEST_F(SRIMessageSignatureParserTest, ValidHeaders) {
@@ -181,7 +181,7 @@ TEST_F(SRIMessageSignatureParserTest, ValidHeaders) {
       ParseSRIMessageSignaturesFromHeaders(*headers);
 
   EXPECT_EQ(1u, result->signatures.size());
-  EXPECT_EQ(0u, result->issues.size());
+  EXPECT_EQ(0u, result->errors.size());
   ValidateBasicTestHeader(result->signatures[0]);
 }
 
@@ -204,10 +204,10 @@ TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
     mojom::SRIMessageSignaturesPtr result =
         ParseSRIMessageSignaturesFromHeaders(*headers);
     EXPECT_EQ(1u, result->signatures.size());
-    EXPECT_EQ(1u, result->issues.size());
+    EXPECT_EQ(1u, result->errors.size());
     EXPECT_EQ(
         mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel,
-        result->issues[0]->error);
+        result->errors[0]);
     ValidateBasicTestHeader(result->signatures[0]);
   }
 
@@ -218,7 +218,7 @@ TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
         ParseSRIMessageSignaturesFromHeaders(*headers);
     EXPECT_EQ(1u, result->signatures.size());
     // TODO(crbug.com/381044049): We should probably have a parsing error here.
-    EXPECT_EQ(0u, result->issues.size());
+    EXPECT_EQ(0u, result->errors.size());
     ValidateBasicTestHeader(result->signatures[0]);
   }
 
@@ -228,10 +228,10 @@ TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
     mojom::SRIMessageSignaturesPtr result =
         ParseSRIMessageSignaturesFromHeaders(*headers);
     EXPECT_EQ(1u, result->signatures.size());
-    EXPECT_EQ(1u, result->issues.size());
+    EXPECT_EQ(1u, result->errors.size());
     EXPECT_EQ(
         mojom::SRIMessageSignatureError::kSignatureInputHeaderMissingLabel,
-        result->issues[0]->error);
+        result->errors[0]);
     ValidateBasicTestHeader(result->signatures[0]);
   }
 }
@@ -278,7 +278,7 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureHeader) {
 
     // As these are all malformed, we expect parsing to return no headers.
     EXPECT_EQ(0u, result->signatures.size());
-    EXPECT_EQ(1u, result->issues.size());
+    EXPECT_EQ(1u, result->errors.size());
   }
 }
 
@@ -468,11 +468,8 @@ TEST_F(SRIMessageSignatureParserTest, MalformedSignatureInputComponents) {
 
     // As these are all malformed, we expect parsing to return no headers.
     EXPECT_EQ(0u, result->signatures.size());
-    ASSERT_GT(result->issues.size(), 0u);
-    EXPECT_THAT(
-        result->issues,
-        testing::Contains(testing::Pointee(testing::Field(
-            "error", &mojom::SRIMessageSignatureIssue::error, test.error))));
+    ASSERT_GT(result->errors.size(), 0u);
+    EXPECT_THAT(result->errors, testing::Contains(test.error));
   }
 }
 
@@ -609,7 +606,7 @@ TEST_F(SRIMessageSignatureParserTest, ValidComponents) {
         ParseSRIMessageSignaturesFromHeaders(*headers);
 
     ASSERT_EQ(1u, result->signatures.size());
-    EXPECT_EQ(0u, result->issues.size());
+    EXPECT_EQ(0u, result->errors.size());
     ASSERT_EQ(test.expected_names.size(),
               result->signatures[0]->components.size());
     for (size_t i = 0; i < test.expected_names.size(); i++) {
@@ -642,7 +639,7 @@ TEST_F(SRIMessageSignatureParserTest, Created) {
         ParseSRIMessageSignaturesFromHeaders(*headers);
 
     ASSERT_EQ(1u, result->signatures.size());
-    EXPECT_EQ(0u, result->issues.size());
+    EXPECT_EQ(0u, result->errors.size());
     ASSERT_TRUE(result->signatures[0]->created.has_value());
 
     int64_t expected_int;
@@ -674,7 +671,7 @@ TEST_F(SRIMessageSignatureParserTest, Expires) {
         ParseSRIMessageSignaturesFromHeaders(*headers);
 
     ASSERT_EQ(1u, result->signatures.size());
-    EXPECT_EQ(0u, result->issues.size());
+    EXPECT_EQ(0u, result->errors.size());
     ASSERT_TRUE(result->signatures[0]->expires.has_value());
 
     int64_t expected_int;
@@ -706,7 +703,7 @@ TEST_F(SRIMessageSignatureParserTest, Nonce) {
         ParseSRIMessageSignaturesFromHeaders(*headers);
 
     ASSERT_EQ(1u, result->signatures.size());
-    EXPECT_EQ(0u, result->issues.size());
+    EXPECT_EQ(0u, result->errors.size());
     ASSERT_TRUE(result->signatures[0]->nonce.has_value());
     EXPECT_EQ(test, result->signatures[0]->nonce.value());
   }
@@ -730,7 +727,7 @@ TEST_F(SRIMessageSignatureParserTest, ParameterSorting) {
     auto headers = GetHeaders(kValidSignatureHeader, header.str().c_str());
     auto result = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, result->signatures.size());
-    EXPECT_EQ(0u, result->issues.size());
+    EXPECT_EQ(0u, result->errors.size());
   } while (std::next_permutation(params.begin(), params.end()));
 }
 
@@ -777,7 +774,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersValidBase) {
   auto headers = ValidHeadersPlusInput(kValidSignatureInputHeader);
   auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(1u, parsed->signatures.size());
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 
   std::optional<std::string> result =
       ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
@@ -821,7 +818,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeadersStrictlySerializedBase) {
     auto headers = ValidHeadersPlusInput(test);
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     std::optional<std::string> result =
         ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
@@ -866,7 +863,7 @@ TEST_F(SRIMessageSignatureBaseTest, AuthorityComponent) {
     auto headers = ValidHeadersPlusInput(input_header.c_str());
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     std::optional<std::string> result =
         ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
@@ -904,7 +901,7 @@ TEST_F(SRIMessageSignatureBaseTest, QueryComponent) {
     auto headers = ValidHeadersPlusInput(input_header.c_str());
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     std::optional<std::string> result =
         ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
@@ -950,8 +947,8 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
 
       auto headers = ValidHeadersPlusInput(input_header.c_str());
       auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
-      ASSERT_EQ(1u, parsed->signatures.size()) << parsed->issues[0]->error;
-      EXPECT_EQ(0u, parsed->issues.size());
+      ASSERT_EQ(1u, parsed->signatures.size()) << parsed->errors[0];
+      EXPECT_EQ(0u, parsed->errors.size());
 
       std::optional<std::string> result = ConstructSignatureBase(
           parsed->signatures[0], GURL(test.url), *headers);
@@ -975,8 +972,8 @@ TEST_F(SRIMessageSignatureBaseTest, QueryParamComponent) {
 
       auto headers = ValidHeadersPlusInput(input_header.c_str());
       auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
-      ASSERT_EQ(1u, parsed->signatures.size()) << parsed->issues[0]->error;
-      EXPECT_EQ(0u, parsed->issues.size());
+      ASSERT_EQ(1u, parsed->signatures.size()) << parsed->errors[0];
+      EXPECT_EQ(0u, parsed->errors.size());
 
       std::optional<std::string> result = ConstructSignatureBase(
           parsed->signatures[0], GURL(test.url), *headers);
@@ -1021,7 +1018,7 @@ TEST_F(SRIMessageSignatureBaseTest, PathComponent) {
     auto headers = ValidHeadersPlusInput(input_header.c_str());
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     std::optional<std::string> result =
         ConstructSignatureBase(parsed->signatures[0], GURL(test.url), *headers);
@@ -1056,7 +1053,7 @@ TEST_F(SRIMessageSignatureBaseTest, StatusComponent) {
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
 
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     std::optional<std::string> result = ConstructSignatureBase(
         parsed->signatures[0], GURL(kExampleURL), *headers);
@@ -1113,7 +1110,7 @@ TEST_F(SRIMessageSignatureBaseTest, ValidHeaderParams) {
     auto headers = ValidHeadersPlusInput(input_header.str().c_str());
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     std::optional<std::string> result =
         ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
@@ -1146,7 +1143,7 @@ TEST_F(SRIMessageSignatureBaseTest, ParameterSorting) {
     auto headers = ValidHeadersPlusInput(input_header.str().c_str());
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     std::optional<std::string> result =
         ConstructSignatureBase(parsed->signatures[0], this->url(), *headers);
@@ -1206,22 +1203,22 @@ TEST_F(SRIMessageSignatureValidationTest, NoSignatures) {
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200").Build();
   auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(0u, parsed->signatures.size());
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 
   EXPECT_TRUE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignature) {
   auto headers = ValidHeaders();
   auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(1u, parsed->signatures.size());
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 
   EXPECT_TRUE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
@@ -1240,13 +1237,13 @@ TEST_F(SRIMessageSignatureValidationTest, ValidPlusInvalidSignature) {
 
   auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(2u, parsed->signatures.size());
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 
   EXPECT_FALSE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-  ASSERT_EQ(1u, parsed->issues.size());
+  ASSERT_EQ(1u, parsed->errors.size());
   EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
-            parsed->issues[0]->error);
+            parsed->errors[0]);
 }
 
 TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
@@ -1260,11 +1257,11 @@ TEST_F(SRIMessageSignatureValidationTest, MultipleValidSignatures) {
 
   auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(2u, parsed->signatures.size());
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 
   EXPECT_TRUE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
@@ -1272,7 +1269,7 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
                          kValidExpiringSignatureInputHeader);
   auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
   ASSERT_EQ(1u, parsed->signatures.size());
-  EXPECT_EQ(0u, parsed->issues.size());
+  EXPECT_EQ(0u, parsed->errors.size());
 
   // Signature should validate at the moment before and of expiration.
   auto diff = kValidExpiringSignatureExpiresAt -
@@ -1280,20 +1277,20 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureExpires) {
   task_environment_.AdvanceClock(base::Seconds(diff));
   EXPECT_TRUE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-  ASSERT_EQ(0u, parsed->issues.size());
+  ASSERT_EQ(0u, parsed->errors.size());
 
   task_environment_.AdvanceClock(base::Seconds(1));
   EXPECT_TRUE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-  ASSERT_EQ(0u, parsed->issues.size());
+  ASSERT_EQ(0u, parsed->errors.size());
 
   // ...but not after expiration.
   task_environment_.AdvanceClock(base::Seconds(1));
   EXPECT_FALSE(
       ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-  ASSERT_EQ(1u, parsed->issues.size());
+  ASSERT_EQ(1u, parsed->errors.size());
   EXPECT_EQ(mojom::SRIMessageSignatureError::kValidationFailedSignatureExpired,
-            parsed->issues[0]->error);
+            parsed->errors[0]);
 }
 
 TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
@@ -1310,14 +1307,14 @@ TEST_F(SRIMessageSignatureValidationTest, ValidSignatureDigestHeaderMismatch) {
         Headers(test, kValidSignatureHeader, kValidSignatureInputHeader);
     auto parsed = ParseSRIMessageSignaturesFromHeaders(*headers);
     ASSERT_EQ(1u, parsed->signatures.size());
-    EXPECT_EQ(0u, parsed->issues.size());
+    EXPECT_EQ(0u, parsed->errors.size());
 
     EXPECT_FALSE(
         ValidateSRIMessageSignaturesOverHeaders(parsed, this->url(), *headers));
-    EXPECT_EQ(1u, parsed->issues.size());
+    EXPECT_EQ(1u, parsed->errors.size());
     EXPECT_EQ(
         mojom::SRIMessageSignatureError::kValidationFailedSignatureMismatch,
-        parsed->issues[0]->error);
+        parsed->errors[0]);
   }
 }
 

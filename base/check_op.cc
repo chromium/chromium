@@ -106,8 +106,7 @@ char* CreateCheckOpLogMessageString(const char* expr_str,
                                     char* v1_str,
                                     char* v2_str) {
   std::stringstream ss;
-  ss << "Check failed: " << expr_str << " (" << v1_str << " vs. " << v2_str
-     << ")";
+  ss << expr_str << " (" << v1_str << " vs. " << v2_str << ")";
   free(v1_str);
   free(v2_str);
   return strdup(ss.str().c_str());

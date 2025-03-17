@@ -171,8 +171,7 @@ class OwningDelegate : public Delegate {
       : did_delete_(did_delete), model_(this) {
     model_.AddItem(1, u"foo");
     controller_ = [[WatchedLifetimeMenuController alloc] initWithModel:&model_
-                                                              delegate:nil
-                                                useWithPopUpButtonCell:NO];
+                                                              delegate:nil];
     [controller_ setDeallocCalled:did_dealloc];
   }
 
@@ -227,9 +226,8 @@ TEST_F(MenuControllerTest, EmptyMenu) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(0, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(0, menu.menu.numberOfItems);
 }
 
 TEST_F(MenuControllerTest, BasicCreation) {
@@ -243,18 +241,17 @@ TEST_F(MenuControllerTest, BasicCreation) {
   model.AddItem(5, u"five");
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(6, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(6, menu.menu.numberOfItems);
 
   // Check the title, tag, and represented object are correct for a random
   // element.
-  NSMenuItem* itemTwo = [[menu menu] itemAtIndex:2];
-  NSString* title = [itemTwo title];
+  NSMenuItem* itemTwo = [menu.menu itemAtIndex:2];
+  NSString* title = itemTwo.title;
   EXPECT_EQ(u"three", base::SysNSStringToUTF16(title));
-  EXPECT_EQ(2, [itemTwo tag]);
+  EXPECT_EQ(2, itemTwo.tag);
 
-  EXPECT_TRUE([[[menu menu] itemAtIndex:3] isSeparatorItem]);
+  EXPECT_TRUE([menu.menu itemAtIndex:3].separatorItem);
 }
 
 TEST_F(MenuControllerTest, Submenus) {
@@ -269,30 +266,29 @@ TEST_F(MenuControllerTest, Submenus) {
   model.AddItem(6, u"three");
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(3, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(3, menu.menu.numberOfItems);
 
   // Inspect the submenu to ensure it has correct properties.
-  NSMenuItem* menuItem = [[menu menu] itemAtIndex:1];
-  EXPECT_TRUE([menuItem isEnabled]);
-  NSMenu* submenu = [menuItem submenu];
+  NSMenuItem* menuItem = [menu.menu itemAtIndex:1];
+  EXPECT_TRUE(menuItem.enabled);
+  NSMenu* submenu = menuItem.submenu;
   EXPECT_TRUE(submenu);
-  EXPECT_EQ(3, [submenu numberOfItems]);
+  EXPECT_EQ(3, submenu.numberOfItems);
 
   // Inspect one of the items to make sure it has the correct model as its
   // represented object and the proper tag.
   NSMenuItem* submenuItem = [submenu itemAtIndex:1];
-  NSString* title = [submenuItem title];
+  NSString* title = submenuItem.title;
   EXPECT_EQ(u"sub-two", base::SysNSStringToUTF16(title));
-  EXPECT_EQ(1, [submenuItem tag]);
+  EXPECT_EQ(1, submenuItem.tag);
 
   // Make sure the item after the submenu is correct and its represented
   // object is back to the top model.
-  NSMenuItem* item = [[menu menu] itemAtIndex:2];
-  title = [item title];
+  NSMenuItem* item = [menu.menu itemAtIndex:2];
+  title = item.title;
   EXPECT_EQ(u"three", base::SysNSStringToUTF16(title));
-  EXPECT_EQ(2, [item tag]);
+  EXPECT_EQ(2, item.tag);
 }
 
 TEST_F(MenuControllerTest, EmptySubmenu) {
@@ -303,16 +299,15 @@ TEST_F(MenuControllerTest, EmptySubmenu) {
   model.AddSubMenuWithStringId(2, kTestLabelResourceId, &submodel);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(2, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(2, menu.menu.numberOfItems);
 
   // Inspect the submenu to ensure it has one item labeled "(empty)".
-  NSMenu* submenu = [[[menu menu] itemAtIndex:1] submenu];
+  NSMenu* submenu = [menu.menu itemAtIndex:1].submenu;
   EXPECT_TRUE(submenu);
-  EXPECT_EQ(1, [submenu numberOfItems]);
+  EXPECT_EQ(1, submenu.numberOfItems);
 
-  EXPECT_NSEQ(@"(empty)", [[submenu itemAtIndex:0] title]);
+  EXPECT_NSEQ(@"(empty)", [submenu itemAtIndex:0].title);
 }
 
 // Tests that an empty menu item, "(empty)", is added to a submenu that contains
@@ -330,16 +325,15 @@ TEST_F(MenuControllerTest, EmptySubmenuWhenAllChildItemsAreHidden) {
   model.AddSubMenuWithStringId(4, kTestLabelResourceId, &submodel);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(2, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(2, menu.menu.numberOfItems);
 
   // Inspect the submenu to ensure it has one item labeled "(empty)".
-  NSMenu* submenu = [[[menu menu] itemAtIndex:1] submenu];
+  NSMenu* submenu = [menu.menu itemAtIndex:1].submenu;
   EXPECT_TRUE(submenu);
-  EXPECT_EQ(1, [submenu numberOfItems]);
+  EXPECT_EQ(1, submenu.numberOfItems);
 
-  EXPECT_NSEQ(@"(empty)", [[submenu itemAtIndex:0] title]);
+  EXPECT_NSEQ(@"(empty)", [submenu itemAtIndex:0].title);
 }
 
 // Tests hiding a submenu item. If a submenu item with children is set to
@@ -363,29 +357,27 @@ TEST_F(MenuControllerTest, HiddenSubmenu) {
 
   // Create the controller.
   MenuControllerCocoa* menu_controller =
-      [[MenuControllerCocoa alloc] initWithModel:&model
-                                        delegate:nil
-                          useWithPopUpButtonCell:NO];
-  EXPECT_EQ(2, [[menu_controller menu] numberOfItems]);
-  delegate.menu_to_close_ = [menu_controller menu];
+      [[MenuControllerCocoa alloc] initWithModel:&model delegate:nil];
+  EXPECT_EQ(2, menu_controller.menu.numberOfItems);
+  delegate.menu_to_close_ = menu_controller.menu;
 
   // Show the menu.
-  [NSRunLoop.currentRunLoop
-      performInModes:@[ NSEventTrackingRunLoopMode ]
-               block:^{
-                 EXPECT_TRUE([menu_controller isMenuOpen]);
-                 // Ensure that the submenu is hidden.
-                 NSMenuItem* item = [[menu_controller menu] itemAtIndex:1];
-                 EXPECT_TRUE([item isHidden]);
-               }];
+  [NSRunLoop.currentRunLoop performInModes:@[ NSEventTrackingRunLoopMode ]
+                                     block:^{
+                                       EXPECT_TRUE(menu_controller.menuOpen);
+                                       // Ensure that the submenu is hidden.
+                                       NSMenuItem* item =
+                                           [menu_controller.menu itemAtIndex:1];
+                                       EXPECT_TRUE(item.hidden);
+                                     }];
 
   // Pop open the menu, which will spin an event-tracking run loop.
-  [NSMenu popUpContextMenu:[menu_controller menu]
+  [NSMenu popUpContextMenu:menu_controller.menu
                  withEvent:cocoa_test_event_utils::RightMouseDownAtPoint(
                                NSZeroPoint)
-                   forView:[test_window() contentView]];
+                   forView:test_window().contentView];
 
-  EXPECT_FALSE([menu_controller isMenuOpen]);
+  EXPECT_FALSE(menu_controller.menuOpen);
 
   // Pump the task that notifies the delegate.
   base::RunLoop().RunUntilIdle();
@@ -415,34 +407,33 @@ TEST_F(MenuControllerTest, DisabledSubmenu) {
 
   // Create the controller.
   MenuControllerCocoa* menu_controller =
-      [[MenuControllerCocoa alloc] initWithModel:&model
-                                        delegate:nil
-                          useWithPopUpButtonCell:NO];
-  delegate.menu_to_close_ = [menu_controller menu];
+      [[MenuControllerCocoa alloc] initWithModel:&model delegate:nil];
+  delegate.menu_to_close_ = menu_controller.menu;
 
   // Show the menu.
-  [NSRunLoop.currentRunLoop
-      performInModes:@[ NSEventTrackingRunLoopMode ]
-               block:^{
-                 EXPECT_TRUE([menu_controller isMenuOpen]);
+  [NSRunLoop.currentRunLoop performInModes:@[ NSEventTrackingRunLoopMode ]
+                                     block:^{
+                                       EXPECT_TRUE(menu_controller.menuOpen);
 
-                 // Ensure that the disabled submenu is disabled.
-                 NSMenuItem* disabled_item =
-                     [[menu_controller menu] itemAtIndex:1];
-                 EXPECT_FALSE([disabled_item isEnabled]);
+                                       // Ensure that the disabled submenu is
+                                       // disabled.
+                                       NSMenuItem* disabled_item =
+                                           [menu_controller.menu itemAtIndex:1];
+                                       EXPECT_FALSE(disabled_item.enabled);
 
-                 // Ensure that the enabled submenu is enabled.
-                 NSMenuItem* enabled_item =
-                     [[menu_controller menu] itemAtIndex:2];
-                 EXPECT_TRUE([enabled_item isEnabled]);
-               }];
+                                       // Ensure that the enabled submenu is
+                                       // enabled.
+                                       NSMenuItem* enabled_item =
+                                           [menu_controller.menu itemAtIndex:2];
+                                       EXPECT_TRUE(enabled_item.enabled);
+                                     }];
 
   // Pop open the menu, which will spin an event-tracking run loop.
-  [NSMenu popUpContextMenu:[menu_controller menu]
+  [NSMenu popUpContextMenu:menu_controller.menu
                  withEvent:cocoa_test_event_utils::RightMouseDownAtPoint(
                                NSZeroPoint)
-                   forView:[test_window() contentView]];
-  EXPECT_FALSE([menu_controller isMenuOpen]);
+                   forView:test_window().contentView];
+  EXPECT_FALSE(menu_controller.menuOpen);
 
   // Pump the task that notifies the delegate.
   base::RunLoop().RunUntilIdle();
@@ -450,52 +441,30 @@ TEST_F(MenuControllerTest, DisabledSubmenu) {
   EXPECT_TRUE(delegate.did_close_);
 }
 
-TEST_F(MenuControllerTest, PopUpButton) {
-  Delegate delegate;
-  SimpleMenuModel model(&delegate);
-  model.AddItem(1, u"one");
-  model.AddItem(2, u"two");
-  model.AddItem(3, u"three");
-
-  // Menu should have an extra item inserted at position 0 that has an empty
-  // title.
-  MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:YES];
-  EXPECT_EQ(4, [[menu menu] numberOfItems]);
-  EXPECT_EQ(std::u16string(),
-            base::SysNSStringToUTF16([[[menu menu] itemAtIndex:0] title]));
-
-  // Make sure the tags are still correct (the index no longer matches the tag).
-  NSMenuItem* itemTwo = [[menu menu] itemAtIndex:2];
-  EXPECT_EQ(1, [itemTwo tag]);
-}
-
 TEST_F(MenuControllerTest, Execute) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
   model.AddItem(1, u"one");
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(1, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(1, menu.menu.numberOfItems);
 
   // Fake selecting the menu item, we expect the delegate to be told to execute
   // a command.
-  NSMenuItem* item = [[menu menu] itemAtIndex:0];
+  NSMenuItem* item = [menu.menu itemAtIndex:0];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-  [[item target] performSelector:[item action] withObject:item];
+  [item.target performSelector:item.action withObject:item];
 #pragma clang diagnostic pop
   EXPECT_EQ(1, delegate.execute_count_);
 }
 
 void Validate(MenuControllerCocoa* controller, NSMenu* menu) {
-  for (int i = 0; i < [menu numberOfItems]; ++i) {
+  for (int i = 0; i < menu.numberOfItems; ++i) {
     NSMenuItem* item = [menu itemAtIndex:i];
     [controller validateUserInterfaceItem:item];
-    if ([item hasSubmenu]) {
-      Validate(controller, [item submenu]);
+    if (item.hasSubmenu) {
+      Validate(controller, item.submenu);
     }
   }
 }
@@ -510,11 +479,10 @@ TEST_F(MenuControllerTest, Validate) {
   model.AddSubMenuWithStringId(3, kTestLabelResourceId, &submodel);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(3, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(3, menu.menu.numberOfItems);
 
-  Validate(menu, [menu menu]);
+  Validate(menu, menu.menu);
 }
 
 // Tests that items which have a font set actually use that font.
@@ -529,34 +497,13 @@ TEST_F(MenuControllerTest, LabelFontList) {
   model.AddItem(2, u"two");
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(2, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(2, menu.menu.numberOfItems);
 
-  Validate(menu, [menu menu]);
+  Validate(menu, menu.menu);
 
-  EXPECT_TRUE([[[menu menu] itemAtIndex:0] attributedTitle] != nil);
-  EXPECT_TRUE([[[menu menu] itemAtIndex:1] attributedTitle] == nil);
-}
-
-TEST_F(MenuControllerTest, DefaultInitializer) {
-  Delegate delegate;
-  SimpleMenuModel model(&delegate);
-  model.AddItem(1, u"one");
-  model.AddItem(2, u"two");
-  model.AddItem(3, u"three");
-
-  MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] init];
-  EXPECT_FALSE([menu menu]);
-
-  [menu setModel:&model];
-  [menu setUseWithPopUpButtonCell:NO];
-  EXPECT_TRUE([menu menu]);
-  EXPECT_EQ(3, [[menu menu] numberOfItems]);
-
-  // Check immutability.
-  model.AddItem(4, u"four");
-  EXPECT_EQ(3, [[menu menu] numberOfItems]);
+  EXPECT_TRUE([menu.menu itemAtIndex:0].attributedTitle != nil);
+  EXPECT_TRUE([menu.menu itemAtIndex:1].attributedTitle == nil);
 }
 
 // Test that menus with dynamic labels actually get updated.
@@ -570,16 +517,15 @@ TEST_F(MenuControllerTest, Dynamic) {
   SimpleMenuModel model(&delegate);
   model.AddItem(1, u"foo");
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  EXPECT_EQ(1, [[menu menu] numberOfItems]);
+                                                                delegate:nil];
+  EXPECT_EQ(1, menu.menu.numberOfItems);
   // Validate() simulates opening the menu - the item label/icon should be
   // initialized after this so we can validate the menu contents.
-  Validate(menu, [menu menu]);
-  NSMenuItem* item = [[menu menu] itemAtIndex:0];
+  Validate(menu, menu.menu);
+  NSMenuItem* item = [menu.menu itemAtIndex:0];
   // Item should have the "initial" label and no icon.
-  EXPECT_EQ(initial, base::SysNSStringToUTF16([item title]));
-  EXPECT_EQ(nil, [item image]);
+  EXPECT_EQ(initial, base::SysNSStringToUTF16(item.title));
+  EXPECT_EQ(nil, item.image);
 
   // Now update the item to have a label of "second" and an icon.
   std::u16string second = u"second";
@@ -587,15 +533,15 @@ TEST_F(MenuControllerTest, Dynamic) {
   const gfx::Image& icon = gfx::test::CreateImage(32, 32);
   delegate.SetDynamicIcon(icon);
   // Simulate opening the menu and validate that the item label + icon changes.
-  Validate(menu, [menu menu]);
-  EXPECT_EQ(second, base::SysNSStringToUTF16([item title]));
-  EXPECT_TRUE([item image] != nil);
+  Validate(menu, menu.menu);
+  EXPECT_EQ(second, base::SysNSStringToUTF16(item.title));
+  EXPECT_NE(nil, item.image);
 
   // Now get rid of the icon and make sure it goes away.
   delegate.SetDynamicIcon(gfx::Image());
-  Validate(menu, [menu menu]);
-  EXPECT_EQ(second, base::SysNSStringToUTF16([item title]));
-  EXPECT_EQ(nil, [item image]);
+  Validate(menu, menu.menu);
+  EXPECT_EQ(second, base::SysNSStringToUTF16(item.title));
+  EXPECT_EQ(nil, item.image);
 }
 
 TEST_F(MenuControllerTest, OpenClose) {
@@ -612,26 +558,25 @@ TEST_F(MenuControllerTest, OpenClose) {
 
   // Create the controller.
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
-  delegate.menu_to_close_ = [menu menu];
+                                                                delegate:nil];
+  delegate.menu_to_close_ = menu.menu;
 
-  EXPECT_FALSE([menu isMenuOpen]);
+  EXPECT_FALSE(menu.menuOpen);
 
   // In the event tracking run loop mode of the menu, verify that the controller
   // reports the menu as open.
   [NSRunLoop.currentRunLoop performInModes:@[ NSEventTrackingRunLoopMode ]
                                      block:^{
-                                       EXPECT_TRUE([menu isMenuOpen]);
+                                       EXPECT_TRUE(menu.menuOpen);
                                      }];
 
   // Pop open the menu, which will spin an event-tracking run loop.
-  [NSMenu popUpContextMenu:[menu menu]
+  [NSMenu popUpContextMenu:menu.menu
                  withEvent:cocoa_test_event_utils::RightMouseDownAtPoint(
                                NSZeroPoint)
-                   forView:[test_window() contentView]];
+                   forView:test_window().contentView];
 
-  EXPECT_FALSE([menu isMenuOpen]);
+  EXPECT_FALSE(menu.menuOpen);
 
   // When control returns back to here, the menu will have finished running its
   // loop and will have closed itself (see Delegate::OnMenuWillShow).
@@ -669,13 +614,13 @@ TEST_F(MenuControllerTest, OwningDelegate) {
     // Unretained reference to the controller.
     MenuControllerCocoa* controller = delegate->controller();
 
-    item = [[controller menu] itemAtIndex:0];
+    item = [controller.menu itemAtIndex:0];
     EXPECT_TRUE(item);
 
     // Simulate opening the menu and selecting an item. Methods are always
     // invoked by AppKit in the following order.
-    [controller menuWillOpen:[controller menu]];
-    [controller menuDidClose:[controller menu]];
+    [controller menuWillOpen:controller.menu];
+    [controller menuDidClose:controller.menu];
   }
   EXPECT_FALSE(did_dealloc);
   EXPECT_FALSE(did_delete);
@@ -688,26 +633,11 @@ TEST_F(MenuControllerTest, OwningDelegate) {
   @autoreleasepool {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    [[item target] performSelector:[item action] withObject:item];
+    [item.target performSelector:item.action withObject:item];
 #pragma clang diagnostic pop
   }
   EXPECT_TRUE(did_dealloc);
   EXPECT_TRUE(did_delete);
-}
-
-// Tests to make sure that when |-initWithModel:| is called the menu is
-// constructed.
-TEST_F(MenuControllerTest, InitBuildsMenu) {
-  Delegate delegate;
-  SimpleMenuModel model(&delegate);
-  model.AddItem(1, u"one");
-  model.AddItem(2, u"two");
-  model.AddItem(3, u"three");
-
-  MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:YES];
-  EXPECT_TRUE([menu isMenuBuiltForTesting]);
 }
 
 // Tests that Windows-style ampersand mnemonics are stripped by default, but
@@ -720,11 +650,10 @@ TEST_F(MenuControllerTest, Ampersands) {
   model.SetMayHaveMnemonicsAt(1, false);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
-                                                                delegate:nil
-                                                  useWithPopUpButtonCell:NO];
+                                                                delegate:nil];
 
-  EXPECT_NSEQ([[[menu menu] itemAtIndex:0] title], @"New");
-  EXPECT_NSEQ([[[menu menu] itemAtIndex:1] title], @"Gin & Tonic");
+  EXPECT_NSEQ([menu.menu itemAtIndex:0].title, @"New");
+  EXPECT_NSEQ([menu.menu itemAtIndex:1].title, @"Gin & Tonic");
 }
 
 }  // namespace

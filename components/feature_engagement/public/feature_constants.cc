@@ -707,8 +707,8 @@ BASE_FEATURE(kIPHAutofillDisabledVirtualCardSuggestionFeature,
 BASE_FEATURE(kIPHAutofillExternalAccountProfileSuggestionFeature,
              "IPH_AutofillExternalAccountProfileSuggestion",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHAutofillPredictionImprovementsFeature,
-             "IPH_AutofillPredictionImprovements",
+BASE_FEATURE(kIPHAutofillAiOptInFeature,
+             "IPH_AutofillAiOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutofillVirtualCardCVCSuggestionFeature,
              "IPH_AutofillVirtualCardCVCSuggestion",

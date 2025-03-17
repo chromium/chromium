@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -14,18 +15,29 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_view.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/user_education_data.h"
@@ -36,14 +48,20 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "content/public/test/browser_test.h"
+#include "omnibox_event.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/events/event_modifiers.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -80,20 +98,148 @@ BASE_FEATURE(kCustomUiTestFeature,
         return param.param == ControllerMode::kUserEd25 ? "V25" : "V20";     \
       })
 
+class BrowserFeaturePromoController2xUiTestBase
+    : public InteractiveFeaturePromoTest {
+ public:
+  explicit BrowserFeaturePromoController2xUiTestBase(
+      ClockMode clock_mode = ClockMode::kUseDefaultClock)
+      : InteractiveFeaturePromoTest(UseMockTracker(), clock_mode) {}
+  ~BrowserFeaturePromoController2xUiTestBase() override = default;
+
+  void OnCustomUiCustomAction(ui::ElementContext context,
+                              user_education::FeaturePromoHandle promo_handle) {
+    EXPECT_EQ(browser()->window()->GetElementContext(), context);
+    continued_promo_handle_ = std::move(promo_handle);
+  }
+
+  // Verifies that `CanShowPromo()` returns `expected_result`.
+  auto QueryIPH(const base::Feature& iph_feature,
+                user_education::FeaturePromoResult expected_result) {
+    std::ostringstream oss;
+    oss << "QueryIPH(" << iph_feature.name << ", " << expected_result << ")";
+    return CheckResult(
+        [this, &iph_feature]() {
+          return promo_controller()->CanShowPromo(iph_feature);
+        },
+        expected_result, oss.str());
+  }
+
+  auto UseFeature(const base::Feature& iph_feature) {
+    return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
+      EXPECT_TRUE(promo_controller()->IsPromoActive(iph_feature));
+      promo_controller()->EndPromo(iph_feature,
+                                   EndFeaturePromoReason::kFeatureEngaged);
+
+      EXPECT_FALSE(promo_controller()->IsPromoActive(iph_feature));
+    })));
+  }
+
+  struct ExpectedMetrics {
+    int dismiss_count = 0;
+    int snooze_count = 0;
+    int cancel_count = 0;
+    int abort_count = 0;
+    int feature_engaged_count = 0;
+    int custom_action_count = 0;
+  };
+
+  auto CheckMetrics(const base::Feature& iph_feature,
+                    ExpectedMetrics expected) {
+    return Check(
+        base::BindLambdaForTesting([this, &iph_feature, expected]() {
+          EXPECT_EQ(expected.dismiss_count,
+                    user_action_tester_.GetActionCount(
+                        std::string("UserEducation.MessageAction.Dismiss.")
+                            .append(iph_feature.name)));
+          EXPECT_EQ(expected.snooze_count,
+                    user_action_tester_.GetActionCount(
+                        std::string("UserEducation.MessageAction.Snooze.")
+                            .append(iph_feature.name)));
+          EXPECT_EQ(expected.cancel_count,
+                    user_action_tester_.GetActionCount(
+                        std::string("UserEducation.MessageAction.Cancel.")
+                            .append(iph_feature.name)));
+          EXPECT_EQ(
+              expected.abort_count,
+              user_action_tester_.GetActionCount(
+                  std::string("UserEducation.MessageAction.AbortedByFeature.")
+                      .append(iph_feature.name)));
+          EXPECT_EQ(
+              expected.feature_engaged_count,
+              user_action_tester_.GetActionCount(
+                  std::string("UserEducation.MessageAction.FeatureEngaged.")
+                      .append(iph_feature.name)));
+          EXPECT_EQ(expected.custom_action_count,
+                    user_action_tester_.GetActionCount(
+                        std::string("UserEducation.MessageAction.Action.")
+                            .append(iph_feature.name)));
+
+          std::string action_name = "UserEducation.MessageAction.";
+          action_name.append(iph_feature.name);
+
+          histogram_tester_.ExpectBucketCount(
+              action_name, static_cast<int>(FeaturePromoClosedReason::kDismiss),
+              expected.dismiss_count);
+          histogram_tester_.ExpectBucketCount(
+              action_name, static_cast<int>(FeaturePromoClosedReason::kSnooze),
+              expected.snooze_count);
+          histogram_tester_.ExpectBucketCount(
+              action_name, static_cast<int>(FeaturePromoClosedReason::kCancel),
+              expected.cancel_count);
+          histogram_tester_.ExpectBucketCount(
+              action_name,
+              static_cast<int>(FeaturePromoClosedReason::kAbortedByFeature),
+              expected.abort_count);
+          histogram_tester_.ExpectBucketCount(
+              action_name,
+              static_cast<int>(FeaturePromoClosedReason::kFeatureEngaged),
+              expected.feature_engaged_count);
+          histogram_tester_.ExpectBucketCount(
+              action_name, static_cast<int>(FeaturePromoClosedReason::kAction),
+              expected.custom_action_count);
+
+          return !testing::Test::HasNonfatalFailure();
+        }),
+        "Metrics");
+  }
+
+  auto PressEscAndWaitForClose(ElementSpecifier spec) {
+    auto native_view =
+        base::MakeRefCounted<base::RefCountedData<gfx::NativeView>>(
+            gfx::NativeView());
+    return Steps(
+        WaitForShow(spec),
+        IfView(
+            spec,
+            [native_view](const views::View* view) {
+              native_view.get()->data = view->GetWidget()->GetNativeView();
+              return !view->GetWidget()->IsActive();
+            },
+            Then(ObserveState(views::test::kCurrentWidgetFocus),
+                 WaitForState(
+                     views::test::kCurrentWidgetFocus,
+                     [native_view]() { return native_view.get()->data; }))),
+        SendAccelerator(spec,
+                        ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+        WaitForHide(spec));
+  }
+
+  user_education::FeaturePromoController* promo_controller() const {
+    return browser()->window()->GetFeaturePromoControllerForTesting();
+  }
+
+ protected:
+  base::UserActionTester user_action_tester_;
+  base::HistogramTester histogram_tester_;
+  user_education::FeaturePromoHandle continued_promo_handle_;
+};
+
 class BrowserFeaturePromoController2xUiTest
-    : public InteractiveFeaturePromoTest,
+    : public BrowserFeaturePromoController2xUiTestBase,
       public testing::WithParamInterface<ControllerMode> {
  public:
-  BrowserFeaturePromoController2xUiTest()
-      : InteractiveFeaturePromoTest(UseMockTracker(),
-                                    ClockMode::kUseDefaultClock) {}
-
+  BrowserFeaturePromoController2xUiTest() = default;
   ~BrowserFeaturePromoController2xUiTest() override = default;
-
-  BrowserFeaturePromoController2xUiTest(
-      const BrowserFeaturePromoController2xUiTest&) = delete;
-  BrowserFeaturePromoController2xUiTest& operator=(
-      const BrowserFeaturePromoController2xUiTest&) = delete;
 
   void SetUp() override {
     SetControllerMode(GetParam());
@@ -143,107 +289,10 @@ class BrowserFeaturePromoController2xUiTest
                       anchor_element->AsA<views::TrackedElementViews>()->view(),
                       user_education::HelpBubbleViews::TranslateArrow(arrow));
                 })),
-            base::BindRepeating(
-                &BrowserFeaturePromoController2xUiTest::OnCustomUiCustomAction,
-                weak_ptr_factory_.GetWeakPtr())));
+            base::BindRepeating(&BrowserFeaturePromoController2xUiTestBase::
+                                    OnCustomUiCustomAction,
+                                weak_ptr_factory_.GetWeakPtr())));
   }
-
-  void OnCustomUiCustomAction(ui::ElementContext context,
-                              user_education::FeaturePromoHandle promo_handle) {
-    EXPECT_EQ(browser()->window()->GetElementContext(), context);
-    continued_promo_handle_ = std::move(promo_handle);
-  }
-
-  // Verifies that `CanShowPromo()` returns `expected_result`.
-  auto QueryIPH(const base::Feature& iph_feature,
-                user_education::FeaturePromoResult expected_result) {
-    std::ostringstream oss;
-    oss << "QueryIPH(" << iph_feature.name << ", " << expected_result << ")";
-    return CheckResult(
-        [this, &iph_feature]() {
-          return promo_controller()->CanShowPromo(iph_feature);
-        },
-        expected_result, oss.str());
-  }
-
-  auto UseFeature(const base::Feature& iph_feature) {
-    return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
-      EXPECT_TRUE(promo_controller()->IsPromoActive(iph_feature));
-      promo_controller()->EndPromo(iph_feature,
-                                   EndFeaturePromoReason::kFeatureEngaged);
-
-      EXPECT_FALSE(promo_controller()->IsPromoActive(iph_feature));
-    })));
-  }
-
-  auto CheckMetrics(const base::Feature& iph_feature,
-                    int dismiss_count,
-                    int snooze_count,
-                    int abort_count,
-                    int feature_engaged_count,
-                    int custom_action_count) {
-    return Check(
-        base::BindLambdaForTesting([this, &iph_feature, dismiss_count,
-                                    snooze_count, abort_count,
-                                    feature_engaged_count,
-                                    custom_action_count]() {
-          EXPECT_EQ(dismiss_count,
-                    user_action_tester_.GetActionCount(
-                        std::string("UserEducation.MessageAction.Dismiss.")
-                            .append(iph_feature.name)));
-          EXPECT_EQ(snooze_count,
-                    user_action_tester_.GetActionCount(
-                        std::string("UserEducation.MessageAction.Snooze.")
-                            .append(iph_feature.name)));
-          EXPECT_EQ(
-              abort_count,
-              user_action_tester_.GetActionCount(
-                  std::string("UserEducation.MessageAction.AbortedByFeature.")
-                      .append(iph_feature.name)));
-          EXPECT_EQ(
-              feature_engaged_count,
-              user_action_tester_.GetActionCount(
-                  std::string("UserEducation.MessageAction.FeatureEngaged.")
-                      .append(iph_feature.name)));
-          EXPECT_EQ(custom_action_count,
-                    user_action_tester_.GetActionCount(
-                        std::string("UserEducation.MessageAction.Action.")
-                            .append(iph_feature.name)));
-
-          std::string action_name = "UserEducation.MessageAction.";
-          action_name.append(iph_feature.name);
-
-          histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(FeaturePromoClosedReason::kDismiss),
-              dismiss_count);
-          histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(FeaturePromoClosedReason::kSnooze),
-              snooze_count);
-          histogram_tester_.ExpectBucketCount(
-              action_name,
-              static_cast<int>(FeaturePromoClosedReason::kAbortedByFeature),
-              abort_count);
-          histogram_tester_.ExpectBucketCount(
-              action_name,
-              static_cast<int>(FeaturePromoClosedReason::kFeatureEngaged),
-              feature_engaged_count);
-          histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(FeaturePromoClosedReason::kAction),
-              custom_action_count);
-
-          return !testing::Test::HasNonfatalFailure();
-        }),
-        "Metrics");
-  }
-
-  user_education::FeaturePromoController* promo_controller() const {
-    return browser()->window()->GetFeaturePromoControllerForTesting();
-  }
-
- protected:
-  base::UserActionTester user_action_tester_;
-  base::HistogramTester histogram_tester_;
-  user_education::FeaturePromoHandle continued_promo_handle_;
 
  private:
   base::WeakPtrFactory<BrowserFeaturePromoController2xUiTest> weak_ptr_factory_{
@@ -254,14 +303,9 @@ INSTANTIATE_V2X_TEST(BrowserFeaturePromoController2xUiTest);
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
                        LogsAbortMetrics) {
-  RunTestSequence(MaybeShowPromo(kToastTestFeature),
-                  AbortPromo(kToastTestFeature),
-                  CheckMetrics(kToastTestFeature,
-                               /*snooze_count*/ 0,
-                               /*dismiss_count*/ 0,
-                               /*abort_count*/ 1,
-                               /*feature_engaged_count*/ 0,
-                               /*custom_action_count*/ 0));
+  RunTestSequence(
+      MaybeShowPromo(kToastTestFeature), AbortPromo(kToastTestFeature),
+      CheckMetrics(kToastTestFeature, ExpectedMetrics{.abort_count = 1}));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
@@ -269,11 +313,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
   RunTestSequence(MaybeShowPromo(kToastTestFeature),
                   UseFeature(kToastTestFeature),
                   CheckMetrics(kToastTestFeature,
-                               /*snooze_count*/ 0,
-                               /*dismiss_count*/ 0,
-                               /*abort_count*/ 0,
-                               /*feature_engaged_count*/ 1,
-                               /*custom_action_count*/ 0));
+                               ExpectedMetrics{.feature_engaged_count = 1}));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
@@ -281,11 +321,17 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
   RunTestSequence(MaybeShowPromo(kCustomActionTestFeature),
                   PressNonDefaultPromoButton(),
                   CheckMetrics(kCustomActionTestFeature,
-                               /*snooze_count*/ 0,
-                               /*dismiss_count*/ 0,
-                               /*abort_count*/ 0,
-                               /*feature_engaged_count*/ 0,
-                               /*custom_action_count*/ 1));
+                               ExpectedMetrics{.custom_action_count = 1}));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       LogsCancelOnEscPressed) {
+  RunTestSequence(
+      MaybeShowPromo(kCustomActionTestFeature),
+      PressEscAndWaitForClose(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckMetrics(kCustomActionTestFeature,
+                   ExpectedMetrics{.cancel_count = 1}));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
@@ -373,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       WithView(kBubbleId,
                [](views::View* view) { view->GetWidget()->Close(); }),
       WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
-      CheckMetrics(kCustomUiTestFeature, 0, 0, 0, 0, 0),
+      CheckMetrics(kCustomUiTestFeature, ExpectedMetrics()),
       CheckResult(
           [this]() {
             return user_action_tester_.GetActionCount(
@@ -393,7 +439,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       PressButton(
           user_education::test::TestCustomHelpBubbleView::kDismissButtonId),
       WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
-      CheckMetrics(kCustomUiTestFeature, 1, 0, 0, 0, 0));
+      CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.dismiss_count = 1}));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
@@ -405,7 +451,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       PressButton(
           user_education::test::TestCustomHelpBubbleView::kSnoozeButtonId),
       WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
-      CheckMetrics(kCustomUiTestFeature, 0, 1, 0, 0, 0));
+      CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.snooze_count = 1}));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
@@ -417,7 +463,17 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
       PressButton(
           user_education::test::TestCustomHelpBubbleView::kCancelButtonId),
       WaitForHide(kBubbleId), CheckPromoRequested(kCustomUiTestFeature, false),
-      CheckMetrics(kCustomUiTestFeature, 0, 0, 0, 0, 0));
+      CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.cancel_count = 1}));
+}
+
+IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
+                       ShowCustomHelpBubble_PressEsc) {
+  const auto kBubbleId =
+      user_education::test::TestCustomHelpBubbleView::kBubbleId;
+  RunTestSequence(
+      MaybeShowPromo(kCustomUiTestFeature, CustomHelpBubbleShown{kBubbleId}),
+      PressEscAndWaitForClose(kBubbleId),
+      CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.cancel_count = 1}));
 }
 
 IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
@@ -434,7 +490,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFeaturePromoController2xUiTest,
         return result;
       }),
       CheckPromoRequested(kCustomUiTestFeature, false),
-      CheckMetrics(kCustomUiTestFeature, 0, 0, 0, 0, 1));
+      CheckMetrics(kCustomUiTestFeature,
+                   ExpectedMetrics{.custom_action_count = 1}));
 }
 
 class BrowserFeaturePromoController2xLiveTrackerUiTest
@@ -536,4 +593,140 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController20ActivationUiTest,
       // Verify that we can no longer show the promo, since the browser is not
       // the active window.
       CheckElement(kToolbarAppMenuButtonElementId, can_show_promo, false));
+}
+
+namespace {
+
+BASE_FEATURE(kIPHExemptFromOmniboxFeature,
+             "TEST_ExemptFromOmnibox",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHExemptFromUserNotActiveFeature,
+             "TEST_ExemptFromUserNotActive",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHExemptFromToolbarNotCollapsedFeature,
+             "TEST_ExemptFromToolbarNotCollapsed",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
+class BrowserFeaturePromoController25UiTest
+    : public BrowserFeaturePromoController2xUiTestBase {
+ public:
+  BrowserFeaturePromoController25UiTest() {
+    static_cast<internal::InteractiveFeaturePromoTestPrivate&>(
+        private_test_impl())
+        .set_use_shortened_timeouts_for_internal_testing(true);
+    SetControllerMode(ControllerMode::kUserEd25);
+  }
+  ~BrowserFeaturePromoController25UiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    BrowserFeaturePromoController2xUiTestBase::SetUpOnMainThread();
+
+    auto spec = FeaturePromoSpecification::CreateForSnoozePromo(
+        kIPHExemptFromOmniboxFeature, kToolbarAppMenuButtonElementId,
+        IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE);
+    spec.AddPreconditionExemption(kOmniboxNotOpenPrecondition);
+    RegisterTestFeature(browser(), std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForSnoozePromo(
+        kIPHExemptFromUserNotActiveFeature, kToolbarAppMenuButtonElementId,
+        IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE);
+    spec.AddPreconditionExemption(kUserNotActivePrecondition);
+    RegisterTestFeature(browser(), std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForSnoozePromo(
+        kIPHExemptFromToolbarNotCollapsedFeature,
+        kToolbarAppMenuButtonElementId, IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE);
+    spec.AddPreconditionExemption(kToolbarNotCollapsedPrecondition);
+    RegisterTestFeature(browser(), std::move(spec));
+
+    auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        views::GetRootWindow(browser_view->GetWidget()),
+        browser_view->GetNativeWindow());
+  }
+
+ protected:
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+                       PromoExemptFromOmniboxNotOpenPrecondition) {
+  RunTestSequence(
+      WithView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            AutocompleteInput input(
+                u"chrome", metrics::OmniboxEventProto::NTP,
+                ChromeAutocompleteSchemeClassifier(browser_view->GetProfile()));
+            browser_view->GetLocationBarView()
+                ->GetOmniboxView()
+                ->controller()
+                ->autocomplete_controller()
+                ->Start(input);
+          }),
+      MaybeShowPromo(kIPHExemptFromUserNotActiveFeature,
+                     user_education::FeaturePromoResult::kBlockedByUi),
+      MaybeShowPromo(kIPHExemptFromOmniboxFeature));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+                       PromoExemptFromUserNotActivePrecondition) {
+  RunTestSequence(
+      WaitForShow(kBrowserViewElementId), Check([this]() {
+        // Use a keypress that is is not an accelerator but won't open the
+        // omnibox.
+        return ui_test_utils::SendKeyPressSync(browser(),
+                                               ui::KeyboardCode::VKEY_SPACE,
+                                               false, false, false, false);
+      }),
+      MaybeShowPromo(kIPHExemptFromOmniboxFeature,
+                     user_education::FeaturePromoResult::kBlockedByUi),
+      MaybeShowPromo(kIPHExemptFromUserNotActiveFeature));
+}
+
+class BrowserFeaturePromoController25OverflowUiTest
+    : public BrowserFeaturePromoController25UiTest {
+ public:
+  BrowserFeaturePromoController25OverflowUiTest() {
+    // This has to be called before the browser is created.
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
+  }
+  ~BrowserFeaturePromoController25OverflowUiTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25OverflowUiTest,
+                       PromoExemptFromToolbarNotCollapsed) {
+  RunTestSequence(
+      WaitForShow(kBrowserViewElementId),
+      WithView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) {
+            const ToolbarController* const controller =
+                browser_view->toolbar()->toolbar_controller();
+            CHECK(controller);
+            auto* const forward_button =
+                views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                    kToolbarForwardButtonElementId,
+                    browser_view->GetElementContext());
+            auto* const container_view =
+                views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                    ToolbarView::kToolbarContainerElementId,
+                    browser_view->GetElementContext());
+            constexpr gfx::Size kButtonSize{16, 16};
+            while (forward_button->GetVisible()) {
+              auto* const button = container_view->AddChildView(
+                  std::make_unique<ToolbarButton>());
+              button->SetPreferredSize(kButtonSize);
+              button->SetMinSize(kButtonSize);
+              button->GetViewAccessibility().SetName(u"dummy");
+              button->SetVisible(true);
+              views::test::RunScheduledLayout(browser_view);
+            }
+          }),
+      WaitForShow(kToolbarOverflowButtonElementId),
+      MaybeShowPromo(kIPHExemptFromOmniboxFeature,
+                     user_education::FeaturePromoResult::kBlockedByUi),
+      MaybeShowPromo(kIPHExemptFromToolbarNotCollapsedFeature));
 }

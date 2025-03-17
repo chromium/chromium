@@ -129,6 +129,7 @@ if (!is_android) {
         "//components/signin/public/identity_manager",
         "//components/signin/public/identity_manager:test_support",
         "//components/sync:test_support",
+        "//components/sync_bookmarks",
         "//content/public/browser",
         "//content/test:test_support",
         "//google_apis",

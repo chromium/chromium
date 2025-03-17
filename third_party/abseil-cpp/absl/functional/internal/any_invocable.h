@@ -634,17 +634,12 @@ using CanAssignReferenceWrapper = TrueAlias<
     absl::enable_if_t<Impl<Sig>::template CallIsNoexceptIfSigIsNoexcept<
         std::reference_wrapper<F>>::value>>;
 
-////////////////////////////////////////////////////////////////////////////////
-//
 // The constraint for checking whether or not a call meets the noexcept
-// callability requirements. This is a preprocessor macro because specifying it
+// callability requirements. We use a preprocessor macro because specifying it
 // this way as opposed to a disjunction/branch can improve the user-side error
 // messages and avoids an instantiation of std::is_nothrow_invocable_r in the
 // cases where the user did not specify a noexcept function type.
 //
-#define ABSL_INTERNAL_ANY_INVOCABLE_NOEXCEPT_CONSTRAINT(inv_quals, noex) \
-  ABSL_INTERNAL_ANY_INVOCABLE_NOEXCEPT_CONSTRAINT_##noex(inv_quals)
-
 // The disjunction below is because we can't rely on std::is_nothrow_invocable_r
 // to give the right result when ReturnType is non-moveable in toolchains that
 // don't treat non-moveable result types correctly. For example this was the
@@ -698,8 +693,8 @@ using CanAssignReferenceWrapper = TrueAlias<
     /*SFINAE constraint to check if F is nothrow-invocable when necessary*/    \
     template <class F>                                                         \
     using CallIsNoexceptIfSigIsNoexcept =                                      \
-        TrueAlias<ABSL_INTERNAL_ANY_INVOCABLE_NOEXCEPT_CONSTRAINT(inv_quals,   \
-                                                                  noex)>;      \
+        TrueAlias<ABSL_INTERNAL_ANY_INVOCABLE_NOEXCEPT_CONSTRAINT_##noex(      \
+            inv_quals)>;                                                       \
                                                                                \
     /*Put the AnyInvocable into an empty state.*/                              \
     Impl() = default;                                                          \
@@ -772,7 +767,6 @@ ABSL_INTERNAL_ANY_INVOCABLE_IMPL(const, &&, const&&);
 #undef ABSL_INTERNAL_ANY_INVOCABLE_IMPL_
 #undef ABSL_INTERNAL_ANY_INVOCABLE_NOEXCEPT_CONSTRAINT_false
 #undef ABSL_INTERNAL_ANY_INVOCABLE_NOEXCEPT_CONSTRAINT_true
-#undef ABSL_INTERNAL_ANY_INVOCABLE_NOEXCEPT_CONSTRAINT
 
 }  // namespace internal_any_invocable
 ABSL_NAMESPACE_END

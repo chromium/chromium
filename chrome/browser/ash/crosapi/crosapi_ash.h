@@ -43,19 +43,15 @@ class PrintPreviewWebcontentsAdapterAsh;
 
 namespace crosapi {
 
-class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
 class ClipboardHistoryAsh;
 class DeskProfilesAsh;
 class DeviceAttributesAsh;
-class DeviceLocalAccountExtensionServiceAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
-class DriveIntegrationServiceAsh;
 class EchoPrivateAsh;
-class EmbeddedAccessibilityHelperClientAsh;
 class FileChangeServiceBridgeAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -95,8 +91,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindAccountManager(
       mojo::PendingReceiver<mojom::AccountManager> receiver) override;
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
-  void BindCertDatabase(
-      mojo::PendingReceiver<mojom::CertDatabase> receiver) override;
   void BindCertProvisioning(
       mojo::PendingReceiver<mojom::CertProvisioning> receiver) override;
   void BindCfmServiceContext(
@@ -115,23 +109,14 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
-  void BindDeviceLocalAccountExtensionService(
-      mojo::PendingReceiver<mojom::DeviceLocalAccountExtensionService> receiver)
-      override;
   void BindDeviceOAuth2TokenService(
       mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) override;
   void BindDiagnosticsService(
       mojo::PendingReceiver<mojom::DiagnosticsService> receiver) override;
   void BindDocumentScan(
       mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
-  void BindDriveIntegrationService(
-      mojo::PendingReceiver<mojom::DriveIntegrationService> receiver) override;
   void BindEchoPrivate(
       mojo::PendingReceiver<mojom::EchoPrivate> receiver) override;
-  void BindEmbeddedAccessibilityHelperClientFactory(
-      mojo::PendingReceiver<
-          ::crosapi::mojom::EmbeddedAccessibilityHelperClientFactory> receiver)
-      override;
   void BindFileChangeServiceBridge(
       mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver) override;
   void BindFileSystemAccessCloudIdentifierProvider(
@@ -221,8 +206,6 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
       override;
 
-  CertDatabaseAsh* cert_database_ash() { return cert_database_ash_.get(); }
-
   CertProvisioningAsh* cert_provisioning_ash() {
     return cert_provisioning_ash_.get();
   }
@@ -239,19 +222,9 @@ class CrosapiAsh : public mojom::Crosapi {
     return device_attributes_ash_.get();
   }
 
-  DeviceLocalAccountExtensionServiceAsh*
-  device_local_account_extension_service() {
-    return device_local_account_extension_service_ash_.get();
-  }
-
   DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
 
   EchoPrivateAsh* echo_private_ash() { return echo_private_ash_.get(); }
-
-  EmbeddedAccessibilityHelperClientAsh*
-  embedded_accessibility_helper_client_ash() {
-    return embedded_accessibility_helper_client_ash_.get();
-  }
 
   FileSystemAccessCloudIdentifierProviderAsh*
   file_system_access_cloud_identifier_provider_ash() {
@@ -323,22 +296,16 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
   std::unique_ptr<DeskProfilesAsh> desk_profiles_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
-  std::unique_ptr<DeviceLocalAccountExtensionServiceAsh>
-      device_local_account_extension_service_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;
   std::unique_ptr<DocumentScanAsh> document_scan_ash_;
-  std::unique_ptr<DriveIntegrationServiceAsh> drive_integration_service_ash_;
   std::unique_ptr<EchoPrivateAsh> echo_private_ash_;
-  std::unique_ptr<EmbeddedAccessibilityHelperClientAsh>
-      embedded_accessibility_helper_client_ash_;
   std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
       file_system_access_cloud_identifier_provider_ash_;

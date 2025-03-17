@@ -173,6 +173,33 @@ IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest, ForceSystemAudio) {
 }
 
 // Verify that `ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO` does not work
+// when the request is not from chrome://.
+IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
+                       ForceSystemAudioButWrongScheme) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an empty page.
+  GURL url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  DesktopMediaPickerManager* picker_manager = DesktopMediaPickerManager::Get();
+  picker_manager->AddObserver(this);
+
+  SetSystemAudioSetting(true);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_THAT(content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                              R"((async () => {
+    return navigator.mediaDevices.getDisplayMedia({
+        audio: true, systemAudio: 'include', video: false});
+  })())")
+                  .error,
+              testing::HasSubstr("Not supported"));
+  EXPECT_EQ(dialog_opened_, false);
+}
+
+// Verify that `ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO` does not work
 // when the system audio is excluded and the request should be rejected.
 IN_PROC_BROWSER_TEST_F(DisplayMediaAccessHandlerTest,
                        ForceSystemAudioButExcluded) {

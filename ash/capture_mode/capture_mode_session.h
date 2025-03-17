@@ -54,6 +54,7 @@ class CursorSetter;
 class PillButton;
 class RecordingTypeMenuView;
 class ScannerActionViewModel;
+enum class ScannerEntryPoint;
 class UserNudgeController;
 class WindowDimmer;
 
@@ -194,6 +195,7 @@ class ASH_EXPORT CaptureModeSession
                                     ActionButtonViewID id) override;
   void AddSmartActionsButton() override;
   void MaybeShowScannerDisclaimer(
+      ScannerEntryPoint entry_point,
       base::RepeatingClosure accept_callback,
       base::RepeatingClosure decline_callback) override;
   void OnScannerActionsFetched(
@@ -448,7 +450,8 @@ class ASH_EXPORT CaptureModeSession
   [[nodiscard]] bool ShowDefaultActionButtonsOrPerformSearch();
 
   // Called by the consent disclaimer on accept.
-  void OnDisclaimerAccepted(base::RepeatingClosure callback);
+  void OnDisclaimerAccepted(ScannerEntryPoint entry_point,
+                            base::RepeatingClosure callback);
 
   // Called by the consent disclaimer on decline.
   void OnDisclaimerDeclined(base::RepeatingClosure callback);

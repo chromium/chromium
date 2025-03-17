@@ -4418,7 +4418,8 @@ bool Document::ShouldScheduleLayout() const {
 void Document::write(const String& text,
                      LocalDOMWindow* entered_window,
                      ExceptionState& exception_state) {
-  TRACE_EVENT("blink", "Document::write");
+  TRACE_EVENT1("blink", "Document::write", "size_in_bytes",
+               text.CharactersSizeInBytes());
 
   if (!IsA<HTMLDocument>(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
