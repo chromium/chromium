@@ -1034,7 +1034,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                 mRootUiCoordinator.getDesktopWindowStateManager(),
                                 mTabModelNotificationDotManager
                                         .getNotificationDotObservableSupplier(),
-                                getCompositorViewHolderSupplier());
+                                getCompositorViewHolderSupplier(),
+                                getShareDelegateSupplier(),
+                                mTabBookmarkerSupplier);
         if (didFinishNativeInitialization()) {
             result.first.initWithNative();
         }

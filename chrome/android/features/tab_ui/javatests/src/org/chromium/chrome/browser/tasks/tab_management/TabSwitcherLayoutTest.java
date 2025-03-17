@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -973,78 +972,6 @@ public class TabSwitcherLayoutTest {
         onView(withId(R.id.action_button)).perform(click());
         onView(allOf(withText(deleteButtonText), withId(R.id.menu_item_text)))
                 .check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    public void testLongPressTab_entryInTabSwitcher_verifyNoSelectionOccurs() {
-        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
-
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // LongPress entry to TabListEditor.
-        onView(tabSwitcherViewMatcher())
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
-
-        TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
-
-        // Verify no selection action occurred to switch the selected tab in the tab model
-        Criteria.checkThat(
-                mActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(1));
-    }
-
-    @Test
-    @MediumTest
-    public void testLongPressTabGroup_entryInTabSwitcher() {
-        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
-
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // LongPress entry to TabListEditor.
-        onView(tabSwitcherViewMatcher())
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
-
-        TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
-    }
-
-    @Test
-    @MediumTest
-    public void testLongPressTab_verifyPostLongPressClickNoSelectionEditor() {
-        TabUiFeatureUtilities.setTabListEditorLongPressEntryEnabledForTesting(true);
-
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // LongPress entry to TabListEditor.
-        onView(tabSwitcherViewMatcher())
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, longClick()));
-
-        TabListEditorTestingRobot mSelectionEditorRobot = new TabListEditorTestingRobot();
-        mSelectionEditorRobot.resultRobot.verifyTabListEditorIsVisible();
-        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0);
-        mSelectionEditorRobot.resultRobot.verifyItemSelectedAtAdapterPosition(0);
-        Espresso.pressBack();
-
-        onView(tabSwitcherViewMatcher())
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        // Check the selected tab in the tab model switches from the second tab to the first to
-        // verify clicking the tab worked.
-        Criteria.checkThat(
-                mActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(0));
     }
 
     @Test
