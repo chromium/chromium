@@ -39,6 +39,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/scanner/scanner_session.h"
 #include "ash/session/session_controller_impl.h"
@@ -2366,6 +2367,7 @@ void CaptureModeController::MaybeShowScannerDisclaimerOnSunfishStartup(
                          : base::BindRepeating(&CaptureModeController::Stop,
                                                weak_ptr_factory_.GetWeakPtr());
   capture_mode_session_->MaybeShowScannerDisclaimer(
+      ScannerEntryPoint::kSunfishSession,
       /*accept_callback=*/base::BindRepeating([]() {
         // Start a session after the disclaimer to ensure that it is started
         // correctly if the user has just consented.

@@ -384,10 +384,11 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
   bool NeedsDisclaimerOnInit() const override {
     // Return true if Scanner is enabled and any type of disclaimer should be
-    // shown.
+    // shown at the start of a Sunfish-session.
     return ScannerController::CanShowUiForShell() &&
            GetScannerDisclaimerType(
-               *capture_mode_util::GetActiveUserPrefService()) !=
+               *capture_mode_util::GetActiveUserPrefService(),
+               ScannerEntryPoint::kSunfishSession) !=
                ScannerDisclaimerType::kNone;
   }
   bool ShouldAnnounceCaptureModeUIOnDisclaimerDismissed() const override {

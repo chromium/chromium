@@ -1560,11 +1560,12 @@ void CaptureModeSession::AddSmartActionsButton() {
 }
 
 void CaptureModeSession::MaybeShowScannerDisclaimer(
+    ScannerEntryPoint entry_point,
     base::RepeatingClosure accept_callback,
     base::RepeatingClosure decline_callback) {
   bool is_reminder;
   switch (GetScannerDisclaimerType(
-      *capture_mode_util::GetActiveUserPrefService())) {
+      *capture_mode_util::GetActiveUserPrefService(), entry_point)) {
     case ScannerDisclaimerType::kNone:
       if (accept_callback) {
         std::move(accept_callback).Run();
@@ -1583,7 +1584,7 @@ void CaptureModeSession::MaybeShowScannerDisclaimer(
   disclaimer_ = DisclaimerView::CreateWidget(
       capture_mode_util::GetPreferredRootWindow(), is_reminder,
       base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
-                          weak_ptr_factory_.GetWeakPtr(),
+                          weak_ptr_factory_.GetWeakPtr(), entry_point,
                           std::move(accept_callback)),
       base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
                           weak_ptr_factory_.GetWeakPtr(),
@@ -1677,10 +1678,12 @@ void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
   }
 }
 
-void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
+void CaptureModeSession::OnDisclaimerAccepted(ScannerEntryPoint entry_point,
+                                              base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerAccepted);
-  SetScannerDisclaimerAcked(*capture_mode_util::GetActiveUserPrefService());
+  SetScannerDisclaimerAcked(*capture_mode_util::GetActiveUserPrefService(),
+                            entry_point);
 
   disclaimer_.reset();
 
@@ -1708,10 +1711,13 @@ void CaptureModeSession::OnDisclaimerLinkPressed(const char* url) {
 
   void CaptureModeSession::OnSmartActionsButtonPressed() {
     MaybeShowScannerDisclaimer(
-        /*accept_callback=*/base::BindRepeating(
+        ScannerEntryPoint::kSmartActionsButton,
+        /*accept_callback=*/
+        base::BindRepeating(
             &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
             weak_ptr_factory_.GetWeakPtr()),
-        /*decline_callback=*/base::BindRepeating(
+        /*decline_callback=*/
+        base::BindRepeating(
             &CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined,
             weak_ptr_factory_.GetWeakPtr()));
 }

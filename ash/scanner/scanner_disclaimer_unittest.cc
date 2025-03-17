@@ -16,30 +16,85 @@ void RegisterPrefs(PrefRegistrySimple& registry) {
   registry.RegisterBooleanPref(prefs::kSunfishConsentDisclaimerAccepted, false);
 }
 
-TEST(ScannerDisclaimerTest, InitialValue) {
+TEST(ScannerDisclaimerTest, InitialValues) {
   TestingPrefServiceSimple prefs;
   RegisterPrefs(*prefs.registry());
 
-  EXPECT_EQ(GetScannerDisclaimerType(prefs), ScannerDisclaimerType::kFull);
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kFull);
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kFull);
 }
 
-TEST(ScannerDisclaimerTest, AfterAcknowledge) {
+TEST(ScannerDisclaimerTest, AfterSmartActionsButtonAcknowledge) {
   TestingPrefServiceSimple prefs;
   RegisterPrefs(*prefs.registry());
 
-  SetScannerDisclaimerAcked(prefs);
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
 
-  EXPECT_EQ(GetScannerDisclaimerType(prefs), ScannerDisclaimerType::kNone);
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kNone);
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kNone);
+}
+
+TEST(ScannerDisclaimerTest, AfterSunfishSessionAcknowledge) {
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(*prefs.registry());
+
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSunfishSession);
+
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kNone);
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kNone);
+}
+
+TEST(ScannerDisclaimerTest,
+     AfterSmartActionsButtonThenSunfishSessionAcknowledge) {
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(*prefs.registry());
+
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSunfishSession);
+
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kNone);
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kNone);
+}
+
+TEST(ScannerDisclaimerTest,
+     AfterSunfishSessionThenSmartActionsButtonAcknowledge) {
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(*prefs.registry());
+
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSunfishSession);
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
+
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kNone);
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kNone);
 }
 
 TEST(ScannerDisclaimerTest, AcknowledgeIsIdempotent) {
   TestingPrefServiceSimple prefs;
   RegisterPrefs(*prefs.registry());
 
-  SetScannerDisclaimerAcked(prefs);
-  SetScannerDisclaimerAcked(prefs);
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
+  SetScannerDisclaimerAcked(prefs, ScannerEntryPoint::kSmartActionsButton);
 
-  EXPECT_EQ(GetScannerDisclaimerType(prefs), ScannerDisclaimerType::kNone);
+  EXPECT_EQ(
+      GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSmartActionsButton),
+      ScannerDisclaimerType::kNone);
+  EXPECT_EQ(GetScannerDisclaimerType(prefs, ScannerEntryPoint::kSunfishSession),
+            ScannerDisclaimerType::kNone);
 }
 
 }  // namespace
