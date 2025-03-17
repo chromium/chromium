@@ -25,19 +25,11 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/prefs/pref_service.h"
 #include "url/origin.h"
 
 namespace crostini {
-
-// TODO(crbug.com/377377749): replace with url from concierge rpc
-constexpr char baguetteUrl[] =
-    "https://storage.googleapis.com/cros-containers/baguette/images/"
-    "baguette_rootfs_amd64_2025-01-29-000057_"
-    "6310e875487f154a58648db8fb3cc284401f856e.img.zstd";
-// TODO(crbug.com/377377749): replace with sha256 from concierge rpc
-constexpr char baguetteSHA256[] =
-    "e21336031b00057afd4f3414369cbf98d8e12783cb38a98cd12f7b9318bdc443";
 
 namespace {
 
@@ -107,20 +99,58 @@ void BaguetteInstaller::OnInstallDlc(
     return;
   }
 
-  DownloadBaguetteImage(std::move(callback));
+  GetBaguetteImageUrl(std::move(callback));
+}
+
+void BaguetteInstaller::GetBaguetteImageUrl(
+    BaguetteInstallerCallback callback) {
+  auto* concierge_client = ash::ConciergeClient::Get();
+  concierge_client->WaitForServiceToBeAvailable(
+      base::BindOnce(&BaguetteInstaller::OnConciergeAvailable,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void BaguetteInstaller::OnConciergeAvailable(BaguetteInstallerCallback callback,
+                                             bool service_is_available) {
+  if (!service_is_available) {
+    LOG(ERROR) << "vm_concierge service is unavailable.";
+    std::move(callback).Run(InstallResult::Failure, {});
+  }
+
+  auto* concierge_client = ash::ConciergeClient::Get();
+  concierge_client->GetBaguetteImageUrl(
+      base::BindOnce(&BaguetteInstaller::DownloadBaguetteImage,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BaguetteInstaller::DownloadBaguetteImage(
-    BaguetteInstallerCallback callback) {
+    BaguetteInstallerCallback callback,
+    std::optional<vm_tools::concierge::GetBaguetteImageUrlResponse> response) {
+  if (!response) {
+    LOG(ERROR) << "Failed to get baguette disk image URL from vm_concierge.";
+    std::move(callback).Run(InstallResult::DownloadError, {});
+    return;
+  } else if (response->url().empty()) {
+    LOG(ERROR) << "vm_concierge returned an empty baguette image URL.";
+    std::move(callback).Run(InstallResult::DownloadError, {});
+    return;
+  } else if (response->sha256().empty()) {
+    LOG(ERROR) << "vm_concierge returned an empty baguette image checksum.";
+    std::move(callback).Run(InstallResult::DownloadError, {});
+    return;
+  }
+
   image_download_ = download_factory_.Run();
   image_download_->StartDownload(
-      profile_, GURL(baguetteUrl),
+      profile_, GURL(response->url()),
       base::BindOnce(&crostini::BaguetteInstaller::OnDiskImageDownloaded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     response->sha256()));
 }
 
 void BaguetteInstaller::OnDiskImageDownloaded(
     BaguetteInstallerCallback callback,
+    std::string expected_hash,
     base::FilePath path,
     std::string hash) {
   if (path.empty()) {
@@ -128,7 +158,7 @@ void BaguetteInstaller::OnDiskImageDownloaded(
     std::move(callback).Run(InstallResult::DownloadError, {});
     return;
   }
-  if (!base::EqualsCaseInsensitiveASCII(hash, baguetteSHA256)) {
+  if (!base::EqualsCaseInsensitiveASCII(hash, expected_hash)) {
     LOG(ERROR) << "Downloaded image has incorrect SHA256 hash.";
     std::move(callback).Run(InstallResult::ChecksumError, {});
     return;

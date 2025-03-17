@@ -461,6 +461,14 @@ void FakeConciergeClient::SetUpVmUser(
       FROM_HERE, base::BindOnce(std::move(callback), set_up_vm_user_response_));
 }
 
+void FakeConciergeClient::GetBaguetteImageUrl(
+    chromeos::DBusMethodCallback<
+        vm_tools::concierge::GetBaguetteImageUrlResponse> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), get_baguette_image_url_response_));
+}
+
 void FakeConciergeClient::NotifyVmStarted(
     const vm_tools::concierge::VmStartedSignal& signal) {
   // Now GetVmInfo can return success.

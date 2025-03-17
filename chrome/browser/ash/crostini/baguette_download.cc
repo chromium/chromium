@@ -48,8 +48,7 @@ const net::NetworkTrafficAnnotationTag kBaguetteTrafficAnnotation =
         last_reviewed: "2023-01-09"
       }
       policy {
-        cookies_allowed: YES
-        cookies_store: "user"
+        cookies_allowed: NO
       }
     )");
 

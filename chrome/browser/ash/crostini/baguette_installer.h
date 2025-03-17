@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crostini/baguette_download.h"
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 
 class PrefService;
 class Profile;
@@ -60,10 +61,16 @@ class BaguetteInstaller {
   void Install(BaguetteInstallerCallback callback);
 
  private:
+  void GetBaguetteImageUrl(BaguetteInstallerCallback callback);
   void OnInstallDlc(BaguetteInstallerCallback callback,
                     guest_os::GuestOsDlcInstallation::Result result);
-  void DownloadBaguetteImage(BaguetteInstallerCallback callback);
+  void OnConciergeAvailable(BaguetteInstallerCallback callback,
+                            bool service_is_available);
+  void DownloadBaguetteImage(
+      BaguetteInstallerCallback callback,
+      std::optional<vm_tools::concierge::GetBaguetteImageUrlResponse> response);
   void OnDiskImageDownloaded(BaguetteInstallerCallback callback,
+                             std::string expected_hash,
                              base::FilePath path,
                              std::string hash);
   void OnOpenFd(BaguetteInstallerCallback callback, base::ScopedFD image);
