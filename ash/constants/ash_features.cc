@@ -229,7 +229,7 @@ BASE_FEATURE(kBocaStudentHeartbeatCustomInterval,
 constexpr base::FeatureParam<base::TimeDelta>
     kBocaStudentHeartbeatPeriodicJobIntervalInSeconds{
         &kBocaStudentHeartbeatCustomInterval,
-        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(60)};
+        "StudentHeartbeatPeriodicJobIntervalInSeconds", base::Seconds(30)};
 
 // Enables or disables Boca extension consumer experience on ChromeOS.
 BASE_FEATURE(kBocaExtensionConsumer,
