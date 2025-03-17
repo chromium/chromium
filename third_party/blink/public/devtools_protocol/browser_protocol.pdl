@@ -858,6 +858,7 @@ experimental domain Audits
   type SRIMessageSignatureIssueDetails extends object
     properties
       SRIMessageSignatureError error
+      string signatureBase
       AffectedRequest request
 
   type GenericIssueErrorType extends string
