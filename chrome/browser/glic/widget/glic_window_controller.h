@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -450,5 +451,23 @@ class GlicWindowController : public views::WidgetObserver,
 };
 
 }  // namespace glic
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<glic::GlicWindowController,
+                               glic::GlicWindowController::StateObserver> {
+  static void AddObserver(glic::GlicWindowController* source,
+                          glic::GlicWindowController::StateObserver* observer) {
+    source->AddStateObserver(observer);
+  }
+  static void RemoveObserver(
+      glic::GlicWindowController* source,
+      glic::GlicWindowController::StateObserver* observer) {
+    source->RemoveStateObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_CONTROLLER_H_

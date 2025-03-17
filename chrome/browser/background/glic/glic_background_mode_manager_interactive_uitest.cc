@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/background/glic/glic_background_mode_manager.h"
-
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -18,7 +17,7 @@
 #include "chrome/browser/status_icons/status_tray.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/prefs/pref_service.h"
@@ -40,15 +39,15 @@ class TestStartupLaunchManager : public StartupLaunchManager {
 
 namespace glic {
 
-class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
+class GlicBackgroundModeManagerUiTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton}, {});
-    InProcessBrowserTest::SetUp();
+    InteractiveBrowserTest::SetUp();
   }
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    InteractiveBrowserTest::SetUpOnMainThread();
     ForceSigninAndModelExecutionCapability(browser()->profile());
   }
 
@@ -77,7 +76,7 @@ class GlicBackgroundModeManagerBrowserTest : public InProcessBrowserTest {
 };
 
 // Checks that modifying the pref propagates to KeepAliveRegistry.
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, KeepAlive) {
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, KeepAlive) {
   auto* keep_alive_registry = KeepAliveRegistry::GetInstance();
   ASSERT_FALSE(
       keep_alive_registry->IsOriginRegistered(KeepAliveOrigin::GLIC_LAUNCHER));
@@ -94,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, KeepAlive) {
 }
 
 // Checks that the status icon exists when the pref is enabled.
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, StatusIcon) {
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, StatusIcon) {
   ASSERT_FALSE(g_browser_process->status_tray()->HasStatusIconOfTypeForTesting(
       StatusTray::StatusIconType::GLIC_ICON));
 
@@ -109,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, StatusIcon) {
       StatusTray::StatusIconType::GLIC_ICON));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
                        UpdateHotkeyWhileEnabled) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
@@ -132,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
   EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
                        UpdateHotkeyWhileDisabled) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
@@ -154,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
   EXPECT_EQ(updated_hotkey, manager->RegisteredHotkeyForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
                        RegisterInvalidAccelerator) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
@@ -170,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
   EXPECT_NE(updated_hotkey, manager->RegisteredHotkeyForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest,
                        SuspendShortcutAndRegisterAccelerator) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
@@ -192,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest,
 }
 
 #if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, LaunchOnStartup) {
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, LaunchOnStartup) {
   auto launch_manager = std::make_unique<TestStartupLaunchManager>();
   StartupLaunchManager::SetInstanceForTesting(launch_manager.get());
 
@@ -210,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, LaunchOnStartup) {
 #endif
 
 // Test that hotkey is logged when pressed.
-IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerBrowserTest, HotkeyPressed) {
+IN_PROC_BROWSER_TEST_F(GlicBackgroundModeManagerUiTest, HotkeyPressed) {
   if (!IsHotkeySupported()) {
     GTEST_SKIP() << "Test does not apply to this platform.";
   }

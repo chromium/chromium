@@ -632,6 +632,15 @@ void GlicWindowController::OpenAttached(Browser& browser) {
   // window.
   gfx::Rect glic_window_widget_initial_rect = glic_button->GetBoundsWithInset();
 
+  // Ensure that we start with a non-empty rect (see DCHECK in
+  // NativeWidgetNSWindowBridge::SetInitialBounds).
+  if (glic_window_widget_initial_rect.IsEmpty()) {
+    glic_window_widget_initial_rect.set_width(
+        std::max(glic_window_widget_initial_rect.width(), 1));
+    glic_window_widget_initial_rect.set_height(
+        std::max(glic_window_widget_initial_rect.height(), 1));
+  }
+
   glic_widget_ = GlicWidget::Create(profile_, glic_window_widget_initial_rect,
                                     GetWeakPtr());
   glic_widget_observation_.Observe(glic_widget_.get());

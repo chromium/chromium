@@ -62,7 +62,14 @@ class GlicKeyedService : public KeyedService {
                 bool prevent_close,
                 mojom::InvocationSource source);
 
+  // Forcibly close the UI. This is similar to Shutdown in that it causes the
+  // window controller to shutdown (and clear cached state), but unlike
+  // Shutdown, it doesn't unregister as the "active glic" with the profile
+  // manager.
+  void CloseUI();
+
   GlicEnabling& enabling() { return *enabling_.get(); }
+
   GlicMetrics* metrics() { return metrics_.get(); }
   GlicWindowController& window_controller() { return *window_controller_; }
 
@@ -75,7 +82,9 @@ class GlicKeyedService : public KeyedService {
   // Called when a `GlicPageHandler` is about to be destroyed.
   void PageHandlerRemoved(GlicPageHandler* page_handler);
 
-  bool IsWindowShowing() const;
+  // Virtual for testing.
+  virtual bool IsWindowShowing() const;
+
   // Virtual for testing.
   virtual bool IsWindowDetached() const;
 
