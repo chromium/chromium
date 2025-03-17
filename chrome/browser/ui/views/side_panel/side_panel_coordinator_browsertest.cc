@@ -23,6 +23,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -238,7 +239,8 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
             .AddAPIPermission("sidePanel")
             .Build();
 
-    extension_service()->GrantPermissions(extension.get());
+    extensions::PermissionsUpdater(browser()->profile())
+        .GrantActivePermissions(extension.get());
     extension_service()->AddExtension(extension.get());
 
     return extension;
