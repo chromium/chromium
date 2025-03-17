@@ -5396,8 +5396,8 @@ class ExtensionServiceZipUninstallProfileFeatureTest
  public:
   void SetUp() override {
     ExtensionServiceWithEmptyServiceTest::SetUp();
-      expected_extension_install_directory_ =
-          service()->unpacked_install_directory();
+    expected_extension_install_directory_ =
+        registrar()->unpacked_install_directory();
   }
 
  protected:
@@ -5421,11 +5421,11 @@ TEST_F(ExtensionServiceZipUninstallProfileFeatureTest,
 
   registry()->AddObserver(&observer);
 
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
-                       zipfile_installer, original_path,
-                       service()->unpacked_install_directory()));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
+                     zipfile_installer, original_path,
+                     registrar()->unpacked_install_directory()));
   task_environment()->RunUntilIdle();
 
   std::string extension_id = std::string(observer.last_extension_installed);

@@ -395,15 +395,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   bool block_extensions() const { return block_extensions_; }
 
-  // TODO(crbug.com/402825212): Migrate callers to use ExtensionRegistrar
-  // directly.
-  const base::FilePath& install_directory() const {
-    return extension_registrar_->install_directory();
-  }
-  const base::FilePath& unpacked_install_directory() const {
-    return extension_registrar_->unpacked_install_directory();
-  }
-
   DelayedInstallManager* delayed_install_manager() {
     return &delayed_install_manager_;
   }

@@ -2208,7 +2208,7 @@ class DeveloperPrivateApiZipFileUnitTest
   void SetUp() override {
     DeveloperPrivateApiUnitTest::SetUp();
     expected_extension_install_directory_ =
-        service()->unpacked_install_directory();
+        registrar()->unpacked_install_directory();
   }
 
  protected:
