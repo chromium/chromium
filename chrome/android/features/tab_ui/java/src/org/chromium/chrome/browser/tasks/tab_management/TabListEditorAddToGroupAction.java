@@ -180,7 +180,11 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
     }
 
     private void createNewTabGroup(List<Tab> tabs, TabGroupModelFilter filter, Tab destinationTab) {
-        filter.mergeListOfTabsToGroup(tabs, destinationTab, true);
+        if (tabs.size() == 1) {
+            filter.createSingleTabGroup(destinationTab);
+        } else {
+            filter.mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ true);
+        }
         mTabGroupCreationDialogManager.showDialog(destinationTab.getRootId(), filter);
     }
 
