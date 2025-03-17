@@ -237,23 +237,15 @@ interface Session {
 // browser and consumers must take care to sanitize inputs.
 [Stable]
 interface OnDeviceModel {
-  // Starts a session with this model. If a session starts before the previous
-  // one has completed and the multiple sessions support is not enabled for
-  // this model, the previous session will be canceled, the mojo connection
-  // for the previous session will also be closed, and the ongoing connections
-  // of StreamingResponder & ContextClient will also be closed.
-  // When the multiple sessions support is enabled, nothing will be
-  // disconnected, and the further requests will be queued.
+  // Starts a session with this model. Sessions are logically independent,
+  // but requests may block progress of other sessions.
   StartSession@0(pending_receiver<Session> session,
       [MinVersion=1] SessionParams? params);
 
-  // Infers multiclass safety scores for the given `text` using this model's
-  // underlying safety classifier, if any. Returns null if classification fails
-  // or there is no classifier available.
+  // DEPRECATED: Does nothing
   ClassifyTextSafety@1(string text) => (SafetyInfo? safety_info);
 
-  // Detects the language of the text using the language classifier. Returns
-  // null if there is no classifier available.
+  // DEPRECATED: Does nothing
   DetectLanguage@2(string text) => (LanguageDetectionResult? result);
 
   // Loads an adaptation with the specified params. This will always load the
@@ -263,7 +255,9 @@ interface OnDeviceModel {
       => (LoadModelResult result);
 };
 
-interface TextSafetyModel {
+// A connection to a text safety model, that can be used to score arbitrary
+// text in a set of safety categories.
+interface TextSafetySession {
   // Infers multiclass safety scores for the given `text` using this model's
   // underlying safety classifier, if any. Returns null if classification fails
   // or there is no classifier available.
@@ -272,6 +266,14 @@ interface TextSafetyModel {
   // Detects the language of the text using the language classifier. Returns
   // null if there is no classifier available.
   DetectLanguage@2(string text) => (LanguageDetectionResult? result);
+};
+
+// A loaded text safety model, that can be shared by multiple features.
+// This remote of this interface is held by the browser, and manages the
+// resource.
+interface TextSafetyModel {
+  // Starts a session with this model.
+  StartSession@0(pending_receiver<TextSafetySession> session);
 };
 
 // Classifies the device based on how fast it is estimated to be able to run a

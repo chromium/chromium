@@ -271,6 +271,11 @@ FakeTsModel::FakeTsModel(
 }
 FakeTsModel::~FakeTsModel() = default;
 
+void FakeTsModel::StartSession(
+    mojo::PendingReceiver<mojom::TextSafetySession> session) {
+  sessions_.Add(this, std::move(session));
+}
+
 void FakeTsModel::ClassifyTextSafety(const std::string& text,
                                      ClassifyTextSafetyCallback callback) {
   CHECK(has_safety_model_);
