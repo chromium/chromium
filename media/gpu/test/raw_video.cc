@@ -136,8 +136,6 @@ class RawVideo::VP9Decoder {
 
  private:
   struct VP9Data : public base::RefCountedThreadSafe<VP9Data> {
-    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
-
     VP9Data(std::unique_ptr<base::MemoryMappedFile> mmap_file,
             const std::vector<base::span<const uint8_t>>& chunks,
             const std::vector<size_t>& keyframe_indices)
