@@ -9,6 +9,7 @@
 
 class TemplateURLService;
 class ProfileInternalsHandler;
+class SearchEngineChoiceDialogService;
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -21,10 +22,6 @@ namespace regional_capabilities {
 
 // Keys for `CountryIdHolder::GetRestricted()`.
 enum class CountryAccessReason {
-  // TODO(crbug.com/328040066): To be removed when the migration away from
-  // `SearchEngineChoiceService::GetCountryId()` is done.
-  kSearchEngineChoiceServiceDeprecatedForwardCall,
-
   // Used to check whether the current country is in scope for re-triggering
   // the search engine choice screen.
   // Added with the initial access control migration, see crbug.com/328040066.
@@ -50,6 +47,11 @@ enum class CountryAccessReason {
   // debug page, which intends to help investigate b:380002162.
   // Added with the initial access control migration, see crbug.com/328040066.
   kProfileInternalsDisplayInDebugUi,
+
+  // Used in crash debug keys related to investigating crbug.com/318824817.
+  // Added with the initial access control migration, see crbug.com/328040066.
+  // TODO(crbug.com/318824817): Remove when the bug root cause is found.
+  kSearchEngineChoiceNotifyChoiceMadeDebug,
 };
 
 // Pass key inspired from `base::NonCopyablePassKey` that also allows specifying
@@ -67,6 +69,7 @@ class CountryAccessKey {
   friend class RegionalCapabilitiesService;
   friend class ::TemplateURLService;
   friend class ::ProfileInternalsHandler;
+  friend class ::SearchEngineChoiceDialogService;
   FRIEND_TEST_ALL_PREFIXES(RegionalCapabilitiesCountryIdTest, GetRestricted);
 
   explicit CountryAccessKey(CountryAccessReason reason) : reason(reason) {}
