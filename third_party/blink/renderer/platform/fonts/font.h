@@ -187,6 +187,9 @@ class PLATFORM_EXPORT Font : public GarbageCollected<Font> {
   // Returns the primary font that contains the digit zero glyph.
   const SimpleFontData* PrimaryFontWithDigitZero() const;
 
+  // Returns the primary font that contains the CJK water glyph.
+  const SimpleFontData* PrimaryFontWithCjkWater() const;
+
   // Returns a list of font features for this `FontDescription`. The returned
   // list is common for all `SimpleFontData` for `this`.
   base::span<const FontFeatureRange> GetFontFeatures() const;
@@ -271,6 +274,12 @@ inline const SimpleFontData* Font::PrimaryFont() const {
 // Uses digit zero as lookup character.
 inline const SimpleFontData* Font::PrimaryFontWithDigitZero() const {
   return EnsureFontFallbackList()->PrimarySimpleFontDataWithDigitZero(
+      font_description_);
+}
+
+// Uses CJK water as lookup character.
+inline const SimpleFontData* Font::PrimaryFontWithCjkWater() const {
+  return EnsureFontFallbackList()->PrimarySimpleFontDataWithCjkWater(
       font_description_);
 }
 
