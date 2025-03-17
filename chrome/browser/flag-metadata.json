@@ -4939,6 +4939,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "group-promo-prototype",
+    "owners": [ "ssid@chromium.org", "yuezhanggg@chromium.org"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "growth-campaigns",
     "owners": [ "llin@google.com", "cros-growth@google.com" ],
     "expiry_milestone": 140

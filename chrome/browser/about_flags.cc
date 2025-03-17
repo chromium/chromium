@@ -9674,6 +9674,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kTabStripTransitionInDesktopWindow)},
 #endif
 
+    {"group-promo-prototype", flag_descriptions::kGroupPromoPrototypeName,
+     flag_descriptions::kGroupPromoPrototypeDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         visited_url_ranking::features::kGroupSuggestionService)},
+
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,
      FEATURE_VALUE_TYPE(::features::kUseDMSAAForTiles)},

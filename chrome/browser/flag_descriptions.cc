@@ -7645,6 +7645,10 @@ const char kTaskManagerDesktopRefreshDescription[] =
     "Enables a refreshed design for the Task Manager on Desktop platforms.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+const char kGroupPromoPrototypeName[] = "Group Promo Prototype";
+const char kGroupPromoPrototypeDescription[] =
+    "Enables prototype for group promo.";
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kEnableNetworkServiceSandboxName[] =
     "Enable the network service sandbox.";

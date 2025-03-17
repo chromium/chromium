@@ -2294,6 +2294,9 @@ extern const char kVisitedURLRankingServiceHistoryVisibilityScoreFilterName[];
 extern const char
     kVisitedURLRankingServiceHistoryVisibilityScoreFilterDescription[];
 
+extern const char kGroupPromoPrototypeName[];
+extern const char kGroupPromoPrototypeDescription[];
+
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 
