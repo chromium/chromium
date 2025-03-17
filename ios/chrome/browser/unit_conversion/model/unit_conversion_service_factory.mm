@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/unit_conversion/unit_conversion_service_factory.h"
+#import "ios/chrome/browser/unit_conversion/model/unit_conversion_service_factory.h"
 
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/unit_conversion/unit_conversion_service.h"
+#import "ios/chrome/browser/unit_conversion/model/unit_conversion_service.h"
 
 // static
 UnitConversionServiceFactory* UnitConversionServiceFactory::GetInstance() {

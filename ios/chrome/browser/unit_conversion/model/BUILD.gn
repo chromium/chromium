@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("unit_conversion") {
+source_set("model") {
   sources = [
     "unit_conversion_service.h",
     "unit_conversion_service.mm",
@@ -20,7 +20,7 @@ source_set("unit_conversion_factory") {
     "unit_conversion_service_factory.mm",
   ]
   deps = [
-    ":unit_conversion",
+    ":model",
     "//base",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
@@ -32,7 +32,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "unit_conversion_service_unittest.mm" ]
   deps = [
-    ":unit_conversion",
+    ":model",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/test/providers/unit_conversion",

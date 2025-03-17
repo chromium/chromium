@@ -229,7 +229,7 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/trusted_vault/model",
     "//ios/chrome/browser/unified_consent/model",
-    "//ios/chrome/browser/unit_conversion:unit_conversion_factory",
+    "//ios/chrome/browser/unit_conversion/model:unit_conversion_factory",
     "//ios/chrome/browser/visited_url_ranking/model",
     "//ios/chrome/browser/voice/ui_bundled",
     "//ios/chrome/browser/web/model/java_script_console",

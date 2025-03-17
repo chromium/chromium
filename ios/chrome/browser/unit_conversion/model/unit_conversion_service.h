@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UNIT_CONVERSION_UNIT_CONVERSION_SERVICE_H_
-#define IOS_CHROME_BROWSER_UNIT_CONVERSION_UNIT_CONVERSION_SERVICE_H_
+#ifndef IOS_CHROME_BROWSER_UNIT_CONVERSION_MODEL_UNIT_CONVERSION_SERVICE_H_
+#define IOS_CHROME_BROWSER_UNIT_CONVERSION_MODEL_UNIT_CONVERSION_SERVICE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -30,4 +30,4 @@ class UnitConversionService : public KeyedService {
       [[NSMutableDictionary alloc] init];
 };
 
-#endif  // IOS_CHROME_BROWSER_UNIT_CONVERSION_UNIT_CONVERSION_SERVICE_H_
+#endif  // IOS_CHROME_BROWSER_UNIT_CONVERSION_MODEL_UNIT_CONVERSION_SERVICE_H_

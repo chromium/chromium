@@ -80,7 +80,7 @@ specific_include_rules = {
     "+ios/chrome/browser/translate/model",
     "+ios/chrome/browser/trusted_vault/model",
     "+ios/chrome/browser/unified_consent/model",
-    "+ios/chrome/browser/unit_conversion",
+    "+ios/chrome/browser/unit_conversion/model",
     "+ios/chrome/browser/visited_url_ranking/model",
     "+ios/chrome/browser/voice/ui_bundled",
     "+ios/chrome/browser/web/model",
