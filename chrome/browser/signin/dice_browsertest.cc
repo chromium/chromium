@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -1553,6 +1554,33 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
 
   // Simulates a previous choice done with Always sign in.
   SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
+
+  SimulateWebSigninMainAccount();
+
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::kSigninChoiceRemembered, 1);
+  // Should still count as an explicit sign in since the choice was explicit
+  // set.
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
+}
+
+class DiceBrowserTestWithAutoAcceptFlag
+    : public DiceBrowserTestWithExplicitSignin {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DiceBrowserTestWithExplicitSignin::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kBrowserSigninAutoAccept);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithAutoAcceptFlag, AutoSignin) {
+  base::HistogramTester histogram_tester;
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_FALSE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
 
   SimulateWebSigninMainAccount();
 
