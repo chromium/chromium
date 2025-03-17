@@ -11,7 +11,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/extensions/installation_mode.h"
-#include "chrome/browser/extensions/toolbar_pin_mode.h"
+#include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/url_pattern_set.h"
@@ -148,7 +148,7 @@ struct IndividualSettings {
   // Allows admins to control whether the extension icon should be pinned to
   // the toolbar next to the omnibar. If it is pinned, the icon is visible at
   // all times.
-  ToolbarPinMode toolbar_pin = ToolbarPinMode::kDefaultUnpinned;
+  ManagedToolbarPinMode toolbar_pin = ManagedToolbarPinMode::kDefaultUnpinned;
 
   // Boolean to indicate whether the extension can navigate to file URLs.
   bool file_url_navigation_allowed{false};

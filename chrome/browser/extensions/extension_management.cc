@@ -36,9 +36,9 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/installation_mode.h"
+#include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
 #include "chrome/browser/extensions/permissions_based_management_policy_provider.h"
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
-#include "chrome/browser/extensions/toolbar_pin_mode.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -592,8 +592,9 @@ const std::string ExtensionManagement::BlockedInstallMessage(
 ExtensionIdSet ExtensionManagement::GetForcePinnedList() const {
   ExtensionIdSet force_pinned_list;
   for (const auto& entry : settings_by_id_) {
-    if (entry.second->toolbar_pin == ToolbarPinMode::kForcePinned)
+    if (entry.second->toolbar_pin == ManagedToolbarPinMode::kForcePinned) {
       force_pinned_list.insert(entry.first);
+    }
   }
   return force_pinned_list;
 }

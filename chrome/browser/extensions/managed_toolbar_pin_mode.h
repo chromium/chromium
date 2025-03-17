@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_TOOLBAR_PIN_MODE_H_
-#define CHROME_BROWSER_EXTENSIONS_TOOLBAR_PIN_MODE_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_MANAGED_TOOLBAR_PIN_MODE_H_
+#define CHROME_BROWSER_EXTENSIONS_MANAGED_TOOLBAR_PIN_MODE_H_
 
 namespace extensions {
 
@@ -14,12 +14,11 @@ namespace extensions {
 // * kForcePinned: Extension starts pinned to the toolbar, and the user
 //                 cannot unpin it.
 // TODO(crbug.com/40126725): Add kDefaultPinned state.
-// TODO(crbug.com/404271004): Rename to ManagedToolbarPinMode.
-enum class ToolbarPinMode {
+enum class ManagedToolbarPinMode {
   kDefaultUnpinned = 0,
   kForcePinned,
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_TOOLBAR_PIN_MODE_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_MANAGED_TOOLBAR_PIN_MODE_H_

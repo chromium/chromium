@@ -11,7 +11,7 @@
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_management_constants.h"
 #include "chrome/browser/extensions/installation_mode.h"
-#include "chrome/browser/extensions/toolbar_pin_mode.h"
+#include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/url_pattern_set.h"
 #include "url/gurl.h"
@@ -224,9 +224,9 @@ bool IndividualSettings::Parse(const base::Value::Dict& dict,
   std::string toolbar_pin_str;
   if (GetString(dict, schema_constants::kToolbarPin, &toolbar_pin_str)) {
     if (toolbar_pin_str == schema_constants::kDefaultUnpinned) {
-      toolbar_pin = ToolbarPinMode::kDefaultUnpinned;
+      toolbar_pin = ManagedToolbarPinMode::kDefaultUnpinned;
     } else if (toolbar_pin_str == schema_constants::kForcePinned) {
-      toolbar_pin = ToolbarPinMode::kForcePinned;
+      toolbar_pin = ManagedToolbarPinMode::kForcePinned;
     } else {
       // Invalid value for 'toolbar_pin'.
       LOG(WARNING) << kMalformedPreferenceWarning;
