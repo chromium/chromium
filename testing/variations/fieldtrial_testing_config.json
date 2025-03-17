@@ -8181,7 +8181,7 @@
             ]
         }
     ],
-    "DirectCompositorThreadIpc": [
+    "DirectCompositorThreadIpcMacLinuxChromeOS": [
         {
             "platforms": [
                 "chromeos",
