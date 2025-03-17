@@ -44,7 +44,6 @@ mojom("mojom") {
     "networking_private.mojom",
     "nullable_primitives.mojom",
     "parent_access.mojom",
-    "policy_namespace.mojom",
     "policy_service.mojom",
     "print_preview_cros.mojom",
     "probe_service.mojom",
@@ -103,18 +102,6 @@ mojom("mojom") {
         {
           mojom = "crosapi.mojom.App"
           cpp = "::apps::AppPtr"
-          move_only = true
-          nullable_is_same_type = true
-        },
-        {
-          mojom = "crosapi.mojom.PolicyDomain"
-          cpp = "::policy::PolicyDomain"
-          move_only = true
-          nullable_is_same_type = true
-        },
-        {
-          mojom = "crosapi.mojom.PolicyNamespace"
-          cpp = "::policy::PolicyNamespace"
           move_only = true
           nullable_is_same_type = true
         },
@@ -208,8 +195,6 @@ mojom("mojom") {
         },
       ]
       traits_headers = [
-        "//chromeos/crosapi/mojom/policy_domain_mojom_traits.h",
-        "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.h",
         "//chromeos/crosapi/mojom/ui_constants_mojom_traits.h",
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//components/services/app_service/public/cpp/app_launch_util.h",
@@ -222,14 +207,11 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp/preferred_app.h",
       ]
       traits_sources = [
-        "//chromeos/crosapi/mojom/policy_domain_mojom_traits.cc",
-        "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.cc",
         "//chromeos/crosapi/mojom/ui_constants_mojom_traits.cc",
         "//chromeos/crosapi/mojom/web_app_types_mojom_traits.cc",
       ]
       traits_public_deps = [
         "//base",
-        "//components/policy/core/common:policy_namespace",
         "//components/services/app_service/public/cpp:app_types",
         "//components/services/app_service/public/cpp/shortcut",
         "//components/tab_groups",
