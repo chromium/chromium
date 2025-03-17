@@ -213,7 +213,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   if (preferenceName == prefs::kInactiveTabsTimeThreshold) {
     NSInteger daysThreshold =
         _prefService->GetInteger(prefs::kInactiveTabsTimeThreshold);
-    [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
+    if (daysThreshold >= 0) {
+      [_consumer updateInactiveTabsDaysThreshold:daysThreshold];
+    }
   }
 }
 
