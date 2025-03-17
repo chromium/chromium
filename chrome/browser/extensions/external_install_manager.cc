@@ -12,7 +12,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_error.h"
-#include "chrome/browser/extensions/installation_mode.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "components/version_info/version_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
@@ -209,7 +209,7 @@ void ExternalInstallManager::OnExtensionInstalled(
   ExtensionManagement* settings =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   bool is_recommended_by_policy = settings->GetInstallationMode(extension) ==
-                                  InstallationMode::kRecommended;
+                                  ManagedInstallationMode::kRecommended;
   // Certain extension locations are specific enough that we can
   // auto-acknowledge any extension that came from one of them.
   // Extensions recommended by policy can also be auto-acknowledged.

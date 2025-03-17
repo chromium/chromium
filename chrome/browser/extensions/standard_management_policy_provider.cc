@@ -9,7 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/installation_mode.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "extensions/common/constants.h"
@@ -124,10 +124,10 @@ bool StandardManagementPolicyProvider::UserMayLoad(
       NOTREACHED();
   }
 
-  InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       settings_->GetInstallationMode(extension);
-  if (installation_mode == InstallationMode::kBlocked ||
-      installation_mode == InstallationMode::kRemoved) {
+  if (installation_mode == ManagedInstallationMode::kBlocked ||
+      installation_mode == ManagedInstallationMode::kRemoved) {
     return ReturnLoadError(extension, error);
   }
 
@@ -146,12 +146,12 @@ bool StandardManagementPolicyProvider::UserMayLoad(
 bool StandardManagementPolicyProvider::UserMayInstall(
     const Extension* extension,
     std::u16string* error) const {
-  InstallationMode installation_mode =
+  ManagedInstallationMode installation_mode =
       settings_->GetInstallationMode(extension);
 
   // Force-installed extensions cannot be overwritten manually.
   if (!Manifest::IsPolicyLocation(extension->location()) &&
-      installation_mode == InstallationMode::kForced) {
+      installation_mode == ManagedInstallationMode::kForced) {
     return ReturnLoadError(extension, error);
   }
 
@@ -238,12 +238,12 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
 bool StandardManagementPolicyProvider::MustRemainInstalled(
     const Extension* extension,
     std::u16string* error) const {
-  InstallationMode mode = settings_->GetInstallationMode(extension);
+  ManagedInstallationMode mode = settings_->GetInstallationMode(extension);
   // Disallow removing of recommended extension, to avoid re-install it
   // again while policy is reload. But disabling of recommended extension is
   // allowed.
-  if (mode == InstallationMode::kForced ||
-      mode == InstallationMode::kRecommended) {
+  if (mode == ManagedInstallationMode::kForced ||
+      mode == ManagedInstallationMode::kRecommended) {
     if (error) {
       *error = l10n_util::GetStringFUTF16(
           IDS_EXTENSION_CANT_UNINSTALL_POLICY_REQUIRED,
@@ -259,7 +259,8 @@ bool StandardManagementPolicyProvider::ShouldForceUninstall(
     std::u16string* error) const {
   if (UserMayLoad(extension, error))
     return false;
-  if (settings_->GetInstallationMode(extension) == InstallationMode::kRemoved) {
+  if (settings_->GetInstallationMode(extension) ==
+      ManagedInstallationMode::kRemoved) {
     return true;
   }
   return false;

@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/installation_mode.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
@@ -35,19 +35,19 @@ namespace {
 // wildcard/update_url but blocked by |manifest type| or |required permissions|.
 bool IsExtensionInstallBlockedByPolicy(
     ExtensionManagement* extension_management,
-    InstallationMode mode,
+    ManagedInstallationMode mode,
     const ExtensionId& extension_id,
     const std::string& update_url,
     Manifest::Type manifest_type,
     const PermissionSet& required_permissions) {
   switch (mode) {
-    case InstallationMode::kBlocked:
-    case InstallationMode::kRemoved:
+    case ManagedInstallationMode::kBlocked:
+    case ManagedInstallationMode::kRemoved:
       return true;
-    case InstallationMode::kForced:
-    case InstallationMode::kRecommended:
+    case ManagedInstallationMode::kForced:
+    case ManagedInstallationMode::kRecommended:
       return false;
-    case InstallationMode::kAllowed:
+    case ManagedInstallationMode::kAllowed:
       break;
   }
 
@@ -97,11 +97,11 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   // function is used by webstore private API only and there may not be any
   // |Extension| instance. Note that we don't handle the case where an offstore
   // extension with an identical ID is installed.
-  InstallationMode mode = extension_management->GetInstallationMode(
+  ManagedInstallationMode mode = extension_management->GetInstallationMode(
       extension_id, update_url.spec());
 
-  if (mode == InstallationMode::kForced ||
-      mode == InstallationMode::kRecommended) {
+  if (mode == ManagedInstallationMode::kForced ||
+      mode == ManagedInstallationMode::kRecommended) {
     return kForceInstalled;
   }
 

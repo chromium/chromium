@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/values.h"
-#include "chrome/browser/extensions/installation_mode.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission_set.h"
@@ -80,7 +80,7 @@ struct IndividualSettings {
   // In case this setting is specified in both per-extensions and
   // per-update-url settings, per-extension settings will override
   // per-update-url settings.
-  InstallationMode installation_mode;
+  ManagedInstallationMode installation_mode;
   std::string update_url;
 
   // Boolean to indicate whether the update URL of the extension/app is

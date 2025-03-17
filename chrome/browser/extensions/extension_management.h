@@ -16,7 +16,7 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
-#include "chrome/browser/extensions/installation_mode.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -84,12 +84,12 @@ class ExtensionManagement : public KeyedService {
   bool BlocklistedByDefault() const;
 
   // Returns installation mode for an extension.
-  InstallationMode GetInstallationMode(const Extension* extension);
+  ManagedInstallationMode GetInstallationMode(const Extension* extension);
 
   // Returns installation mode for an extension with id |extension_id| and
   // updated with |update_url|.
-  InstallationMode GetInstallationMode(const ExtensionId& extension_id,
-                                       const std::string& update_url);
+  ManagedInstallationMode GetInstallationMode(const ExtensionId& extension_id,
+                                              const std::string& update_url);
 
   // Returns the force install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
@@ -284,7 +284,7 @@ class ExtensionManagement : public KeyedService {
   // Helper to return an extension install list, in format specified by
   // ExternalPolicyLoader::AddExtension().
   base::Value::Dict GetInstallListByMode(
-      InstallationMode installation_mode) const;
+      ManagedInstallationMode installation_mode) const;
 
   // Helper to update `extension_dict` for forced installs.
   void UpdateForcedExtensions(const base::Value::Dict* extension_dict);
