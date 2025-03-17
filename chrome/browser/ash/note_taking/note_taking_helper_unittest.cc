@@ -67,6 +67,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "extensions/browser/extension_system.h"
@@ -350,10 +351,7 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     AccountId account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     user_manager()->AddGaiaUser(account_id, user_manager::UserType::kRegular);
     user_manager()->UserLoggedIn(
-        account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {

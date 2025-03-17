@@ -251,12 +251,8 @@ class USER_MANAGER_EXPORT UserManager {
 
   // Indicates that a user with the given `account_id` has just logged in.
   // `username_hash` is used to identify homedir mount point.
-  // TODO(crbug.com/278643115): `browser_restart` and `is_child` is no longer
-  // used. Remove them.
   virtual void UserLoggedIn(const AccountId& account_id,
-                            const std::string& username_hash,
-                            bool browser_restart,
-                            bool is_child) = 0;
+                            const std::string& username_hash) = 0;
 
   // If there's no user for the given `account_id`, a new is created with
   // the given `user_type`. `is_ephemeral` is respected only if the `user_type`

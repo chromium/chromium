@@ -20,6 +20,7 @@
 #include "chromeos/crosapi/mojom/document_scan.mojom-forward.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom-shared.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,14 +48,11 @@ class DocumentScanAshTest : public testing::Test {
 
     const AccountId account_id =
         AccountId::FromUserEmail(profile_.GetProfileUserName());
-    const user_manager::User* user =
-        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id,
-            /*is_affiliated=*/false, user_manager::UserType::kRegular,
-            &profile_);
-    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                     /*browser_restart=*/false,
-                                     /*is_child=*/false);
+    fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id,
+        /*is_affiliated=*/false, user_manager::UserType::kRegular, &profile_);
+    fake_user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     fake_user_manager_->SimulateUserProfileLoad(account_id);
   }
 

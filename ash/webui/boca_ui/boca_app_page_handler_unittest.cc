@@ -362,9 +362,7 @@ class BocaAppPageHandlerTest : public testing::Test {
                                     user_manager::UserType::kRegular);
     fake_user_manager_->UserLoggedIn(
         account_id,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id),
-        /*browser_restart=*/false,
-        /*is_child=*/false);
+        user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
     auto* browser_context =
         browser_context_helper_delegate_ptr->CreateBrowserContext(
             browser_context_helper_delegate_ptr->GetUserDataDir()->AppendASCII(

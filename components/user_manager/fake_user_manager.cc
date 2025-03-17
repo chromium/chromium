@@ -29,9 +29,7 @@ std::string FakeUserManager::GetFakeUsernameHash(const AccountId& account_id) {
 }
 
 void FakeUserManager::UserLoggedIn(const AccountId& account_id,
-                                   const std::string& username_hash,
-                                   bool browser_restart,
-                                   bool is_child) {
+                                   const std::string& username_hash) {
   // Please keep the implementation in sync with
   // FakeChromeUserManager::UserLoggedIn. We're in process to merge.
   for (auto& user : user_storage_) {

@@ -25,6 +25,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace ash::sync_wifi {
@@ -110,8 +111,7 @@ void NetworkTestHelper::SetUp() {
 void NetworkTestHelper::LoginUser(const user_manager::User* user) {
   fake_user_manager_->UserLoggedIn(
       user->GetAccountId(),
-      user_manager::FakeUserManager::GetFakeUsernameHash(user->GetAccountId()),
-      /*browser_restart=*/true, /*is_child=*/false);
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
   fake_user_manager_->SwitchActiveUser(user->GetAccountId());
 }
 
