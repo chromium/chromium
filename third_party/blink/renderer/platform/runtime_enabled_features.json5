@@ -3017,10 +3017,6 @@
       status: "test"
     },
     {
-      name: "OnDeviceChange",
-      status: "stable"
-    },
-    {
       name: "OnDeviceWebSpeechAvailable",
       status: "experimental",
     },

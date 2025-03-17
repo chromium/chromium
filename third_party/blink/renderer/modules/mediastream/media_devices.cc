@@ -423,7 +423,7 @@ MediaDevices::MediaDevices(Navigator& navigator)
     : ActiveScriptWrappable<MediaDevices>({}),
       Supplement<Navigator>(navigator),
       ExecutionContextLifecycleObserver(navigator.DomWindow()),
-      stopped_(false),
+      is_execution_context_active_(!!navigator.DomWindow()),
       dispatcher_host_(navigator.GetExecutionContext()),
       receiver_(this, navigator.DomWindow()) {}
 
@@ -1117,11 +1117,11 @@ bool MediaDevices::HasPendingActivity() const {
 
 void MediaDevices::ContextDestroyed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stopped_) {
+  if (!is_execution_context_active_) {
     return;
   }
 
-  stopped_ = true;
+  is_execution_context_active_ = false;
   enumerate_device_requests_.clear();
   StopObserving();
 }
@@ -1131,23 +1131,21 @@ void MediaDevices::OnDevicesChanged(
     const Vector<WebMediaDeviceInfo>& device_infos) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetExecutionContext());
-  DCHECK(!stopped_);
+  CHECK(is_execution_context_active_);
   if (std::ranges::equal(current_device_infos_[static_cast<wtf_size_t>(type)],
                          device_infos, EqualDeviceForDeviceChange)) {
     return;
   }
 
   current_device_infos_[static_cast<wtf_size_t>(type)] = device_infos;
-  if (RuntimeEnabledFeatures::OnDeviceChangeEnabled()) {
-    if (media::MediaPermission* media_permission =
-            blink::Platform::Current()->GetWebRTCMediaPermission(
-                WebLocalFrame::FromFrameToken(
-                    DomWindow()->GetLocalFrameToken()))) {
-      media_permission->HasPermission(
-          ToMediaPermissionType(type),
-          WTF::BindOnce(&MediaDevices::MaybeFireDeviceChangeEvent,
-                        WrapWeakPersistent(this)));
-    }
+  if (media::MediaPermission* media_permission =
+          blink::Platform::Current()->GetWebRTCMediaPermission(
+              WebLocalFrame::FromFrameToken(
+                  DomWindow()->GetLocalFrameToken()))) {
+    media_permission->HasPermission(
+        ToMediaPermissionType(type),
+        WTF::BindOnce(&MediaDevices::MaybeFireDeviceChangeEvent,
+                      WrapWeakPersistent(this)));
   }
 }
 
@@ -1159,7 +1157,7 @@ void MediaDevices::MaybeFireDeviceChangeEvent(bool has_permission) {
 
 void MediaDevices::ScheduleDispatchEvent(Event* event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stopped_) {
+  if (!is_execution_context_active_) {
     return;
   }
 
@@ -1178,7 +1176,7 @@ void MediaDevices::ScheduleDispatchEvent(Event* event) {
 
 void MediaDevices::DispatchScheduledEvents() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stopped_) {
+  if (!is_execution_context_active_) {
     return;
   }
   HeapVector<Member<Event>> events;
@@ -1191,7 +1189,8 @@ void MediaDevices::DispatchScheduledEvents() {
 
 void MediaDevices::StartObserving() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (receiver_.is_bound() || stopped_ || starting_observation_) {
+  if (receiver_.is_bound() || !is_execution_context_active_ ||
+      starting_observation_) {
     return;
   }
 
@@ -1219,7 +1218,7 @@ void MediaDevices::FinalizeStartObserving(
         audio_input_capabilities) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   starting_observation_ = false;
-  if (receiver_.is_bound() || stopped_) {
+  if (receiver_.is_bound() || !is_execution_context_active_) {
     return;
   }
 
