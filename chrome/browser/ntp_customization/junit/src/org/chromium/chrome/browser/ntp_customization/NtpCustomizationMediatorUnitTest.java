@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Map;
@@ -42,8 +41,8 @@ import java.util.Map;
 public class NtpCustomizationMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private BottomSheetController mBottomSheetController;
-    @Mock private NtpCustomizationBottomSheetContent mBottomSheetContent;
+    @Mock private BottomSheetController mBottomSheetControllerMock;
+    @Mock private BottomSheetContent mBottomSheetContent;
     @Mock private PropertyModel mPropertyModel;
 
     private NtpCustomizationMediator mMediator;
@@ -53,7 +52,7 @@ public class NtpCustomizationMediatorUnitTest {
     public void setUp() {
         mMediator =
                 new NtpCustomizationMediator(
-                        mBottomSheetController, mBottomSheetContent, mPropertyModel);
+                        mBottomSheetControllerMock, mBottomSheetContent, mPropertyModel);
         mViewFlipperMap = mMediator.getViewFlipperMapForTesting();
     }
 
@@ -109,12 +108,12 @@ public class NtpCustomizationMediatorUnitTest {
 
         mMediator.showBottomSheet(BottomSheetType.NTP_CARDS);
 
-        verify(mBottomSheetController).requestShowContent(eq(mBottomSheetContent), eq(true));
-        clearInvocations(mBottomSheetController);
+        verify(mBottomSheetControllerMock).requestShowContent(eq(mBottomSheetContent), eq(true));
+        clearInvocations(mBottomSheetControllerMock);
 
         mViewFlipperMap.put(11, 101);
         mMediator.showBottomSheet(11);
-        verify(mBottomSheetController, never())
+        verify(mBottomSheetControllerMock, never())
                 .requestShowContent(eq(mBottomSheetContent), eq(true));
     }
 
@@ -149,7 +148,7 @@ public class NtpCustomizationMediatorUnitTest {
         // not initialized.
         mMediator.backPressOnCurrentBottomSheet();
 
-        verify(mBottomSheetController, never())
+        verify(mBottomSheetControllerMock, never())
                 .hideContent(any(BottomSheetContent.class), anyBoolean());
         verify(mPropertyModel, never()).set(eq(LAYOUT_TO_DISPLAY), anyInt());
     }
@@ -162,7 +161,7 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.backPressOnCurrentBottomSheet();
 
         // Verifies that hideContent() is called and mCurrentBottomSheet is set to null.
-        verify(mBottomSheetController).hideContent(eq(mBottomSheetContent), eq(true));
+        verify(mBottomSheetControllerMock).hideContent(eq(mBottomSheetContent), eq(true));
         assertNull(mMediator.getCurrentBottomSheetForTesting());
 
         // Verifies that showBottomSheet() is not called.
@@ -179,7 +178,7 @@ public class NtpCustomizationMediatorUnitTest {
 
         // Verifies that hideContent() is not called and showBottomSheet() is called to change the
         // value of mCurrentBottomSheet and to set the value of mPropertyModel.
-        verify(mBottomSheetController, never())
+        verify(mBottomSheetControllerMock, never())
                 .hideContent(any(BottomSheetContent.class), anyBoolean());
         assertEquals(BottomSheetType.MAIN, (int) mMediator.getCurrentBottomSheetForTesting());
         verify(mPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(10));
@@ -194,25 +193,5 @@ public class NtpCustomizationMediatorUnitTest {
         assertEquals(2, mViewFlipperMap.size());
         mMediator.destroy();
         assertEquals(0, mViewFlipperMap.size());
-    }
-
-    @Test
-    @SmallTest
-    public void testBottomSheetObserver() {
-        // Verifies the supplier is set to true when the sheet opens.
-        BottomSheetObserver observer = mMediator.getBottomSheetObserver();
-        observer.onSheetOpened(0);
-        verify(mBottomSheetContent).onSheetOpened();
-
-        // Verifies the supplier is set to false when the sheet closes and the observer is removed.
-        observer.onSheetClosed(3); // Closes the sheet by clicking the trim.
-        verify(mBottomSheetContent).onSheetClosed();
-        verify(mBottomSheetController).removeObserver(eq(observer));
-        clearInvocations(mBottomSheetContent);
-        clearInvocations(mBottomSheetController);
-
-        observer.onSheetClosed(0); // Closes the sheet by clicking the system back button.
-        verify(mBottomSheetContent).onSheetClosed();
-        verify(mBottomSheetController).removeObserver(eq(observer));
     }
 }
