@@ -247,6 +247,8 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
   void CreateInterceptor(
       std::optional<blink::DocumentToken> initiator_document_token) {
     interceptor_ = std::make_unique<PrefetchURLLoaderInterceptor>(
+        PrefetchServiceWorkerState::kDisallowed,
+        /*service_worker_handle=*/nullptr,
         web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
         std::move(initiator_document_token),
         /*serving_page_metrics_container=*/nullptr);

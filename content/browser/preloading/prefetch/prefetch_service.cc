@@ -786,13 +786,11 @@ void PrefetchService::CheckHasServiceWorker(
         NOTREACHED();
 
       case PrefetchServiceWorkerState::kControlled:
-        // Currently we disallow redirects for ServiceWorker-controlled
+        // Currently we disallow redirects from ServiceWorker-controlled
         // prefetches.
-        // TODO(https://crbug.com/40947546): Supply an appropriate eligibility
-        // value if needed.
         OnGotEligibility(std::move(prefetch_container),
                          std::move(redirect_data),
-                         PreloadingEligibility::kUserHasServiceWorker);
+                         PreloadingEligibility::kRedirectFromServiceWorker);
         return;
     }
   } else {
