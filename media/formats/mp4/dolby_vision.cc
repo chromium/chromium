@@ -21,7 +21,8 @@ FourCC DolbyVisionConfiguration::BoxType() const {
 }
 
 bool DolbyVisionConfiguration::Parse(BoxReader* reader) {
-  return dovi_config.Parse(reader, reader->media_log());
+  return dovi_config.Parse(reader, reader->media_log()) &&
+         dovi_config.dv_profile <= 7;
 }
 
 DolbyVisionConfiguration8::DolbyVisionConfiguration8() = default;
@@ -32,7 +33,8 @@ FourCC DolbyVisionConfiguration8::BoxType() const {
 }
 
 bool DolbyVisionConfiguration8::Parse(BoxReader* reader) {
-  return dovi_config.Parse(reader, reader->media_log());
+  return dovi_config.Parse(reader, reader->media_log()) &&
+         dovi_config.dv_profile > 7 && dovi_config.dv_profile < 10;
 }
 
 bool DOVIDecoderConfigurationRecord::ParseForTesting(const uint8_t* data,
