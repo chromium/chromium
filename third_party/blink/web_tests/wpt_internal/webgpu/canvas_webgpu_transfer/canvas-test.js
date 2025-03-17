@@ -83,7 +83,8 @@ function runCanvasTestsInWorker({dependencies = []} = {}) {
   promise_setup(async () => {
     const allDeps = [
       '/resources/testharness.js',
-      'canvas-worker-test.js',
+      'canvas-test.js',
+      'canvas-worker-test.js',  // Overrides parts of canvas-test.js.
     ].concat(dependencies);
 
     const dependencyScripts =

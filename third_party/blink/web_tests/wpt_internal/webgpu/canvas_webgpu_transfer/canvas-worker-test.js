@@ -1,15 +1,6 @@
 /** Worker script needed by canvas-test.js. */
 
 /**
- * Enum listing all test types emitted by `canvasPromiseTest()`.
- */
-const CanvasTestType = Object.freeze({
-  HTML:   Symbol("html"),
-  OFFSCREEN:  Symbol("offscreen"),
-  WORKER: Symbol("worker")
-});
-
-/**
  * Worker version of `canvasPromiseTest()`, running `testBody` with an
  * `OffscreenCanvas` in a worker. For more details, see the main thread version
  * of this function in `canvas-test.js`.
