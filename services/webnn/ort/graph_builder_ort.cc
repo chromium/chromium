@@ -2213,22 +2213,52 @@ void GraphBuilderOrt::AddPreluOperation(const mojom::Prelu& prelu) {
   model_editor_.AddNode(kOpTypePRelu, node, inputs, outputs);
 }
 
-// TODO(https://github.com/shiyi9801/chromium/issues/53): 'reduceSumSquare
-// float32 1D tensor with empty axes' test case fails
 [[nodiscard]] base::expected<void, mojom::ErrorPtr>
 GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   const std::string input = GetOperandNameById(reduce.input_operand_id);
+  const std::string output = GetOperandNameById(reduce.output_operand_id);
   std::vector<const char*> inputs = {input.c_str()};
+  std::array<const char*, 1> outputs = {output.c_str()};
 
+  // According to
+  // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reduce,
+  // if axes is empty,
+  // WebNN applies reduction function to each value in the tensor individually
+  // with no dimensions are reduced, but ONNX reduction operations either
+  // reduces all dimensions or act as noop. So we need to emulate the behavior
+  // of reducing each value individually:
+  // 1. insert a log operation for reduceLogSum
+  // 2. insert a pow operation for reduceSumSquare
+  // 3. insert a abs operation for reduceL1, reduceL2
+  // For other reduction operations like reuduceMin, reuduceSum, reducing each
+  // value individually is equivalent to noop.
   std::vector<int64_t> axes_value(reduce.axes.begin(), reduce.axes.end());
-  std::string axes;
-  if (!axes_value.empty()) {
-    // axes is an operand with data type int64, not an attribute.
-    std::vector<uint32_t> axes_dims = {
-        base::checked_cast<uint32_t>(axes_value.size())};
-    ASSIGN_OR_RETURN(axes, CreateInitializer<int64_t>(axes_dims, axes_value));
-    inputs.push_back(axes.c_str());
+  if (axes_value.empty()) {
+    if (reduce.kind == mojom::Reduce::Kind::kLogSum) {
+      const std::string log_node = GenerateNextOperationName("inserted_log");
+      model_editor_.AddNode(kOpTypeLog, log_node, inputs, outputs);
+      return base::ok();
+    } else if (reduce.kind == mojom::Reduce::Kind::kSumSquare) {
+      const std::string pow_node = GenerateNextOperationName("inserted_pow");
+      ASSIGN_OR_RETURN(const std::string pow,
+                       CreateScalarInitializer<int64_t>(2));
+      std::array<const char*, 2> pow_inputs = {input.c_str(), pow.c_str()};
+      model_editor_.AddNode(kOpTypePow, pow_node, pow_inputs, outputs);
+      return base::ok();
+    } else if (reduce.kind == mojom::Reduce::Kind::kL1 ||
+               reduce.kind == mojom::Reduce::Kind::kL2) {
+      const std::string abs_node = GenerateNextOperationName("inserted_abs");
+      model_editor_.AddNode(kOpTypeAbs, abs_node, inputs, outputs);
+      return base::ok();
+    }
   }
+
+  std::string axes;
+  // axes is an operand with data type int64, not an attribute.
+  std::vector<uint32_t> axes_dims = {
+      base::checked_cast<uint32_t>(axes_value.size())};
+  ASSIGN_OR_RETURN(axes, CreateInitializer<int64_t>(axes_dims, axes_value));
+  inputs.push_back(axes.c_str());
 
   std::vector<ScopedOrtOpAttr> attributes;
   attributes.reserve(2);
@@ -2237,18 +2267,12 @@ GraphBuilderOrt::AddReduceOperation(const mojom::Reduce& reduce) {
   attributes.push_back(
       model_editor_.CreateAttribute(/*name=*/"keepdims", keepdims));
 
-  // According to
-  // https://webmachinelearning.github.io/webnn/#api-mlgraphbuilder-reduce, if
-  // axes is empty, the operation is a noop, no dimensions are reduced.
   int64_t noop_with_empty_axes = 1;
   attributes.push_back(model_editor_.CreateAttribute(
       /*name=*/"noop_with_empty_axes", noop_with_empty_axes));
 
   const std::string node = GenerateNextOperationName(reduce.label);
-  const std::string output = GetOperandNameById(reduce.output_operand_id);
-  std::array<const char*, 1> outputs = {output.c_str()};
   std::string reduce_op_type = MapReduceKindToOrtOpType(reduce.kind);
-
   model_editor_.AddNode(reduce_op_type, node, inputs, outputs,
                         std::move(attributes));
 
