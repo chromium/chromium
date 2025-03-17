@@ -9082,3 +9082,6 @@ crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-side
 crbug.com/402796552 [ Mac14-arm64 ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Failure ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
 crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
+
+#Gardener 2025-03-17
+crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
