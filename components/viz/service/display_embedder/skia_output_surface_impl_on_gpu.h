@@ -214,7 +214,9 @@ class SkiaOutputSurfaceImplOnGpu
 
   void SetVSyncDisplayID(int64_t display_id);
 
+#if BUILDFLAG(IS_ANDROID)
   void SetFrameRate(float frame_rate);
+#endif
 
   bool was_context_lost() { return context_state_->context_lost(); }
 

@@ -112,7 +112,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   base::ScopedClosureRunner GetCacheBackBufferCb() override;
 #endif
   gfx::Rect GetCurrentFramebufferDamage() const override;
+#if BUILDFLAG(IS_ANDROID)
   void SetFrameRate(float frame_rate) override;
+#endif
   void SetNeedsMeasureNextDrawLatency() override;
 
   // SkiaOutputSurface implementation:
