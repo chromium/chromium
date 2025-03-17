@@ -45,6 +45,10 @@ vendor`, and `gnrt gen`.
 Depending on how many crates are updated, the script may need 10-15 minutes to
 run.
 
+The script should Just Work in most cases, but sometimes it may fail when
+dealing with a specific create update.  See the "Recovering from script
+failures" section below for what to do when that happens.
+
 Before the auto-generated CLs can be landed, some additional manual steps need
 to be done first - see the sections below.
 
@@ -298,3 +302,55 @@ For maximal control, the script can be used in `manual` mode:
     - To make the review easier, one of the patchsets covers just the path
       changes.  For example - see [the delta here](https://crrev.com/c/5445719/2..7).
 
+## Recovering from script failures
+
+Sometimes the `create_update_cl.py` script will fail when dealing with
+a specific crate update.  The general workflow in this case is to
+1) fix the issue in a separate CL, and 2) restart the tool from the middle
+by using `--upstream-branch` that points to the last successful update branch
+(or to the fix CL) rather than defaulting to `origin/main`.
+
+Examples of a few specific situations that may lead to script failure:
+
+* An update brought in a new crate, but `gnrt` didn't recognize new crate's
+  license kind or license file.  In that case a prerequisite CL needs to be
+  landed first, teaching `gnrt` about the new license kinds/files
+  (somewhere around
+  [here](https://source.chromium.org/chromium/chromium/src/+/main:tools/crates/gnrt/lib/readme.rs;l=264-290;drc=c838bc6c6317d4c1ead1f7f0c615af353482f2b3)).
+  Example CL with such a fix: https://crrev.com/c/6219211
+* Patches from `//third_party/rust/chromium_crates_io/patches/` no longer
+  apply cleanly to the new version of a crate.  In that case the crate update CL
+  needs to 1) first update the patches, and then 2) update the crate as usual.
+  This is not very well supported by the script... But something like this
+  should work:
+    - Checkout a new branch:
+        ```
+        $ git checkout rust-crates-update--last-successful-update
+        $ git checkout -b fix-patches-for-foo
+        $ git git branch --set-upstream-to=rust-crates-update--last-successful-update
+        ```
+    - Fix the patches and upload as a temporary / throw-away CL
+      (this CL can't be landed on its own - it needs to be combined
+      with the actual update CL):
+        ```
+        $ # Fix the patches
+        $ git commit -a -m ...
+        $ git cl upload
+        ```
+    - Restart the script (the CL created by the script can't be landed
+      as-is / on its own - it needs to be combined with the fixed patches
+      in the step below) with `--upstream-branch` parameter:
+        ```
+        $ tools/crates/create_update_cl.py auto -- name-of-failed-crate \
+            --upstream-branch=fix-patches-for-foo
+        ```
+    - Combine the branches:
+        ```
+        $ git map-branches -v # to orient yourself
+        $ git checkout rust-crates-update--new-successful-update
+        $ git branch --set-upstream-to=rust-crates-update--last-successful-update
+        $ git cl upload -m Rebasing... # --bypass-hooks as needed
+        ```
+* `//third_party/rust/chromium_crates_io/gnrt_config.toml` needs to be updated
+  to work with a new crate version.  The same workflow should work as for fixing
+  `//third_party/rust/chromium_crates_io/patches/` (see the item above).
