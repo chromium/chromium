@@ -2609,6 +2609,7 @@ if (!is_android) {
       "//ui/shell_dialogs:test_support",
       "//ui/web_dialogs:test_support",
       "//ui/webui",
+      "//ui/webui:buildflags",
       "//ui/webui:test_support",
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//v8",
@@ -5535,6 +5536,10 @@ if (!is_android) {
 
     if (chrome_root_store_cert_management_ui) {
       deps += [ "//components/server_certificate_database" ]
+    }
+
+    if (enable_webui_generate_code_cache) {
+      deps += [ "//ui/webui/resources:code_cache_resources" ]
     }
   }
 }
