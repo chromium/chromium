@@ -145,6 +145,13 @@ class WebClientImpl implements WebClientInterface {
         });
   }
 
+  notifyOsLocationPermissionStateChanged(enabled: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyOsLocationPermissionStateChanged', {
+          enabled: enabled,
+        });
+  }
+
   notifyFocusedTabChanged(focusedTabData: (FocusedTabDataMojo)): void {
     const extras = new ResponseExtras();
     this.sender.requestNoResponse(
@@ -459,6 +466,9 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   }
 
   glicBrowserOpenOsPermissionSettingsMenu(request: {permission: string}) {
+    // Warning: calling openOsPermissionSettingsMenu with unsupported content
+    // setting type will terminate the render process (bad mojo message). Update
+    // GlicWebClientHandler:OpenOsPermissionSettingsMenu with any new types.
     switch (request.permission) {
       case 'media':
         return this.handler.openOsPermissionSettingsMenu(
@@ -468,6 +478,10 @@ class HostMessageHandler implements HostMessageHandlerInterface {
             ContentSettingsType.GEOLOCATION);
     }
     return Promise.resolve();
+  }
+
+  glicBrowserGetOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
+    return this.handler.getOsMicrophonePermissionStatus();
   }
 }
 

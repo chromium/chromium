@@ -313,6 +313,9 @@ export declare interface GlicBrowserHost {
   /** Returns the state of the tab context permission. */
   getTabContextPermissionState?(): ObservableValue<boolean>;
 
+  /** Returns the state of the OS granted location permission. */
+  getOsLocationPermissionState?(): ObservableValue<boolean>;
+
   /**
    * Set the state of the microphone permission in settings. Returns a promise
    * that resolves when the browser has stored the new pref value.
@@ -393,6 +396,11 @@ export declare interface GlicBrowserHost {
    * Supports `media` for microphone ad `geolocation` for location.
    */
   openOsPermissionSettingsMenu?(permission: string): void;
+
+  /**
+   * Get the status of the OS Microphone permission currently granted to Chrome.
+   */
+  getOsMicrophonePermissionStatus?(): Promise<boolean>;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */

@@ -165,6 +165,11 @@ export declare interface HostRequestTypes {
     },
   };
   glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}};
+  glicBrowserGetOsMicrophonePermissionStatus: {
+    response: {
+      enabled: boolean,
+    },
+  };
 }
 
 // Types of requests to the GlicWebClient.
@@ -207,6 +212,11 @@ export declare interface WebClientRequestTypes {
     },
   };
   glicWebClientNotifyTabContextPermissionStateChanged: {
+    request: {
+      enabled: boolean,
+    },
+  };
+  glicWebClientNotifyOsLocationPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
@@ -265,6 +275,7 @@ type HostRequestEnumNamesType = {
     ScrollTo: 0,
     SetSyntheticExperimentState: 0,
     OpenOsPermissionSettingsMenu: 0,
+    GetOsMicrophonePermissionStatus: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)
