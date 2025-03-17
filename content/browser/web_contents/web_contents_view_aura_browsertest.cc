@@ -1137,9 +1137,45 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
   delegate->DelayedFinishOnPerformingDrop();
   async_drop_run_loop.Run();
+  EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
+  ASSERT_FALSE(view->drag_in_progress_);
   end_drag_run_loop.Run();
 
+  EXPECT_EQ(drop_target_widget_,
+            RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                           .root()
+                                           ->current_frame_host()
+                                           ->GetRenderWidgetHost()));
+}
+
+// This test is the same as `DragInProgressFinishesAfterDrop`, but it tests the
+// scenario where drag_in_progress_ should still be flipped even when drop is
+// blocked.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
+                       DragInProgressFinishesAfterNoDrop) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents = GetWebContentsImpl();
+  WebContentsViewAura* view = GetWebContentsViewAura();
+
+  base::RunLoop async_drop_run_loop;
+  async_drop_closure_ = async_drop_run_loop.QuitClosure();
+
+  base::RunLoop end_drag_run_loop;
+  async_end_drag_closure_ = end_drag_run_loop.QuitClosure();
+  view->end_drag_runner_.ReplaceClosure(base::BindOnce(
+      &WebContentsViewAuraTest::EndDrag, base::Unretained(this)));
+
+  TestWebContentsViewDelegate* delegate =
+      PrepareWebContentsViewForDropTest(/*delegate_allows_drop=*/false);
+  SimulateDragEnterAndDrop(/*document_is_handling_drag=*/true);
+  // `drag_in_progress_` should still be true before `CompleteDrop()` is called.
+  ASSERT_TRUE(view->drag_in_progress_);
+
+  delegate->DelayedFinishOnPerformingDrop();
+  async_drop_run_loop.Run();
+  EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   ASSERT_FALSE(view->drag_in_progress_);
+  end_drag_run_loop.Run();
 
   EXPECT_EQ(drop_target_widget_,
             RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
