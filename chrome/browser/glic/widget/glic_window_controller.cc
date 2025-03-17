@@ -60,7 +60,6 @@ namespace glic {
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 namespace {
-constexpr static int kDefaultDetachedTopRightDistance = 48;
 
 // Default value for adding a buffer to the attachment zone.
 constexpr static int kAttachmentBuffer = 20;

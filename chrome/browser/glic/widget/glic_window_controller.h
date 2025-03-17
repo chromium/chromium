@@ -33,6 +33,8 @@ class Point;
 
 namespace glic {
 
+inline constexpr static int kDefaultDetachedTopRightDistance = 48;
+
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kGlicWidgetAttached);
 
 class GlicEnabling;
