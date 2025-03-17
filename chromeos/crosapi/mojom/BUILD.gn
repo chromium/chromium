@@ -14,7 +14,6 @@ mojom("mojom") {
     "clipboard_history.mojom",
     "cros_display_config.mojom",
     "crosapi.mojom",
-    "desk.mojom",
     "desk_profiles.mojom",
     "device_attributes.mojom",
     "device_oauth2_token_service.mojom",
@@ -209,7 +208,6 @@ mojom("mojom") {
         },
       ]
       traits_headers = [
-        "//chromeos/crosapi/mojom/desk_mojom_traits.h",
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.h",
         "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.h",
         "//chromeos/crosapi/mojom/ui_constants_mojom_traits.h",
@@ -224,7 +222,6 @@ mojom("mojom") {
         "//components/services/app_service/public/cpp/preferred_app.h",
       ]
       traits_sources = [
-        "//chromeos/crosapi/mojom/desk_mojom_traits.cc",
         "//chromeos/crosapi/mojom/policy_domain_mojom_traits.cc",
         "//chromeos/crosapi/mojom/policy_namespace_mojom_traits.cc",
         "//chromeos/crosapi/mojom/ui_constants_mojom_traits.cc",
