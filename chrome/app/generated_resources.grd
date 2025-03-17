@@ -10013,7 +10013,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_RELOAD" desc="The accessible name for the reload/stop button.">
         Reload
       </message>
-      <message name="IDS_ACCNAME_SIDE_BY_SIDE" is_accessibility_with_no_ui="true" desc="The accessible name for the toolbar button for the side by side tabs feature.">
+      <message name="IDS_ACCNAME_SPLIT_TABS" is_accessibility_with_no_ui="true" desc="The accessible name for the toolbar button for the split tabs feature.">
         Side-by-side
       </message>
       <message name="IDS_ACCNAME_FIND" desc="The accessible name for the find button.">
@@ -11435,7 +11435,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!-- Side By Side -->
-      <message name="IDS_ACCNAME_SIDE_BY_SIDE_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side by side resize handle is focused.">
+      <message name="IDS_ACCNAME_SPLIT_TABS_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side by side resize handle is focused.">
         Side By Side Resize Handle
       </message>
 

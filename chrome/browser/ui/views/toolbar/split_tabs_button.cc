@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/side_by_side_button.h"
+#include "chrome/browser/ui/views/toolbar/split_tabs_button.h"
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/grit/generated_resources.h"
@@ -12,40 +12,40 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
 
-SideBySideToolbarButton::SideBySideToolbarButton(Browser* browser)
-    : ToolbarButton(base::BindRepeating(&SideBySideToolbarButton::ButtonPressed,
+SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
+    : ToolbarButton(base::BindRepeating(&SplitTabsToolbarButton::ButtonPressed,
                                         base::Unretained(this)),
                     nullptr,
                     nullptr),
       browser_(browser) {
   SetProperty(views::kElementIdentifierKey,
-              kToolbarSideBySideToolbarButtonElementId);
+              kToolbarSplitTabsToolbarButtonElementId);
   GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_BY_SIDE));
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS));
 
   SetVectorIcon(vector_icons::kCelebrationIcon);
   SetVisible(false);
   browser->tab_strip_model()->AddObserver(this);
 }
 
-SideBySideToolbarButton::~SideBySideToolbarButton() {
+SplitTabsToolbarButton::~SplitTabsToolbarButton() {
   browser_->tab_strip_model()->RemoveObserver(this);
 }
 
-void SideBySideToolbarButton::OnTabStripModelChanged(
+void SplitTabsToolbarButton::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   UpdateButtonVisibility();
 }
 
-void SideBySideToolbarButton::OnSplitViewAdded(std::vector<int> indices) {
+void SplitTabsToolbarButton::OnSplitViewAdded(std::vector<int> indices) {
   UpdateButtonVisibility();
 }
 
-void SideBySideToolbarButton::ButtonPressed(const ui::Event& event) {}
+void SplitTabsToolbarButton::ButtonPressed(const ui::Event& event) {}
 
-void SideBySideToolbarButton::UpdateButtonVisibility() {
+void SplitTabsToolbarButton::UpdateButtonVisibility() {
   if (browser_->tab_strip_model() &&
       browser_->tab_strip_model()->GetActiveTab()) {
     SetVisible(browser_->tab_strip_model()->GetActiveTab()->IsSplit());
@@ -54,5 +54,5 @@ void SideBySideToolbarButton::UpdateButtonVisibility() {
   }
 }
 
-BEGIN_METADATA(SideBySideToolbarButton)
+BEGIN_METADATA(SplitTabsToolbarButton)
 END_METADATA
