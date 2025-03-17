@@ -347,7 +347,6 @@ packager_builder(
             {
                 "sdk_package_name": "system-images;android-35;google_apis_tablet;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-35/google_apis_tablet/x86_64.yaml",
-                "sdk_channel": "CANARY",
             },
             {
                 "sdk_package_name": "system-images;android-Baklava;google_apis;x86_64",
