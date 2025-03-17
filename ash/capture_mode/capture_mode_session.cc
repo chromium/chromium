@@ -3907,10 +3907,8 @@ void CaptureModeSession::InitInternal() {
                          "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       active_behavior_->CreateCaptureModeBarView());
-  // TODO(crbug.com/401570359): Use a different accessible title in Sunfish
-  // mode.
   std::u16string capture_mode_bar_a11y_title =
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE);
+      active_behavior_->GetCaptureModeBarTitle();
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
       capture_mode_bar_a11y_title);
   capture_mode_bar_widget_->widget_delegate()->SetAccessibleTitle(

@@ -6865,6 +6865,10 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE" desc="The title of the window that contains available action buttons after the user has selected a region on their screen of interest. Example actions include copy text or create a Google Doc.">
         Actions
       </message>
+      <!-- TODO: crbug.com/375967525 - Finalize this string and mark it as translateable. -->
+      <message name="IDS_ASH_SCREEN_CAPTURE_SUNFISH_CLOSE_BUTTON_ACCESSIBLE_NAME" desc="The accessible name of the close button for a screen capture mode where users can select a region on their screen to search." translateable="false">
+        Close search my screen
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_COPY_TEXT_BUTTON_LABEL" desc="The label on a button that can be clicked to copy text from the contents of a screenshot into the user's clipboard.">
         Copy text
       </message>

@@ -398,6 +398,11 @@ class SunfishBehavior : public CaptureModeBehavior {
     return l10n_util::GetStringUTF16(
         IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE);
   }
+  const std::u16string GetCaptureModeBarTitle() const override {
+    // The capture mode bar window does not need a title for Sunfish behavior
+    // since it only contains a close button.
+    return u"";
+  }
   const std::string GetCaptureModeOpenAnnouncement() const override {
     return l10n_util::GetStringUTF8(IDS_ASH_SUNFISH_MODE_ALERT_OPEN);
   }
@@ -651,6 +656,10 @@ const std::u16string CaptureModeBehavior::GetActionButtonContainerTitle()
     const {
   return l10n_util::GetStringUTF16(
       IDS_ASH_SCREEN_CAPTURE_DEFAULT_ACTION_BUTTON_WINDOW_TITLE);
+}
+
+const std::u16string CaptureModeBehavior::GetCaptureModeBarTitle() const {
+  return l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE);
 }
 
 const std::string CaptureModeBehavior::GetCaptureModeOpenAnnouncement() const {
