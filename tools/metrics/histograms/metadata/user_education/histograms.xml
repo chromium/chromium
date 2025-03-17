@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
-    expires_after="2025-04-30">
+    expires_after="2025-08-31">
   <expired_intentionally>
     Deprecated. Replaced by UserEducation.RotatingPromoIndex.{IPHFeature}.
   </expired_intentionally>
@@ -407,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UserEducation.Session.RecentSuperActiveWeeks" units="count"
-    expires_after="2025-04-30">
+    expires_after="2025-08-31">
   <owner>dfried@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>
   <summary>
