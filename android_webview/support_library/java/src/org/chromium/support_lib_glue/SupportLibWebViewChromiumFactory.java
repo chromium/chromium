@@ -111,7 +111,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.SAVE_STATE + Features.DEV_SUFFIX,
                 Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE,
                 Features.ASYNC_SHOULD_INTERCEPT_REQUEST + Features.DEV_SUFFIX,
-                Features.PROVIDER_WEAKLY_REF_WEBVIEW + Features.DEV_SUFFIX,
+                Features.PROVIDER_WEAKLY_REF_WEBVIEW,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
