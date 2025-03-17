@@ -433,8 +433,15 @@ struct map_slot_policy {
   template <class Allocator>
   static auto transfer(Allocator* alloc, slot_type* new_slot,
                        slot_type* old_slot) {
-    auto is_relocatable =
-        typename absl::is_trivially_relocatable<value_type>::type();
+    // This should really just be
+    // typename absl::is_trivially_relocatable<value_type>::type()
+    // but std::pair is not trivially copyable in C++23 in some standard
+    // library versions.
+    // See https://github.com/llvm/llvm-project/pull/95444 for instance.
+    auto is_relocatable = typename std::conjunction<
+        absl::is_trivially_relocatable<typename value_type::first_type>,
+        absl::is_trivially_relocatable<typename value_type::second_type>>::
+        type();
 
     emplace(new_slot);
     if (is_relocatable) {

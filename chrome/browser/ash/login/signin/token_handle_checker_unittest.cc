@@ -26,6 +26,8 @@ namespace ash {
 
 namespace {
 
+constexpr char kFakeToken[] = "fake-token";
+constexpr char kFakeEmail[] = "fake-email@example.com";
 constexpr char kValidTokenInfoResponse[] =
     R"(
       { "email": "%s",
@@ -75,168 +77,127 @@ class TokenHandleCheckerTest : public ::testing::Test {
 };
 
 TEST_F(TokenHandleCheckerTest, ValidTokenReturnsValidStatus) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
-  AddFakeResponse(GetValidTokenInfoResponse(email, /*expires_in=*/1000),
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
+  AddFakeResponse(GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/1000),
                   net::HTTP_OK);
 
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_EQ(future.Get<AccountId>(), account_id);
-  EXPECT_EQ(future.Get<std::string>(), token);
+  EXPECT_EQ(future.Get<std::string>(), kFakeToken);
   EXPECT_EQ(future.Get<TokenHandleChecker::Status>(),
             TokenHandleChecker::Status::kValid);
 }
 
 TEST_F(TokenHandleCheckerTest, NegativeExpiryTimeReturnsExpiredStatus) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
-  AddFakeResponse(GetValidTokenInfoResponse(email, /*expires_in=*/-1),
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
+  AddFakeResponse(GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/-1),
                   net::HTTP_OK);
 
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_EQ(future.Get<AccountId>(), account_id);
-  EXPECT_EQ(future.Get<std::string>(), token);
+  EXPECT_EQ(future.Get<std::string>(), kFakeToken);
   EXPECT_EQ(future.Get<TokenHandleChecker::Status>(),
             TokenHandleChecker::Status::kExpired);
 }
 
 TEST_F(TokenHandleCheckerTest, OAuthErrorReturnsInvalidStatus) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
-  AddFakeResponse(GetValidTokenInfoResponse(email, /*expires_in=*/1000),
-                  net::HTTP_UNAUTHORIZED);
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
+  AddFakeResponse(std::string(), net::HTTP_UNAUTHORIZED);
 
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_EQ(future.Get<AccountId>(), account_id);
-  EXPECT_EQ(future.Get<std::string>(), token);
+  EXPECT_EQ(future.Get<std::string>(), kFakeToken);
   EXPECT_EQ(future.Get<TokenHandleChecker::Status>(),
             TokenHandleChecker::Status::kInvalid);
 }
 
-TEST_F(TokenHandleCheckerTest, NetworkErrorReturnsUnknownStatus) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
+// TODO(383733245): Add test for network errors.
+TEST_F(TokenHandleCheckerTest, InvalidResponseReturnsUnknownStatus) {
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
   AddFakeResponse(std::string(), net::HTTP_OK);
 
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_EQ(future.Get<AccountId>(), account_id);
-  EXPECT_EQ(future.Get<std::string>(), token);
+  EXPECT_EQ(future.Get<std::string>(), kFakeToken);
   EXPECT_EQ(future.Get<TokenHandleChecker::Status>(),
             TokenHandleChecker::Status::kUnknown);
 }
 
 TEST_F(TokenHandleCheckerTest, ValidTokenRecordsResponseTime) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
+  AddFakeResponse(GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/1000),
+                  net::HTTP_OK);
   base::HistogramTester histogram_tester;
 
-  AddFakeResponse(GetValidTokenInfoResponse(email, /*expires_in=*/1000),
-                  net::HTTP_OK);
-
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
-
   histogram_tester.ExpectTotalCount(kTokenCheckResponseTime, 1);
 }
 
-TEST_F(TokenHandleCheckerTest,
-       NetworkErrorWithResponseCodeRecordsResponseTime) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
+// TODO(383733245): Add histogram test for network errors with response code.
+TEST_F(TokenHandleCheckerTest, InvalidResponseRecordsResponseTime) {
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
+  AddFakeResponse(std::string(), net::HTTP_OK);
   base::HistogramTester histogram_tester;
 
-  AddFakeResponse(std::string(), net::HTTP_OK);
-
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
-
   histogram_tester.ExpectTotalCount(kTokenCheckResponseTime, 1);
 }
 
 TEST_F(TokenHandleCheckerTest,
        NetworkErrorWithoutResponseCodeDoesNotRecordResponseTime) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
-  base::HistogramTester histogram_tester;
-
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
   url_loader_factory_.AddResponse(
       GURL(GaiaUrls::GetInstance()->oauth2_token_info_url().spec()),
-      network::mojom::URLResponseHead::New(), "",
+      network::mojom::URLResponseHead::New(), std::string(),
       network::URLLoaderCompletionStatus{});
+  base::HistogramTester histogram_tester;
 
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
-
   histogram_tester.ExpectTotalCount(kTokenCheckResponseTime, 0);
 }
 
 TEST_F(TokenHandleCheckerTest, OAuthErrorRecordsResponseTime) {
-  const std::string token = "test-token";
-  const std::string email = "test@example.com";
-  AccountId account_id = AccountId::FromUserEmail(email);
-  std::unique_ptr<TokenHandleChecker> token_handle_checker_ =
-      MakeTokenHandleChecker(account_id, token);
-
+  AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
+  std::unique_ptr<TokenHandleChecker> token_handle_checker =
+      MakeTokenHandleChecker(account_id, kFakeToken);
+  AddFakeResponse(std::string(), net::HTTP_UNAUTHORIZED);
   base::HistogramTester histogram_tester;
 
-  AddFakeResponse(GetValidTokenInfoResponse(email, /*expires_in=*/1000),
-                  net::HTTP_UNAUTHORIZED);
-
   TokenCheckedFuture future;
-
-  token_handle_checker_->StartCheck(future.GetCallback());
+  token_handle_checker->StartCheck(future.GetCallback());
 
   EXPECT_TRUE(future.Wait());
-
   histogram_tester.ExpectTotalCount(kTokenCheckResponseTime, 1);
 }
 

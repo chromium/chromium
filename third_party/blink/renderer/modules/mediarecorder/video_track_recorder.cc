@@ -32,6 +32,7 @@
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
+#include "media/video/video_encoder_info.h"
 #include "media/video/vpx_video_encoder.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -136,15 +137,6 @@ static const struct {
 static_assert(std::size(kPreferredCodecIdAndVEAProfiles) ==
                   static_cast<int>(CodecId::kLast),
               "|kPreferredCodecIdAndVEAProfiles| should consider all CodecIds");
-
-// The maximum number of frames which we'll keep frame references alive for
-// encode. The number of frames in flight is further restricted by the device
-// video capture max buffer pool size if it is smaller. This guarantees that
-// there is limit on the number of frames in a FIFO queue that are being encoded
-// and frames coming after this limit is reached are dropped.
-// TODO(emircan): Make this a LIFO queue that has different sizes for each
-// encoder implementation.
-const size_t kMaxNumberOfFramesInEncode = 10;
 
 void NotifyEncoderSupportKnown(base::OnceClosure callback) {
   if (!Platform::Current()) {
@@ -546,8 +538,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
   awaiting_first_frame_ = false;
 
-  if (num_frames_in_encode_->count() >
-      std::min(kMaxNumberOfFramesInEncode, frame_buffer_pool_limit_)) {
+  if (num_frames_in_encode_->count() > max_number_of_frames_in_encode_) {
     LOCAL_HISTOGRAM_BOOLEAN("Media.MediaRecorder.DroppingFrameTooManyInEncode",
                             true);
     DLOG(WARNING) << "Too many frames are queued up. Dropping this one.";
@@ -584,6 +575,28 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   EncodeFrame(std::move(frame), timestamp,
               request_key_frame_for_testing_ || force_key_frame);
   request_key_frame_for_testing_ = false;
+}
+
+void VideoTrackRecorderImpl::Encoder::OnVideoEncoderInfo(
+    const media::VideoEncoderInfo& encoder_info) {
+  if (!encoder_info.frame_delay.has_value()) {
+    max_number_of_frames_in_encode_ = kMaxNumberOfFramesInEncoderMinValue;
+    return;
+  }
+
+  // The maximum number of input frames above the encoder frame delay that we
+  // want to be able to enqueue---to account for IPC, etc.
+  constexpr int kDefaultEncoderExtraInputCapacity = 2;
+
+  const int preferred_capacity =
+      encoder_info.frame_delay.value() + kDefaultEncoderExtraInputCapacity;
+  max_number_of_frames_in_encode_ =
+      encoder_info.input_capacity.has_value()
+          ? std::min(preferred_capacity, encoder_info.input_capacity.value())
+          : preferred_capacity;
+  CHECK_GE(frame_buffer_pool_limit_, max_number_of_frames_in_encode_)
+      << "The video capture buffer pool is too small for this encoder: "
+      << encoder_info.implementation_name;
 }
 
 scoped_refptr<media::VideoFrame>

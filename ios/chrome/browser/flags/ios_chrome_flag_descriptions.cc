@@ -1320,21 +1320,6 @@ const char kTabResumptionDescription[] =
     "When enabled, offer users with a quick shortcut to resume the last synced "
     "tab from another device.";
 
-const char kTabResumption1_5Name[] = "Enable Tab Resumption Enhancements";
-const char kTabResumption1_5Description[] =
-    "When enabled, add some improvements to Tab Resumption UI: Add a See more "
-    "button to the cards and show better thumbnails. Requires #tab-resumption.";
-
-const char kTabResumption2Name[] = "Enable Tab Resumption 2.0";
-const char kTabResumption2Description[] =
-    "When enabled, enable the version 2.0 of tab resumption. Requires Tab "
-    "resumption to be enabled.";
-
-const char kTabResumption2ReasonName[] = "Enable Tab Resumption 2.0 Reason";
-const char kTabResumption2ReasonDescription[] =
-    "When enabled, a bubble showing the reason why the tab is shown is "
-    "displayed.";
-
 const char kTabResumptionImagesName[] = "Enable Tab Resumption images";
 const char kTabResumptionImagesDescription[] =
     "When enabled, a relevant image is displayed in Tab resumption items.";

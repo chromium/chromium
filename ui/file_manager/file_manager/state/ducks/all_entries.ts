@@ -971,18 +971,18 @@ export async function*
   const state = getStore().getState();
   const childEntryFileData = getFileData(state, childEntryKey);
   if (!childEntryFileData) {
-    console.warn(`Can not find the child entry: ${childEntryKey}`);
+    console.warn(`Cannot find the child entry: ${childEntryKey}`);
     return;
   }
   const volume = getVolume(state, childEntryFileData);
   if (!volume) {
     console.warn(
-        `Can not find the volume root for the child entry: ${childEntryKey}`);
+        `Cannot find the volume root for the child entry: ${childEntryKey}`);
     return;
   }
   const volumeEntry = getEntry(state, volume.rootKey!);
   if (!volumeEntry) {
-    console.warn(`Can not find the volume root entry: ${volume.rootKey}`);
+    console.warn(`Cannot find the volume root entry: ${volume.rootKey}`);
     return;
   }
 

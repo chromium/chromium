@@ -103,6 +103,15 @@ class PLATFORM_EXPORT FontFallbackList
     return cached_primary_simple_font_data_with_digit_zero_;
   }
 
+  const SimpleFontData* PrimarySimpleFontDataWithCjkWater(
+      const FontDescription& font_description) {
+    if (!cached_primary_simple_font_data_with_cjk_water_) {
+      cached_primary_simple_font_data_with_cjk_water_ =
+          DeterminePrimarySimpleFontData(font_description, kCjkWaterCharacter);
+    }
+    return cached_primary_simple_font_data_with_cjk_water_;
+  }
+
   const FontData* FontDataAt(const FontDescription&, unsigned index);
 
   base::span<const FontFeatureRange> GetFontFeatures(const FontDescription&);
@@ -137,10 +146,9 @@ class PLATFORM_EXPORT FontFallbackList
   bool ComputeCanShapeWordByWord(const FontDescription&);
 
   HeapVector<Member<const FontData>, 1> font_list_;
-  Member<const SimpleFontData> cached_primary_simple_font_data_with_space_ =
-      nullptr;
-  Member<const SimpleFontData>
-      cached_primary_simple_font_data_with_digit_zero_ = nullptr;
+  Member<const SimpleFontData> cached_primary_simple_font_data_with_space_;
+  Member<const SimpleFontData> cached_primary_simple_font_data_with_digit_zero_;
+  Member<const SimpleFontData> cached_primary_simple_font_data_with_cjk_water_;
   const Member<FontSelector> font_selector_;
   int family_index_ = 0;
   const uint16_t generation_;

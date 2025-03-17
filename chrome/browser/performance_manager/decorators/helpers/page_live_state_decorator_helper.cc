@@ -68,6 +68,13 @@ class ActiveTabObserver : public TabStripModelObserver,
         PageLiveStateDecorator::SetIsPinnedTab(
             tab.contents, tab_strip_model->IsTabPinned(tab.index));
       }
+    } else if (change.type() == TabStripModelChange::kReplaced) {
+      auto* replace = change.GetReplace();
+      if (replace->new_contents) {
+        PageLiveStateDecorator::SetIsPinnedTab(
+            replace->new_contents,
+            tab_strip_model->IsTabPinned(replace->index));
+      }
     }
   }
 

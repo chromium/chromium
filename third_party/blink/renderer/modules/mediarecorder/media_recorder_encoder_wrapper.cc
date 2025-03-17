@@ -164,7 +164,8 @@ void MediaRecorderEncoderWrapper::CreateAndInitialize(
                                 /*is_hardware_encoder=*/gpu_factories_);
   encoder_->Initialize(
       profile_, options_,
-      /*info_cb=*/base::DoNothing(),
+      WTF::BindRepeating(&MediaRecorderEncoderWrapper::OnVideoEncoderInfo,
+                         weak_factory_.GetWeakPtr()),
       WTF::BindRepeating(&MediaRecorderEncoderWrapper::OutputEncodeData,
                          weak_factory_.GetWeakPtr()),
       WTF::BindOnce(&MediaRecorderEncoderWrapper::InitializeDone,

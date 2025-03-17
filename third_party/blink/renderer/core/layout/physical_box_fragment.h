@@ -538,15 +538,7 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     }
 
     // Remove existing children, and add those from new_fragment.
-    void ReplaceChildren(const PhysicalBoxFragment& new_fragment) {
-      // Replacing children that establish an inline formatting context is not
-      // supported. An anonymous wrapper block should have been created.
-      DCHECK(!new_fragment.HasItems());
-      DCHECK(!fragment_.HasItems());
-
-      fragment_.children_.clear();
-      fragment_.children_.AppendVector(new_fragment.children_);
-    }
+    void ReplaceChildren(const PhysicalBoxFragment& new_fragment);
 
    private:
     explicit MutableForCloning(const PhysicalBoxFragment& fragment)

@@ -134,6 +134,11 @@ void VEAEncoder::NotifyErrorStatus(const media::EncoderStatus& status) {
   error_notified_ = true;
 }
 
+void VEAEncoder::NotifyEncoderInfoChange(const media::VideoEncoderInfo& info) {
+  DVLOG(3) << __func__;
+  OnVideoEncoderInfo(info);
+}
+
 void VEAEncoder::UseOutputBitstreamBufferId(int32_t bitstream_buffer_id) {
   DVLOG(3) << __func__;
   metrics_provider_->IncrementEncodedFrameCount();

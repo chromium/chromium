@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_PLAIN_TEXT_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_PLAIN_TEXT_NODE_H_
 
+#include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -16,6 +17,7 @@
 namespace blink {
 
 class Font;
+class FrameShapeCache;
 class ShapeResult;
 class ShapeResultView;
 class TextRun;
@@ -78,7 +80,8 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
   PlainTextNode(const TextRun& run,
                 bool normalize_space,
                 const Font& font,
-                bool supports_bidi);
+                bool supports_bidi,
+                FrameShapeCache* cache);
   void Trace(Visitor* visitor) const;
 
   PlainTextNode(const PlainTextNode&) = delete;
@@ -116,7 +119,7 @@ class PLATFORM_EXPORT PlainTextNode : public GarbageCollected<PlainTextNode> {
                    TextDirection direction,
                    const Font& font);
 
-  void Shape(const Font& font);
+  void Shape(const Font& font, FrameShapeCache* cache);
 
   String text_content_;
   PlainTextItemList item_list_;

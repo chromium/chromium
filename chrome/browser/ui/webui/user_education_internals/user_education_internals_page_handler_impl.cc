@@ -202,11 +202,8 @@ std::vector<std::string> GetSupportedPlatforms(
       case Platforms::kLinux:
         result.push_back("Linux");
         break;
-      case Platforms::kChromeOSAsh:
-        result.push_back("ChromeOS Ash");
-        break;
-      case Platforms::kChromeOSLacros:
-        result.push_back("ChromeOS Lacros");
+      case Platforms::kChromeOS:
+        result.push_back("ChromeOS");
         break;
     }
   }

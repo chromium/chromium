@@ -54,6 +54,7 @@ class VEAEncoder final : public VideoTrackRecorder::Encoder,
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
   void NotifyErrorStatus(const media::EncoderStatus& status) override;
+  void NotifyEncoderInfoChange(const media::VideoEncoderInfo& info) override;
 
  private:
   struct VideoFrameAndMetadata {

@@ -154,21 +154,43 @@ void BrowserFeaturePromoController25::AddPreconditionProviders(
            const user_education::FeaturePromoParams&) {
           user_education::FeaturePromoPreconditionList preconditions;
           if (const auto* const controller = GetFromWeakPtr(ptr)) {
-            preconditions.AddPrecondition(
-                std::make_unique<WindowActivePrecondition>());
-            preconditions.AddPrecondition(controller->WrapSharedPrecondition(
-                kOmniboxNotOpenPrecondition));
-            preconditions.AddPrecondition(controller->WrapSharedPrecondition(
-                kToolbarNotCollapsedPrecondition));
+            // Check that the window isn't active.
+            if (!spec.is_exempt_from(kWindowActivePrecondition)) {
+              preconditions.AddPrecondition(
+                  std::make_unique<WindowActivePrecondition>());
+            }
+
+            // The rest of the preconditions are shared. This helper adds a
+            // shared condition if it's not excluded by the promo specification.
+            auto maybe_add_shared_precondition =
+                [&spec, &preconditions, &controller](
+                    user_education::FeaturePromoPrecondition::Identifier id) {
+                  if (!spec.is_exempt_from(id)) {
+                    preconditions.AddPrecondition(
+                        controller->WrapSharedPrecondition(id));
+                  }
+                };
+
+            // Most promos are blocked by an open omnibox to prevent z-fighting
+            // issues.
+            maybe_add_shared_precondition(kOmniboxNotOpenPrecondition);
+
+            // Most promos do not show when the toolbar is collapsed because (a)
+            // the anchor might not be in the expected place - or visible at
+            // all - and (b) the browser window might not be large enough to
+            // properly accommodate the promo bubble, or use the feature being
+            // promoted.
+            maybe_add_shared_precondition(kToolbarNotCollapsedPrecondition);
 
             // Higher priority and lightweight messages are not subject to
-            // browser activity checks.
+            // certain requirements.
             const auto info =
                 controller->session_policy()->GetPromoPriorityInfo(spec);
             if (info.priority == Priority::kLow &&
                 info.weight == PromoWeight::kHeavy) {
-              preconditions.AddPrecondition(controller->WrapSharedPrecondition(
-                  kUserNotActivePrecondition));
+              // Since heavyweight promos steal keyboard focus, try not to show
+              // them when the user is typing.
+              maybe_add_shared_precondition(kUserNotActivePrecondition);
             }
           }
           return preconditions;

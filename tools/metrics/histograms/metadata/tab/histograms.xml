@@ -793,7 +793,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.CountAtStartup" units="groups"
-    expires_after="2025-04-11">
+    expires_after="2026-04-11">
   <owner>gambard@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>[iOS] The number of tab groups opened at cold launch.</summary>

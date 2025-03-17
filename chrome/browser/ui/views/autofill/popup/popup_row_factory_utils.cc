@@ -131,6 +131,7 @@ void FormatLabel(views::Label& label,
   switch (main_filling_product) {
     case FillingProduct::kAddress:
     case FillingProduct::kAutocomplete:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kPlusAddresses:
       label.SetMaximumWidthSingleLine(maximum_width_single_line);
       break;
@@ -147,7 +148,6 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kIban:
     case FillingProduct::kMerchantPromoCode:
     case FillingProduct::kPassword:
-    case FillingProduct::kAutofillAi:
     case FillingProduct::kNone:
       break;
   }

@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -878,8 +879,17 @@ TEST_P(SqlRecoveryTest, CannotRecoverDbWithErrorCallback) {
 // that it is passed a non-null database pointer and will instead likely result
 // in unexpected behavior or crashes.
 TEST_P(SqlRecoveryTest, CannotRecoverNullDb) {
-  EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
-                         nullptr, Recovery::Strategy::kRecoverOrRaze));
+  // TODO(pbos): Consider consolidating these so that DCHECK builds crash in the
+  // same spot. Probably either by upgrading DCHECKs to CHECKs, or if feasible
+  // by setting up the test to make it past failing DCHECKs to the expected
+  // CHECK.
+  if (DCHECK_IS_ON()) {
+    EXPECT_DCHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                            nullptr, Recovery::Strategy::kRecoverOrRaze));
+  } else {
+    EXPECT_CHECK_DEATH(std::ignore = Recovery::RecoverDatabase(
+                           nullptr, Recovery::Strategy::kRecoverOrRaze));
+  }
 }
 
 // TODO(crbug.com/40199997): Ideally this would be a

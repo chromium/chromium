@@ -331,7 +331,6 @@ void AppServiceContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
 
   // Create default items for non-Remote apps.
   if (app_id() != app_constants::kChromeAppId &&
-      app_id() != app_constants::kLacrosAppId &&
       app_type_ != apps::AppType::kUnknown &&
       app_type_ != apps::AppType::kRemote) {
     app_list::AppContextMenu::BuildMenu(menu_model.get());

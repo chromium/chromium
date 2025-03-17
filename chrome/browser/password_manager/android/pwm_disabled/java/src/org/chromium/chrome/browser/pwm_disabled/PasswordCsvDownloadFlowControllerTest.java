@@ -8,8 +8,11 @@ import static android.app.Activity.RESULT_OK;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -19,7 +22,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Looper;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 import org.junit.After;
@@ -35,11 +40,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
+import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
@@ -55,6 +62,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,6 +153,113 @@ public class PasswordCsvDownloadFlowControllerTest {
         resultCallbackCaptor.getValue().onResult(false);
 
         assertFalse(dialog.isShowing());
+        verify(mEndOfFlowCallback).run();
+    }
+
+    @Test
+    public void testDestinationNotSet() throws IOException {
+        // Make sure the auto-exported csv is set up.
+        File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
+
+        mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
+        when(mReauthenticatorBridge.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
+
+        Dialog exportDialog = ShadowDialog.getLatestDialog();
+        exportDialog.findViewById(R.id.positive_button).performClick();
+
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
+        resultCallbackCaptor.getValue().onResult(true);
+
+        ShadowActivity shadowActivity = shadowOf(mActivity);
+        Intent startedIntent = shadowActivity.getNextStartedActivityForResult().intent;
+        // Verify that the create document intent was triggered (creating file in Downloads for
+        // exported passwords).
+        assertEquals(Intent.ACTION_CREATE_DOCUMENT, startedIntent.getAction());
+
+        // Simulate the user cancelling the activity and not setting a destination file
+        shadowActivity.receiveResult(startedIntent, RESULT_OK, new Intent().setData(null));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        assertFalse(exportDialog.isShowing());
+
+        // The source file should not have been deleted, because the write to the destination
+        // file didn't complete.
+        assertTrue(sourceFile.exists());
+        verify(mEndOfFlowCallback).run();
+    }
+
+    @Test
+    public void testErrorDialog() throws IOException {
+        // Make sure the auto-exported csv is set up.
+        File sourceFile = setUpTempAutoExportedCsv(TEST_FILE_DATA);
+
+        mController = new PasswordCsvDownloadFlowController(mEndOfFlowCallback);
+        mController.showDialogAndStartFlow(mActivity, mProfile, true);
+        mActivity.getSupportFragmentManager().executePendingTransactions();
+
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorBridge);
+        when(mReauthenticatorBridge.getBiometricAvailabilityStatus())
+                .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
+
+        Dialog exportDialog = ShadowDialog.getLatestDialog();
+        exportDialog.findViewById(R.id.positive_button).performClick();
+
+        ArgumentCaptor<Callback<Boolean>> resultCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mReauthenticatorBridge).reauthenticate(resultCallbackCaptor.capture());
+        resultCallbackCaptor.getValue().onResult(true);
+
+        ShadowActivity shadowActivity = shadowOf(mActivity);
+        Intent startedIntent = shadowActivity.getNextStartedActivityForResult().intent;
+        // Verify that the create document intent was triggered (creating file in Downloads for
+        // exported passwords).
+        assertEquals(Intent.ACTION_CREATE_DOCUMENT, startedIntent.getAction());
+
+        // Create the destination file.
+        File destinationFile = File.createTempFile("exportedpasswords", "csv", null);
+        destinationFile.deleteOnExit();
+
+        // Mock the input stream to simulate an error
+        InputStream inputStream = mock(InputStream.class);
+        ShadowContentResolver shadowContentResolver =
+                shadowOf(ContextUtils.getApplicationContext().getContentResolver());
+        shadowContentResolver.registerInputStream(Uri.fromFile(sourceFile), inputStream);
+        when(inputStream.read(any())).thenThrow(new IOException());
+
+        // Return the result of the create document intent (the file name).
+        shadowActivity.receiveResult(
+                startedIntent, RESULT_OK, new Intent().setData(Uri.fromFile(destinationFile)));
+        shadowOf(Looper.getMainLooper()).idle();
+        assertFalse(exportDialog.isShowing());
+
+        Dialog errorDialog = ShadowDialog.getLatestDialog();
+        assertTrue(errorDialog instanceof AlertDialog);
+        AlertDialog errorAlertDialog = (AlertDialog) errorDialog;
+        TextView description =
+                errorAlertDialog.findViewById(
+                        org.chromium.chrome.browser.password_manager.R.id
+                                .passwords_error_main_description);
+        assertNotNull(description);
+        assertEquals(
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.password_settings_export_tips),
+                description.getText());
+        errorAlertDialog
+                .getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE)
+                .performClick();
+
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // The source file should not have been deleted, because the write to the destination
+        // file didn't complete.
+        assertTrue(sourceFile.exists());
         verify(mEndOfFlowCallback).run();
     }
 

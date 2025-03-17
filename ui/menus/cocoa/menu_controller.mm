@@ -4,6 +4,8 @@
 
 #import "ui/menus/cocoa/menu_controller.h"
 
+#include <AppKit/AppKit.h>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
@@ -53,9 +55,8 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 // which allows it to be stored in the representedObject field of an NSMenuItem.
 @interface WeakPtrToMenuModelAsNSObject : NSObject
 + (instancetype)weakPtrForModel:(ui::MenuModel*)model;
-+ (ui::MenuModel*)getFrom:(id)instance;
-- (instancetype)initWithModel:(ui::MenuModel*)model;
-- (ui::MenuModel*)menuModel;
++ (ui::MenuModel*)menuModelForNSMenuItem:(NSMenuItem*)menuItem;
+@property(readonly) ui::MenuModel* menuModel;
 @end
 
 @implementation WeakPtrToMenuModelAsNSObject {
@@ -66,9 +67,10 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   return [[WeakPtrToMenuModelAsNSObject alloc] initWithModel:model];
 }
 
-+ (ui::MenuModel*)getFrom:(id)instance {
-  return [base::apple::ObjCCastStrict<WeakPtrToMenuModelAsNSObject>(instance)
-      menuModel];
++ (ui::MenuModel*)menuModelForNSMenuItem:(NSMenuItem*)menuItem {
+  return base::apple::ObjCCastStrict<WeakPtrToMenuModelAsNSObject>(
+             menuItem.representedObject)
+      .menuModel;
 }
 
 - (instancetype)initWithModel:(ui::MenuModel*)model {
@@ -114,12 +116,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
 @implementation MenuControllerCocoa {
   base::WeakPtr<ui::MenuModel> _model;
   NSMenu* __strong _menu;
-  BOOL _useWithPopUpButtonCell;  // If YES, 0th item is blank
   BOOL _isMenuOpen;
   id<MenuControllerCocoaDelegate> __weak _delegate;
 }
-
-@synthesize useWithPopUpButtonCell = _useWithPopUpButtonCell;
 
 - (ui::MenuModel*)model {
   return _model.get();
@@ -129,19 +128,12 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   _model = model->AsWeakPtr();
 }
 
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
-
 - (instancetype)initWithModel:(ui::MenuModel*)model
-                     delegate:(id<MenuControllerCocoaDelegate>)delegate
-       useWithPopUpButtonCell:(BOOL)useWithCell {
+                     delegate:(id<MenuControllerCocoaDelegate>)delegate {
   if ((self = [super init])) {
     _model = model->AsWeakPtr();
     _delegate = delegate;
-    _useWithPopUpButtonCell = useWithCell;
-    [self maybeBuild];
+    [self buildMenu];
   }
   return self;
 }
@@ -215,12 +207,13 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     item.target = nil;
     item.action = nil;
     item.submenu = submenu;
-    // [item setSubmenu] updates target and action which means clicking on a
-    // submenu entry will not call [self validateUserInterfaceItem].
+    // [item setSubmenu:] updates target and action which means clicking on a
+    // submenu entry will not call [self validateUserInterfaceItem:].
     DCHECK_EQ(item.action, @selector(submenuAction:));
     DCHECK_EQ(item.target, submenu);
     // Set the enabled state here as submenu entries do not call into
-    // validateUserInterfaceItem. See crbug.com/981294 and crbug.com/991472.
+    // validateUserInterfaceItem. See https://crbug.com/40634897 and
+    // https://crbug.com/41474827.
     [item setEnabled:model->IsEnabledAt(index)];
   } else {
     // The MenuModel works on indexes so we can't just set the command id as the
@@ -235,9 +228,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
     // On the Mac, context menus do not have accelerators except when
     // |force_show_accelerator_for_item| is set to true. Consult with the Mac
     // team before using the flag!
-    // Menus constructed for context use have useWithPopUpButtonCell_ set to NO.
-    if (_useWithPopUpButtonCell ||
-        model->GetForceShowAcceleratorForItemAt(index)) {
+    if (model->GetForceShowAcceleratorForItemAt(index)) {
       ui::Accelerator accelerator;
       if (model->GetAcceleratorAt(index, &accelerator)) {
         KeyEquivalentAndModifierMask* equivalent =
@@ -264,7 +255,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   }
 
   ui::MenuModel* model =
-      [WeakPtrToMenuModelAsNSObject getFrom:menuItem.representedObject];
+      [WeakPtrToMenuModelAsNSObject menuModelForNSMenuItem:menuItem];
   if (!model) {
     return NO;
   }
@@ -299,7 +290,7 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   NSMenuItem* menuItem = base::apple::ObjCCastStrict<NSMenuItem>(sender);
 
   ui::MenuModel* model =
-      [WeakPtrToMenuModelAsNSObject getFrom:menuItem.representedObject];
+      [WeakPtrToMenuModelAsNSObject menuModelForNSMenuItem:menuItem];
   DCHECK(model);
   const size_t modelIndex = base::checked_cast<size_t>(menuItem.tag);
   const ui::ElementIdentifier identifier =
@@ -314,10 +305,10 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   // Note: |self| may be destroyed by the call to ActivatedAt().
 }
 
-- (void)maybeBuild {
-  if (_menu || !_model) {
-    return;
-  }
+- (void)buildMenu {
+  // The menu is eagerly built in the initializer, so the model cannot be null
+  // at this point.
+  CHECK(_model);
 
   _menu = [self menuFromModel:_model.get()];
   _menu.delegate = self;
@@ -329,21 +320,9 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   if (_delegate) {
     [_delegate controllerWillAddMenu:_menu fromModel:_model.get()];
   }
-
-  // If this is to be used with a NSPopUpButtonCell, add an item at the 0th
-  // position that's empty. Doing it after the menu has been constructed won't
-  // complicate creation logic, and since the tags are model indexes, they
-  // are unaffected by the extra item.
-  if (_useWithPopUpButtonCell) {
-    NSMenuItem* blankItem = [[NSMenuItem alloc] initWithTitle:@""
-                                                       action:nil
-                                                keyEquivalent:@""];
-    [_menu insertItem:blankItem atIndex:0];
-  }
 }
 
 - (NSMenu*)menu {
-  [self maybeBuild];
   return _menu;
 }
 
@@ -365,14 +344,6 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
       _model->MenuWillClose();  // Note: |model_| may trigger -[self dealloc].
     }
   }
-}
-
-@end
-
-@implementation MenuControllerCocoa (TestingAPI)
-
-- (BOOL)isMenuBuiltForTesting {
-  return _menu != nil;
 }
 
 @end

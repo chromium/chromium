@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -117,6 +118,19 @@ bool IsAllowedToastWithoutScreenreaderText(const base::Feature& promo_feature) {
   // TODO(dfried): Merge legacy promos into this category, eliminating the entry
   // point and promo type entirely.
   //
+  // Add exceptions here:
+  // static constexpr auto kAllowedPromoNames =
+  //     base::MakeFixedFlatSet<std::string_view>({ });
+  // return kAllowedPromoNames.contains(promo_feature.name);
+  return false;
+}
+
+bool IsAllowedPreconditionExemption(const base::Feature& promo_feature) {
+  // Features used for tests have this prefix and are excluded.
+  if (std::string_view(promo_feature.name).starts_with("TEST_")) {
+    return true;
+  }
+
   // Add exceptions here:
   // static constexpr auto kAllowedPromoNames =
   //     base::MakeFixedFlatSet<std::string_view>({ });
@@ -527,6 +541,13 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetInAnyContext(
 FeaturePromoSpecification& FeaturePromoSpecification::SetAdditionalConditions(
     AdditionalConditions additional_conditions) {
   additional_conditions_ = std::move(additional_conditions);
+  return *this;
+}
+
+FeaturePromoSpecification& FeaturePromoSpecification::AddPreconditionExemption(
+    FeaturePromoPrecondition::Identifier exempt_precondition) {
+  CHECK(IsAllowedPreconditionExemption(*feature_));
+  exempt_preconditions_.insert(exempt_precondition);
   return *this;
 }
 

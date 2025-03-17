@@ -27,12 +27,12 @@ android_library("internal_java") {
 
     # TODO(crbug.com/41452318): Cyclic dependency. Depend on public only when ready.
     "//chrome/android:chrome_java",
-    "//chrome/android/features/keyboard_accessory/public:public_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",

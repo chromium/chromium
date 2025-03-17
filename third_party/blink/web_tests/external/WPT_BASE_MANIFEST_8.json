@@ -232770,6 +232770,58 @@
        {}
       ]
      ],
+     "caret-eol-001.html": [
+      "3eb1d8ce368abe3d2cc42a202981b739f83318a8",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/caret-eol-001.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-eol-002.html": [
+      "2506c6defd1ca594b263e94c05e4df7155198584",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/caret-eol-001.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-eol-003.html": [
+      "61e9c50bf5aa2f579d347ed207e629e7271cce98",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/caret-eol-001.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-eol-004.tentative.html": [
+      "63e6e1c79b9b161a59e76599417d5d2c8d83a965",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/caret-eol-001.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "compute-kind-widget-fallback-props-revert-001.html": [
       "7f2ae2cf1df1319ddc8d1041ddb08d3b1d14f937",
       [
@@ -365819,6 +365871,10 @@
       ],
       "box-sizing-023-ref.html": [
        "5e103f7712c8a761ad4dba2ec8a0085dacd2191c",
+       []
+      ],
+      "caret-eol-001.html": [
+       "dc8f37feaeefa314f3f6bde2ec031eb4e9b9cf02",
        []
       ],
       "outline-006-ref.html": [

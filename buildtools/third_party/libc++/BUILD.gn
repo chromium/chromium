@@ -151,26 +151,40 @@ libcxx_modules("std_core") {
   deps = [
     ":_Builtin_stddef",
     ":_Builtin_stdint",
+    ":std_config",
   ]
 }
 
 libcxx_modules("std_ctype_h") {
+  deps = [
+    ":std_config",
+  ]
 }
 
 libcxx_modules("std_errno_h") {
+  deps = [
+    ":std_config",
+  ]
 }
 
 libcxx_modules("std_fenv_h") {
+  deps = [
+    ":std_config",
+  ]
 }
 
 libcxx_modules("std_float_h") {
-  deps = [ ":_Builtin_float" ]
+  deps = [
+    ":_Builtin_float",
+    ":std_config",
+  ]
 }
 
 libcxx_modules("std_inttypes_h") {
   deps = [
     ":_Builtin_inttypes",
     ":_Builtin_stdint",
+    ":std_config",
   ]
 }
 
@@ -182,25 +196,37 @@ libcxx_modules("std_math_h") {
 }
 
 libcxx_modules("std_private_mbstate_t") {
+  deps = [
+    ":std_config",
+ ]
 }
 
 libcxx_modules("std_stddef_h") {
 }
 
 libcxx_modules("std_string_h") {
-  deps = [ ":_Builtin_stddef" ]
+  deps = [
+    ":_Builtin_stddef",
+    ":std_config",
+  ]
 }
 
 libcxx_modules("std_uchar_h") {
-  deps = [ ":_Builtin_stddef" ]
+  deps = [
+    ":_Builtin_stddef",
+    ":std_config",
+  ]
   if (is_mac) {
     deps += [ ":std_private_mbstate_t" ]
   }
 }
 
 libcxx_modules("std_wctype_h") {
+  deps = [
+    ":std_config",
+  ]
   if (is_mac) {
-    deps = [ ":std_ctype_h" ]
+    deps += [ ":std_ctype_h" ]
   }
 }
 

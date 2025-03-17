@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -126,23 +127,31 @@ void IOSCollaborationControllerDelegate::ShowError(const ErrorInfo& error,
   NSString* title = base::SysUTF8ToNSString(error.error_header);
   NSString* message = base::SysUTF8ToNSString(error.error_body);
 
-  auto result_block = base::CallbackToBlock(std::move(result));
+  auto alert_action = base::CallbackToBlock(
+      base::BindOnce(&IOSCollaborationControllerDelegate::ErrorAccepted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+  // Make sure to present it on top of any visible view.
+  UIViewController* top_view_controller =
+      top_view_controller::TopPresentedViewControllerFrom(
+          base_view_controller_);
+
   alert_coordinator_ =
-      [[AlertCoordinator alloc] initWithBaseViewController:base_view_controller_
+      [[AlertCoordinator alloc] initWithBaseViewController:top_view_controller
                                                    browser:browser_
                                                      title:title
                                                    message:message];
   [alert_coordinator_
       addItemWithTitle:l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_ERROR_GOT_IT)
-                action:^{
-                  result_block(
-                      CollaborationControllerDelegate::Outcome::kSuccess);
-                }
+                action:alert_action
                  style:UIAlertActionStyleDefault];
   [alert_coordinator_ start];
 }
 
 void IOSCollaborationControllerDelegate::Cancel(ResultCallback result) {
+  if (dismiss_join_screen_callback_) {
+    std::move(dismiss_join_screen_callback_).Run();
+  }
+
   if (session_id_) {
     share_kit_service_->CancelSession(session_id_);
   }
@@ -262,6 +271,10 @@ void IOSCollaborationControllerDelegate::ShowManageDialog(
 void IOSCollaborationControllerDelegate::PromoteTabGroup(
     const data_sharing::GroupId& group_id,
     ResultCallback result) {
+  if (dismiss_join_screen_callback_) {
+    std::move(dismiss_join_screen_callback_).Run();
+  }
+
   tab_groups::TabGroupSyncService* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->GetProfile());
@@ -293,6 +306,11 @@ void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
 }
 
 void IOSCollaborationControllerDelegate::OnFlowFinished() {
+  if (dismiss_join_screen_callback_) {
+    // The dismissal should be handled before the end of the flow.
+    NOTREACHED(base::NotFatalUntil::M140);
+    std::move(dismiss_join_screen_callback_).Run();
+  }
   [scrim_view_ removeFromSuperview];
 }
 
@@ -318,6 +336,18 @@ void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
                     : CollaborationControllerDelegate::Outcome::kFailure;
 
   std::move(result).Run(outcome);
+}
+
+void IOSCollaborationControllerDelegate::OnCollaborationJoinSuccess(
+    void (^dismiss_join_screen)()) {
+  dismiss_join_screen_callback_ = base::BindOnce(dismiss_join_screen);
+}
+
+void IOSCollaborationControllerDelegate::ErrorAccepted(ResultCallback result) {
+  if (dismiss_join_screen_callback_) {
+    std::move(dismiss_join_screen_callback_).Run();
+  }
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
 }
 
 const TabGroup* IOSCollaborationControllerDelegate::GetLocalGroup(
@@ -419,6 +449,12 @@ void IOSCollaborationControllerDelegate::ConfigureAndJoinTabGroup(
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   config.previewItems = preview_items;
   config.previewImage = JoinGroupImage(preview_items);
+
+  auto join_success_completion = base::BindOnce(
+      &IOSCollaborationControllerDelegate::OnCollaborationJoinSuccess,
+      weak_ptr_factory_.GetWeakPtr());
+  config.joinCollaborationGroupSuccessBlock =
+      base::CallbackToBlock(std::move(join_success_completion));
 
   auto completion_block = base::CallbackToBlock(std::move(result));
   config.completion = ^(ShareKitFlowOutcome outcome) {

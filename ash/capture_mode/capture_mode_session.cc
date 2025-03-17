@@ -46,6 +46,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
 #include "ash/scanner/scanner_metrics.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
@@ -1559,20 +1560,31 @@ void CaptureModeSession::AddSmartActionsButton() {
 }
 
 void CaptureModeSession::MaybeShowScannerDisclaimer(
+    ScannerEntryPoint entry_point,
     base::RepeatingClosure accept_callback,
     base::RepeatingClosure decline_callback) {
-  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-          prefs::kSunfishConsentDisclaimerAccepted)) {
-    if (accept_callback) {
-      std::move(accept_callback).Run();
-    }
-    return;
+  bool is_reminder;
+  switch (GetScannerDisclaimerType(
+      *capture_mode_util::GetActiveUserPrefService(), entry_point)) {
+    case ScannerDisclaimerType::kNone:
+      if (accept_callback) {
+        std::move(accept_callback).Run();
+      }
+      return;
+
+    case ScannerDisclaimerType::kReminder:
+      is_reminder = true;
+      break;
+
+    case ScannerDisclaimerType::kFull:
+      is_reminder = false;
+      break;
   }
+
   disclaimer_ = DisclaimerView::CreateWidget(
-      capture_mode_util::GetPreferredRootWindow(),
-      /*is_reminder=*/false,
+      capture_mode_util::GetPreferredRootWindow(), is_reminder,
       base::BindRepeating(&CaptureModeSession::OnDisclaimerAccepted,
-                          weak_ptr_factory_.GetWeakPtr(),
+                          weak_ptr_factory_.GetWeakPtr(), entry_point,
                           std::move(accept_callback)),
       base::BindRepeating(&CaptureModeSession::OnDisclaimerDeclined,
                           weak_ptr_factory_.GetWeakPtr(),
@@ -1666,11 +1678,12 @@ void CaptureModeSession::OnDisclaimerDeclined(base::RepeatingClosure callback) {
   }
 }
 
-void CaptureModeSession::OnDisclaimerAccepted(base::RepeatingClosure callback) {
+void CaptureModeSession::OnDisclaimerAccepted(ScannerEntryPoint entry_point,
+                                              base::RepeatingClosure callback) {
   RecordScannerFeatureUserState(
       ScannerFeatureUserState::kConsentDisclaimerAccepted);
-  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
-      prefs::kSunfishConsentDisclaimerAccepted, true);
+  SetScannerDisclaimerAcked(*capture_mode_util::GetActiveUserPrefService(),
+                            entry_point);
 
   disclaimer_.reset();
 
@@ -1698,10 +1711,13 @@ void CaptureModeSession::OnDisclaimerLinkPressed(const char* url) {
 
   void CaptureModeSession::OnSmartActionsButtonPressed() {
     MaybeShowScannerDisclaimer(
-        /*accept_callback=*/base::BindRepeating(
+        ScannerEntryPoint::kSmartActionsButton,
+        /*accept_callback=*/
+        base::BindRepeating(
             &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
             weak_ptr_factory_.GetWeakPtr()),
-        /*decline_callback=*/base::BindRepeating(
+        /*decline_callback=*/
+        base::BindRepeating(
             &CaptureModeSession::OnSmartActionsButtonDisclaimerDeclined,
             weak_ptr_factory_.GetWeakPtr()));
 }
@@ -3635,6 +3651,8 @@ void CaptureModeSession::UpdateActionContainerWidget() {
     auto* parent = GetParentContainer(current_root_);
     action_container_widget_->Init(
         CreateWidgetParams(parent, gfx::Rect(), "ActionButtonsContainer"));
+    action_container_widget_->widget_delegate()->SetTitle(
+        active_behavior_->GetActionButtonContainerTitle());
 
     action_container_view_ = action_container_widget_->SetContentsView(
         std::make_unique<ActionButtonContainerView>());
@@ -3905,10 +3923,8 @@ void CaptureModeSession::InitInternal() {
                          "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       active_behavior_->CreateCaptureModeBarView());
-  // TODO(crbug.com/401570359): Use a different accessible title in Sunfish
-  // mode.
   std::u16string capture_mode_bar_a11y_title =
-      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE);
+      active_behavior_->GetCaptureModeBarTitle();
   capture_mode_bar_widget_->GetNativeWindow()->SetTitle(
       capture_mode_bar_a11y_title);
   capture_mode_bar_widget_->widget_delegate()->SetAccessibleTitle(

@@ -66,7 +66,8 @@ class CustomWebUIHelpBubble : public user_education::CustomHelpBubbleViews {
  protected:
   template <typename T>
     requires IsCustomWebUIHelpBubbleController<T>
-  CustomWebUIHelpBubble(WebUIBubbleDialogView* bubble,
+  CustomWebUIHelpBubble(std::unique_ptr<views::Widget> widget,
+                        WebUIBubbleDialogView* bubble,
                         std::unique_ptr<WebUIContentsWrapperT<T>> wrapper,
                         ui::TrackedElement* anchor_element);
 
@@ -103,12 +104,16 @@ MakeCustomWebUIHelpBubbleFactoryCallback(
 template <typename T>
   requires IsCustomWebUIHelpBubbleController<T>
 CustomWebUIHelpBubble::CustomWebUIHelpBubble(
+    std::unique_ptr<views::Widget> widget,
     WebUIBubbleDialogView* bubble,
     std::unique_ptr<WebUIContentsWrapperT<T>> wrapper,
     ui::TrackedElement* anchor_element)
-    : CustomHelpBubbleViews(bubble,
+    : CustomHelpBubbleViews(std::move(widget),
+                            bubble,
                             *wrapper->GetWebUIController(),
-                            anchor_element),
+                            anchor_element,
+                            std::nullopt,
+                            std::nullopt),
       wrapper_(std::move(wrapper)) {}
 
 // static
@@ -132,10 +137,11 @@ CustomWebUIHelpBubble::CreateForController(
       user_education::HelpBubbleViews::TranslateArrow(arrow),
       wrapper->GetWeakPtr());
   auto* const bubble = bubble_ptr.get();
-  views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_ptr));
+  auto widget = base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+      std::move(bubble_ptr), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   wrapper->ShowUI();
-  return base::WrapUnique(new CustomWebUIHelpBubble(bubble, std::move(wrapper),
-                                                    params.anchor_element));
+  return base::WrapUnique(new CustomWebUIHelpBubble(
+      std::move(widget), bubble, std::move(wrapper), params.anchor_element));
 }
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_CUSTOM_WEBUI_HELP_BUBBLE_H_

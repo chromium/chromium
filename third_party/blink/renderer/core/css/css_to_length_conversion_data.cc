@@ -143,7 +143,7 @@ float CSSToLengthConversionData::FontSizes::Rch(float zoom) const {
 
 float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
   DCHECK(font_);
-  const SimpleFontData* font_data = font_->PrimaryFont();
+  const SimpleFontData* font_data = font_->PrimaryFontWithCjkWater();
   std::optional<float> full_width;
   if (font_data) {
     full_width = font_data->IdeographicInlineSize();
@@ -158,7 +158,7 @@ float CSSToLengthConversionData::FontSizes::Ic(float zoom) const {
 
 float CSSToLengthConversionData::FontSizes::Ric(float zoom) const {
   DCHECK(root_font_);
-  const SimpleFontData* font_data = root_font_->PrimaryFont();
+  const SimpleFontData* font_data = root_font_->PrimaryFontWithCjkWater();
   std::optional<float> full_width;
   if (font_data) {
     full_width = font_data->IdeographicInlineSize();

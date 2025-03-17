@@ -23,6 +23,7 @@
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_disclaimer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -382,17 +383,28 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool CanShowActionButtons() const override { return true; }
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
   bool NeedsDisclaimerOnInit() const override {
-    // Return true if Scanner is enabled and the disclaimer has not already been
-    // accepted.
+    // Return true if Scanner is enabled and any type of disclaimer should be
+    // shown at the start of a Sunfish-session.
     return ScannerController::CanShowUiForShell() &&
-           !capture_mode_util::GetActiveUserPrefService()->GetBoolean(
-               prefs::kSunfishConsentDisclaimerAccepted);
+           GetScannerDisclaimerType(
+               *capture_mode_util::GetActiveUserPrefService(),
+               ScannerEntryPoint::kSunfishSession) !=
+               ScannerDisclaimerType::kNone;
   }
   bool ShouldAnnounceCaptureModeUIOnDisclaimerDismissed() const override {
     return true;
   }
   const std::u16string GetCaptureLabelRegionText() const override {
     return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
+  }
+  const std::u16string GetActionButtonContainerTitle() const override {
+    return l10n_util::GetStringUTF16(
+        IDS_ASH_SCREEN_CAPTURE_SUNFISH_ACTION_BUTTON_WINDOW_TITLE);
+  }
+  const std::u16string GetCaptureModeBarTitle() const override {
+    // The capture mode bar window does not need a title for Sunfish behavior
+    // since it only contains a close button.
+    return u"";
   }
   const std::string GetCaptureModeOpenAnnouncement() const override {
     return l10n_util::GetStringUTF8(IDS_ASH_SUNFISH_MODE_ALERT_OPEN);
@@ -641,6 +653,16 @@ const std::u16string CaptureModeBehavior::GetCaptureLabelRegionText() const {
       controller->type() == CaptureModeType::kImage
           ? IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_IMAGE_CAPTURE
           : IDS_ASH_SCREEN_CAPTURE_LABEL_REGION_VIDEO_RECORD);
+}
+
+const std::u16string CaptureModeBehavior::GetActionButtonContainerTitle()
+    const {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_SCREEN_CAPTURE_DEFAULT_ACTION_BUTTON_WINDOW_TITLE);
+}
+
+const std::u16string CaptureModeBehavior::GetCaptureModeBarTitle() const {
+  return l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_A11Y_TITLE);
 }
 
 const std::string CaptureModeBehavior::GetCaptureModeOpenAnnouncement() const {

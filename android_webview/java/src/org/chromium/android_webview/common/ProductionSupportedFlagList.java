@@ -1042,10 +1042,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.MEDIA_CODEC_BLOCK_MODEL,
                 "Controls use of MediaCodec's LinearBlock mode."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_PARTITIONED_COOKIES_EXCLUDED,
-                "When enabled, WebView records if a site with partitioned cookies has any cookies"
-                    + " excluded due to a different cookie partition key than the current site's."),
         Flag.baseFeature(BlinkFeatures.FETCH_LATER_API, "Enables FetchLater API."),
         Flag.baseFeature(
                 ContentFeatures.WEB_PAYMENTS,

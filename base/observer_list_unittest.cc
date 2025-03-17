@@ -952,7 +952,7 @@ TYPED_TEST(ObserverListTest, NonReentrantObserverList) {
   Adder a(1);
   non_reentrant_observer_list.AddObserver(&a);
 
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     for (const Foo& observer : non_reentrant_observer_list) {
       for (const Foo& nested_observer : non_reentrant_observer_list) {
         std::ignore = observer;

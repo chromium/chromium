@@ -9,9 +9,6 @@
 #include "base/files/file_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/crosapi/cert_database_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
@@ -77,21 +74,6 @@ class CertificateManagerModelBrowserTestBase
       std::make_unique<crypto::ScopedTestNSSDB>();
   std::unique_ptr<CertificateManagerModel> certificate_manager_model_;
 };
-
-// Test that when OnPkcs12CertDualWritten() is called from Lacros, the
-// kNssChapsDualWrittenCertsExist preference is stored.
-IN_PROC_BROWSER_TEST_F(CertificateManagerModelBrowserTestBase,
-                       LacrosCallStoresThePref) {
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kNssChapsDualWrittenCertsExist));
-
-  crosapi::CertDatabaseAsh* const cert_database_ash =
-      crosapi::CrosapiManager::Get()->crosapi_ash()->cert_database_ash();
-  cert_database_ash->OnPkcs12CertDualWritten();
-
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kNssChapsDualWrittenCertsExist));
-}
 
 class CertificateManagerModelEnablePkcs12DualWrite
     : public CertificateManagerModelBrowserTestBase {

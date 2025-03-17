@@ -86,10 +86,8 @@ using OnProfileSwitchCompletion =
         currentProfile:(ProfileIOS*)currentProfile;
 
 // Switches to the profile that `identity` is assigned, for `sceneIdentifier`.
-// `completion` is called once the switch failed or succeeded.
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
-                         sceneState:(SceneState*)sceneState
-                         completion:(OnProfileSwitchCompletion)completion;
+                         sceneState:(SceneState*)sceneState;
 
 // Converts the personal profile to a managed one and attaches `identity` to it.
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity;
