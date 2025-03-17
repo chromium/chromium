@@ -9087,9 +9087,6 @@ crbug.com/402377886 [ Win11-arm64 ] external/wpt/webtransport/stats.https.any.sh
 crbug.com/402495529 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
 crbug.com/402495529 [ Mac12 ] wpt_internal/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-popup-same-origin-report-to.https.html [ Failure ]
 
-# TODO(crrev.com/c/6339201): Re-enable after landing CL.
-crbug.com/42203857 http/tests/devtools/profiler/heap-snapshot.js [ Failure Skip ]
-
 # Gardener 2025-03-12
 crbug.com/402546166 [ Linux ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
 crbug.com/402547571 [ Mac ] external/wpt/workers/interfaces/WorkerUtils/importScripts/report-error-setTimeout-redirect-to-cross-origin.sub.any.worker.html [ Failure Pass ]
