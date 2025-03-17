@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/services/stable_video_decoder_service.h"
-
 #include <sys/mman.h>
 
 #include "base/posix/eintr_wrapper.h"
@@ -12,10 +10,12 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 #include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/stable_video_decoder_factory_service.h"
+#include "media/mojo/services/stable_video_decoder_service.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -179,6 +179,13 @@ class MockVideoDecoder : public mojom::VideoDecoder {
                     bool low_delay,
                     const std::optional<base::UnguessableToken>& cdm_id,
                     InitializeCallback callback));
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  MOCK_METHOD4(InitializeWithCdmContext,
+               void(const VideoDecoderConfig& config,
+                    bool low_delay,
+                    mojo::PendingRemote<mojom::CdmContextForOOPVD> cdm_context,
+                    InitializeWithCdmContextCallback callback));
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   MOCK_METHOD2(Decode,
                void(mojom::DecoderBufferPtr buffer, DecodeCallback callback));
   MOCK_METHOD1(Reset, void(ResetCallback callback));
@@ -192,78 +199,76 @@ class MockVideoDecoder : public mojom::VideoDecoder {
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 };
 
-class MockStableVideoDecoderTracker
-    : public stable::mojom::StableVideoDecoderTracker {};
+class MockVideoDecoderTracker : public mojom::VideoDecoderTracker {};
 
-class MockStableVideoDecoderClient : public stable::mojom::VideoDecoderClient {
+class MockVideoDecoderClient : public mojom::VideoDecoderClient {
  public:
-  explicit MockStableVideoDecoderClient(
-      mojo::PendingAssociatedReceiver<stable::mojom::VideoDecoderClient>
+  explicit MockVideoDecoderClient(
+      mojo::PendingAssociatedReceiver<mojom::VideoDecoderClient>
           pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {}
-  MockStableVideoDecoderClient(const MockStableVideoDecoderClient&) = delete;
-  MockStableVideoDecoderClient& operator=(const MockStableVideoDecoderClient&) =
-      delete;
-  ~MockStableVideoDecoderClient() override = default;
+  MockVideoDecoderClient(const MockVideoDecoderClient&) = delete;
+  MockVideoDecoderClient& operator=(const MockVideoDecoderClient&) = delete;
+  ~MockVideoDecoderClient() override = default;
 
-  // stable::mojom::VideoDecoderClient implementation.
-  MOCK_METHOD3(OnVideoFrameDecoded,
-               void(stable::mojom::VideoFramePtr frame,
-                    bool can_read_without_stalling,
-                    const base::UnguessableToken& release_token));
+  // mojom::VideoDecoderClient implementation.
+  MOCK_METHOD3(
+      OnVideoFrameDecoded,
+      void(const scoped_refptr<VideoFrame>& frame,
+           bool can_read_without_stalling,
+           const std::optional<base::UnguessableToken>& release_token));
   MOCK_METHOD1(OnWaiting, void(WaitingReason reason));
+  MOCK_METHOD1(RequestOverlayInfo, void(bool restart_for_transitions));
 
  private:
-  mojo::AssociatedReceiver<stable::mojom::VideoDecoderClient> receiver_;
+  mojo::AssociatedReceiver<mojom::VideoDecoderClient> receiver_;
 };
 
-class MockStableMediaLog : public stable::mojom::MediaLog {
+class MockMediaLog : public mojom::MediaLog {
  public:
-  explicit MockStableMediaLog(
-      mojo::PendingReceiver<stable::mojom::MediaLog> pending_receiver)
+  explicit MockMediaLog(mojo::PendingReceiver<mojom::MediaLog> pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {}
-  MockStableMediaLog(const MockStableMediaLog&) = delete;
-  MockStableMediaLog& operator=(const MockStableMediaLog&) = delete;
-  ~MockStableMediaLog() override = default;
+  MockMediaLog(const MockMediaLog&) = delete;
+  MockMediaLog& operator=(const MockMediaLog&) = delete;
+  ~MockMediaLog() override = default;
 
-  // stable::mojom::MediaLog implementation.
+  // mojom::MediaLog implementation.
   MOCK_METHOD1(AddLogRecord, void(const MediaLogRecord& event));
 
  private:
-  mojo::Receiver<stable::mojom::MediaLog> receiver_;
+  mojo::Receiver<mojom::MediaLog> receiver_;
 };
 
 // AuxiliaryEndpoints groups the endpoints that support the operation of a
-// StableVideoDecoderService and that come from the Construct() call. That way,
+// OOPVideoDecoderService and that come from the Construct() call. That way,
 // tests can easily poke at one endpoint and set expectations on the other. For
 // example, a test might want to simulate the scenario in which a frame has been
 // decoded by the underlying mojom::VideoDecoder. In this case, the test can
 // call |video_decoder_client_remote|->OnVideoFrameDecoded() and then set an
-// expectation on |mock_stable_video_decoder_client|->OnVideoFrameDecoded().
+// expectation on |mock_video_decoder_client|->OnVideoFrameDecoded().
 struct AuxiliaryEndpoints {
   // |video_decoder_client_remote| is the client that the underlying
   // mojom::VideoDecoder receives through the Construct() call. Tests can make
   // calls on it and those calls should ultimately be received by the
-  // |mock_stable_video_decoder_client|.
+  // |mock_video_decoder_client|.
   mojo::AssociatedRemote<mojom::VideoDecoderClient> video_decoder_client_remote;
-  std::unique_ptr<StrictMock<MockStableVideoDecoderClient>>
-      mock_stable_video_decoder_client;
+  std::unique_ptr<StrictMock<MockVideoDecoderClient>> mock_video_decoder_client;
 
   // |media_log_remote| is the MediaLog that the underlying mojom::VideoDecoder
   // receives through the Construct() call. Tests can make calls on it and those
-  // calls should ultimately be received by the |mock_stable_media_log|.
+  // calls should ultimately be received by the |mock_media_log|.
   mojo::Remote<mojom::MediaLog> media_log_remote;
-  std::unique_ptr<StrictMock<MockStableMediaLog>> mock_stable_media_log;
+  std::unique_ptr<StrictMock<MockMediaLog>> mock_media_log;
 
-  // Tests can use |stable_video_frame_handle_releaser_remote| to simulate
+  // Tests can use |video_frame_handle_releaser_remote| to simulate
   // releasing a VideoFrame.
   // |mock_video_frame_handle_releaser| is the VideoFrameHandleReleaser that's
   // setup when the underlying mojom::VideoDecoder receives a Construct() call.
-  // Tests can make calls on |stable_video_frame_handle_releaser_remote| and
+  // Tests can make calls on |video_frame_handle_releaser_remote| and
   // they should be ultimately received by the
   // |mock_video_frame_handle_releaser|.
-  mojo::Remote<stable::mojom::VideoFrameHandleReleaser>
-      stable_video_frame_handle_releaser_remote;
+  mojo::Remote<mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_remote;
   std::unique_ptr<StrictMock<MockVideoFrameHandleReleaser>>
       mock_video_frame_handle_releaser;
 
@@ -275,17 +280,16 @@ struct AuxiliaryEndpoints {
   std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader;
 };
 
-// Calls Construct() on |stable_video_decoder_remote| and, if
+// Calls Construct() on |video_decoder_remote| and, if
 // |expect_construct_call| is true, expects a corresponding Construct() call on
 // |mock_video_decoder| which is assumed to be the backing decoder of
-// |stable_video_decoder_remote|. Returns nullptr if the expectations on
+// |video_decoder_remote|. Returns nullptr if the expectations on
 // |mock_video_decoder| are violated. Otherwise, returns an AuxiliaryEndpoints
 // instance that contains the supporting endpoints that tests can use to
 // interact with the auxiliary interfaces used by the
-// |stable_video_decoder_remote|.
-std::unique_ptr<AuxiliaryEndpoints> ConstructStableVideoDecoder(
-    mojo::Remote<stable::mojom::StableVideoDecoder>&
-        stable_video_decoder_remote,
+// |video_decoder_remote|.
+std::unique_ptr<AuxiliaryEndpoints> ConstructVideoDecoder(
+    mojo::Remote<mojom::VideoDecoder>& video_decoder_remote,
     StrictMock<MockVideoDecoder>& mock_video_decoder,
     bool expect_construct_call) {
   constexpr gfx::ColorSpace kTargetColorSpace = gfx::ColorSpace::CreateSRGB();
@@ -294,18 +298,17 @@ std::unique_ptr<AuxiliaryEndpoints> ConstructStableVideoDecoder(
                 DoConstruct(/*command_buffer_id=*/_,
                             /*target_color_space=*/kTargetColorSpace));
   }
-  mojo::PendingAssociatedRemote<stable::mojom::VideoDecoderClient>
-      stable_video_decoder_client_remote;
-  auto mock_stable_video_decoder_client =
-      std::make_unique<StrictMock<MockStableVideoDecoderClient>>(
-          stable_video_decoder_client_remote
-              .InitWithNewEndpointAndPassReceiver());
+  mojo::PendingAssociatedRemote<mojom::VideoDecoderClient>
+      video_decoder_client_remote;
+  auto mock_video_decoder_client =
+      std::make_unique<StrictMock<MockVideoDecoderClient>>(
+          video_decoder_client_remote.InitWithNewEndpointAndPassReceiver());
 
-  mojo::PendingRemote<stable::mojom::MediaLog> stable_media_log_remote;
-  auto mock_stable_media_log = std::make_unique<StrictMock<MockStableMediaLog>>(
-      stable_media_log_remote.InitWithNewPipeAndPassReceiver());
+  mojo::PendingRemote<mojom::MediaLog> media_log_remote;
+  auto mock_media_log = std::make_unique<StrictMock<MockMediaLog>>(
+      media_log_remote.InitWithNewPipeAndPassReceiver());
 
-  mojo::Remote<stable::mojom::VideoFrameHandleReleaser>
+  mojo::Remote<mojom::VideoFrameHandleReleaser>
       video_frame_handle_releaser_remote;
 
   mojo::ScopedDataPipeConsumerHandle remote_consumer_handle;
@@ -314,28 +317,29 @@ std::unique_ptr<AuxiliaryEndpoints> ConstructStableVideoDecoder(
           GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO),
           &remote_consumer_handle);
 
-  stable_video_decoder_remote->Construct(
-      std::move(stable_video_decoder_client_remote),
-      std::move(stable_media_log_remote),
+  video_decoder_remote->Construct(
+      std::move(video_decoder_client_remote), std::move(media_log_remote),
       video_frame_handle_releaser_remote.BindNewPipeAndPassReceiver(),
-      std::move(remote_consumer_handle), kTargetColorSpace);
-  stable_video_decoder_remote.FlushForTesting();
+      std::move(remote_consumer_handle), media::mojom::CommandBufferIdPtr(),
+      kTargetColorSpace);
+  video_decoder_remote.FlushForTesting();
 
-  if (!Mock::VerifyAndClearExpectations(&mock_video_decoder))
+  if (!Mock::VerifyAndClearExpectations(&mock_video_decoder)) {
     return nullptr;
+  }
 
   auto auxiliary_endpoints = std::make_unique<AuxiliaryEndpoints>();
 
   auxiliary_endpoints->video_decoder_client_remote =
       mock_video_decoder.TakeClientRemote();
-  auxiliary_endpoints->mock_stable_video_decoder_client =
-      std::move(mock_stable_video_decoder_client);
+  auxiliary_endpoints->mock_video_decoder_client =
+      std::move(mock_video_decoder_client);
 
   auxiliary_endpoints->media_log_remote =
       mock_video_decoder.TakeMediaLogRemote();
-  auxiliary_endpoints->mock_stable_media_log = std::move(mock_stable_media_log);
+  auxiliary_endpoints->mock_media_log = std::move(mock_media_log);
 
-  auxiliary_endpoints->stable_video_frame_handle_releaser_remote =
+  auxiliary_endpoints->video_frame_handle_releaser_remote =
       std::move(video_frame_handle_releaser_remote);
   auxiliary_endpoints->mock_video_frame_handle_releaser =
       mock_video_decoder.TakeVideoFrameHandleReleaser();
@@ -348,53 +352,51 @@ std::unique_ptr<AuxiliaryEndpoints> ConstructStableVideoDecoder(
   return auxiliary_endpoints;
 }
 
-class StableVideoDecoderServiceTest : public testing::Test {
+class OOPVideoDecoderServiceTest : public testing::Test {
  public:
-  StableVideoDecoderServiceTest()
-      : stable_video_decoder_factory_service_(gpu::GpuFeatureInfo()) {
-    stable_video_decoder_factory_service_
+  OOPVideoDecoderServiceTest()
+      : oop_video_decoder_factory_service_(gpu::GpuFeatureInfo()) {
+    oop_video_decoder_factory_service_
         .SetVideoDecoderCreationCallbackForTesting(
             video_decoder_creation_cb_.Get());
   }
 
-  StableVideoDecoderServiceTest(const StableVideoDecoderServiceTest&) = delete;
-  StableVideoDecoderServiceTest& operator=(
-      const StableVideoDecoderServiceTest&) = delete;
-  ~StableVideoDecoderServiceTest() override = default;
+  OOPVideoDecoderServiceTest(const OOPVideoDecoderServiceTest&) = delete;
+  OOPVideoDecoderServiceTest& operator=(const OOPVideoDecoderServiceTest&) =
+      delete;
+  ~OOPVideoDecoderServiceTest() override = default;
 
   void SetUp() override {
-    mojo::PendingReceiver<stable::mojom::StableVideoDecoderFactory>
-        stable_video_decoder_factory_receiver;
-    stable_video_decoder_factory_remote_ =
-        mojo::Remote<stable::mojom::StableVideoDecoderFactory>(
-            stable_video_decoder_factory_receiver
-                .InitWithNewPipeAndPassRemote());
-    stable_video_decoder_factory_service_.BindReceiver(
-        std::move(stable_video_decoder_factory_receiver),
+    mojo::PendingReceiver<mojom::InterfaceFactory>
+        video_decoder_factory_receiver;
+    video_decoder_factory_remote_ = mojo::Remote<mojom::InterfaceFactory>(
+        video_decoder_factory_receiver.InitWithNewPipeAndPassRemote());
+    oop_video_decoder_factory_service_.BindReceiver(
+        std::move(video_decoder_factory_receiver),
         /*disconnect_cb=*/base::DoNothing());
-    ASSERT_TRUE(stable_video_decoder_factory_remote_.is_connected());
+    ASSERT_TRUE(video_decoder_factory_remote_.is_connected());
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
  protected:
-  mojo::Remote<stable::mojom::StableVideoDecoder> CreateStableVideoDecoder(
+  mojo::Remote<mojom::VideoDecoder> CreateVideoDecoder(
       std::unique_ptr<StrictMock<MockVideoDecoder>> dst_video_decoder,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker> tracker) {
-    // Each CreateStableVideoDecoder() should result in exactly one call to the
+      mojo::PendingRemote<mojom::VideoDecoderTracker> tracker) {
+    // Each CreateVideoDecoder() should result in exactly one call to the
     // video decoder creation callback, i.e., the
-    // StableVideoDecoderFactoryService should not re-use mojom::VideoDecoder
+    // OOPVideoDecoderFactoryService should not re-use mojom::VideoDecoder
     // implementation instances.
     EXPECT_CALL(video_decoder_creation_cb_, Run(_, _))
         .WillOnce(Return(ByMove(std::move(dst_video_decoder))));
-    mojo::PendingReceiver<stable::mojom::StableVideoDecoder>
-        stable_video_decoder_receiver;
-    mojo::Remote<stable::mojom::StableVideoDecoder> video_decoder_remote(
-        stable_video_decoder_receiver.InitWithNewPipeAndPassRemote());
-    stable_video_decoder_factory_remote_->CreateStableVideoDecoder(
-        std::move(stable_video_decoder_receiver), std::move(tracker));
-    stable_video_decoder_factory_remote_.FlushForTesting();
-    if (!Mock::VerifyAndClearExpectations(&video_decoder_creation_cb_))
+    mojo::PendingReceiver<mojom::VideoDecoder> video_decoder_receiver;
+    mojo::Remote<mojom::VideoDecoder> video_decoder_remote(
+        video_decoder_receiver.InitWithNewPipeAndPassRemote());
+    video_decoder_factory_remote_->CreateVideoDecoderWithTracker(
+        std::move(video_decoder_receiver), std::move(tracker));
+    video_decoder_factory_remote_.FlushForTesting();
+    if (!Mock::VerifyAndClearExpectations(&video_decoder_creation_cb_)) {
       return {};
+    }
     return video_decoder_remote;
   }
 
@@ -402,76 +404,71 @@ class StableVideoDecoderServiceTest : public testing::Test {
   StrictMock<base::MockRepeatingCallback<std::unique_ptr<
       mojom::VideoDecoder>(MojoMediaClient*, MojoCdmServiceContext*)>>
       video_decoder_creation_cb_;
-  StableVideoDecoderFactoryService stable_video_decoder_factory_service_;
-  mojo::Remote<stable::mojom::StableVideoDecoderFactory>
-      stable_video_decoder_factory_remote_;
-  mojo::Remote<stable::mojom::StableVideoDecoder> stable_video_decoder_remote_;
+  OOPVideoDecoderFactoryService oop_video_decoder_factory_service_;
+  mojo::Remote<mojom::InterfaceFactory> video_decoder_factory_remote_;
+  mojo::Remote<mojom::VideoDecoder> video_decoder_remote_;
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
-// Tests that we can create multiple StableVideoDecoder implementation instances
-// through the StableVideoDecoderFactory and that they can exist concurrently.
-TEST_F(StableVideoDecoderServiceTest, FactoryCanCreateStableVideoDecoders) {
-  std::vector<mojo::Remote<stable::mojom::StableVideoDecoder>>
-      stable_video_decoder_remotes;
+// Tests that we can create multiple VideoDecoder implementation instances
+// through the InterfaceFactory and that they can exist concurrently.
+TEST_F(OOPVideoDecoderServiceTest, FactoryCanCreateVideoDecoders) {
+  std::vector<mojo::Remote<mojom::VideoDecoder>> video_decoder_remotes;
   constexpr size_t kNumConcurrentDecoders = 5u;
   for (size_t i = 0u; i < kNumConcurrentDecoders; i++) {
     auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
-    auto stable_video_decoder_remote =
-        CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-    stable_video_decoder_remotes.push_back(
-        std::move(stable_video_decoder_remote));
+    auto video_decoder_remote =
+        CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+    video_decoder_remotes.push_back(std::move(video_decoder_remote));
   }
-  for (const auto& remote : stable_video_decoder_remotes) {
+  for (const auto& remote : video_decoder_remotes) {
     ASSERT_TRUE(remote.is_bound());
     ASSERT_TRUE(remote.is_connected());
   }
 }
 
-// Tests that a call to stable::mojom::VideoDecoder::Construct() gets routed
+// Tests that a call to mojom::VideoDecoder::Construct() gets routed
 // correctly to the underlying mojom::VideoDecoder.
-TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeConstructed) {
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanBeConstructed) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  ASSERT_TRUE(ConstructStableVideoDecoder(stable_video_decoder_remote,
-                                          *mock_video_decoder_raw,
-                                          /*expect_construct_call=*/true));
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  ASSERT_TRUE(ConstructVideoDecoder(video_decoder_remote,
+                                    *mock_video_decoder_raw,
+                                    /*expect_construct_call=*/true));
 }
 
-// Tests that if two calls to stable::mojom::VideoDecoder::Construct() are made,
+// Tests that if two calls to mojom::VideoDecoder::Construct() are made,
 // only one is routed to the underlying mojom::VideoDecoder.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderCannotBeConstructedTwice) {
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCannotBeConstructedTwice) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  EXPECT_TRUE(ConstructStableVideoDecoder(stable_video_decoder_remote,
-                                          *mock_video_decoder_raw,
-                                          /*expect_construct_call=*/true));
-  EXPECT_TRUE(ConstructStableVideoDecoder(stable_video_decoder_remote,
-                                          *mock_video_decoder_raw,
-                                          /*expect_construct_call=*/false));
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  EXPECT_TRUE(ConstructVideoDecoder(video_decoder_remote,
+                                    *mock_video_decoder_raw,
+                                    /*expect_construct_call=*/true));
+  EXPECT_TRUE(ConstructVideoDecoder(video_decoder_remote,
+                                    *mock_video_decoder_raw,
+                                    /*expect_construct_call=*/false));
 }
 
-// Tests that a call to stable::mojom::VideoDecoder::GetSupportedConfigs() gets
+// Tests that a call to mojom::VideoDecoder::GetSupportedConfigs() gets
 // routed correctly to the underlying mojom::VideoDecoder. Also tests that the
 // underlying mojom::VideoDecoder's reply gets routed correctly back to the
 // client.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderCanGetSupportedConfigs) {
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanGetSupportedConfigs) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
 
   StrictMock<base::MockOnceCallback<void(
       const std::vector<SupportedVideoDecoderConfig>& supported_configs,
@@ -500,9 +497,9 @@ TEST_F(StableVideoDecoderServiceTest,
   EXPECT_CALL(get_supported_configs_cb_to_send, Run(_, kDecoderTypeToReplyWith))
       .WillOnce(SaveArg<0>(&received_supported_configs));
 
-  stable_video_decoder_remote->GetSupportedConfigs(
+  video_decoder_remote->GetSupportedConfigs(
       get_supported_configs_cb_to_send.Get());
-  stable_video_decoder_remote.FlushForTesting();
+  video_decoder_remote.FlushForTesting();
   ASSERT_TRUE(Mock::VerifyAndClearExpectations(mock_video_decoder_raw));
 
   std::move(received_get_supported_configs_cb)
@@ -512,20 +509,20 @@ TEST_F(StableVideoDecoderServiceTest,
   EXPECT_EQ(received_supported_configs, supported_configs_to_reply_with);
 }
 
-// Tests that a call to stable::mojom::VideoDecoder::Initialize() gets routed
-// correctly to the underlying mojom::VideoDecoder. Also tests that when the
-// underlying mojom::VideoDecoder calls the initialization callback, the call
-// gets routed to the client.
-TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeInitialized) {
+// Tests that a call to mojom::VideoDecoder::InitializeWithCdmContext() gets
+// routed correctly to the underlying mojom::VideoDecoder as an Initialize()
+// call. Also tests that when the underlying mojom::VideoDecoder calls the
+// initialization callback, the call gets routed to the client.
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanBeInitialized) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  auto auxiliary_endpoints = ConstructStableVideoDecoder(
-      stable_video_decoder_remote, *mock_video_decoder_raw,
-      /*expect_construct_call=*/true);
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  auto auxiliary_endpoints =
+      ConstructVideoDecoder(video_decoder_remote, *mock_video_decoder_raw,
+                            /*expect_construct_call=*/true);
   ASSERT_TRUE(auxiliary_endpoints);
 
   const VideoDecoderConfig config_to_send = CreateValidVideoDecoderConfig();
@@ -555,11 +552,11 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeInitialized) {
   EXPECT_CALL(initialize_cb_to_send,
               Run(kDecoderStatus, kNeedsBitstreamConversion, kMaxDecodeRequests,
                   kDecoderType, /*needs_transcryption=*/false));
-  stable_video_decoder_remote->Initialize(
+  video_decoder_remote->InitializeWithCdmContext(
       config_to_send, kLowDelay,
-      mojo::PendingRemote<stable::mojom::StableCdmContext>(),
+      mojo::PendingRemote<mojom::CdmContextForOOPVD>(),
       initialize_cb_to_send.Get());
-  stable_video_decoder_remote.FlushForTesting();
+  video_decoder_remote.FlushForTesting();
   ASSERT_TRUE(Mock::VerifyAndClearExpectations(mock_video_decoder_raw));
 
   std::move(received_initialize_cb)
@@ -568,16 +565,16 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeInitialized) {
   task_environment_.RunUntilIdle();
 }
 
-// Tests that the StableVideoDecoderService rejects a call to
-// stable::mojom::VideoDecoder::Initialize() before
-// stable::mojom::VideoDecoder::Construct() gets called.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderCannotBeInitializedBeforeConstruction) {
+// Tests that the OOPVideoDecoderService rejects a call to
+// mojom::VideoDecoder::InitializeWithCdmContext() before
+// mojom::VideoDecoder::Construct() gets called.
+TEST_F(OOPVideoDecoderServiceTest,
+       VideoDecoderCannotBeInitializedBeforeConstruction) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
 
   const VideoDecoderConfig config_to_send = CreateValidVideoDecoderConfig();
   constexpr bool kLowDelay = true;
@@ -588,31 +585,31 @@ TEST_F(StableVideoDecoderServiceTest,
       initialize_cb_to_send;
 
   EXPECT_CALL(initialize_cb_to_send,
-              Run(DecoderStatus(DecoderStatus::Codes::kFailed),
+              Run(DecoderStatus(DecoderStatus::Codes::kFailedToCreateDecoder),
                   /*needs_bitstream_conversion=*/false,
                   /*max_decode_requests=*/1, VideoDecoderType::kUnknown,
                   /*needs_transcryption=*/false));
-  stable_video_decoder_remote->Initialize(
+  video_decoder_remote->InitializeWithCdmContext(
       config_to_send, kLowDelay,
-      mojo::PendingRemote<stable::mojom::StableCdmContext>(),
+      mojo::PendingRemote<mojom::CdmContextForOOPVD>(),
       initialize_cb_to_send.Get());
-  stable_video_decoder_remote.FlushForTesting();
+  video_decoder_remote.FlushForTesting();
 }
 
-// Tests that a call to stable::mojom::VideoDecoder::Decode() gets routed
+// Tests that a call to mojom::VideoDecoder::Decode() gets routed
 // correctly to the underlying mojom::VideoDecoder and that the data pipe is
 // plumbed correctly. Also tests that when the underlying mojom::VideoDecoder
 // calls the decode callback, the call gets routed to the client.
-TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanDecode) {
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanDecode) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  auto auxiliary_endpoints = ConstructStableVideoDecoder(
-      stable_video_decoder_remote, *mock_video_decoder_raw,
-      /*expect_construct_call=*/true);
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  auto auxiliary_endpoints =
+      ConstructVideoDecoder(video_decoder_remote, *mock_video_decoder_raw,
+                            /*expect_construct_call=*/true);
   ASSERT_TRUE(auxiliary_endpoints);
   ASSERT_TRUE(auxiliary_endpoints->mojo_decoder_buffer_writer);
   ASSERT_TRUE(auxiliary_endpoints->mojo_decoder_buffer_reader);
@@ -636,12 +633,13 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanDecode) {
         received_decode_cb = std::move(callback);
       });
   EXPECT_CALL(decode_cb_to_send, Run(kDecoderStatus));
-  ASSERT_TRUE(
+  mojom::DecoderBufferPtr mojo_decoder_buffer =
       auxiliary_endpoints->mojo_decoder_buffer_writer->WriteDecoderBuffer(
-          decoder_buffer_to_send));
-  stable_video_decoder_remote->Decode(decoder_buffer_to_send,
-                                      decode_cb_to_send.Get());
-  stable_video_decoder_remote.FlushForTesting();
+          decoder_buffer_to_send);
+  ASSERT_TRUE(mojo_decoder_buffer);
+  video_decoder_remote->Decode(std::move(mojo_decoder_buffer),
+                               decode_cb_to_send.Get());
+  video_decoder_remote.FlushForTesting();
   ASSERT_TRUE(Mock::VerifyAndClearExpectations(mock_video_decoder_raw));
 
   ASSERT_TRUE(received_decoder_buffer_ptr);
@@ -662,16 +660,15 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanDecode) {
   task_environment_.RunUntilIdle();
 }
 
-// Tests that the StableVideoDecoderService rejects a call to
-// stable::mojom::VideoDecoder::Decode() before
-// stable::mojom::VideoDecoder::Construct() gets called.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderCannotDecodeBeforeConstruction) {
+// Tests that the OOPVideoDecoderService rejects a call to
+// mojom::VideoDecoder::Decode() before
+// mojom::VideoDecoder::Construct() gets called.
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCannotDecodeBeforeConstruction) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
 
   constexpr uint8_t kEncodedData[] = {1, 2, 3};
   scoped_refptr<DecoderBuffer> decoder_buffer_to_send =
@@ -681,26 +678,29 @@ TEST_F(StableVideoDecoderServiceTest,
       decode_cb_to_send;
 
   EXPECT_CALL(decode_cb_to_send,
-              Run(DecoderStatus(DecoderStatus::Codes::kFailed)));
-  stable_video_decoder_remote->Decode(decoder_buffer_to_send,
-                                      decode_cb_to_send.Get());
-  stable_video_decoder_remote.FlushForTesting();
+              Run(DecoderStatus(DecoderStatus::Codes::kFailedToCreateDecoder)));
+  mojom::DecoderBufferPtr mojo_decoder_buffer =
+      mojom::DecoderBuffer::From(*decoder_buffer_to_send);
+  ASSERT_TRUE(mojo_decoder_buffer);
+  video_decoder_remote->Decode(std::move(mojo_decoder_buffer),
+                               decode_cb_to_send.Get());
+  video_decoder_remote.FlushForTesting();
 }
 
-// Tests that a call to stable::mojom::VideoDecoder::Reset() gets routed
+// Tests that a call to mojom::VideoDecoder::Reset() gets routed
 // correctly to the underlying mojom::VideoDecoder. Also tests that when the
 // underlying mojom::VideoDecoder calls the reset callback, the call gets routed
 // to the client.
-TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeReset) {
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderCanBeReset) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  auto auxiliary_endpoints = ConstructStableVideoDecoder(
-      stable_video_decoder_remote, *mock_video_decoder_raw,
-      /*expect_construct_call=*/true);
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  auto auxiliary_endpoints =
+      ConstructVideoDecoder(video_decoder_remote, *mock_video_decoder_raw,
+                            /*expect_construct_call=*/true);
   ASSERT_TRUE(auxiliary_endpoints);
 
   StrictMock<base::MockOnceCallback<void()>> reset_cb_to_send;
@@ -711,48 +711,48 @@ TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeReset) {
         received_reset_cb = std::move(callback);
       });
   EXPECT_CALL(reset_cb_to_send, Run());
-  stable_video_decoder_remote->Reset(reset_cb_to_send.Get());
-  stable_video_decoder_remote.FlushForTesting();
+  video_decoder_remote->Reset(reset_cb_to_send.Get());
+  video_decoder_remote.FlushForTesting();
   ASSERT_TRUE(Mock::VerifyAndClearExpectations(mock_video_decoder_raw));
 
   std::move(received_reset_cb).Run();
   task_environment_.RunUntilIdle();
 }
 
-// Tests that the StableVideoDecoderService doesn't route a
-// stable::mojom::VideoDecoder::Reset() call to the underlying
-// mojom::VideoDecoder before stable::mojom::VideoDecoder::Construct() gets
+// Tests that the OOPVideoDecoderService doesn't route a
+// mojom::VideoDecoder::Reset() call to the underlying
+// mojom::VideoDecoder before mojom::VideoDecoder::Construct() gets
 // called and that it just calls the reset callback.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderCannotBeResetBeforeConstruction) {
+TEST_F(OOPVideoDecoderServiceTest,
+       VideoDecoderCannotBeResetBeforeConstruction) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
 
   StrictMock<base::MockOnceCallback<void()>> reset_cb_to_send;
 
   EXPECT_CALL(reset_cb_to_send, Run());
-  stable_video_decoder_remote->Reset(reset_cb_to_send.Get());
-  stable_video_decoder_remote.FlushForTesting();
+  video_decoder_remote->Reset(reset_cb_to_send.Get());
+  video_decoder_remote.FlushForTesting();
 }
 
 // Tests that a call to
-// stable::mojom::VideoFrameHandleReleaser::ReleaseVideoFrame() gets routed
+// mojom::VideoFrameHandleReleaser::ReleaseVideoFrame() gets routed
 // correctly to the underlying mojom::VideoFrameHandleReleaser.
-TEST_F(StableVideoDecoderServiceTest, VideoFramesCanBeReleased) {
+TEST_F(OOPVideoDecoderServiceTest, VideoFramesCanBeReleased) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  auto auxiliary_endpoints = ConstructStableVideoDecoder(
-      stable_video_decoder_remote, *mock_video_decoder_raw,
-      /*expect_construct_call=*/true);
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  auto auxiliary_endpoints =
+      ConstructVideoDecoder(video_decoder_remote, *mock_video_decoder_raw,
+                            /*expect_construct_call=*/true);
   ASSERT_TRUE(auxiliary_endpoints);
-  ASSERT_TRUE(auxiliary_endpoints->stable_video_frame_handle_releaser_remote);
+  ASSERT_TRUE(auxiliary_endpoints->video_frame_handle_releaser_remote);
   ASSERT_TRUE(auxiliary_endpoints->mock_video_frame_handle_releaser);
 
   const base::UnguessableToken release_token_to_send =
@@ -763,92 +763,91 @@ TEST_F(StableVideoDecoderServiceTest, VideoFramesCanBeReleased) {
   EXPECT_CALL(
       *auxiliary_endpoints->mock_video_frame_handle_releaser,
       ReleaseVideoFrame(release_token_to_send, expected_release_sync_token));
-  auxiliary_endpoints->stable_video_frame_handle_releaser_remote
-      ->ReleaseVideoFrame(release_token_to_send);
-  auxiliary_endpoints->stable_video_frame_handle_releaser_remote
-      .FlushForTesting();
+  auxiliary_endpoints->video_frame_handle_releaser_remote->ReleaseVideoFrame(
+      release_token_to_send, /*release_sync_token=*/{});
+  auxiliary_endpoints->video_frame_handle_releaser_remote.FlushForTesting();
 }
 
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderClientReceivesOnVideoFrameDecodedEvent) {
+TEST_F(OOPVideoDecoderServiceTest,
+       VideoDecoderClientReceivesOnVideoFrameDecodedEvent) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  auto auxiliary_endpoints = ConstructStableVideoDecoder(
-      stable_video_decoder_remote, *mock_video_decoder_raw,
-      /*expect_construct_call=*/true);
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  auto auxiliary_endpoints =
+      ConstructVideoDecoder(video_decoder_remote, *mock_video_decoder_raw,
+                            /*expect_construct_call=*/true);
   ASSERT_TRUE(auxiliary_endpoints);
   ASSERT_TRUE(auxiliary_endpoints->video_decoder_client_remote);
-  ASSERT_TRUE(auxiliary_endpoints->mock_stable_video_decoder_client);
+  ASSERT_TRUE(auxiliary_endpoints->mock_video_decoder_client);
 
-  const auto token_for_release = base::UnguessableToken::Create();
+  const std::optional<base::UnguessableToken> token_for_release =
+      base::UnguessableToken::Create();
   scoped_refptr<VideoFrame> video_frame_to_send =
       CreateTestNV12MappableVideoFrame(test_sii_);
   ASSERT_TRUE(video_frame_to_send);
-  stable::mojom::VideoFramePtr video_frame_received;
+  scoped_refptr<VideoFrame> video_frame_received;
   constexpr bool kCanReadWithoutStalling = true;
   EXPECT_CALL(
-      *auxiliary_endpoints->mock_stable_video_decoder_client,
+      *auxiliary_endpoints->mock_video_decoder_client,
       OnVideoFrameDecoded(_, kCanReadWithoutStalling, token_for_release))
       .WillOnce(WithArgs<0>(
-          [&video_frame_received](stable::mojom::VideoFramePtr frame) {
+          [&video_frame_received](const scoped_refptr<VideoFrame>& frame) {
             video_frame_received = std::move(frame);
           }));
   auxiliary_endpoints->video_decoder_client_remote->OnVideoFrameDecoded(
       video_frame_to_send, kCanReadWithoutStalling, token_for_release);
   auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
   ASSERT_TRUE(video_frame_received);
-  EXPECT_FALSE(video_frame_received->metadata.end_of_stream);
-  EXPECT_TRUE(video_frame_received->metadata.read_lock_fences_enabled);
-  EXPECT_TRUE(video_frame_received->metadata.power_efficient);
-  EXPECT_TRUE(video_frame_received->metadata.allow_overlay);
+  EXPECT_FALSE(video_frame_received->metadata().end_of_stream);
+  EXPECT_TRUE(video_frame_received->metadata().read_lock_fences_enabled);
+  EXPECT_TRUE(video_frame_received->metadata().power_efficient);
+  EXPECT_TRUE(video_frame_received->metadata().allow_overlay);
 }
 
 // Tests that a mojom::VideoDecoderClient::OnWaiting() call originating from the
 // underlying mojom::VideoDecoder gets forwarded to the
-// stable::mojom::VideoDecoderClient correctly.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderClientReceivesOnWaitingEvent) {
+// mojom::VideoDecoderClient correctly.
+TEST_F(OOPVideoDecoderServiceTest, VideoDecoderClientReceivesOnWaitingEvent) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  auto auxiliary_endpoints = ConstructStableVideoDecoder(
-      stable_video_decoder_remote, *mock_video_decoder_raw,
-      /*expect_construct_call=*/true);
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  auto auxiliary_endpoints =
+      ConstructVideoDecoder(video_decoder_remote, *mock_video_decoder_raw,
+                            /*expect_construct_call=*/true);
   ASSERT_TRUE(auxiliary_endpoints);
   ASSERT_TRUE(auxiliary_endpoints->video_decoder_client_remote);
-  ASSERT_TRUE(auxiliary_endpoints->mock_stable_video_decoder_client);
+  ASSERT_TRUE(auxiliary_endpoints->mock_video_decoder_client);
 
   constexpr WaitingReason kWaitingReason = WaitingReason::kNoDecryptionKey;
-  EXPECT_CALL(*auxiliary_endpoints->mock_stable_video_decoder_client,
+  EXPECT_CALL(*auxiliary_endpoints->mock_video_decoder_client,
               OnWaiting(kWaitingReason));
   auxiliary_endpoints->video_decoder_client_remote->OnWaiting(kWaitingReason);
   auxiliary_endpoints->video_decoder_client_remote.FlushForTesting();
 }
 
 // Tests that a mojom::MediaLog::AddLogRecord() call originating from the
-// underlying mojom::VideoDecoder gets forwarded to the stable::mojom::MediaLog
+// underlying mojom::VideoDecoder gets forwarded to the mojom::MediaLog
 // correctly.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderClientReceivesAddLogRecordEvent) {
+TEST_F(OOPVideoDecoderServiceTest,
+       VideoDecoderClientReceivesAddLogRecordEvent) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
   auto* mock_video_decoder_raw = mock_video_decoder.get();
-  auto stable_video_decoder_remote =
-      CreateStableVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
-  auto auxiliary_endpoints = ConstructStableVideoDecoder(
-      stable_video_decoder_remote, *mock_video_decoder_raw,
-      /*expect_construct_call=*/true);
+  auto video_decoder_remote =
+      CreateVideoDecoder(std::move(mock_video_decoder), /*tracker=*/{});
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
+  auto auxiliary_endpoints =
+      ConstructVideoDecoder(video_decoder_remote, *mock_video_decoder_raw,
+                            /*expect_construct_call=*/true);
   ASSERT_TRUE(auxiliary_endpoints);
   ASSERT_TRUE(auxiliary_endpoints->media_log_remote);
-  ASSERT_TRUE(auxiliary_endpoints->mock_stable_media_log);
+  ASSERT_TRUE(auxiliary_endpoints->mock_media_log);
 
   MediaLogRecord media_log_record_to_send;
   media_log_record_to_send.id = 2;
@@ -856,39 +855,38 @@ TEST_F(StableVideoDecoderServiceTest,
   media_log_record_to_send.params.Set("Test", "Value");
   media_log_record_to_send.time = base::TimeTicks::Now();
 
-  EXPECT_CALL(*auxiliary_endpoints->mock_stable_media_log,
+  EXPECT_CALL(*auxiliary_endpoints->mock_media_log,
               AddLogRecord(media_log_record_to_send));
   auxiliary_endpoints->media_log_remote->AddLogRecord(media_log_record_to_send);
   auxiliary_endpoints->media_log_remote.FlushForTesting();
 }
 
-// Tests that a StableVideoDecoderTracker can be used to know when the remote
-// StableVideoDecoder implementation dies.
-TEST_F(StableVideoDecoderServiceTest,
-       StableVideoDecoderTrackerDisconnectsWhenStableVideoDecoderDies) {
+// Tests that a VideoDecoderTracker can be used to know when the remote
+// VideoDecoder implementation dies.
+TEST_F(OOPVideoDecoderServiceTest,
+       VideoDecoderTrackerDisconnectsWhenVideoDecoderDies) {
   auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
 
-  MockStableVideoDecoderTracker tracker;
-  mojo::Receiver<stable::mojom::StableVideoDecoderTracker> tracker_receiver(
-      &tracker);
-  mojo::PendingRemote<stable::mojom::StableVideoDecoderTracker> tracker_remote =
+  MockVideoDecoderTracker tracker;
+  mojo::Receiver<mojom::VideoDecoderTracker> tracker_receiver(&tracker);
+  mojo::PendingRemote<mojom::VideoDecoderTracker> tracker_remote =
       tracker_receiver.BindNewPipeAndPassRemote();
   StrictMock<base::MockOnceCallback<void()>> tracker_disconnect_cb;
   tracker_receiver.set_disconnect_handler(tracker_disconnect_cb.Get());
 
-  auto stable_video_decoder_remote = CreateStableVideoDecoder(
-      std::move(mock_video_decoder), std::move(tracker_remote));
-  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
-  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  auto video_decoder_remote = CreateVideoDecoder(std::move(mock_video_decoder),
+                                                 std::move(tracker_remote));
+  ASSERT_TRUE(video_decoder_remote.is_bound());
+  ASSERT_TRUE(video_decoder_remote.is_connected());
 
   // Until now, nothing in particular should happen.
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(Mock::VerifyAndClearExpectations(&tracker_disconnect_cb));
 
-  // Once we reset the |stable_video_decoder_remote|, the StableVideoDecoder
+  // Once we reset the |video_decoder_remote|, the VideoDecoder
   // implementation should die and the |tracker| should get disconnected.
   EXPECT_CALL(tracker_disconnect_cb, Run());
-  stable_video_decoder_remote.reset();
+  video_decoder_remote.reset();
   task_environment_.RunUntilIdle();
 }
 

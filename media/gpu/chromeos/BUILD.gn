@@ -104,7 +104,7 @@ source_set("common") {
     ":video_frame_resource",
     ":video_frame_utils",
     "//gpu/ipc/service",
-    "//media/mojo/mojom/stable:stable_video_decoder",
+    "//media/mojo/mojom:mojom",
     "//ui/ozone",
   ]
 
