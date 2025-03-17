@@ -39,6 +39,7 @@
 <translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">새로운 Chrome 프로필 맞춤설정</translation>
 <translation id="1547295885616600893">ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
+<translation id="1547469039832541117">강조 표시된 작업을 종료합니다.</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
 <translation id="1587223624401073077">Chrome에서 카메라를 사용 중입니다.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" />은(는) 위험하므로 Chrome에서 차단했습니다.</translation>
@@ -175,6 +176,7 @@
 <translation id="3140883423282498090">Chrome을 다시 시작하면 변경사항이 적용됩니다.</translation>
 <translation id="3149510190863420837">Chrome 앱</translation>
 <translation id="3161522574479303604">모든 언어</translation>
+<translation id="319199214552513804">모든 컴퓨터에서 이 확장 프로그램 등을 사용하려면 Chrome에 로그인하세요.</translation>
 <translation id="3196187562065225381">위험한 파일이므로 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="3222857603094643834">Google 렌즈로 이 페이지 전체 검색</translation>
 <translation id="3226612997184048185">Google 계정에도 북마크를 저장하면 Chrome에서 제품 가격을 추적하고 가격이 인하되면 알림을 받을 수 있습니다.</translation>

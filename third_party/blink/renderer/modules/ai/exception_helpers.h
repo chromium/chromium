@@ -22,6 +22,7 @@ extern const char kExceptionMessageInvalidTemperature[];
 extern const char kExceptionMessageUnableToCreateSession[];
 extern const char kExceptionMessageInitialPromptTooLarge[];
 extern const char kExceptionMessageUnableToCloneSession[];
+extern const char kExceptionMessageUnableToCalculateUsage[];
 extern const char kExceptionMessageRequestAborted[];
 extern const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[];
 extern const char kExceptionMessageSystemPromptIsNotTheFirst[];

@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -177,6 +178,7 @@ namespace {
 [[nodiscard]] bool SatisfiesMiscellaneousRequirements(
     bool is_off_the_record,
     bool has_entity_data_saved,
+    const GeoIpCountryCode& country_code,
     std::string_view app_locale,
     AutofillAiAction action) {
   // Off-the-record.
@@ -208,7 +210,10 @@ namespace {
     }
   }
 
-  // TODO(crbug.com/397881703): Check GeoIP.
+  if (country_code != GeoIpCountryCode("US") &&
+      !base::FeatureList::IsEnabled(features::kAutofillAiIgnoreGeoIp)) {
+    return false;
+  }
 
   return true;
 }
@@ -236,9 +241,9 @@ bool MayPerformAutofillAiAction(const AutofillClient& client,
     return false;
   }
 
-  return SatisfiesMiscellaneousRequirements(client.IsOffTheRecord(),
-                                            has_entity_data_saved,
-                                            client.GetAppLocale(), action);
+  return SatisfiesMiscellaneousRequirements(
+      client.IsOffTheRecord(), has_entity_data_saved,
+      client.GetVariationConfigCountryCode(), client.GetAppLocale(), action);
 }
 
 }  // namespace autofill

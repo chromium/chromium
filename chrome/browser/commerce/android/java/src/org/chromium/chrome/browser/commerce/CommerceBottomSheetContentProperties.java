@@ -15,13 +15,17 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 @NullMarked
 public class CommerceBottomSheetContentProperties {
     public static final ReadableIntPropertyKey TYPE = new ReadableIntPropertyKey();
+
     public static final ReadableBooleanPropertyKey HAS_TITLE = new ReadableBooleanPropertyKey();
 
     public static final ReadableObjectPropertyKey<String> TITLE = new ReadableObjectPropertyKey<>();
+
+    public static final ReadableBooleanPropertyKey HAS_CUSTOM_PADDING =
+            new ReadableBooleanPropertyKey();
 
     public static final ReadableObjectPropertyKey<View> CUSTOM_VIEW =
             new ReadableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {TYPE, HAS_TITLE, TITLE, CUSTOM_VIEW};
+            new PropertyKey[] {TYPE, HAS_TITLE, TITLE, HAS_CUSTOM_PADDING, CUSTOM_VIEW};
 }

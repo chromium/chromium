@@ -34,6 +34,7 @@
 <translation id="1478370723027452770">Ստանալ օգնություն Chrome for Testing-ի միջոցով</translation>
 <translation id="1497802159252041924">Տեղադրման սխալ՝ <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Կիսվեք Chromium-ի ներդիրով</translation>
+<translation id="1547469039832541117">Ավարտում է ընդգծված առաջադրանքը։</translation>
 <translation id="1553461853655228091">Chromium-ին անհրաժեշտ է տեսախցիկն օգտագործելու թույլտվություն՝ ձեր շրջակայքի եռաչափ քարտեզը ստեղծելու համար։</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Այս ընդլայնումն այլևս չի աջակցվում։ Chromium-ը խորհուրդ է տալիս հեռացնել այն։}one{Այս ընդլայնումն այլևս չի աջակցվում։ Chromium-ը խորհուրդ է տալիս հեռացնել այն։}other{Այս ընդլայնումներն այլևս չեն աջակցվում։ Chromium-ը խորհուրդ է տալիս հեռացնել դրանք։}}</translation>
 <translation id="1574377791422810894">Chromium-ի անվտանգության գործիքներ</translation>

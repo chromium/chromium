@@ -614,11 +614,6 @@ BASE_FEATURE(kLogJsConsoleMessages,
 #endif
 );
 
-// Boosts the thread priority of RendererMain if an input scenario is detected.
-BASE_FEATURE(kInputScenarioPriorityBoost,
-             "InputScenarioPriorityBoost",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The MBI mode controls whether or not communication over the
 // AgentSchedulingGroup is ordered with respect to the render-process-global
 // legacy IPC channel, as well as the granularity of AgentSchedulingGroup

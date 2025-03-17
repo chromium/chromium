@@ -398,6 +398,11 @@ enum class AuthenticationFlowInProfileState {
   NOTREACHED();
 }
 
+- (void)didSwitchToProfileWithSuccess:(BOOL)success
+                    newProfileBrowser:(Browser*)newProfileBrowser {
+  NOTREACHED();
+}
+
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
                                    clientID:(NSString*)clientID
                          userAffiliationIDs:

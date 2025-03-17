@@ -54,6 +54,8 @@ class BnplManagerTestApi {
     bnpl_manager_->OnVcnDetailsFetched(result, response_details);
   }
 
+  void Reset() { bnpl_manager_->Reset(); }
+
   BnplManager::OngoingFlowState* GetOngoingFlowState() {
     return bnpl_manager_->ongoing_flow_state_.get();
   }
@@ -63,6 +65,10 @@ class BnplManagerTestApi {
   }
 
   void OnTosDialogAccepted() { bnpl_manager_->OnTosDialogAccepted(); }
+
+  void CreateBnplPaymentInstrument() {
+    bnpl_manager_->CreateBnplPaymentInstrument();
+  }
 
  private:
   const raw_ref<BnplManager> bnpl_manager_;

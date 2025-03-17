@@ -285,16 +285,12 @@ public class IdentityDiscControllerTest {
     @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSwitchToIncognito() {
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(allOf(withId(R.id.optional_toolbar_button), isDisplayed()));
+        ViewUtils.waitForVisibleView(withId(R.id.optional_toolbar_button));
 
         // Identity Disc should not be visible, when switched from sign in state to incognito NTP.
         mActivityTestRule.newIncognitoTabFromMenu();
-        // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
-        ViewUtils.isEventuallyVisible(
-                allOf(
-                        withId(R.id.optional_toolbar_button),
-                        withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.optional_toolbar_button), ViewUtils.VIEW_GONE);
     }
 
     @Test

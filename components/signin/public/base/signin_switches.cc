@@ -147,7 +147,12 @@ bool IsImprovedSigninUIOnDesktopEnabled() {
 
 BASE_FEATURE(kImprovedSettingsUIOnDesktop,
              "ImprovedSettingsUIOnDesktop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 bool IsImprovedSettingsUIOnDesktopEnabled() {
   return base::FeatureList::IsEnabled(kImprovedSettingsUIOnDesktop);

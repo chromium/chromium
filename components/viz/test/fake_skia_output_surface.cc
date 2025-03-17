@@ -154,10 +154,11 @@ FakeSkiaOutputSurface::CreateImageContext(
     bool concurrent_reads,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
+    GrSurfaceOrigin origin,
     bool raw_draw_if_possible) {
   return std::make_unique<ExternalUseClient::ImageContext>(
       mailbox, sync_token, texture_target, size, format, ycbcr_info,
-      std::move(color_space));
+      std::move(color_space), origin);
 }
 
 SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(

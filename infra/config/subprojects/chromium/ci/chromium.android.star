@@ -292,6 +292,7 @@ ci.builder(
         configs = [
             "android_builder",
             "debug_static_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "arm64",
             "webview_google",
@@ -325,6 +326,7 @@ ci.builder(
         configs = [
             "android_builder",
             "debug_static_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "x64",
             "webview_trichrome",
@@ -373,6 +375,7 @@ ci.builder(
         configs = [
             "android_builder",
             "debug_static_builder",
+            "enable_android_secondary_abi",
             "remoteexec",
             "x64",
             "webview_trichrome",
@@ -879,6 +882,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "enable_android_secondary_abi",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -1142,6 +1146,7 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "android_builder",
+            "enable_android_secondary_abi",
             "release_builder",
             "remoteexec",
             "minimal_symbols",
@@ -3733,7 +3738,6 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
-            "no_secondary_abi",
             "webview_shell",
         ],
     ),
@@ -3914,7 +3918,6 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
-            "no_secondary_abi",
             "webview_shell",
         ],
     ),
@@ -4149,7 +4152,6 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
-            "no_secondary_abi",
             "webview_shell",
         ],
     ),
@@ -4453,7 +4455,6 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
-            "no_secondary_abi",
             "webview_shell",
         ],
     ),
@@ -4611,7 +4612,6 @@ ci.builder(
             "x64",
             "strip_debug_info",
             "android_fastbuild",
-            "no_secondary_abi",
         ],
     ),
     targets = targets.bundle(
@@ -4683,7 +4683,6 @@ ci.builder(
             "x64",
             "strip_debug_info",
             "android_fastbuild",
-            "no_secondary_abi",
         ],
     ),
     targets = targets.bundle(
@@ -4978,7 +4977,6 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
-            "no_secondary_abi",
             "webview_shell",
         ],
     ),

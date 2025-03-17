@@ -13,38 +13,37 @@ cargo_crate("lib") {
   epoch = "2"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/arbitrary.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/borsh.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/macros.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/core.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/core/entry.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/core/raw_entry_v1.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/iter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/mutable.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/serde_seq.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/slice.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/map/tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rayon/map.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rayon/mod.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rayon/set.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/rustc.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/iter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/mutable.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/slice.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/set/tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.7.1/src/util.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/arbitrary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/borsh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/core.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/core/entry.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/core/raw_entry_v1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/mutable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/serde_seq.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/map/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/rayon/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/rayon/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/rayon/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/set.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/set/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/set/mutable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/set/slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/set/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/indexmap-2.8.0/src/util.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.7.1"
+  cargo_pkg_version = "2.8.0"
   cargo_pkg_name = "indexmap"
   cargo_pkg_description =
       "A hash table with consistent order and fast iteration."

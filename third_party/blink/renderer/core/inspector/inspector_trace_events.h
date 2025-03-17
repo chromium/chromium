@@ -566,7 +566,8 @@ void Data(perfetto::TracedValue context, const Event&, v8::Isolate*);
 namespace inspector_time_stamp_event {
 void Data(perfetto::TracedValue context,
           ExecutionContext*,
-          const String& message);
+          const String& message,
+          const v8::LocalVector<v8::Value>& args);
 }
 
 namespace inspector_tracing_session_id_for_worker_event {

@@ -40,6 +40,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
         width: 200px; height: 200px; background-color: blue'>
       <div id='content1' style='position: absolute; width: 100px;
           height: 100px; background-color: red'></div>
+      <div style='position: relative; height: 10px'></div>
     </div>
     <div id='filler1' style='position: relative; z-index: 2;
         width: 20px; height: 20px; background-color: gray'></div>
@@ -47,6 +48,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
         width: 200px; height: 200px; background-color: blue'>
       <div id='content2' style='position: absolute; width: 100px;
           height: 100px; background-color: green;'></div>
+      <div style='position: relative; height: 10px'></div>
     </div>
     <div id='filler2' style='position: relative; z-index: 4;
         width: 20px; height: 20px; background-color: gray'></div>
@@ -85,40 +87,36 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
             IsSameId(GetDisplayItemClientFromLayoutObject(filler2)->Id(),
                      kBackgroundType)));
 
-    // Check that new paint chunks were forced for the layers.
+    // Check that new paint chunks were forced for the subsequences.
     auto chunks = ContentPaintChunks();
     auto chunk_it = chunks.begin();
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container1_layer, chunk_it + 1, 2);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content1_layer, chunk_it + 2, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler1_layer, chunk_it + 3, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container2_layer, chunk_it + 4, 2);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content2_layer, chunk_it + 5, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler2_layer, chunk_it + 6, 1);
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container1_layer, chunk_it + 1, 1);
+    EXPECT_NO_SUBSEQUENCE(*content1_layer);
+    EXPECT_NO_SUBSEQUENCE(*filler1_layer);
+    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container2_layer, chunk_it + 3, 1);
+    EXPECT_NO_SUBSEQUENCE(*content2_layer);
+    EXPECT_NO_SUBSEQUENCE(*filler2_layer);
 
     EXPECT_THAT(
         chunks,
         ElementsAre(
             VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(1, 2,
+            IsPaintChunk(1, 3,
                          PaintChunk::Id(container1_layer->Id(),
                                         DisplayItem::kLayerChunk),
                          chunk_state, nullptr, gfx::Rect(0, 0, 200, 200)),
-            IsPaintChunk(
-                2, 3,
-                PaintChunk::Id(content1_layer->Id(), DisplayItem::kLayerChunk),
-                chunk_state, nullptr, gfx::Rect(0, 0, 100, 100)),
+            // The paint chunk for `filler1` is forced by the subsequence for
+            // `container1`.
             IsPaintChunk(
                 3, 4,
                 PaintChunk::Id(filler1_layer->Id(), DisplayItem::kLayerChunk),
                 chunk_state, nullptr, gfx::Rect(0, 200, 20, 20)),
-            IsPaintChunk(4, 5,
+            IsPaintChunk(4, 6,
                          PaintChunk::Id(container2_layer->Id(),
                                         DisplayItem::kLayerChunk),
                          chunk_state, nullptr, gfx::Rect(0, 220, 200, 200)),
-            IsPaintChunk(
-                5, 6,
-                PaintChunk::Id(content2_layer->Id(), DisplayItem::kLayerChunk),
-                chunk_state, nullptr, gfx::Rect(0, 220, 100, 100)),
+            // The paint chunk for `filler2` is forced by the subsequence for
+            // `container2`.
             IsPaintChunk(
                 6, 7,
                 PaintChunk::Id(filler2_layer->Id(), DisplayItem::kLayerChunk),
@@ -135,7 +133,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
   PaintController::CounterForTesting counter;
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(6u, counter.num_cached_items);
-  EXPECT_EQ(4u, counter.num_cached_subsequences);
+  EXPECT_EQ(1u, counter.num_cached_subsequences);
 
   // We should still have the paint chunks forced by the cached subsequences.
   check_results();
@@ -145,14 +143,15 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0 }
-      ::-webkit-scrollbar { display: none }
+      * { scrollbar-width: none }
     </style>
     <div id='container' style='position: relative; z-index: 0;
         width: 150px; height: 150px; overflow: scroll'>
       <div id='content' style='position: relative; z-index: 1;
-          width: 200px; height: 100px'>
+                               width: 200px; height: 100px'>
         <div id='inner-content'
              style='position: absolute; width: 100px; height: 100px'></div>
+        <div style='position: relative; z-index: 2; height: 10px'></div>
       </div>
       <div id='filler' style='position: relative; z-index: 2;
           width: 300px; height: 300px'></div>
@@ -173,10 +172,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   auto* filler_layer = To<LayoutBoxModelObject>(filler)->Layer();
 
   auto chunks = ContentPaintChunks();
-  EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 6);
-  EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 4, 2);
-  EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 5, 1);
-  EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 6, 1);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 5);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 4, 1);
+  EXPECT_NO_SUBSEQUENCE(*inner_content_layer);
+  EXPECT_NO_SUBSEQUENCE(*filler_layer);
 
   auto container_properties =
       container->FirstFragment().LocalBorderBoxProperties();
@@ -206,10 +205,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
               1, 1,
               PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
               content_properties, nullptr, gfx::Rect(0, 0, 200, 100)),
-          IsPaintChunk(1, 1,
-                       PaintChunk::Id(inner_content_layer->Id(),
-                                      DisplayItem::kLayerChunk),
-                       content_properties, nullptr, gfx::Rect(0, 0, 100, 100)),
+          // The paint chunk for `filler` is forced by the subsequence for
+          // `content`.
           IsPaintChunk(
               1, 1,
               PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
@@ -224,7 +221,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_EQ(1u, counter.num_cached_items);         // view background.
-  EXPECT_EQ(1u, counter.num_cached_subsequences);  // filler layer.
+  EXPECT_EQ(0u, counter.num_cached_subsequences);
 
   EXPECT_THAT(
       ContentDisplayItems(),
@@ -234,62 +231,64 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
                    kBackgroundType)));
 
   chunks = ContentPaintChunks();
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 6);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 4, 2);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*inner_content_layer, chunks.begin() + 5, 1);
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*filler_layer, chunks.begin() + 6, 1);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*container_layer, chunks.begin() + 1, 5);
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*content_layer, chunks.begin() + 4, 1);
+  EXPECT_NO_SUBSEQUENCE(*inner_content_layer);
+  EXPECT_NO_SUBSEQUENCE(*filler_layer);
 
-    EXPECT_THAT(
-        ContentPaintChunks(),
-        ElementsAre(
-            VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
-                container_properties, nullptr, gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
-                container_properties, scroll_hit_test,
-                gfx::Rect(0, 0, 150, 150)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(container->Id(), kScrollingBackgroundChunkType),
-                content_properties, nullptr, gfx::Rect(0, 0, 300, 400)),
-            IsPaintChunk(
-                1, 1,
-                PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 0, 200, 100)),
-            IsPaintChunk(1, 2,
-                         PaintChunk::Id(inner_content_layer->Id(),
-                                        DisplayItem::kLayerChunk),
-                         content_properties, nullptr,
-                         gfx::Rect(0, 100, 100, 100)),
-            IsPaintChunk(
-                2, 2,
-                PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
-                content_properties, nullptr, gfx::Rect(0, 100, 300, 300))));
+  EXPECT_THAT(
+      ContentPaintChunks(),
+      ElementsAre(
+          VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(container_layer->Id(), DisplayItem::kLayerChunk),
+              container_properties, nullptr, gfx::Rect(0, 0, 150, 150)),
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(container->Id(), DisplayItem::kScrollHitTest),
+              container_properties, scroll_hit_test, gfx::Rect(0, 0, 150, 150)),
+          IsPaintChunk(
+              1, 1,
+              PaintChunk::Id(container->Id(), kScrollingBackgroundChunkType),
+              content_properties, nullptr, gfx::Rect(0, 0, 300, 400)),
+          IsPaintChunk(
+              1, 2,
+              PaintChunk::Id(content_layer->Id(), DisplayItem::kLayerChunk),
+              content_properties, nullptr, gfx::Rect(0, 0, 200, 200)),
+          IsPaintChunk(
+              2, 2,
+              PaintChunk::Id(filler_layer->Id(), DisplayItem::kLayerChunk),
+              content_properties, nullptr, gfx::Rect(0, 100, 300, 300))));
 }
 
 TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
   SetBodyInnerHTML(R"HTML(
-    <div id='container1' style='position: relative; z-index: 1;
-       width: 200px; height: 200px; background-color: blue'>
-      <div id='content1' style='position: absolute; width: 100px;
-          height: 100px; background-color: green'></div>
+    <style>
+      .container {
+        position: relative;
+        opacity: 0.9;
+        width: 200px;
+        height: 200px;
+        background: blue;
+      }
+      .content {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: green;
+      }
+    </style>
+    <div id='container1' class='container'>
+      <div id='content1' class='content'></div>
     </div>
-    <div id='container2' style='position: relative; z-index: 1;
-        width: 200px; height: 200px; background-color: blue'>
-      <div id='content2a' style='position: absolute; width: 100px;
-          height: 100px; background-color: green'></div>
-      <div id='content2b' style='position: absolute; top: 200px;
-          width: 100px; height: 100px; background-color: green'></div>
+    <div id='container2' class='container'>
+      <div id='content2a' class='content'></div>
+      <div id='content2b' class='content' style='top: 200px'></div>
     </div>
-    <div id='container3' style='position: absolute; z-index: 2;
-        left: 300px; top: 0; width: 200px; height: 200px;
-        background-color: blue'>
-      <div id='content3' style='position: absolute; width: 200px;
-          height: 200px; background-color: green'></div>
+    <div id='container3' class='container'
+         style='position: absolute; z-index: 2; left: 300px; top: 0'>
+      <div id='content3' class='content'></div>
     </div>
   )HTML");
   InvalidateAll();
@@ -334,7 +333,7 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceOnCullRectChange) {
   // Content2b is out of the interest rect and outputs nothing;
   // Container3 becomes out of the interest rect and outputs nothing.
   EXPECT_EQ(5u, counter.num_cached_items);
-  EXPECT_EQ(2u, counter.num_cached_subsequences);
+  EXPECT_EQ(1u, counter.num_cached_subsequences);
 
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,

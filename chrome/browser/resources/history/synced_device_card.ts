@@ -63,7 +63,10 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
       lastUpdateTime: {type: String},
 
       // Whether the card is open.
-      opened: {type: Boolean},
+      opened: {
+        type: Boolean,
+        notify: true,
+      },
 
       searchTerm: {type: String},
 
@@ -191,6 +194,10 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
     BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.LINK_RIGHT_CLICKED,
         SyncedTabsHistogram.LIMIT);
+  }
+
+  protected onOpenedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.opened = e.detail.value;
   }
 }
 

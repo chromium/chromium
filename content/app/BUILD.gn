@@ -131,7 +131,6 @@ source_set("app") {
       "android/library_loader_hooks.h",
     ]
     deps += [
-      "//base/version_info/android:channel_getter",
       "//mojo/public/java/system:native_support",
       "//ui/gl",
     ]

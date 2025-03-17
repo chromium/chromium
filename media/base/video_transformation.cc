@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 
 namespace media {
 namespace {
@@ -181,6 +182,12 @@ VideoTransformation VideoTransformation::add(VideoTransformation delta) const {
   int combined_rotation = (base_rotation + delta_rotation) % 360;
   return VideoTransformation(static_cast<VideoRotation>(combined_rotation),
                              delta.mirrored);
+}
+
+std::string VideoTransformation::ToString() const {
+  return base::StringPrintf("Rotation: %s, is mirrored: %s",
+                            VideoRotationToString(rotation),
+                            mirrored ? "true" : "false");
 }
 
 }  // namespace media

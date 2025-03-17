@@ -7,6 +7,7 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "pdf/pdfium/pdfium_engine_exports.h"
@@ -23,6 +24,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/utf_string_conversions.h"
+#endif
 
 namespace chrome_pdf {
 
@@ -53,6 +58,22 @@ base::FilePath GetTestDataFilePath(const base::FilePath& path) {
       .Append(FILE_PATH_LITERAL("test"))
       .Append(FILE_PATH_LITERAL("data"))
       .Append(path);
+}
+
+base::FilePath::StringType GetTestDataPathWithPlatformSuffix(
+    std::string_view filename) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+  base::FilePath path(base::UTF8ToWide(filename));
+  static constexpr std::wstring_view kSuffix = L"_win";
+#else
+  base::FilePath path(filename);
+  static constexpr std::string_view kSuffix = "_mac";
+#endif  // BUILDFLAG(IS_WIN)
+  return path.InsertBeforeExtension(kSuffix).value();
+#else
+  return base::FilePath(filename).value();
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)}
 }
 
 testing::AssertionResult MatchesPngFile(

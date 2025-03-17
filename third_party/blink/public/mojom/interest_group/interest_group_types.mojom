@@ -221,6 +221,42 @@ struct PreviousWin {
   string ad_json;
 };
 
+// Used by ClickAndViewCounts -- both view and click counts share the same time
+// bucketing scheme.
+//
+// There can be some imprecison due to the fact that counts older than one hour
+// get compacted by DB maintenance to the nearest hour, to save storage.
+//
+// Note that the longer time intervals include all events in the shorter time
+// intervals. For example, every event in the past hour is also an event in the
+// past day, etc.
+struct ViewOrClickCounts {
+  // Views or clicks within the past hour.
+  int32 past_hour = 0;
+
+  // Views or clicks within the past day.
+  int32 past_day = 0;
+
+  // Views or clicks within the past week.
+  int32 past_week = 0;
+
+  // Views or clicks within the past 30 days.
+  int32 past_30_days = 0;
+
+  // Views or clicks within the past 90 days.
+  int32 past_90_days = 0;
+};
+
+// A part of BiddingBrowserSignals that provides counts of views and clicks for
+// the given buyer origin (the "eligible origin") over various time buckets.
+struct ViewAndClickCounts {
+  // Counts for view events for the given buyer origin.
+  ViewOrClickCounts view_counts;
+
+  // Counts for click events for the given buyer origin.
+  ViewOrClickCounts click_counts;
+};
+
 // Browser signals passed to the BidderWorklet's generateBid() method that are
 // stored on disk and updated by the browser, as opposed to coming from the
 // frame running the auction, or from the definition of the InterestGroup taking
@@ -239,6 +275,10 @@ struct BiddingBrowserSignals {
   // Whether the browser is under lockout or the buyer's origin is under
   // cooldown for sending forDebuggingOnly reports.
   bool for_debugging_only_in_cooldown_or_lockout;
+
+  // Loaded time-bucketed view and click counts aggregated across the
+  // `view_and_click_counts_providers` for this interest group.
+  ViewAndClickCounts view_and_click_counts;
 };
 
 // Represents an interest group with associated metadata. This struct is

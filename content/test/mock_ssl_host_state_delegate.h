@@ -31,11 +31,9 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
                            StoragePartition* storage_partition) override;
 
   void HostRanInsecureContent(const std::string& host,
-                              int child_id,
                               InsecureContentType content_type) override;
 
   bool DidHostRunInsecureContent(const std::string& host,
-                                 int child_id,
                                  InsecureContentType content_type) override;
 
   void AllowHttpForHost(const std::string& host,

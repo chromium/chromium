@@ -301,28 +301,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.ClipboardHistory.UrlTitleFetcher.IsPrimaryProfileActive"
-    enum="BooleanActive" expires_after="2024-08-04">
-  <owner>newcomer@chromium.org</owner>
-  <owner>multipaste@google.com</owner>
-  <summary>
-    Whether the primary user profile is also the active user profile. Recorded
-    when the primary profile is retrieved for the purpose of querying its
-    browsing history.
-  </summary>
-</histogram>
-
-<histogram name="Ash.ClipboardHistory.UrlTitleFetcher.NumProfiles"
-    units="count" expires_after="2024-08-04">
-  <owner>newcomer@chromium.org</owner>
-  <owner>multipaste@google.com</owner>
-  <summary>
-    The number of user profiles added to the current session. Recorded when the
-    primary profile is retrieved for the purpose of querying its browsing
-    history.
-  </summary>
-</histogram>
-
 <histogram name="Ash.ClipboardHistory.UrlTitleFetcher.UrlFound"
     enum="BooleanHit" expires_after="2024-08-04">
   <owner>newcomer@chromium.org</owner>

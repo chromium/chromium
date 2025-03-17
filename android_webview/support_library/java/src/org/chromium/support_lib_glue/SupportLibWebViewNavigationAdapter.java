@@ -46,11 +46,11 @@ class SupportLibWebViewNavigationAdapter extends IsomorphicAdapter
     }
 
     @Override
-    public boolean isPageInitiated() {
+    public boolean wasInitiatedByPage() {
         try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_IS_PAGE_INITIATED")) {
-            recordApiCall(ApiCall.NAVIGATION_IS_PAGE_INITIATED);
-            return mNavigation.isPageInitiated();
+                TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_WAS_INITIATED_BY_PAGE")) {
+            recordApiCall(ApiCall.NAVIGATION_WAS_INITIATED_BY_PAGE);
+            return mNavigation.wasInitiatedByPage();
         }
     }
 
@@ -108,11 +108,11 @@ class SupportLibWebViewNavigationAdapter extends IsomorphicAdapter
     }
 
     @Override
-    public boolean hasCommitted() {
+    public boolean didCommit() {
         try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_HAS_COMMITTED")) {
-            recordApiCall(ApiCall.NAVIGATION_HAS_COMMITTED);
-            return mNavigation.hasCommitted();
+                TraceEvent.scoped("WebView.APICall.AndroidX.NAVIGATION_DID_COMMIT")) {
+            recordApiCall(ApiCall.NAVIGATION_DID_COMMIT);
+            return mNavigation.didCommit();
         }
     }
 

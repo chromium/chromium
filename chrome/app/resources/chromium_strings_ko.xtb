@@ -33,6 +33,7 @@
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
 <translation id="1497802159252041924">설치 오류: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
+<translation id="1547469039832541117">강조 표시된 작업을 종료합니다.</translation>
 <translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않습니다. Chromium에서는 삭제할 것을 권장합니다.}other{이 확장 프로그램은 더 이상 지원되지 않습니다. Chromium에서는 삭제할 것을 권장합니다.}}</translation>
 <translation id="1574377791422810894">Chromium의 안전 도구</translation>
@@ -225,6 +226,7 @@
 <translation id="4148957013307229264">설치 중...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chromium</translation>
 <translation id="421369550622382712">Chromium에 유용한 앱, 게임, 확장 프로그램, 테마를 찾아보세요.</translation>
+<translation id="4217080900579554343">모든 컴퓨터에서 이 확장 프로그램 등을 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="4217972271355023382">부모님의 선택을 통해 온라인에서 더 안전하게 보호하려면 이미 <ph name="USER_EMAIL_ADDRESS" />님으로 로그인되어 있는 Chromium 프로필로 전환하세요.</translation>
 <translation id="4222932583846282852">취소 중...</translation>
 <translation id="4224210481850767180">설치가 취소되었습니다.</translation>

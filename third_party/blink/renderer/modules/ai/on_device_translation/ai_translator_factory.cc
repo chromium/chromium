@@ -125,8 +125,8 @@ class CreateTranslatorClient
       // TODO (crbug.com/391715395): Pass the real download progress rather than
       // mocking one.
       if (monitor_) {
-        monitor_->OnDownloadProgressUpdate(0, 1);
-        monitor_->OnDownloadProgressUpdate(1, 1);
+        monitor_->OnDownloadProgressUpdate(0, 0x10000);
+        monitor_->OnDownloadProgressUpdate(0x10000, 0x10000);
       }
 
       GetResolver()->Resolve(MakeGarbageCollected<AITranslator>(

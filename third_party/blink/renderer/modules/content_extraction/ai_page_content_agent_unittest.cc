@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
+#include <cstddef>
+
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 namespace {
@@ -2152,7 +2155,8 @@ TEST_F(AIPageContentAgentTest, Selection) {
   EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
             6);
 
-  const auto& frame_interaction_info = content->main_frame_interaction_info;
+  const auto& frame_interaction_info =
+      content->frame_data->frame_interaction_info;
   ASSERT_TRUE(frame_interaction_info->selection);
   const auto& selection = *frame_interaction_info->selection;
   EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
@@ -2220,12 +2224,13 @@ TEST_F(AIPageContentAgentTest, SelectionInIframe) {
   EXPECT_EQ(paragraph3.children_nodes[0]->content_attributes->content_node_id,
             7);
 
-  const auto& main_frame_interaction_info =
-      content->main_frame_interaction_info;
-  ASSERT_FALSE(main_frame_interaction_info->selection);
+  const auto& frame_interaction_info =
+      content->frame_data->frame_interaction_info;
+  ASSERT_FALSE(frame_interaction_info->selection);
 
   const auto& iframe_interaction_info =
-      iframe.content_attributes->iframe_data->frame_interaction_info;
+      iframe.content_attributes->iframe_data->local_frame_data
+          ->frame_interaction_info;
   ASSERT_TRUE(iframe_interaction_info->selection);
   const auto& selection = *iframe_interaction_info->selection;
   EXPECT_EQ(selection.selected_text, "1\n\nParagraph");
@@ -2305,6 +2310,8 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
       "  <meta name='author' content='George'>"
       "  <meta name='keywords' content='HTML, CSS, JavaScript'>"
       "  <meta name='nocontent'>"
+      "  <meta name='emptycontent' content=''>"
+      "  <meta id='nullcontent' name='nullcontent'>"
       "</head>"
       "<body>"
       "  <meta name='ignored'>"
@@ -2320,11 +2327,19 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
 
-  auto content = GetAIPageContent();
+  // Explicitly set the content of the nullcontent meta tag to the null atom to
+  // test this case.
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  document.getElementById(AtomicString("nullcontent"))
+      ->setAttribute(html_names::kContentAttr, WTF::g_null_atom);
+
+  mojom::blink::AIPageContentOptions options;
+  options.max_meta_elements = 32;
+  auto content = GetAIPageContent(options);
   ASSERT_TRUE(content);
   ASSERT_TRUE(content->root_node);
 
-  EXPECT_EQ(content->frame_data->meta_data.size(), 3u);
+  EXPECT_EQ(content->frame_data->meta_data.size(), 5u);
 
   EXPECT_EQ(content->frame_data->meta_data[0]->name, "author");
   EXPECT_EQ(content->frame_data->meta_data[0]->content, "George");
@@ -2334,6 +2349,13 @@ TEST_F(AIPageContentAgentTest, MetaTags) {
             "HTML, CSS, JavaScript");
 
   EXPECT_EQ(content->frame_data->meta_data[2]->name, "nocontent");
+  EXPECT_EQ(content->frame_data->meta_data[3]->content, "");
+
+  EXPECT_EQ(content->frame_data->meta_data[3]->name, "emptycontent");
+  EXPECT_EQ(content->frame_data->meta_data[3]->content, "");
+
+  EXPECT_EQ(content->frame_data->meta_data[4]->name, "nullcontent");
+  EXPECT_EQ(content->frame_data->meta_data[4]->content, "");
 
   const auto& root = *content->root_node;
   EXPECT_EQ(root.children_nodes.size(), 1u);

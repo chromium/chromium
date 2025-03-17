@@ -11,12 +11,14 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "remoting/base/errors.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/basic_desktop_environment.h"
 #include "remoting/host/client_session_control.h"
@@ -64,8 +66,6 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
 
   bool enable_user_interface = options.enable_user_interface();
   bool enable_notifications = options.enable_notifications();
-  bool should_limit_session_length =
-      !options.maximum_session_duration().is_zero();
   // The host UI should be created on the UI thread.
 #if BUILDFLAG(IS_APPLE)
   // Don't try to display any UI on top of the system's login screen as this
@@ -78,13 +78,21 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   enable_user_interface = getuid() != 0;
 #endif  // BUILDFLAG(IS_APPLE)
 
-  // Create the continue window.  The implication of this window is that the
-  // session length will be limited.  If the user interface is disabled,
-  // then sessions will not have a maximum length enforced by the continue
-  // window timer.
-  if (should_limit_session_length) {
-    // TODO(b:402442753): Terminate session after maximum session duration.
+  // Enforce the maximum session length defined in the session options. If a
+  // specific session duration limit is configured, the ContinueWindow mechanism
+  // should not require re-authentication for the ongoing session.
+  if (!options.maximum_session_duration().is_zero()) {
+    ui_task_runner->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ClientSessionControl::DisconnectSession,
+                       client_session_control, ErrorCode::MAX_SESSION_LENGTH,
+                       "Maximum session duration has been reached.", FROM_HERE),
+        options.maximum_session_duration());
   } else if (enable_user_interface) {
+    // Create the continue window.  The implication of this window is that the
+    // session length will be limited.  If the user interface is disabled,
+    // then sessions will not have a maximum length enforced by the continue
+    // window timer.
     continue_window_ = HostWindow::CreateContinueWindow();
     continue_window_ = std::make_unique<HostWindowProxy>(
         caller_task_runner, ui_task_runner, std::move(continue_window_));

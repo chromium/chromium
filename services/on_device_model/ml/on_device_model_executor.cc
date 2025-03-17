@@ -391,6 +391,36 @@ OnDeviceModelExecutor::CreateWithResult(
   return base::unexpected(load_model_result);
 }
 
+// static
+DISABLE_CFI_DLSYM
+on_device_model::Capabilities OnDeviceModelExecutor::GetCapabilities(
+    const ChromeML& chrome_ml,
+    on_device_model::ModelAssets assets) {
+  on_device_model::Capabilities result;
+  if (!chrome_ml.api().GetCapabilities) {
+    return result;
+  }
+
+  PlatformFile platform_file;
+  std::string weights_path_str = assets.weights_path.AsUTF8Unsafe();
+  if (assets.weights.IsValid()) {
+    platform_file = assets.weights.TakePlatformFile();
+  } else {
+    base::File file(assets.weights_path, base::File::FLAG_OPEN);
+    platform_file = file.TakePlatformFile();
+  }
+  ChromeMLCapabilities capabilities;
+  chrome_ml.api().GetCapabilities(platform_file, capabilities);
+
+  if (capabilities.image_input) {
+    result.Put(on_device_model::CapabilityFlags::kImageInput);
+  }
+  if (capabilities.audio_input) {
+    result.Put(on_device_model::CapabilityFlags::kAudioInput);
+  }
+  return result;
+}
+
 std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
     const ScopedAdaptation* adaptation,
     on_device_model::mojom::SessionParamsPtr params) {

@@ -46,6 +46,7 @@
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/background_sync/background_sync_controller_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
@@ -941,11 +942,6 @@ ProfileImpl::~ProfileImpl() {
 
   FullBrowserTransitionManager::Get()->OnProfileDestroyed(this);
 
-  // Records the number of active KeyedServices for SystemProfile right before
-  // shutting the Services.
-  if (IsSystemProfile())
-    ProfileMetrics::LogSystemProfileKeyedServicesCount(this);
-
   // The SimpleDependencyManager should always be passed after the
   // BrowserContextDependencyManager. This is because the KeyedService instances
   // in the BrowserContextDependencyManager's dependency graph can depend on the
@@ -963,6 +959,14 @@ ProfileImpl::~ProfileImpl() {
   // This must be called before ProfileIOData::ShutdownOnUIThread but after
   // other profile-related destroy notifications are dispatched.
   ShutdownStoragePartitions();
+
+  // Explicitly clear all user data here, so that the other fields of
+  // `ProfileImpl` are still valid while user data is being destroyed.
+  // See crbug.com/402028628 for a motivating example.
+  if (base::FeatureList::IsEnabled(
+          features::kClearUserDataUponProfileDestruction)) {
+    ClearAllUserData();
+  }
 }
 
 std::string ProfileImpl::GetProfileUserName() const {

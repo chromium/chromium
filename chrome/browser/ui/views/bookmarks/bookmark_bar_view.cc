@@ -2234,11 +2234,6 @@ const views::View* BookmarkBarView::GetSavedTabGroupsSeparatorViewForTesting()
 }
 
 void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
-  // Only show this promo with the V2 enabled flag.
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return;
-  }
-
   // Check whether to show the synced, or unsyned version of the promo.
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser_->profile());

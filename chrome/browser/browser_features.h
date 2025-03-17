@@ -36,6 +36,7 @@ BASE_DECLARE_FEATURE(kBookmarksTreeView);
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
 BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
 BASE_DECLARE_FEATURE(kCertVerificationNetworkTime);
+BASE_DECLARE_FEATURE(kClearUserDataUponProfileDestruction);
 
 BASE_DECLARE_FEATURE(kContentUsesBrowserThemeColorMode);
 

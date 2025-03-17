@@ -222,6 +222,9 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
       {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
        IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
        IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
+      {ContentSettingsType::LOCAL_NETWORK_ACCESS,
+       IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS,
+       IDS_SITE_SETTINGS_TYPE_LOCAL_NETWORK_ACCESS_MID_SENTENCE},
 #if !BUILDFLAG(IS_ANDROID)
       // Page Info Permissions that are not defined in Android.
       {ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
@@ -375,6 +378,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::IDLE_DETECTION:
       message_id = IDS_PAGE_INFO_STATE_TEXT_IDLE_DETECTION_ASK;
+      break;
+    case ContentSettingsType::LOCAL_NETWORK_ACCESS:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_LOCAL_NETWORK_ACCESS_ASK;
       break;
     // Guard content settings:
     case ContentSettingsType::USB_GUARD:
@@ -540,7 +546,6 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                        SecurityDescriptionType::INTERNAL);
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
-    case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
       switch (identity_info.connection_status) {
         case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
           return CreateSecurityDescription(
@@ -580,7 +585,6 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       NOTREACHED();
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
-    case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       switch (identity_info.connection_status) {
         case PageInfo::SITE_CONNECTION_STATUS_INSECURE_ACTIVE_SUBRESOURCE:
@@ -599,18 +603,10 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                            IDS_PAGE_INFO_MIXED_CONTENT_DETAILS,
                                            SecurityDescriptionType::CONNECTION);
         default:
-
-          auto description = CreateSecurityDescription(
-              SecuritySummaryColor::GREEN, IDS_PAGE_INFO_SECURE_SUMMARY,
-              IDS_PAGE_INFO_SECURE_DETAILS,
-              SecurityDescriptionType::CONNECTION);
-          if (identity_info.identity_status ==
-              PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT) {
-            description->details = l10n_util::GetStringFUTF16(
-                IDS_PAGE_INFO_ADMIN_PROVIDED_CERT_DETAILS,
-                base::UTF8ToUTF16(identity_info.site_identity));
-          }
-          return description;
+          return CreateSecurityDescription(SecuritySummaryColor::GREEN,
+                                           IDS_PAGE_INFO_SECURE_SUMMARY,
+                                           IDS_PAGE_INFO_SECURE_DETAILS,
+                                           SecurityDescriptionType::CONNECTION);
       }
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:
@@ -1007,7 +1003,6 @@ int PageInfoUI::GetIdentityIconID(PageInfo::SiteIdentityStatus status) {
       return IDR_PAGEINFO_GOOD;
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ERROR:
-    case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
       return IDR_PAGEINFO_BAD;
   }
@@ -1042,7 +1037,6 @@ int PageInfoUI::GetIdentityIconColorID(PageInfo::SiteIdentityStatus status) {
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ISOLATED_WEB_APP:
       return IDR_PAGEINFO_GOOD_COLOR;
-    case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_NO_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
       return IDR_PAGEINFO_WARNING_COLOR;

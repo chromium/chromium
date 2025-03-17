@@ -601,6 +601,18 @@ Reviewed in https://crrev.com/c/6235725. Very large change in buf_impl.rs
 as well but no unsafe changes there specifically.
 """
 
+[[audits.bytes]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.10.0 -> 1.10.1"
+notes = """
+Still no crypto, and safe to run with trustworthy inputs.
+
+There are some `unsafe`-related changes in the delta, but I didn't
+evaluate those, because this is not required for `safe-to-run`
+certification.
+"""
+
 [[audits.calendrical_calculations]]
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
@@ -754,6 +766,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.29 -> 4.5.31"
 notes = "Comment-only change to update version."
 
+[[audits.clap]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.31 -> 4.5.32"
+notes = "Only `examples` changes + comment-only changes in `lib.rs` and `_tutorial.rs`."
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -858,6 +876,12 @@ who = "Daniel Cheng <dcheng@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "4.5.29 -> 4.5.31"
 notes = "No unsafe uses added or changed. Delta consists of miscellaneous fixes and cleanups (e.g. improvements for ValueRange) and a new parser for Saturating<T>."
+
+[[audits.clap_builder]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "4.5.31 -> 4.5.32"
+notes = "Just a new `fn remove` method in `src/error/mod.rs`."
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"
@@ -1133,6 +1157,12 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.141 -> 1.0.143"
 notes = "Clippy lint suppression and... a C++ deduction guide for cxx::Slice."
 
+[[audits.cxxbridge-cmd]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.143 -> 1.0.146"
+notes = "Only propagating `cxx.h` change from the main `cxx` roll."
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -1219,6 +1249,12 @@ who = "Daniel Cheng <dcheng@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.141 -> 1.0.143"
 notes = "Only changes for rustdoc generation."
+
+[[audits.cxxbridge-flags]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.143 -> 1.0.146"
+notes = "No actual changes in this delta - just a version bump."
 
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
@@ -1358,6 +1394,12 @@ Either way, the result is code that does exactly the same thing and does not cha
 
 See https://crrev.com/c/6323164 for more audit details.
 """
+
+[[audits.either]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+delta = "1.14.0 -> 1.15.0"
+notes = "The delta in `lib.rs` only tweaks doc comments and `#[cfg(feature = \"std\")]`."
 
 [[audits.equivalent]]
 who = "Jonathan Hao <phao@chromium.org>"
@@ -2197,6 +2239,17 @@ There is a little bit of `unsafe` Rust code - the audit can be found at
 https://chromium-review.googlesource.com/c/chromium/src/+/6187726/2
 '''
 
+[[audits.indexmap]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "2.7.1 -> 2.8.0"
+notes = """
+No `unsafe` introduced or affected in:
+* `indexmap_with_default!` and `indexset_with_default!` macros
+* New `PartialEq` implementations
+* `fn slice_eq` in `util.rs`
+"""
+
 [[audits.itertools]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -2495,6 +2548,17 @@ criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "0.2.17 -> 0.2.20"
 notes = "Using zerocopy to reduce unsafe usage."
 
+[[audits.ppv-lite86]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "0.2.20 -> 0.2.21"
+notes = """
+The delta mostly corresponds to @joshlf's
+https://github.com/cryptocorrosion/cryptocorrosion/pull/85 which started
+using an undocumented API that `zerocopy` has provided specifically for
+`ppv-lite86` in https://github.com/google/zerocopy/pull/2418.
+"""
+
 [[audits.proc-macro2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -2732,6 +2796,15 @@ who = "Daniel Cheng <dcheng@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.38 -> 1.0.39"
 notes = "Only minor changes for clippy lints and documentation."
+
+[[audits.quote]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.39 -> 1.0.40"
+notes = """
+The delta is just a simplification of how `tokens.extend(...)` call is made.
+Still no `unsafe` anywhere.
+"""
 
 [[audits.rand]]
 who = "danakj@chromium.org"
@@ -3296,6 +3369,12 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.217 -> 1.0.218"
 notes = "No changes outside comments and documentation."
 
+[[audits.serde]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.218 -> 1.0.219"
+notes = "Just allowing `clippy::elidable_lifetime_names`."
+
 [[audits.serde_derive]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = "ub-risk-0"
@@ -3399,6 +3478,12 @@ who = "Daniel Cheng <dcheng@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.217 -> 1.0.218"
 notes = "No changes outside comments and documentation."
+
+[[audits.serde_derive]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.218 -> 1.0.219"
+notes = "Minor changes (clippy tweaks, using `mem::take` instead of `mem::replace`)."
 
 [[audits.serde_json]]
 who = "danakj@chromium.org"
@@ -3829,6 +3914,11 @@ delta = "1.4.0 -> 1.4.1"
 who = "Manish Goregaokar <manishearth@google.com>"
 criteria = "does-not-implement-crypto"
 version = "0.8.0"
+
+[[audits.tinystr]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "0.8.0 -> 0.8.1"
 
 [[audits.tinyvec]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"

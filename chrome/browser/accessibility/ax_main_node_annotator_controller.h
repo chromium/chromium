@@ -16,7 +16,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/callback_list.h"
 #else
-#include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #endif
 

@@ -1281,27 +1281,16 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public Set<Integer> getAllTabGroupRootIds() {
-        Set<Integer> uniqueTabGroupRootIds = new ArraySet<>();
-        forEachTabInTabGroup((tab) -> uniqueTabGroupRootIds.add(tab.getRootId()));
-        return uniqueTabGroupRootIds;
-    }
-
-    @Override
     public Set<Token> getAllTabGroupIds() {
         Set<Token> uniqueTabGroupIds = new ArraySet<>();
-        forEachTabInTabGroup((tab) -> uniqueTabGroupIds.add(tab.getTabGroupId()));
-        return uniqueTabGroupIds;
-    }
-
-    private void forEachTabInTabGroup(Callback<Tab> callback) {
         TabList tabList = getTabModel();
         for (int i = 0; i < tabList.getCount(); i++) {
             Tab tab = tabList.getTabAt(i);
             if (isTabInTabGroup(tab)) {
-                callback.onResult(tab);
+                uniqueTabGroupIds.add(tab.getTabGroupId());
             }
         }
+        return uniqueTabGroupIds;
     }
 
     private boolean isMoveTabOutOfGroup(Tab movedTab) {
@@ -1422,23 +1411,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public @Nullable Tab getGroupLastShownTab(int rootId) {
-        TabGroup group = mRootIdToGroupMap.get(rootId);
-        if (group == null) return null;
-
-        int lastShownId = group.getLastShownTabId();
-        if (lastShownId == Tab.INVALID_TAB_ID) return null;
-
-        return getTabModel().getTabById(lastShownId);
-    }
-
-    @Override
-    public boolean tabGroupExistsForRootId(int rootId) {
-        TabGroup group = mRootIdToGroupMap.get(rootId);
-        return group != null;
-    }
-
-    @Override
     public boolean tabGroupExists(@Nullable Token tabGroupId) {
         boolean foundKey = mGroupIdToRootIdMap.containsKey(tabGroupId);
         // Guards are in place to ensure this doesn't happen, assert if it does.
@@ -1556,10 +1528,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             } else {
                 Set<Integer> closingTabIds =
                         new HashSet<>(TabModelUtils.getTabIds(tabClosureParams.tabs));
-                for (int rootId : getAllTabGroupRootIds()) {
-                    TabGroup group = mRootIdToGroupMap.get(rootId);
-                    if (group == null) continue;
-
+                for (TabGroup group : mRootIdToGroupMap.values()) {
                     if (closingTabIds.containsAll(group.getTabIdList())) {
                         Tab tab = tabModel.getTabById(group.getLastShownTabId());
                         setTabGroupHiding(tab.getTabGroupId());

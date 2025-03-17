@@ -2724,9 +2724,9 @@ void Textfield::UpdateDefaultBorder() {
   if (!use_default_border_) {
     return;
   }
+
   auto border = std::make_unique<views::FocusableBorder>();
   const LayoutProvider* provider = LayoutProvider::Get();
-  border->SetColorId(ui::kColorTextfieldOutline);
   border->SetInsets(gfx::Insets::TLBR(
       extra_insets_.top() +
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
@@ -2736,11 +2736,16 @@ void Textfield::UpdateDefaultBorder() {
           provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
       extra_insets_.right() + provider->GetDistanceMetric(
                                   DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING)));
+
+  auto border_color_id = ui::kColorTextfieldOutline;
   if (invalid_) {
-    border->SetColorId(ui::kColorTextfieldOutlineInvalid);
+    border_color_id = ui::kColorTextfieldOutlineInvalid;
   } else if (!GetEnabled() || GetReadOnly()) {
-    border->SetColorId(ui::kColorTextfieldOutlineDisabled);
+    border_color_id = ui::kColorTextfieldOutlineDisabled;
   }
+
+  border->SetColor(border_color_id);
+
   border->SetCornerRadius(GetCornerRadius());
   View::SetBorder(std::move(border));
 }

@@ -85,8 +85,8 @@ class MockIpProtectionCore : public IpProtectionCore {
       // Default is set to true which is needed for the default MDL type.
       bool ip_protection_incognito = true)
       : masked_domain_list_manager_(masked_domain_list_manager) {
-    mdl_type_ =
-        ip_protection_incognito ? MdlType::kIncognito : MdlType::kRegularBrowsing;
+    mdl_type_ = ip_protection_incognito ? MdlType::kIncognito
+                                        : MdlType::kRegularBrowsing;
   }
 
   bool IsMdlPopulated() override {
@@ -833,7 +833,10 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_HasSiteException) {
   histogram_tester_.ExpectUniqueSample(
       kProxyResolutionHistogram, ProxyResolutionResult::kHasSiteException, 1);
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
-                                       ProtectionEligibility::kUnknown, 1);
+                                       ProtectionEligibility::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(kAreAuthTokensAvailableHistogram, true,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kIsProxyListAvailableHistogram, true, 1);
 }
 
 // When the top frame url has a User Bypass exception and the user has navigated
@@ -880,7 +883,10 @@ TEST_F(IpProtectionProxyDelegateTest,
   histogram_tester_.ExpectUniqueSample(
       kProxyResolutionHistogram, ProxyResolutionResult::kHasSiteException, 1);
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
-                                       ProtectionEligibility::kUnknown, 1);
+                                       ProtectionEligibility::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(kAreAuthTokensAvailableHistogram, true,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kIsProxyListAvailableHistogram, true, 1);
 }
 
 // When the top frame url has a User Bypass exception but the experiment to

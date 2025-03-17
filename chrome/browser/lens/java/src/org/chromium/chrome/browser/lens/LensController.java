@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.lens;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A class which manages communication with the Lens SDK. */
+@NullMarked
 public class LensController {
     private static LensController sInstance = new LensController();
 
@@ -108,7 +108,7 @@ public class LensController {
      * @param lensQueryParams A wrapper object which contains params for the enablement check.
      * @return True if Lens is enabled.
      */
-    public boolean isLensEnabled(@NonNull LensQueryParams lensQueryParams) {
+    public boolean isLensEnabled(LensQueryParams lensQueryParams) {
         return mDelegate.isLensEnabled(lensQueryParams);
     }
 }

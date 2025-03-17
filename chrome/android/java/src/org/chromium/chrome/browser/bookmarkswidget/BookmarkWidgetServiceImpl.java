@@ -282,6 +282,7 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         private final Context mContext;
         private final int mWidgetId;
         private final SharedPreferences mPreferences;
+        private final RemoteViews mBookmarkWidgeRemoteView;
         private int mIconColor;
 
         // Accessed only on the UI thread
@@ -297,6 +298,8 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             mPreferences = getWidgetState(mWidgetId);
             mIconColor = getIconColor(mContext);
             SystemNightModeMonitor.getInstance().addObserver(this);
+            mBookmarkWidgeRemoteView =
+                    new RemoteViews(mContext.getPackageName(), R.layout.bookmark_widget);
         }
 
         @UiThread
@@ -376,11 +379,38 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
             BookmarkId folderId =
                     BookmarkId.getBookmarkIdFromString(
                             mPreferences.getString(PREF_CURRENT_FOLDER, null));
+
+            // Blocks until bookmarks are loaded from the UI thread.
             mCurrentFolder = loadBookmarks(folderId);
+
+            // Update empty message visibility right after mCurrentFolder is updated.
+            updateFolderEmptyMessageVisibility();
+
             mPreferences
                     .edit()
                     .putString(PREF_CURRENT_FOLDER, mCurrentFolder.folder.id.toString())
                     .apply();
+        }
+
+        @BinderThread
+        private void updateFolderEmptyMessageVisibility() {
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(mContext);
+            if (!BookmarkWidgetProvider.shouldShowIconsOnly(appWidgetManager, mWidgetId)) {
+                boolean folderIsEmpty = mCurrentFolder != null && mCurrentFolder.children.isEmpty();
+                mBookmarkWidgeRemoteView.setViewVisibility(
+                        R.id.empty_message, folderIsEmpty ? View.VISIBLE : View.GONE);
+
+                // Directly update the widget on the UI thread.
+                PostTask.runOrPostTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            // Use AppWidgetManager#partiallyUpdateAppWidget to update only the
+                            // empty_message visibility, avoiding full widget redraws and redundant
+                            // intent setup from BookmarkWidgetProvider#performUpdate.
+                            appWidgetManager.partiallyUpdateAppWidget(
+                                    mWidgetId, mBookmarkWidgeRemoteView);
+                        });
+            }
         }
 
         @BinderThread

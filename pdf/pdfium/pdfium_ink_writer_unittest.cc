@@ -32,6 +32,7 @@
 #include "third_party/pdfium/public/fpdfview.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace chrome_pdf {
 
@@ -108,9 +109,10 @@ TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
   std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
   ASSERT_TRUE(!saved_pdf_data.empty());
 
-  CheckPdfRendering(saved_pdf_data,
-                    /*page_index=*/0, gfx::Size(200, 200),
-                    GetInkTestDataFilePath("ink_writer_basic.png"));
+  CheckPdfRendering(
+      saved_pdf_data,
+      /*page_index=*/0, gfx::Size(200, 200),
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("ink_writer_basic.png")));
 
   // Load `saved_pdf_data` into `saved_engine` and get a handle to the one and
   // only page.
@@ -159,6 +161,78 @@ TEST_P(PDFiumInkWriterTest, BasicWriteAndRead) {
   EXPECT_TRUE(ink::Intersects(ink::Point{139, 53}, saved_shape, no_transform));
   EXPECT_TRUE(ink::Intersects(ink::Point{129, 63}, shape, no_transform));
   EXPECT_TRUE(ink::Intersects(ink::Point{129, 63}, saved_shape, no_transform));
+}
+
+TEST_P(PDFiumInkWriterTest, WriteToCroppedPage) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  PDFiumPage& pdfium_page = GetPDFiumPageForTest(*engine, 0);
+  FPDF_PAGE page = pdfium_page.GetPage();
+  ASSERT_TRUE(page);
+
+  auto brush = CreateTestBrush();
+
+  // `kBasicInputs` values range from (125.143, 49.7908) to (137.878, 61.301)
+  // in screen coordinates.  Converted to points, (125.143, 49.7908) becomes
+  // (93.75, 37).  So the upper-left corner of the captured stroke should be
+  // roughly starting at that location, minus a little bit for implementation
+  // details of how Ink draws strokes.
+  std::optional<ink::StrokeInputBatch> inputs =
+      CreateInkInputBatch(kBasicInputs);
+  ASSERT_TRUE(inputs.has_value());
+  ink::Stroke stroke(brush->ink_brush(), inputs.value());
+  std::vector<FPDF_PAGEOBJECT> results =
+      WriteStrokeToPage(engine->doc(), page, stroke);
+  EXPECT_EQ(results.size(), 1u);
+
+  ASSERT_TRUE(FPDFPage_GenerateContent(page));
+
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
+  ASSERT_TRUE(!saved_pdf_data.empty());
+
+  base::FilePath expectation_path = GetInkTestDataFilePath(
+      GetTestDataPathWithPlatformSuffix("ink_writer_cropped.png"));
+  CheckPdfRendering(saved_pdf_data, /*page_index=*/0, gfx::Size(145, 97),
+                    expectation_path);
+
+  // Load `saved_pdf_data` into `saved_engine` and get a handle to the one and
+  // only page.
+  TestClient saved_client;
+  std::unique_ptr<PDFiumEngine> saved_engine =
+      InitializeEngineFromData(&saved_client, std::move(saved_pdf_data));
+  ASSERT_TRUE(saved_engine);
+  ASSERT_EQ(saved_engine->GetNumberOfPages(), 1);
+  PDFiumPage& saved_pdfium_page = GetPDFiumPageForTest(*saved_engine, 0);
+  FPDF_PAGE saved_page = saved_pdfium_page.GetPage();
+  ASSERT_TRUE(saved_page);
+
+  // Complete the round trip and read the written PDF data back into memory as
+  // an ink::PartitionedMesh. ReadV2InkPathsFromPageAsModeledShapes() is known
+  // to be good because its unit tests reads from a real, known to be good Ink
+  // PDF.
+  std::vector<ReadV2InkPathResult> saved_results =
+      ReadV2InkPathsFromPageAsModeledShapes(saved_page);
+  ASSERT_EQ(saved_results.size(), 1u);
+
+  float left;
+  float bottom;
+  float right;
+  float top;
+  bool get_bounds = FPDFPageObj_GetBounds(saved_results[0].page_object, &left,
+                                          &bottom, &right, &top);
+  ASSERT_TRUE(get_bounds);
+  // While the cropped image shows the stroke on the visible page at an X coord
+  // of 92, that object's position in the PDF page is relative to the MediaBox,
+  // not the CropBox.  So its bounding box should be 55 points to the right of
+  // that.
+  EXPECT_RECTF_NEAR(gfx::RectF(gfx::PointF(left, bottom),
+                               gfx::SizeF(right - left, top - bottom)),
+                    gfx::RectF(gfx::PointF(147.3787f, 49.5206f),
+                               gfx::SizeF(12.5402f, 11.6486f)),
+                    /*abs_error=*/0.0001f);
 }
 
 TEST_P(PDFiumInkWriterTest, EmptyStroke) {

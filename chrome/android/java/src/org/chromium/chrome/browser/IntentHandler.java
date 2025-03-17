@@ -75,9 +75,12 @@ import org.chromium.url.Origin;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /** Handles all browser-related Intents. */
 @JNINamespace("chrome::android")
@@ -904,50 +907,79 @@ public class IntentHandler {
         // wild.
         try {
             // Ignore all invalid URLs, regardless of what the intent was.
-            if (!intentHasValidUrl(intent)) {
-                return true;
+            @Nullable TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
+            if (tabGroupMetadata != null) {
+                // Exit early if the incognito intent is not allowed.
+                if (tabGroupMetadata.isIncognito
+                        && !isAllowedIncognitoIntent(
+                                wasIntentSenderChrome(intent), isCustomTab, intent)) {
+                    return true;
+                }
+
+                // Check url validity and remove invalid urls if needed.
+                LinkedHashMap tabIdsToUrls = tabGroupMetadata.tabIdsToUrls;
+                Iterator<Entry<Integer, String>> iterator = tabIdsToUrls.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<Integer, String> entry = iterator.next();
+                    String url = entry.getValue();
+                    if (shouldIgnoreIntentUrl(intent, context, url, isCustomTab)) {
+                        iterator.remove();
+                    }
+                }
+                // TODO(crbug.com/384979079) Add metrics for invalid url and ignored intent during
+                // group drag drop.
+                return tabIdsToUrls.size() == 0;
+            } else {
+                return shouldIgnoreIntentUrl(
+                        intent, context, getUrlFromIntent(intent), isCustomTab);
             }
-
-            // Determine if this intent came from a trustworthy source (Chrome).
-            boolean isFromChrome = wasIntentSenderChrome(intent);
-
-            if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                    && !isAllowedIncognitoIntent(isFromChrome, isCustomTab, intent)) {
-                return true;
-            }
-
-            // Ignore Daydream intents as these would cause us to re-navigate after the Device ON
-            // flow. This can be removed once we migrate to the cardboard library.
-            if (intent.hasCategory(DAYDREAM_CATEGORY)) return true;
-
-            // Now if we have an empty URL and the intent was ACTION_MAIN,
-            // we are pretty sure it is the launcher calling us to show up.
-            // We can safely ignore the screen state.
-            String url = getUrlFromIntent(intent);
-            if (url == null && Intent.ACTION_MAIN.equals(intent.getAction())) {
-                return false;
-            }
-
-            if (isFromChrome) return false;
-
-            // Ignore all intents that specify a Chrome internal scheme if they did not come from
-            // a trustworthy source.
-            String scheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
-            if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
-                Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
-                return true;
-            }
-
-            // Checking screen on/keyguard last as these calls can be slow.
-            // If the screen is off, ignore any intents.
-            if (!isScreenOn(context)) return true;
-            if (ChromeFeatureList.sBlockIntentsWhileLocked.isEnabled() && isKeyguardLocked()) {
-                return true;
-            }
-            return false;
         } catch (Throwable t) {
             return true;
         }
+    }
+
+    private static boolean shouldIgnoreIntentUrl(
+            Intent intent, Context context, String url, boolean isCustomTab) {
+        if (!isValidUrl(url)) {
+            return true;
+        }
+
+        // Determine if this intent came from a trustworthy source (Chrome).
+        boolean isFromChrome = wasIntentSenderChrome(intent);
+
+        if (IntentUtils.safeGetBooleanExtra(intent, EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                && !isAllowedIncognitoIntent(isFromChrome, isCustomTab, intent)) {
+            return true;
+        }
+
+        // Ignore Daydream intents as these would cause us to re-navigate after the Device ON
+        // flow. This can be removed once we migrate to the cardboard library.
+        if (intent.hasCategory(DAYDREAM_CATEGORY)) return true;
+
+        // Now if we have an empty URL and the intent was ACTION_MAIN,
+        // we are pretty sure it is the launcher calling us to show up.
+        // We can safely ignore the screen state.
+        if (url == null && Intent.ACTION_MAIN.equals(intent.getAction())) {
+            return false;
+        }
+
+        if (isFromChrome) return false;
+
+        // Ignore all intents that specify a Chrome internal scheme if they did not come from
+        // a trustworthy source.
+        String scheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
+        if (intentHasUnsafeInternalScheme(scheme, url, intent)) {
+            Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
+            return true;
+        }
+
+        // Checking screen on/keyguard last as these calls can be slow.
+        // If the screen is off, ignore any intents.
+        if (!isScreenOn(context)) return true;
+        if (ChromeFeatureList.sBlockIntentsWhileLocked.isEnabled() && isKeyguardLocked()) {
+            return true;
+        }
+        return false;
     }
 
     private static boolean isAllowedIncognitoIntent(
@@ -991,9 +1023,7 @@ public class IntentHandler {
     }
 
     @VisibleForTesting
-    static boolean intentHasValidUrl(Intent intent) {
-        String url = extractUrlFromIntent(intent);
-
+    static boolean isValidUrl(String url) {
         // Check if this is a valid googlechrome:// URL.
         if (isGoogleChromeScheme(url)) {
             url = ExternalNavigationHandler.getUrlFromSelfSchemeUrl(GOOGLECHROME_SCHEME, url);

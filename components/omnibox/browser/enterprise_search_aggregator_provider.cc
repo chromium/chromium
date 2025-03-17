@@ -121,7 +121,7 @@ bool kPreferContentsOverQueries() {
       .scoring_prefer_contents_over_queries;
 }
 
-// Always show at least 2 (unscoped) or 6 (scoped) suggestions if available.
+// Always show at least 2 (unscoped) or 8 (scoped) suggestions if available.
 // Only show more if they're scored at least 500; i.e. had at least 1 strong and
 // 1 weak match.
 size_t kScopedMaxLowQualityMatches() {
@@ -719,14 +719,19 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const TemplateURLRef& url_ref,
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::CONTENT) {
-    return ptr_to_string(
-        result.FindStringByDottedPath("document.derivedStructData.link"));
+    std::string destination_uri =
+        ptr_to_string(result.FindString("destinationUri"));
+    // TODO(crbug.com/403545926): Remove support for
+    //   "document.derivedStructData.link" once the change to populate
+    //   "destinationUri" is available in prod.
+    if (destination_uri.empty()) {
+      destination_uri = ptr_to_string(
+          result.FindStringByDottedPath("document.derivedStructData.link"));
+    }
+    return destination_uri;
   }
 
-  std::string path = suggestion_type == SuggestionType::QUERY
-                         ? "suggestion"
-                         : "document.derivedStructData.name.userName";
-  std::string query = ptr_to_string(result.FindStringByDottedPath(path));
+  std::string query = ptr_to_string(result.FindString("suggestion"));
   if (query.empty()) {
     return "";
   }
@@ -751,11 +756,9 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
 std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
-  if (suggestion_type == SuggestionType::QUERY) {
+  if (suggestion_type == SuggestionType::QUERY ||
+      suggestion_type == SuggestionType::PEOPLE) {
     return ptr_to_string(result.FindString("suggestion"));
-  } else if (suggestion_type == SuggestionType::PEOPLE) {
-    return ptr_to_string(result.FindStringByDottedPath(
-        "document.derivedStructData.name.userName"));
   } else if (suggestion_type == SuggestionType::CONTENT) {
     std::optional<int> response_time =
         result.FindIntByDottedPath("document.derivedStructData.updated_time");

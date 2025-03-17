@@ -140,6 +140,12 @@ AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 // Use the browser's UIA provider when requested by
 // an accessibility client.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaProvider);
+
+// Optimizes event firing by only emitting events when at least one listener is
+// subscribed. Killswitch to turn it off in case this work has negative
+// side-effects on assistive technologies.
+// TODO(https://crbug.com/402375302): Remove in M139.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaEventOptimization);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -8,12 +8,15 @@
 
 load("//lib/targets.star", "targets")
 
+# No bundle definitions should be above
+# TODO: b/402830227 - Once the AyeAye analyzer correctly includes the closing
+# parenthesis as part of the group, group_prefixes=) can be removed
+# go/keep-sorted start newline_separated=yes numeric=yes skip_lines=1 group_prefixes=)
+
 targets.bundle(
-    name = "android_10_rel_gtests",
+    name = "android_10_emulator_fyi_gtests",
     targets = [
-        "android_ar_gtests",
-        "android_trichrome_smoke_tests",
-        "vr_android_specific_chromium_tests",
+        "android_content_browsertests_fyi",
     ],
 )
 
@@ -40,9 +43,19 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_10_emulator_fyi_gtests",
+    name = "android_10_rel_gtests",
+    targets = [
+        "android_ar_gtests",
+        "android_trichrome_smoke_tests",
+        "vr_android_specific_chromium_tests",
+    ],
+)
+
+targets.bundle(
+    name = "android_11_emulator_fyi_gtests",
     targets = [
         "android_content_browsertests_fyi",
+        "android_emulator_specific_chrome_public_tests",
     ],
 )
 
@@ -64,14 +77,6 @@ targets.bundle(
             ],
         ),
         "webview_ui_instrumentation_tests",
-    ],
-)
-
-targets.bundle(
-    name = "android_11_emulator_fyi_gtests",
-    targets = [
-        "android_content_browsertests_fyi",
-        "android_emulator_specific_chrome_public_tests",
     ],
 )
 
@@ -1631,6 +1636,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_gtests_for_linux_wayland_mutter",
+    targets = [
+        "interactive_ui_tests",
+    ],
+)
+
+targets.bundle(
     name = "chromium_ios_scripts",
     targets = [
         "check_static_initializers",
@@ -2470,6 +2482,45 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "dawn_chromeos_release_telemetry_tests_volteer_skylab",
+    targets = [
+        # TODO(crbug.com/340815322): Add gpu_dawn_webgpu_compat_cts once
+        # compat works properly on ChromeOS.
+        targets.bundle(
+            targets = "gpu_dawn_webgpu_cts",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "dawn_chromeos_release_tests_volteer_skylab",
+    targets = [
+        # gtests
+        targets.bundle(
+            targets = "gpu_common_gtests_passthrough",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_dawn_gtests",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_dawn_gtests_with_validation",
+            variants = [
+                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "desktop_chromium_isolated_scripts",
     targets = [
         "blink_python_tests",
@@ -2531,45 +2582,6 @@ targets.bundle(
             ],
         ),
     },
-)
-
-targets.bundle(
-    name = "dawn_chromeos_release_telemetry_tests_volteer_skylab",
-    targets = [
-        # TODO(crbug.com/340815322): Add gpu_dawn_webgpu_compat_cts once
-        # compat works properly on ChromeOS.
-        targets.bundle(
-            targets = "gpu_dawn_webgpu_cts",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "dawn_chromeos_release_tests_volteer_skylab",
-    targets = [
-        # gtests
-        targets.bundle(
-            targets = "gpu_common_gtests_passthrough",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_dawn_gtests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_dawn_gtests_with_validation",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
 )
 
 targets.bundle(
@@ -4594,45 +4606,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
-    targets = [
-        "webgl_conformance_validating_ganesh_tests",
-    ],
-    per_test_modifications = {
-        "webgl_conformance_validating_ganesh_tests": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-                android_swarming = targets.swarming(
-                    shards = 6,
-                ),
-            ),
-        ],
-    },
-)
-
-targets.bundle(
-    name = "gpu_webgl_conformance_validating_graphite_telemetry_tests",
-    targets = [
-        "webgl_conformance_validating_graphite_tests",
-    ],
-    per_test_modifications = {
-        "webgl_conformance_validating_graphite_tests": [
-            targets.mixin(
-                ci_only = True,
-                swarming = targets.swarming(
-                    shards = 2,
-                ),
-                android_swarming = targets.swarming(
-                    shards = 6,
-                ),
-            ),
-        ],
-    },
-)
-
-targets.bundle(
     name = "gpu_webgl2_conformance_validating_telemetry_tests",
     targets = [
         "webgl2_conformance_validating_tests",
@@ -4717,6 +4690,45 @@ targets.bundle(
                 ),
                 chromeos_swarming = targets.swarming(
                     shards = 20,
+                ),
+            ),
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
+    targets = [
+        "webgl_conformance_validating_ganesh_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_validating_ganesh_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_validating_graphite_telemetry_tests",
+    targets = [
+        "webgl_conformance_validating_graphite_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_validating_graphite_tests": [
+            targets.mixin(
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+                android_swarming = targets.swarming(
+                    shards = 6,
                 ),
             ),
         ],
@@ -5122,6 +5134,9 @@ targets.bundle(
                 "--test-launcher-bot-mode",
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.content_browsertests.filter",
             ],
+            swarming = targets.swarming(
+                shards = 5,
+            ),
         ),
         "content_unittests": targets.mixin(
             args = [
@@ -6226,17 +6241,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "q_isolated_scripts",
-    targets = [
-        "android_isolated_scripts",
-        "chromium_junit_tests_scripts",
-        "components_perftests_isolated_scripts",
-        "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
-    ],
-)
-
-targets.bundle(
     name = "pixel_browser_tests_gtests",
     targets = [
         "pixel_browser_tests",
@@ -6284,6 +6288,17 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "q_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
+)
+
 # Rust tests run on all targets.
 targets.bundle(
     name = "rust_common_gtests",
@@ -6325,47 +6340,6 @@ targets.bundle(
     ],
 )
 
-targets.bundle(
-    name = "trees_in_viz_fyi_gtests",
-    targets = [
-        "blink_unittests",
-        "blink_platform_unittests",
-        "cc_unittests",
-        "content_browsertests",
-    ],
-    mixins = [
-        targets.mixin(
-            args = [
-                "--enable-features=TreesInViz",
-            ],
-        ),
-    ],
-    per_test_modifications = {
-        "blink_unittests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_unittests.filter",
-            ],
-        ),
-        "blink_platform_unittests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
-            ],
-        ),
-        "cc_unittests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
-            ],
-        ),
-        "content_browsertests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.content_browsertests.filter",
-            ],
-            swarming = targets.swarming(
-                shards = 8,
-            ),
-        ),
-    },
-)
 targets.bundle(
     name = "site_isolation_android_fyi_gtests",
     targets = [
@@ -6643,6 +6617,48 @@ targets.bundle(
     targets = [
         "test_traffic_annotation_auditor",
     ],
+)
+
+targets.bundle(
+    name = "trees_in_viz_fyi_gtests",
+    targets = [
+        "blink_unittests",
+        "blink_platform_unittests",
+        "cc_unittests",
+        "content_browsertests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = [
+                "--enable-features=TreesInViz",
+            ],
+        ),
+    ],
+    per_test_modifications = {
+        "blink_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_unittests.filter",
+            ],
+        ),
+        "blink_platform_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
+            ],
+        ),
+        "cc_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
+            ],
+        ),
+        "content_browsertests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.content_browsertests.filter",
+            ],
+            swarming = targets.swarming(
+                shards = 8,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -7321,3 +7337,6 @@ targets.bundle(
         ),
     },
 )
+
+# go/keep-sorted end
+# No bundle definitions should be below

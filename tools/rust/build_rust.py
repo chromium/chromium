@@ -71,6 +71,9 @@ EXCLUDED_TESTS = [
 EXCLUDED_TESTS_WINDOWS = [
     # Temporarily disabled due to https://crbug.com/379308086
     os.path.join('tests', 'ui', 'sanitizer', 'asan_odr_windows.rs'),
+
+    # Temporarily disabled due to https://crbug.com/400524229
+    os.path.join('tests', 'ui', 'process', 'win-command-child-path.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
 ]

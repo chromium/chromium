@@ -606,8 +606,7 @@ def _upload_skia_json(benchmark_name: str,
   # experiment is done.
   bucket_names = json_util.gcs_buckets_from_builder_name(
       builder_name=build_properties['buildername'],
-      master_name=_GetMachineGroup(build_properties),
-      experiment_only=True)
+      master_name=_GetMachineGroup(build_properties))
   logging.info('Uploading skia json to buckets: %s', bucket_names)
   for bucket_name in bucket_names:
     dest = google_storage_helper.unique_name(

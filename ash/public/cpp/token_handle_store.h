@@ -19,6 +19,7 @@ namespace ash {
 // exactly the same lifetime. It is not secure, and its only purpose is checking
 // validity of corresponding refresh token in an insecure environment, eg. login
 // screen.
+// TODO(b/387248794): Remove as part of cleanup.
 class TokenHandleStore {
  public:
   // `account_id`: The account for which the token handle check was performed.

@@ -135,6 +135,8 @@ source_set("unit_tests") {
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/settings:test_support",
     "//chromeos/ash/services/network_config/public/cpp:test_support",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/strings:strings_grit",

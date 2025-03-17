@@ -64,6 +64,9 @@ void TrackGeolocationRelinquished(const std::string& name);
 // Returns false if the Privacy Hub Location feature flag is not enabled.
 bool IsCrosLocationOobeNegotiationNeeded();
 
+// Returns the effective system geolocation access level.
+GeolocationAccessLevel GetSystemGeolocationAccessLevel();
+
 // Checks if we use the fallback solution for the camera LED
 // (go/privacy-hub:camera-led-fallback).
 // TODO(b/289510726): remove when all cameras fully support the software

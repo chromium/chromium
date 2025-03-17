@@ -56,6 +56,11 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       const DedicatedOrSharedWorkerToken& worker_token,
       base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
 
+  static std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
+  CreateForPrefetch(
+      const network::ResourceRequest& resource_request,
+      base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle);
+
   ServiceWorkerMainResourceLoaderInterceptor(
       const ServiceWorkerMainResourceLoaderInterceptor&) = delete;
   ServiceWorkerMainResourceLoaderInterceptor& operator=(

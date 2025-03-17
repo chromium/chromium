@@ -4,9 +4,3 @@
 # are skipped or marked as flaky by the defaut TestExpectations.
 # When Optimization Guide Bots run AI related API tests, the default
 # TestExpectations file is ignored and this file is referred.
-
-# Mark following tests as broken until they are fixed.
-crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.html [ Crash Failure ]
-crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.serviceworker.html [ Crash Failure ]
-crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.sharedworker.html [ Crash Failure ]
-crbug.com/378549335 external/wpt/ai/language_detection/detector.https.tentative.any.worker.html [ Crash Failure ]

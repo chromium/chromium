@@ -44,7 +44,7 @@ Step::Step(Axis axis, const NodeTest& node_test)
 
 Step::Step(Axis axis,
            const NodeTest& node_test,
-           HeapVector<Member<Predicate>>& predicates)
+           GCedHeapVector<Member<Predicate>>& predicates)
     : axis_(axis), node_test_(MakeGarbageCollected<NodeTest>(node_test)) {
   predicates_.swap(predicates);
 }

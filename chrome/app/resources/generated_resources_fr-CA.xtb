@@ -2242,7 +2242,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2530166226437958497">Dépannage</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Un problème est survenu, et <ph name="DEVICE_OS" /> n'a pas pu être installé.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Pour obtenir de l'aide supplémentaire, consultez la page g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">En savoir plus</translation>
 <translation id="2532144599248877204">Prolonge l'autonomie de la pile en maintenant le niveau de recharge autour de 80 %. La pile se rechargera complètement avant que vous ne la débranchiez de la prise comme d'habitude.</translation>
 <translation id="2532146950330687938">Préparation de l'appareil en cours…</translation>
 <translation id="2532198298278778531">Gérer le DNS sécurisé dans les paramètres de Chrome OS Flex</translation>
@@ -2800,7 +2799,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2921081876747860777">Veuillez créer un mot de passe pour protéger vos données locales.</translation>
 <translation id="2923006468155067296">Votre <ph name="DEVICE_TYPE" /> sera maintenant verrouillé.
 <ph name="DOMAIN" /> vous demande de laisser votre carte à puce insérée.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> autre tâche dans le même groupe de tâches : <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> autres tâches dans le même groupe de tâches : <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Supprimer ce compte</translation>
 <translation id="2923644930701689793">Accédez à la pellicule de votre téléphone</translation>
 <translation id="292371311537977079">Paramètres de Chrome</translation>
@@ -6904,6 +6902,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sera bientôt mise en pause</translation>
 <translation id="586567932979200359">Vous utilisez <ph name="PRODUCT_NAME" /> à partir de son image disque. Si vous l'installez sur votre ordinateur, vous pourrez l'utiliser sans image disque et vous bénéficierez de mises à jour automatiques.</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
+<translation id="5866363217037791319">Terminer la tâche</translation>
 <translation id="5868434909835797817">Le microphone est désactivé sur votre appareil</translation>
 <translation id="5868479397518301468">Délai de connexion dépassé</translation>
 <translation id="5868822853313956582">Suivre les couleurs de l'appareil</translation>
@@ -10630,7 +10629,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8524841856047224176">Personnalisez les arrière-plans de votre caméra pour les appels vidéo et bien plus encore</translation>
 <translation id="8525306231823319788">Plein écran</translation>
 <translation id="8525461909394569609">Cette application comporte du contenu Web provenant de</translation>
-<translation id="8526313996927074827">Insérez des liens, des émojis et plus. Vous pouvez également obtenir de l'aide à la rédaction avec l'IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Haut-parleurs</translation>
 <translation id="8527257351549797148">Votre organisation peut exiger une inscription afin que vous puissiez accéder aux applications, aux extensions et plus. Cela permet également à votre organisation de gérer des éléments, tels que la sécurité et les paramètres de l'appareil.</translation>
@@ -11086,6 +11084,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="883924185304953854">Recherche par image</translation>
 <translation id="8841786407272321022">Le mot de passe est enregistré sur cet appareil uniquement. Pour enregistrer de nouveaux mots de passe dans votre compte Google, mettez à jour les services Google Play.</translation>
 <translation id="8841843049738266382">Consulter et modifier les utilisateurs ajoutés à la liste verte</translation>
+<translation id="8841884135319684422">Terminer la tâche</translation>
 <translation id="8842594465773264717">Supprimer cette empreinte digitale</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8846132060409673887">Trouvez le fabricant et le modèle de cet ordinateur</translation>

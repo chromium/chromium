@@ -185,6 +185,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       bool maybe_concurrent_reads,
       const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,
+      GrSurfaceOrigin origin,
       bool raw_draw_if_possible) override;
 
   void InitDelegatedInkPointRendererReceiver(

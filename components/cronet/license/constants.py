@@ -119,6 +119,5 @@ IGNORED_README = {
 # TODO: http://crbug.com/389925432 - remove the need for this list.
 INCLUDED_README = {
   "base/third_party/nspr/README.chromium",
-  "third_party/boringssl/src/pki/testdata/nist-pkits/README.chromium",
   "url/third_party/mozilla/README.chromium",
 }

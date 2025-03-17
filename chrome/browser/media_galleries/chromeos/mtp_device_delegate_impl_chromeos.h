@@ -41,11 +41,7 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
       const bool read_only,
       CreateMTPDeviceAsyncDelegateCallback);
 
-  enum InitializationState {
-    UNINITIALIZED = 0,
-    PENDING_INIT,
-    INITIALIZED
-  };
+  enum InitializationState { UNINITIALIZED = 0, PENDING_INIT, INITIALIZED };
 
   // Used to represent pending task details.
   struct PendingTaskInfo {

@@ -94,6 +94,7 @@ class TabGroupListBottomSheetRowMediator {
         SavedTabGroupTab savedTabGroupTab = group.savedTabs.get(0);
         Integer localId = savedTabGroupTab.localId;
         Tab tab = mTabGroupModelFilter.getTabModel().getTabById(localId);
+        if (tab == null) return;
 
         mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tab, true);
     }

@@ -32,6 +32,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -74,7 +75,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** A mediator for the TabGroupUi. Responsible for managing the internal state of the component. */
-public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver, TintObserver {
+public class TabGroupUiMediator implements BackPressHandler {
 
     /** Defines an interface for a {@link TabGroupUiMediator} reset event handler. */
     interface ResetHandler {
@@ -127,6 +128,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
     private final Callback mOnTokenComponentChange = this::onTokenComponentChange;
     private final ObservableSupplierImpl<Integer> mWidthPxSupplier =
             new ObservableSupplierImpl<>(0);
+    private final ThemeColorObserver mThemeColorObserver = this::onThemeColorChanged;
+    private final TintObserver mTintObserver = this::onTintChanged;
     private final PropertyModel mModel;
     private final TabModelObserver mTabModelObserver;
     private final ResetHandler mResetHandler;
@@ -145,6 +148,7 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
 
     // These should only be used when regular (non-incognito) tabs are set in the model.
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
+    private final @Nullable SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
 
     private final LayoutStateObserver mLayoutStateObserver;
@@ -170,7 +174,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
                     LazyOneshotSupplier<TabGridDialogMediator.DialogController>
                             dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
-            SharedImageTilesCoordinator sharedImageTilesCoordinator,
+            @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
+            @Nullable SharedImageTilesConfig.Builder sharedImageTilesConfigBuilder,
             ThemeColorProvider themeColorProvider,
             Callback<Object> onSnapshotTokenChange,
             ObservableSupplierImpl<Object> childTokenSupplier) {
@@ -183,10 +188,11 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         mTabGridDialogControllerSupplier = dialogControllerSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
+        mSharedImageTilesConfigBuilder = sharedImageTilesConfigBuilder;
         mThemeColorProvider = themeColorProvider;
 
-        mThemeColorProvider.addThemeColorObserver(this);
-        mThemeColorProvider.addTintObserver(this);
+        mThemeColorProvider.addThemeColorObserver(mThemeColorObserver);
+        mThemeColorProvider.addTintObserver(mTintObserver);
         mOnSnapshotTokenChange = onSnapshotTokenChange;
         mChildTokenSupplier = childTokenSupplier;
         mChildTokenSupplier.addObserver(mOnTokenComponentChange);
@@ -361,14 +367,16 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         layoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
-    @Override
-    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
+    private void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
         mModel.set(BACKGROUND_COLOR, color);
+        if (mSharedImageTilesCoordinator != null && mSharedImageTilesConfigBuilder != null) {
+            mSharedImageTilesConfigBuilder.setBorderColor(color).setBackgroundColor(color);
+            mSharedImageTilesCoordinator.updateConfig(mSharedImageTilesConfigBuilder.build());
+        }
         publishSnapshotToken();
     }
 
-    @Override
-    public void onTintChanged(
+    private void onTintChanged(
             ColorStateList tint, ColorStateList activityFocusTint, int brandedColorScheme) {
         mModel.set(TINT, mThemeColorProvider.getTint());
     }
@@ -594,6 +602,8 @@ public class TabGroupUiMediator implements BackPressHandler, ThemeColorObserver,
         }
         mChildTokenSupplier.removeObserver(mOnTokenComponentChange);
         mWidthPxSupplier.removeObserver(mOnTokenComponentChange);
+        mThemeColorProvider.removeThemeColorObserver(mThemeColorObserver);
+        mThemeColorProvider.removeTintObserver(mTintObserver);
     }
 
     private @Nullable DialogController getTabGridDialogControllerIfExists() {

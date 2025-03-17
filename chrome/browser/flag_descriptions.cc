@@ -290,6 +290,14 @@ const char kCopyImageFilenameToClipboardName[] =
 const char kCopyImageFilenameToClipboardDescription[] =
     "Whether to write filename to the clipboard when copying image downloads.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kCredentialManagementThirdPartyWebApiRequestForwardingName[] =
+    "Credential Management Third Party Web API Request Forwarding";
+const char kCredentialManagementThirdPartyWebApiRequestForwardingDescription[] =
+    "Forwards the requests from web pages that use the Credential Management "
+    "API to 3P password managers if 3P mode autofill is on.";
+#endif  // IS_ANDROID
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kCrosSwitcherName[] = "ChromeOS Switcher feature.";
 const char kCrosSwitcherDescription[] =
@@ -585,6 +593,12 @@ const char kAutofillEnableAmountExtractionDesktopName[] =
 const char kAutofillEnableAmountExtractionDesktopDescription[] =
     "When enabled, Chrome will extract the checkout amount from the checkout "
     "page of the allowlisted merchant websites.";
+const char kAutofillEnableAmountExtractionDesktopLoggingName[] =
+    "Enable amount extraction logging on Chrome desktop";
+const char kAutofillEnableAmountExtractionDesktopLoggingDescription[] =
+    "Enables logging of the result of checkout amount extraction on desktop. "
+    "This flag will allow amount extraction to run on any website when a CC "
+    "form is clicked.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
@@ -2759,6 +2773,12 @@ const char kOmniboxFocusTriggersWebAndSRPZeroSuggestDescription[] =
     "focused, subject to the same conditions and restrictions as on-clobber "
     "suggestions.";
 
+const char kOmniboxUrlSuggestionsOnFocus[] =
+    "Omnibox on-focus URL suggestions on web and SRP";
+const char kOmniboxUrlSuggestionsOnFocusDecription[] =
+    "Enables zero-prefix URL suggestions on web and SRP when the omnibox is "
+    "focused.";
+
 const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions popup in WebUI.";
@@ -3655,12 +3675,6 @@ const char kTabGroupsDeferRemoteNavigationsName[] =
 const char kTabGroupsDeferRemoteNavigationsDescription[] =
     "Prevents remote navigations from being performed when a tab is "
     "backgrounded in a group";
-
-const char kTabGroupsSaveV2Id[] = "tab-groups-save-v2";
-const char kTabGroupsSaveV2Name[] = "Tab Groups Save and Sync V2";
-const char kTabGroupsSaveV2Description[] =
-    "Enables saving and recalling of tab groups but enhanced. Highly "
-    "experimental.";
 
 const char kTabGroupSyncServiceDesktopMigrationId[] =
     "tab-group-sync-service-desktop-migration";
@@ -4576,9 +4590,6 @@ const char kLegacyTabStateDeprecationName[] =
 const char kLegacyTabStateDeprecationDescription[] =
     "Deprecates the legacy pickle based TabState format following the launch "
     "of the FlatBuffer based schema.";
-
-const char kLogoPolishName[] = "Logo Polish";
-const char kLogoPolishDescription[] = "Enable bigger doodle size for NTP.";
 
 const char kMagicStackAndroidName[] = "Magic Stack Android";
 const char kMagicStackAndroidDescription[] =
@@ -7599,6 +7610,11 @@ const char kTabSwitcherColorBlendAnimateName[] =
 const char kTabSwitcherColorBlendAnimateDescription[] =
     "Animates the color transition between incognito and regular tab switcher "
     "panes in the Hub.";
+
+const char kTabSwitcherContextMenuAndroidName[] = "Tab Switcher Context Menu";
+const char kTabSwitcherContextMenuAndroidDescription[] =
+    "Shows a context menu on long pressing a tab card in the tab switcher";
+
 #else
 const char kTaskManagerDesktopRefreshName[] = "Task Manager Desktop Refresh";
 const char kTaskManagerDesktopRefreshDescription[] =
@@ -8037,6 +8053,10 @@ const char kSupervisedUserLocalWebApprovalsDescription[] =
 const char kHistoryOptInEntryPointsName[] = "History opt-in entry points";
 const char kHistoryOptInEntryPointsDescription[] =
     "Add some history opt-in entry points.";
+
+const char kWebSerialAPIName[] = "Enable Web Serial API";
+const char kWebSerialAPIDescription[] =
+    "Provides a way for websites to interact with a serial device";
 
 const char kSupervisedUserForceSigninWithCapabilitiesName[] =
     "Use capabilities for supervised user forced sign-in";

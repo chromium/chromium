@@ -23,7 +23,9 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -302,19 +304,24 @@ SignedInUserState GetSignedInUserState(
 }
 
 bool ForceLeavingPrimaryAccountConfirmationDialog(
-    SignedInUserState signed_in_user_state) {
+    SignedInUserState signed_in_user_state,
+    std::string_view profile_name) {
   switch (signed_in_user_state) {
     case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin:
       return false;
     case SignedInUserState::kManagedAccountClearsDataOnSignout:
     case SignedInUserState::kManagedAccountAndMigratedFromSyncing:
-      if (base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
-        // TODO(crbug.com/355167413): Might need to update this implementation
-        // for pre-existing managed account in the personal profile.
-        return false;
-      } else {
+      if (!base::FeatureList::IsEnabled(kSeparateProfilesForManagedAccounts)) {
         return true;
       }
+
+      // Show the dialog only if a managed account is signing out from the
+      // personal profile. (This can only happen for managed accounts that were
+      // already signed in before there was multi-profile support.)
+      return GetApplicationContext()
+                 ->GetProfileManager()
+                 ->GetProfileAttributesStorage()
+                 ->GetPersonalProfileName() == profile_name;
   }
   NOTREACHED();
 }

@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Glic.Action.ActInFocusedTabErrorReason"
+    enum="ActInFocusedTabErrorReason" expires_after="2026-01-15">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>chasej@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client receives an error reason from the
+    browser when attempting to act.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
     expires_after="2026-01-15">
   <owner>carlosk@chromium.org</owner>
@@ -43,6 +54,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(ApiRequestType) -->
 
   <token key="ApiRequestType">
+    <variant name="ActInFocusedTab"/>
     <variant name="AttachPanel"/>
     <variant name="CaptureScreenshot"/>
     <variant name="ClosePanel"/>
@@ -56,6 +68,7 @@ chromium-metrics-reviews@google.com.
     <variant name="OnSessionTerminated"/>
     <variant name="OnUserInputSubmitted"/>
     <variant name="OpenGlicSettingsPage"/>
+    <variant name="OpenOsPermissionSettingsMenu"/>
     <variant name="RefreshSignInCookies"/>
     <variant name="ResizeWindow"/>
     <variant name="ScrollTo"/>
@@ -63,6 +76,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SetContextAccessIndicator"/>
     <variant name="SetLocationPermissionState"/>
     <variant name="SetMicrophonePermissionState"/>
+    <variant name="SetMinimumWidgetSize"/>
     <variant name="SetSyntheticExperimentState"/>
     <variant name="SetTabContextPermissionState"/>
     <variant name="SetWindowDraggableAreas"/>
@@ -380,6 +394,16 @@ chromium-metrics-reviews@google.com.
   <owner>harringtond@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
   <summary>Recorded when a session ends. The duration of the session.</summary>
+</histogram>
+
+<histogram name="Glic.Session.InputModesUsed" enum="GlicInputModesUsed"
+    expires_after="2026-01-15">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <summary>
+    Recorded when a session ends. The input modes that were used during the
+    session.
+  </summary>
 </histogram>
 
 <histogram name="Glic.Session.Open.Attached" enum="Boolean"

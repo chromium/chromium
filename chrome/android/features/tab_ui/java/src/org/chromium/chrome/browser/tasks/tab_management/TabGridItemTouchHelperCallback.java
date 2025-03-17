@@ -449,22 +449,25 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder =
                     (SimpleRecyclerViewAdapter.ViewHolder) viewHolder;
 
-            @Nullable PropertyModel propertyModel = null;
-            if (simpleViewHolder.model.get(CARD_TYPE) == TAB) {
-                propertyModel =
-                        mModel.getModelFromTabId(simpleViewHolder.model.get(TabProperties.TAB_ID));
-            } else if (simpleViewHolder.model.get(CARD_TYPE) == MESSAGE) {
+            @Nullable PropertyModel viewHolderModel = simpleViewHolder.model;
+            if (viewHolderModel == null) return;
+
+            @Nullable PropertyModel cardModel = null;
+            if (viewHolderModel.get(CARD_TYPE) == TAB) {
+                cardModel =
+                        mModel.getModelFromTabId(viewHolderModel.get(TabProperties.TAB_ID));
+            } else if (viewHolderModel.get(CARD_TYPE) == MESSAGE) {
                 int index =
                         mModel.lastIndexForMessageItemFromType(
-                                simpleViewHolder.model.get(MESSAGE_TYPE));
+                                viewHolderModel.get(MESSAGE_TYPE));
                 if (index == TabModel.INVALID_TAB_INDEX) return;
 
-                propertyModel = mModel.get(index).model;
+                cardModel = mModel.get(index).model;
             }
 
-            if (propertyModel == null) return;
+            if (cardModel == null) return;
 
-            propertyModel.set(TabListModel.CardProperties.CARD_ALPHA, alpha);
+            cardModel.set(TabListModel.CardProperties.CARD_ALPHA, alpha);
             boolean isOverThreshold = Math.abs(dX) >= mSwipeToDismissThreshold;
             if (isOverThreshold && !mIsSwipingToDismiss) {
                 viewHolder.itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);

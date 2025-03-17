@@ -115,7 +115,7 @@ class ThreadStateStorageFor<kAnyThread> {
   STATIC_ONLY(ThreadStateStorageFor);
 
  public:
-  ALWAYS_INLINE static ThreadStateStorage* GetState() {
+  static ThreadStateStorage* GetState() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     // Perform a fast on main thread check on platforms with expensive TLS.
     if (!WTF::MayNotBeMainThread()) {

@@ -1628,22 +1628,9 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,ExemptSpeculationRulesHeaderFromCSP",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader",
+      "--disable-features=PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
-    ],
-    "expires": "Oct 1, 2025"
-  },
-  {
-    "prefix": "prefetch-no-vary-search",
-    "owners": ["jbroman@chromium.org", "liviutinta@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/speculation-rules/prefetch/no-vary-search",
-      "wpt_internal/speculation-rules/prefetch/no-vary-search"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
     ],
     "expires": "Oct 1, 2025"
   },
@@ -1657,7 +1644,23 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader,ExemptSpeculationRulesHeaderFromCSP",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader",
+      "--disable-features=PrefetchServiceWorker",
+      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
+    ],
+    "expires": "Oct 1, 2025"
+  },
+  {
+    "prefix": "prefetch-serviceworker",
+    "owners": ["hiroshige@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch",
+      "http/tests/inspector-protocol/prefetch"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Oct 1, 2025"
@@ -1708,7 +1711,8 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules",
+      "--disable-features=PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],

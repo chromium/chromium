@@ -168,6 +168,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
   bool IsValid() const override { return GetSkSurface(); }
   bool IsAccelerated() const final { return false; }
   bool SupportsDirectCompositing() const override { return false; }
+  bool IsSingleBuffered() const override { return false; }
 
  private:
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
@@ -295,7 +296,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
       return !IsGpuContextLost();
   }
 
-  bool SupportsSingleBuffering() const override {
+  bool IsSingleBuffered() const override {
     return shared_image_usage_flags_.Has(
         gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
   }
@@ -855,7 +856,7 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
   bool IsValid() const final { return true; }
   bool IsAccelerated() const final { return true; }
   bool SupportsDirectCompositing() const override { return true; }
-  bool SupportsSingleBuffering() const override { return true; }
+  bool IsSingleBuffered() const override { return true; }
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
@@ -907,10 +908,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     resource_ = CanvasResourceSwapChain::Create(
         size, format, alpha_type, color_space, ContextProviderWrapper(),
         CreateWeakPtr());
-    // CanvasResourceProviderSwapChain can only operate in a single buffered
-    // mode so enable it as soon as possible.
-    TryEnableSingleBuffering();
-    DCHECK(IsSingleBuffered());
   }
   ~CanvasResourceProviderSwapChain() override = default;
 
@@ -923,7 +920,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 
   bool IsAccelerated() const final { return true; }
   bool SupportsDirectCompositing() const override { return true; }
-  bool SupportsSingleBuffering() const override { return true; }
+  bool IsSingleBuffered() const override { return true; }
 
  private:
   void WillDraw() override {
@@ -1893,7 +1890,7 @@ void CanvasResourceProvider::RecycleResource(
   // whether the state of the resource provider has changed such that the
   // resource has become unusable in the interim.
   if (resource->HasOneRef() && resource_recycling_enabled_ &&
-      !is_single_buffered_ && IsResourceUsable(resource.get())) {
+      !IsSingleBuffered() && IsResourceUsable(resource.get())) {
     RegisterUnusedResource(std::move(resource));
     MaybePostUnusedResourcesReclaimTask();
   }
@@ -1924,7 +1921,7 @@ void CanvasResourceProvider::MaybePostUnusedResourcesReclaimTask() {
     return;
   }
 
-  if (resource_recycling_enabled_ && !is_single_buffered_ &&
+  if (resource_recycling_enabled_ && !IsSingleBuffered() &&
       !unused_resources_reclaim_timer_.IsRunning() &&
       !canvas_resources_.empty()) {
     unused_resources_reclaim_timer_.Start(
@@ -1972,17 +1969,11 @@ scoped_refptr<CanvasResource> CanvasResourceProvider::NewOrRecycledResource() {
   return resource;
 }
 
-void CanvasResourceProvider::TryEnableSingleBuffering() {
-  if (IsSingleBuffered() || !SupportsSingleBuffering())
-    return;
-  is_single_buffered_ = true;
-  ClearRecycledResources();
-}
-
 bool CanvasResourceProvider::ImportResource(
     scoped_refptr<CanvasResource>&& resource) {
-  if (!IsSingleBuffered() || !SupportsSingleBuffering())
+  if (!IsSingleBuffered()) {
     return false;
+  }
   canvas_resources_.clear();
   RegisterUnusedResource(std::move(resource));
   return true;
@@ -1990,8 +1981,9 @@ bool CanvasResourceProvider::ImportResource(
 
 scoped_refptr<CanvasResource> CanvasResourceProvider::GetImportedResource()
     const {
-  if (!IsSingleBuffered() || !SupportsSingleBuffering())
+  if (!IsSingleBuffered()) {
     return nullptr;
+  }
   DCHECK_LE(canvas_resources_.size(), 1u);
   if (canvas_resources_.empty())
     return nullptr;

@@ -8,7 +8,6 @@
 
 #import "base/time/time.h"
 #import "ios/chrome/browser/download/model/auto_deletion/scheduled_file.h"
-#import "ios/chrome/browser/download/model/auto_deletion/scheduled_file_queue.h"
 
 namespace {
 

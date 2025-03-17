@@ -26,15 +26,6 @@ using ::blink::mojom::PermissionStatus;
 using PermissionResult =
     ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
 
-// Checks whether the app is focused.
-// Note that this is different from requiring that the capturer RFH is focused.
-// The check here starts at the primary main frame, and then cascades through
-// the tree - which is the desired behavior.
-bool IsFocused(WebContentsImpl& web_contents) {
-  RenderFrameHostImpl* const rfhi = web_contents.GetPrimaryMainFrame();
-  return rfhi && rfhi->IsFocused();
-}
-
 // Translate between callbacks expecting different types.
 base::OnceCallback<void(PermissionStatus)> WrapCallback(
     base::OnceCallback<void(PermissionResult)> callback) {
@@ -70,11 +61,6 @@ void CheckPermissionOnUIThread(
       WebContentsImpl::FromRenderFrameHostImpl(capturer_rfhi);
   if (!capturer_wc) {
     // The capturing frame or tab appears to have closed asynchronously.
-    std::move(callback).Run(PermissionResult::kError);
-    return;
-  }
-
-  if (!IsFocused(*capturer_wc)) {
     std::move(callback).Run(PermissionResult::kError);
     return;
   }

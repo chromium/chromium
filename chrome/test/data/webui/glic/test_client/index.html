@@ -75,6 +75,26 @@ found in the LICENSE file.
   #fileDrop {
     border: double black;
   }
+  #status {
+    font-size: smaller;
+  }
+  #successUI, #localDenialUI, #osDenialUI {
+  padding: 10px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+#localDenialUI {
+  border-color: orange;
+}
+
+#osDenialUI {
+  border-color: red;
+}
+
+#successUI {
+    border-color: green;
+}
 </style>
 <div id="pageHeader">
   <h1>Test Web Client</h1>
@@ -198,12 +218,17 @@ found in the LICENSE file.
   <div id="screenshot">
     <img id="screenshotImg" />
   </div>
+  <span id="getPageContextResult"></span>
   <span id="getPageContextStatus"></span>
 </div>
 <div class="section">
   <h1>Test Location Access</h1>
   <button id="getlocation">Get Location</button> <br />
   <div id="location"></div>
+  <div id="locationStatus"></div>
+  <div id="locationErrorUI" style="display: none;">
+    <button id="openOsLocationSettingsButton">Open OS Settings</button>
+  </div>
 </div>
 <div class="section">
   <h1>Test Link Out Behavior</h1>
@@ -301,6 +326,24 @@ found in the LICENSE file.
   <h1>Responsiveness Check</h1>
   <button id="busyWork3s">Start 3 seconds busy work</button>
   <button id="busyWork8s">Start 8 seconds busy work</button>
+</div>
+<div class="section">
+  <h1>Mic Start Permissions Flow Demo</h1>
+  <button id="startMic">Start Mic</button>
+  <!-- Initially hidden UI elements -->
+  <div id="successUI" style="display: none;">
+    <p>Microphone access granted!</p>
+  </div>
+
+  <div id="localDenialUI" style="display: none;">
+    <p>Microphone access denied locally. Please enable in settings.</p>
+    <button id="openLocalSettingsButton">Open Local Settings</button>
+  </div>
+
+  <div id="osDenialUI" style="display: none;">
+    <p>Microphone access denied by OS. Please enable in OS settings.</p>
+    <button id="openOsSettingsButton">Open OS Settings</button>
+  </div>
 </div>
 <br />
 <div id="status"></div>

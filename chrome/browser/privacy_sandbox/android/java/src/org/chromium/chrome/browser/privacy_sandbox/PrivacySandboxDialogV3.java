@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
@@ -15,11 +16,13 @@ import android.widget.ScrollView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LifecycleState;
@@ -35,11 +38,12 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Arrays;
+import java.util.List;
 
 // TODO(crbug.com/392943234): Update this class's naming and description when naming is finalized.
 /** Handles logic for the Privacy Sandbox Ads consents/notices dialogs. */
-public class PrivacySandboxDialogV3 extends ChromeDialog
-        implements View.OnClickListener, DialogInterface.OnShowListener {
+public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterface.OnShowListener {
 
     @IntDef({
         PrivacySandboxDialogType.UNKNOWN,
@@ -62,7 +66,9 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
 
     private @PrivacySandboxDialogType int mDialogType;
 
+    private int mSurfaceType;
     private View mContentView;
+    private View.OnClickListener mOnClickListener;
 
     private LinearLayout mViewContainer;
     private ButtonCompat mMoreButton;
@@ -88,17 +94,25 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
     private @StringRes int mLearnMoreLinkString =
             R.string.privacy_sandbox_m1_consent_learn_more_card_v3;
 
+    // TODO(crbug.com/392943234): Update the constructor to accept a layoutRes required for the
+    // dialog.
     public PrivacySandboxDialogV3(
-            Context context,
+            Activity activity,
             Profile profile,
             ActivityWindowAndroid activityWindowAndroid,
+            @SurfaceType int surfaceType,
             @PrivacySandboxDialogType int dialogType) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mDialogType = dialogType;
+        mSurfaceType = surfaceType;
 
-        fetchDialogContent(context);
+        fetchDialogContent(activity);
+        mOnClickListener = getOnClickListener();
         registerDialogButtons();
-        registerDropdownElements(context);
+        registerDropdownElements(activity);
         registerPrivacyPolicy(profile, activityWindowAndroid);
 
         mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);
@@ -122,46 +136,61 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
     }
 
     private void fetchDialogContent(Context context) {
+        // TODO(crbug.com/392943234): Update function to accept the Layoutres and remove the switch
+        // statement.
+        // We're currently keeping the logic as is since the resources are not used anywhere else
+        // (unused warnings will trigger).
+        @LayoutRes int contentToInflate;
         switch (mDialogType) {
-                // Fall through
             case PrivacySandboxDialogType.EEA_CONSENT:
+                contentToInflate = R.layout.privacy_sandbox_consent_eea_v3;
+                break;
             case PrivacySandboxDialogType.EEA_NOTICE:
+                contentToInflate = R.layout.privacy_sandbox_notice_eea_v3;
+                break;
             case PrivacySandboxDialogType.ROW_NOTICE:
             case PrivacySandboxDialogType.RESTRICTED_NOTICE:
             default:
-                // TODO(crbug.com/392943234): For now we're defaulting to using the EEA consent
-                // dialog for all types as it's the only available dialog right now. Update this as
-                // we support more dialogs.
-                mContentView =
-                        LayoutInflater.from(context)
-                                .inflate(R.layout.privacy_sandbox_consent_eea_v3, null);
-                mViewContainer = mContentView.findViewById(R.id.privacy_sandbox_consent_eea_view);
+                // TODO(crbug.com/392943234): Don't default to the eea consent
+                contentToInflate = R.layout.privacy_sandbox_consent_eea_v3;
                 // TODO(crbug.com/392943234): Emit a histogram if we hit the default cause.
+                throw new IllegalStateException(
+                        "[PrivacySandboxDialog] Invalid dialog content requested.");
         }
+        mContentView = LayoutInflater.from(context).inflate(contentToInflate, null);
+        mViewContainer = mContentView.findViewById(R.id.privacy_sandbox_dialog_view);
         setContentView(mContentView);
     }
 
     private void registerDialogButtons() {
+        // Process buttons that exists in all dialogs.
         ButtonCompat ackButton = mContentView.findViewById(R.id.ack_button);
-        ackButton.setOnClickListener(this);
-        ButtonCompat noButton = mContentView.findViewById(R.id.no_button);
-        noButton.setOnClickListener(this);
         mActionButtons = mContentView.findViewById(R.id.action_buttons);
-
         mMoreButton = mContentView.findViewById(R.id.more_button);
-        mMoreButton.setOnClickListener(this);
         mBottomFade = mContentView.findViewById(R.id.bottom_fade);
+
+        ackButton.setOnClickListener(mOnClickListener);
+        mMoreButton.setOnClickListener(mOnClickListener);
+
+        // Conditionally register the other CTA button if it exists.
+        List<Integer> buttonIds = Arrays.asList(R.id.settings_button, R.id.no_button);
+        ButtonCompat button;
+        for (int buttonId : buttonIds) {
+            button = mContentView.findViewById(buttonId);
+            if (button != null) {
+                button.setOnClickListener(mOnClickListener);
+            }
+        }
     }
 
     private void registerDropdownElements(Context context) {
-        // TODO(crbug.com/392943234): Not all dialogs will contain a dropdown, update logic to
-        // reflect this.
-        mDropdownElement = mContentView.findViewById(R.id.ad_measurement_dropdown_element);
-        mDropdownElement.setOnClickListener(this);
-
-        mDropdownContentContainer =
-                mContentView.findViewById(R.id.ad_measurement_dropdown_container);
-        mDropdownExpandArrowView = mContentView.findViewById(R.id.ad_measurement_expand_arrow);
+        mDropdownElement = mContentView.findViewById(R.id.dropdown_element);
+        if (mDropdownElement == null) {
+            return;
+        }
+        mDropdownElement.setOnClickListener(mOnClickListener);
+        mDropdownContentContainer = mContentView.findViewById(R.id.dropdown_container);
+        mDropdownExpandArrowView = mContentView.findViewById(R.id.dropdown_element_expand_arrow);
         mDropdownExpandArrowView.setImageDrawable(
                 PrivacySandboxDialogUtils.createExpandDrawable(context));
         mDropdownExpandArrowView.setChecked(isDropdownExpanded());
@@ -177,9 +206,37 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
         dismiss();
     }
 
+    private void handleSettingsButtonClick() {
+        // TODO(crbug.com/392943234): Record that the settings button was clicked.
+        dismiss();
+        PrivacySandboxSettingsBaseFragment.launchPrivacySandboxSettings(
+                getContext(), PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+    }
+
     private void handleMoreButtonClick() {
         // TODO(crbug.com/392943234): Record that more button was clicked.
         mScrollView.post(() -> mScrollView.pageScroll(ScrollView.FOCUS_DOWN));
+    }
+
+    private void inflateDropdownContent() {
+        mDropdownContentContainer.setVisibility(View.VISIBLE);
+        @LayoutRes int resourceToInflate;
+        switch (mDialogType) {
+            case PrivacySandboxDialogType.EEA_CONSENT:
+                resourceToInflate = R.layout.privacy_sandbox_consent_eea_dropdown_v3;
+                break;
+            case PrivacySandboxDialogType.EEA_NOTICE:
+                resourceToInflate = R.layout.privacy_sandbox_notice_eea_dropdown_v3;
+                break;
+            case PrivacySandboxDialogType.ROW_NOTICE:
+            case PrivacySandboxDialogType.RESTRICTED_NOTICE:
+            default:
+                // TODO(crbug.com/392943234): Don't default to the eea dropdown.
+                resourceToInflate = R.layout.privacy_sandbox_consent_eea_dropdown_v3;
+                // TODO(crbug.com/392943234): Emit a histogram if we hit the default cause.
+        }
+        LayoutInflater.from(getContext()).inflate(resourceToInflate, mDropdownContentContainer);
+        mScrollView.post(() -> mScrollView.scrollTo(0, mDropdownElement.getTop()));
     }
 
     private void handleDropdownClick(View view) {
@@ -187,12 +244,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
             mDropdownContentContainer.setVisibility(View.GONE);
             mDropdownContentContainer.removeAllViews();
         } else {
-            mDropdownContentContainer.setVisibility(View.VISIBLE);
-            LayoutInflater.from(getContext())
-                    .inflate(
-                            R.layout.privacy_sandbox_consent_eea_dropdown_v3,
-                            mDropdownContentContainer);
-            mScrollView.post(() -> mScrollView.scrollTo(0, mDropdownElement.getTop()));
+            inflateDropdownContent();
         }
 
         mDropdownExpandArrowView.setChecked(isDropdownExpanded());
@@ -222,6 +274,10 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
      * @param unused_view The View that was clicked (typically the TextView containing the link).
      */
     private void onPrivacyPolicyClicked(View unused_view) {
+        // TODO(crbug.com/392943234): Hide the `More` button.
+        // There is a case where the more button will be shown if we have not yet reached the bottom
+        // of the screen. We will also need to re-enable the more button when the back button was
+        // clicked.
         mPrivacyPolicyContent.removeAllViews();
         if (mThinWebView != null && mThinWebView.getView() != null) {
             mViewContainer.setVisibility(View.GONE);
@@ -237,7 +293,9 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
             return;
         }
         mPrivacyPolicyContent = mContentView.findViewById(R.id.privacy_policy_content);
-        mContentView.findViewById(R.id.privacy_policy_back_button).setOnClickListener(this);
+        mContentView
+                .findViewById(R.id.privacy_policy_back_button)
+                .setOnClickListener(mOnClickListener);
         mIsPrivacyPageLoaded = false;
         createPrivacyPolicyLink(profile, activityWindowAndroid);
     }
@@ -285,18 +343,51 @@ public class PrivacySandboxDialogV3 extends ChromeDialog
         return mScrollView.canScrollVertically(ScrollView.FOCUS_DOWN);
     }
 
-    // OnClickListener:
-    @Override
-    public void onClick(View view) {
+    // TODO(crbug.com/403286432): Remove this function after refactoring the debouncing class is
+    // done.
+    private String getDialogName() {
+        String dialogName = "";
+        switch (mDialogType) {
+            case PrivacySandboxDialogType.EEA_CONSENT:
+                dialogName = "TopicsConsentModal";
+                break;
+            case PrivacySandboxDialogType.EEA_NOTICE:
+                dialogName = "ProtectedAudienceMeasurementNoticeModal";
+                break;
+            case PrivacySandboxDialogType.ROW_NOTICE:
+                dialogName = "ThreeAdsAPIsNoticeModal";
+                break;
+            case PrivacySandboxDialogType.RESTRICTED_NOTICE:
+                dialogName = "MeasurementNoticeModal";
+                break;
+            case PrivacySandboxDialogType.UNKNOWN:
+            case PrivacySandboxDialogType.MAX_VALUE:
+            default:
+                break;
+        }
+        return dialogName + PrivacySandboxDialogUtils.getSurfaceTypeAsString(mSurfaceType);
+    }
+
+    private View.OnClickListener getOnClickListener() {
+        return new PrivacySandboxDebouncedOnClick(getDialogName()) {
+            @Override
+            public void processClick(View v) {
+                processClickImpl(v);
+            }
+        };
+    }
+
+    public void processClickImpl(View view) {
         int id = view.getId();
         if (id == R.id.ack_button) {
             handleAckButtonClick();
         } else if (id == R.id.no_button) {
             handleNoButtonClick();
+        } else if (id == R.id.settings_button) {
+            handleSettingsButtonClick();
         } else if (id == R.id.more_button) {
             handleMoreButtonClick();
-        // TODO(crbug.com/392943234): Rename this to be more generic
-        } else if (id == R.id.ad_measurement_dropdown_element) {
+        } else if (id == R.id.dropdown_element) {
             handleDropdownClick(view);
         } else if (id == R.id.privacy_policy_back_button) {
             handlePrivacyPolicyBackButtonClicked();

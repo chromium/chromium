@@ -59,9 +59,13 @@ class CONTENT_EXPORT ServiceWorkerClient final
   using ExecutionReadyCallback = base::OnceClosure;
 
   // Constructor for window clients.
+  //
+  // For clients for prefetch, `ongoing_navigation_frame_tree_node_id` is null.
+  // TODO(https://crbug.com/40947546): Consider explicitly distinguish the
+  // clients for prefetch.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,
                       bool is_parent_frame_secure,
-                      FrameTreeNodeId frame_tree_node_id);
+                      FrameTreeNodeId ongoing_navigation_frame_tree_node_id);
 
   // Constructor for worker clients.
   ServiceWorkerClient(base::WeakPtr<ServiceWorkerContextCore> context,

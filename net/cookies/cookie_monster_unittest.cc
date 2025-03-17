@@ -4702,11 +4702,17 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
   // since the histogram should have been initialized by the CM construction
   // above.
   base::HistogramBase* expired_histogram = base::Histogram::FactoryGet(
-      "Cookie.ExpirationDurationMinutesSecure.Subsampled", 1,
-      10 * 365 * 24 * 60, 50, base::Histogram::kUmaTargetedHistogramFlag);
+      "Cookie.ExpirationDurationMinutesSecure.Subsampled2", 1, 400 * 24 * 60,
+      100, base::Histogram::kUmaTargetedHistogramFlag);
+  base::HistogramBase* persistance_histogram =
+      base::BooleanHistogram::FactoryGet(
+          "Cookie.IsPersistentWhenSet.Subsampled",
+          base::HistogramBase::kUmaTargetedHistogramFlag);
 
-  std::unique_ptr<base::HistogramSamples> samples1(
+  std::unique_ptr<base::HistogramSamples> expired_samples1(
       expired_histogram->SnapshotSamples());
+  std::unique_ptr<base::HistogramSamples> persistance_samples1(
+      persistance_histogram->SnapshotSamples());
   auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
       "a", "b", "a.url", "/", base::Time(),
       base::Time::Now() + base::Minutes(59), base::Time(), base::Time(),
@@ -4717,16 +4723,26 @@ TEST_F(CookieMonsterTest, HistogramCheck) {
   ASSERT_TRUE(SetCanonicalCookie(cm.get(), std::move(cookie), source_url,
                                  /*modify_httponly=*/true));
 
-  std::unique_ptr<base::HistogramSamples> samples2(
+  std::unique_ptr<base::HistogramSamples> expired_samples2(
       expired_histogram->SnapshotSamples());
-  EXPECT_EQ(samples1->TotalCount() + 1, samples2->TotalCount());
+  std::unique_ptr<base::HistogramSamples> persistance_samples2(
+      persistance_histogram->SnapshotSamples());
+  EXPECT_EQ(expired_samples1->TotalCount() + 1, expired_samples2->TotalCount());
+  EXPECT_EQ(persistance_samples1->TotalCount() + 1,
+            persistance_samples2->TotalCount());
+  EXPECT_EQ(1, persistance_samples2->sum());
 
   // kValidCookieLine creates a session cookie.
   ASSERT_TRUE(SetCookie(cm.get(), http_www_foo_.url(), kValidCookieLine));
 
-  std::unique_ptr<base::HistogramSamples> samples3(
+  std::unique_ptr<base::HistogramSamples> expired_samples3(
       expired_histogram->SnapshotSamples());
-  EXPECT_EQ(samples2->TotalCount(), samples3->TotalCount());
+  std::unique_ptr<base::HistogramSamples> persistance_samples3(
+      persistance_histogram->SnapshotSamples());
+  EXPECT_EQ(expired_samples2->TotalCount(), expired_samples3->TotalCount());
+  EXPECT_EQ(persistance_samples2->TotalCount() + 1,
+            persistance_samples3->TotalCount());
+  EXPECT_EQ(1, persistance_samples3->sum());
 }
 
 TEST_F(CookieMonsterTest, InvalidExpiryTime) {

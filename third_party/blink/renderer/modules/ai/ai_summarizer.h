@@ -45,7 +45,13 @@ class AISummarizer final : public ScriptWrappable,
       const String& input,
       const AISummarizerSummarizeOptions* options,
       ExceptionState& exception_state);
+  ScriptPromise<IDLDouble> measureInputUsage(
+      ScriptState* script_state,
+      const String& input,
+      const AISummarizerSummarizeOptions* options,
+      ExceptionState& exception_state);
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
+
   String sharedContext() const {
     return options_->getSharedContextOr(g_empty_string);
   }
@@ -67,12 +73,16 @@ class AISummarizer final : public ScriptWrappable,
   String outputLanguage() const {
     return options_->getOutputLanguageOr(String());
   }
+  double inputQuota() const {
+    return static_cast<double>(
+        mojom::blink::kWritingAssistanceMaxInputTokenSize);
+  }
 
  private:
   bool is_destroyed_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<blink::mojom::blink::AISummarizer> summarizer_remote_;
+  HeapMojoRemote<blink::mojom::blink::AISummarizer> remote_;
   Member<AISummarizerCreateOptions> options_;
 };
 

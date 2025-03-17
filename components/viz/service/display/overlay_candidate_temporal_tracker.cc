@@ -8,10 +8,6 @@
 
 namespace viz {
 
-void OverlayCandidateTemporalTracker::Reset() {
-  num_samples_ = 0;
-}
-
 int OverlayCandidateTemporalTracker::GetModeledPowerGain(
     uint64_t curr_frame,
     int display_area,
@@ -33,11 +29,8 @@ void OverlayCandidateTemporalTracker::CategorizeDamageRatioRate(
   float mean_ratio_rate = MeanFrameRatioRate();
   // Simple implementation of hysteresis. If the value is far enough away from
   // the stored value it will be updated.
-  // Hysteresis range is derived from the maximum value impact of a single
-  // sample on the total mean.
-  const float damage_rate_hysteresis_range = 1.0f / config_.max_num_frames_avg;
   if (std::abs(mean_ratio_rate - ratio_rate_category_) >=
-      damage_rate_hysteresis_range) {
+      config_.damage_rate_hysteresis_range) {
     ratio_rate_category_ = mean_ratio_rate;
   }
 }
@@ -55,8 +48,17 @@ void OverlayCandidateTemporalTracker::AddRecord(
     bool force_resource_update) {
   if ((prev_resource_id_ != resource_id || force_resource_update) &&
       frame_record_prev_ != curr_frame) {
-    float damage_area_ratio_rate =
-        damage_area_ratio / (curr_frame - frame_record_prev_);
+    float damage_area_ratio_rate;
+    // Resume from where we left off and assume the difference between
+    // |curr_frame| and |frame_record_prev_| is 1.
+    // An example would be: user sketches on the stylus drawing or
+    // user is watching a video and paused for a certain frames.
+    if (IsActivelyChanging(curr_frame)) {
+      damage_area_ratio_rate =
+          damage_area_ratio / (curr_frame - frame_record_prev_);
+    } else {
+      damage_area_ratio_rate = damage_area_ratio;
+    }
 
     frame_record_prev_ = curr_frame;
     prev_resource_id_ = resource_id;
@@ -85,6 +87,11 @@ uint64_t OverlayCandidateTemporalTracker::LastChangeFrameCount(
 
 bool OverlayCandidateTemporalTracker::IsAbsent() {
   return std::exchange(absent_, true);
+}
+
+void OverlayCandidateTemporalTracker::ResetForTesting() {
+  // Used only in overlay unit tests
+  num_samples_ = 0;
 }
 
 }  // namespace viz

@@ -7,6 +7,7 @@
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace autofill::payments {
 
@@ -20,6 +21,11 @@ class BnplLinkedIssuerPill : public views::Label {
   ~BnplLinkedIssuerPill() override;
 };
 
+BEGIN_VIEW_BUILDER(, BnplLinkedIssuerPill, views::Label)
+END_VIEW_BUILDER
+
 }  // namespace autofill::payments
+
+DEFINE_VIEW_BUILDER(, autofill::payments::BnplLinkedIssuerPill)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_BNPL_ISSUER_LINKED_PILL_H_

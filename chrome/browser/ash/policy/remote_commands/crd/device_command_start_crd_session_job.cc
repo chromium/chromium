@@ -86,6 +86,10 @@ const base::TimeDelta kAutoApproveDeviceIdlenessCutoff = base::Minutes(5);
 // the session starts.
 const base::TimeDelta kConnectionAutoAcceptTimeout = base::Seconds(30);
 
+// Session cutoff to enforce a maximum duration for shared CRD sessions,
+// automatically terminating sessions exceeding this limit.
+const base::TimeDelta kMaximumRemoteSupportSessionDuration = base::Hours(8);
+
 std::optional<std::string> FindString(const base::Value::Dict& dict,
                                       std::string_view key) {
   if (!dict.contains(key)) {
@@ -245,8 +249,8 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
         ExtendedStartCrdSessionResultCode::kFailureUnsupportedUserType, "");
   }
 
-  if (curtain_local_user_session_ && !IsRemoteAccessAllowedByPolicy(CHECK_DEREF(
-                                         g_browser_process->local_state()))) {
+  if (IsRemoteAccessSession() && !IsRemoteAccessAllowedByPolicy(CHECK_DEREF(
+                                     g_browser_process->local_state()))) {
     LOG(ERROR) << "Rejecting CRD session type as CRD remote access is disabled "
                   "by device policy.";
     return FinishWithError(
@@ -279,7 +283,7 @@ void DeviceCommandStartCrdSessionJob::CheckManagedNetworkASync(
         }
       },
       std::move(on_success), GetErrorCallback(),
-      /*require_managed_environment=*/curtain_local_user_session_));
+      /*require_managed_environment=*/IsRemoteAccessSession()));
 }
 
 void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
@@ -289,7 +293,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.user_name = robot_account_id_;
   parameters.terminate_upon_input = ShouldTerminateUponInput();
   parameters.show_confirmation_dialog = ShouldShowConfirmationDialog();
-  parameters.curtain_local_user_session = curtain_local_user_session_;
+  parameters.curtain_local_user_session = IsRemoteAccessSession();
   parameters.admin_email = admin_email_;
   parameters.allow_troubleshooting_tools = ShouldAllowTroubleshootingTools();
   parameters.show_troubleshooting_tools = ShouldShowTroubleshootingTools();
@@ -298,8 +302,9 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   if (ShouldAutoAcceptSession(is_in_managed_environment)) {
     parameters.connection_auto_accept_timeout = kConnectionAutoAcceptTimeout;
   }
-  // TODO(b:402442753): Set maximum session duration to 8 hours for shared
-  // sessions.
+  if (IsRemoteSupportSession()) {
+    parameters.maximum_session_duration = kMaximumRemoteSupportSessionDuration;
+  }
 
   delegate_->StartCrdHostAndGetCode(
       parameters,
@@ -364,7 +369,7 @@ bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
   CRD_VLOG(2) << "User is of type "
               << UserSessionTypeToString(GetCurrentUserSessionType());
 
-  if (curtain_local_user_session_) {
+  if (IsRemoteAccessSession()) {
     return UserSessionSupportsRemoteAccess(GetCurrentUserSessionType());
   } else {
     return UserSessionSupportsRemoteSupport(GetCurrentUserSessionType());
@@ -372,7 +377,7 @@ bool DeviceCommandStartCrdSessionJob::UserTypeSupportsCrd() const {
 }
 
 CrdSessionType DeviceCommandStartCrdSessionJob::GetCrdSessionType() const {
-  if (curtain_local_user_session_) {
+  if (IsRemoteAccessSession()) {
     return CrdSessionType::REMOTE_ACCESS_SESSION;
   }
   return CrdSessionType::REMOTE_SUPPORT_SESSION;
@@ -380,6 +385,14 @@ CrdSessionType DeviceCommandStartCrdSessionJob::GetCrdSessionType() const {
 
 bool DeviceCommandStartCrdSessionJob::IsDeviceIdle() const {
   return GetDeviceIdleTime() >= idleness_cutoff_;
+}
+
+bool DeviceCommandStartCrdSessionJob::IsRemoteSupportSession() const {
+  return !curtain_local_user_session_;
+}
+
+bool DeviceCommandStartCrdSessionJob::IsRemoteAccessSession() const {
+  return curtain_local_user_session_;
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
@@ -406,7 +419,7 @@ bool DeviceCommandStartCrdSessionJob::ShouldShowConfirmationDialog() const {
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldTerminateUponInput() const {
-  if (curtain_local_user_session_) {
+  if (IsRemoteAccessSession()) {
     return false;
   }
 
@@ -445,7 +458,7 @@ bool DeviceCommandStartCrdSessionJob::ShouldAllowReconnections() const {
   }
 
   // Curtained off sessions support reconnections if Chrome restarts.
-  return curtain_local_user_session_;
+  return IsRemoteAccessSession();
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldShowTroubleshootingTools() const {

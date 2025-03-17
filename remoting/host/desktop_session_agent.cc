@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/errors.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/desktop_environment_options.h"
@@ -48,7 +49,6 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "remoting/protocol/errors.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
@@ -165,8 +165,13 @@ const std::string& DesktopSessionAgent::client_jid() const {
   return client_jid_;
 }
 
-void DesktopSessionAgent::DisconnectSession(protocol::ErrorCode error) {
+void DesktopSessionAgent::DisconnectSession(
+    ErrorCode error,
+    std::string_view error_details,
+    const base::Location& error_location) {
   if (desktop_session_state_handler_) {
+    // TODO: crbug.com/382334458 - serialize `error_details` and
+    // `error_location` over mojo.
     desktop_session_state_handler_->DisconnectSession(error);
   }
 }

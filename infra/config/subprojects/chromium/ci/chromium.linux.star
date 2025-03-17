@@ -11,6 +11,7 @@ load("//lib/builders.star", "builders", "gardener_rotations", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/html.star", "linkify")
 load("//lib/targets.star", "targets")
 
 ci.defaults.set(
@@ -736,6 +737,82 @@ ci.thin_tester(
         category = "release",
         short_name = "tst-wl",
     ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-linux-engprod@google.com",
+)
+
+ci.thin_tester(
+    # TODO(crbug.com/401284929): Put common config with "Linux Tests (Wayland)" in shared bundle.
+    name = "linux-wayland-mutter-rel-tests",
+    # TODO(crbug.com/401284929): Uncomment when enabling gardener_rotations and tree_closing.
+    # branch_selector = branches.selector.LINUX_BRANCHES,
+    description_html =
+        "Runs Wayland tests on Mutter. See the {} for details.".format(
+            linkify(
+                "https://chromium.googlesource.com/chromium/src/+/main/docs/ozone_overview.md#wayland",
+                "ozone wayland doc",
+            ),
+        ),
+    triggered_by = ["ci/Linux Builder (Wayland)"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "use_clang_coverage",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_gtests_for_linux_wayland_mutter",
+        ],
+        mixins = [
+            targets.mixin(
+                args = [
+                    "--no-xvfb",
+                    "--use-mutter",
+                    "--ozone-platform=wayland",
+                ],
+            ),
+            "linux-noble",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "interactive_ui_tests": targets.mixin(
+                # https://crbug.com/1192997
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
+        },
+    ),
+
+    ############################################################################
+    # TODO(crbug.com/401284929) Remove this section once mutter tests are stable
+    ############################################################################
+    gardener_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        console_view = "chromium.fyi",
+        category = "linux",
+        short_name = "tst-mt",
+    ),
+    main_console_view = None,
+    ############################################################################
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-linux-engprod@google.com",
 )

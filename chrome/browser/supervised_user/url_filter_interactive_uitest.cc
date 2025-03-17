@@ -12,6 +12,7 @@
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/browser_user.h"
 #include "chrome/test/supervised_user/family_live_test.h"
@@ -21,6 +22,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/interactive_test.h"
+#include "ui/events/event_modifiers.h"
+#include "ui/views/widget/widget_utils.h"
 
 namespace supervised_user {
 namespace {
@@ -456,6 +460,53 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
               histogram_tester.ExpectTotalCount(
                   "FamilyLinkUser.LocalWebApprovalResult", 1);
             }))));
+}
+
+IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
+                       DesktopLocalWebApprovalCancelledViaAccelerator) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPacpViewElementId);
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
+                                      kResetStateObserverId);
+  base::HistogramTester histogram_tester;
+
+  // Child activity is happening in this tab.
+  int tab_index = 0;
+  GURL mature_site_url(GetRoutedUrl("https://bestgore.com"));
+
+  TurnOnSync();
+  RunTestSequence(InAnyContext(Steps(
+      WaitForStateSeeding(kResetStateObserverId, child(),
+                          FamilyLinkSettingsState::Reset()),
+      // Supervised user navigates to inappropriate page and is blocked.
+      Log("When child is shown the interstitial"),
+      InstrumentTab(kChildElementId, tab_index, &child().browser()),
+      NavigateWebContents(kChildElementId, mature_site_url),
+      // The user clicks the local approval button.
+      WaitForStateChange(kChildElementId, LocalApprovalButtonAppeared()),
+      Log("When child requests local web approval"),
+      ChildRequestsLocalApproval(kChildElementId),
+      // The PACP dialog appears.
+      Log("When the PACP dialog shows up"),
+      WaitForShow(kLocalWebParentApprovalDialogId),
+      InstrumentNonTabWebView(kPacpViewElementId,
+                              kLocalWebParentApprovalDialogId),
+      WaitForPacpDialogToAppear(kPacpViewElementId),
+      Log("When parent approval dialog opens"),
+      // Interact with a PACP web view element to ensure the webview is focused
+      // and send ESC event to the webview..
+      UserClicksPacpApprovalButton(kPacpViewElementId),
+      SendAccelerator(kPacpViewElementId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(kPacpViewElementId), Log("When the user presses Escape"),
+      Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "FamilyLinkUser.LocalWebApprovalResult",
+            supervised_user::LocalApprovalResult::kCanceled, 1);
+        histogram_tester.ExpectTotalCount(
+            "FamilyLinkUser.LocalWebApprovalResult", 1);
+      }),
+      Log("Then the dialog is dismissed and a cancellation is recorded"))));
 }
 
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,

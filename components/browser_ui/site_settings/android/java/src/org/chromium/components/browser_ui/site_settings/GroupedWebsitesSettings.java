@@ -254,6 +254,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         preference.setOnPreferenceClickListener(this);
     }
 
+    @VisibleForTesting
     public void resetRwsData() {
         if (getActivity() == null) return;
         RwsCookieInfo rwsInfo = mSiteGroup.getRwsInfo();

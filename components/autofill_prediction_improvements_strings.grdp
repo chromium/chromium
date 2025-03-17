@@ -138,13 +138,13 @@
   </message>
 
   <!-- Iph -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE" desc="Text displayed in the prediction improvements iph title.">
-    Prediction improvements
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_TITLE" translateable="false" desc="The title of a promotional bubble that is likely the user's first engagement with Autofill for AI. Many users are familiar with Chrome Autofill and use it to automatically fill in things like passwords and credit cards. This service promoted on this screen frames the new service as the autofill that users are familiar with but better, because it's powered by AI and can do more for you.">
+    Autofill just got better
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY" desc="Text displayed in the prediction improvements iph body.">
-    Turn on prediction improvements
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_BODY" translateable="false" desc="The body text in a promotional bubble that appears beneath the title: “Autofill just got better”. * “Turn on”: This new feature is opt in, so we want to encourage users to click “Go to settings” and turn the feature on. “autofill with AI” is what we're calling this new feature. We want users to associate the new feature with the familiar autofill functionality they're already used to but want to convey how it's different (AI). * “automatically” should feel valuable to users as the autofill service is making tasks for them simpler. * “more fields”: the existing autofill functionality in Chrome covers things like passwords, credit cards, and building addresses. With this new service, we can also cover 1) passports, 2) vehicles, and 3) driver's licenses.">
+    Turn on autofill with AI to automatically fill more fields
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS" desc="Text displayed in the prediction improvements IPH bubble.">
+  <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_GO_TO_SETTINGS" translateable="false" desc="A button label that opens Chrome settings and allows the user to turn on this new enhanced autofill.">
     Go to settings
   </message>
 
@@ -158,7 +158,6 @@
   <message name="IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to save a passport entity" translateable="false">
     Save passport?
   </message>
-
   <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a vehicle entity" translateable="false">
     Update vehicle?
   </message>
@@ -168,8 +167,13 @@
   <message name="IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE" desc="Used as title on the dialog prompting users whether they want to update a passport entity" translateable="false">
     Update passport?
   </message>
-
   <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info." translateable="false">
     Save your info so that autofill can fill in more fields for you next time
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_UPDATED_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with updated attributes" translateable="false">
+    <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> updated
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_ENTITY_DIALOG_NEW_ATTRIBUTE_ACCESSIBLE_NAME" desc="Used in entity update dialogs, as the accessible names for rows with new attributes" translateable="false">
+    <ph name="ATTRIBUTE_NAME">$1<ex>Passport number</ex></ph> added
   </message>
 </grit-part>

@@ -30,7 +30,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
     // https://en.wikipedia.org/wiki/Exponential_smoothing It is also the frame
     // count cutoff for when an unchanging candidate is considered to be
     // inactive. see 'IsActivelyChanging()'
-    int max_num_frames_avg = 10;
+    int max_num_frames_avg = 100;
+
+    // Hysteresis range used to update |ratio_rate_category_|.
+    float damage_rate_hysteresis_range = 0.1f;
   };
 
   explicit OverlayCandidateTemporalTracker(const Config& config)
@@ -48,8 +51,6 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // exceeds a specific threshold.
   bool IsActivelyChanging(uint64_t curr_frame) const;
 
-  void Reset();
-
   // This function adds a new record to the tracker if the |resource_id| has
   // changed since last update.
   // The |force_resource_update| flag has been added for the case when the
@@ -66,6 +67,12 @@ class VIZ_SERVICE_EXPORT OverlayCandidateTemporalTracker {
   // in the previous frame. We require this behavior in order to know when an
   // overlay candidate is no longer present since we are tracking across frames.
   bool IsAbsent();
+
+  // Clear the number of samples used for averaging damage ratio rate.
+  void ResetForTesting();
+
+  // Return the number of samples we currently use for sampling.
+  int GetNumSamplesForTesting() const { return num_samples_; }
 
   // The functions and data below are used internally but also can be used for
   // diagnosis and testing.

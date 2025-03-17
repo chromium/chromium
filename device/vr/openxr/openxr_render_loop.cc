@@ -193,9 +193,10 @@ void OpenXrRenderLoop::GetFrameData(
                                 base::Unretained(this), std::move(callback),
                                 std::move(pending_frame_->frame_data_)));
 
-  next_frame_id_ += 1;
-  if (next_frame_id_ < 0) {
+  if (next_frame_id_ == std::numeric_limits<int16_t>::max()) {
     next_frame_id_ = 0;
+  } else {
+    next_frame_id_++;
   }
 }
 

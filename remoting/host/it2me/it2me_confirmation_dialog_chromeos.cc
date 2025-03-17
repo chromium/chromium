@@ -22,6 +22,7 @@
 #include "base/i18n/message_formatter.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/session_manager/session_manager_types.h"
 #include "remoting/base/string_resources.h"
@@ -166,8 +167,9 @@ It2MeConfirmationDialogChromeOS::Core::GetDialogDelegate() {
 }
 
 It2MeConfirmationDialogChromeOS::It2MeConfirmationDialogChromeOS(
-    DialogStyle style)
-    : style_(style) {}
+    DialogStyle style,
+    base::TimeDelta auto_accept_timeout)
+    : style_(style), auto_accept_timeout_(auto_accept_timeout) {}
 
 It2MeConfirmationDialogChromeOS::~It2MeConfirmationDialogChromeOS() {
   message_center::MessageCenter::Get()->RemoveNotification(
@@ -275,7 +277,8 @@ It2MeConfirmationDialogChromeOS::GetDialogDelegateForTest() {
 
 std::unique_ptr<It2MeConfirmationDialog>
 It2MeConfirmationDialogFactory::Create() {
-  return std::make_unique<It2MeConfirmationDialogChromeOS>(dialog_style_);
+  return std::make_unique<It2MeConfirmationDialogChromeOS>(
+      dialog_style_, auto_accept_timeout_);
 }
 
 }  // namespace remoting

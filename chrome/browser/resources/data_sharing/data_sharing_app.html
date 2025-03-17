@@ -64,7 +64,10 @@
     --skw-color-surface-container-highest: var(
       --color-sys-surface5
     );
+    /* Prevent html minifier from swallowing the placeholder */
+    /* clean-css ignore:start */
     --skw-font: $i18nRaw{fontfamilyMd};
+    /* clean-css ignore:end */
   }
 
   .invite {

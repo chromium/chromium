@@ -87,8 +87,7 @@ class ShelfAnimationObserver : public views::BoundsAnimatorObserver {
 };
 
 bool HasBrowserIcon(const ShelfModel* model) {
-  return model->ItemByID(ShelfID(app_constants::kLacrosAppId)) ||
-         model->ItemByID(ShelfID(app_constants::kChromeAppId));
+  return model->ItemByID(ShelfID(app_constants::kChromeAppId));
 }
 
 bool HasPendingIcon(const ShelfModel* model) {
@@ -114,8 +113,7 @@ void WindowRestoreTracker::Init(
 void WindowRestoreTracker::AddWindow(int window_id, const std::string& app_id) {
   DCHECK(window_id);
   DCHECK(!app_id.empty());
-  if (app_id == app_constants::kChromeAppId ||
-      app_id == app_constants::kLacrosAppId) {
+  if (app_id == app_constants::kChromeAppId) {
     windows_.emplace(window_id, State::kNotCreated);
   }
 }

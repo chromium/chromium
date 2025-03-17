@@ -3227,6 +3227,11 @@ inline constexpr char kDeviceAllowEnterpriseRemoteAccessConnections[] =
 // up the device.
 inline constexpr char kDeviceWeeklyScheduledSuspend[] =
     "device_weekly_scheduled_suspend";
+
+// A boolean pref which determines whether Chrome Apps are allowed in Kiosk
+// sessions.
+inline constexpr char kKioskChromeAppsForceAllowed[] =
+    "kiosk_chrome_apps_force_allowed";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -3573,11 +3578,6 @@ inline constexpr char kIncompatibleApplications[] = "incompatible_applications";
 // external tampering.
 inline constexpr char kModuleBlocklistCacheMD5Digest[] =
     "module_blocklist_cache_md5_digest";
-
-// A boolean value, controlling whether third party software is allowed to
-// inject into Chrome's processes.
-inline constexpr char kThirdPartyBlockingEnabled[] =
-    "third_party_blocking_enabled";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN)

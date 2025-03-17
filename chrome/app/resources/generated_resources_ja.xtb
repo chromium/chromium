@@ -2235,7 +2235,6 @@
 <translation id="2529887123641260401">設定はいつでも変更できます。スイッチ アクセスの設定から設定ガイドを開くこともできます。</translation>
 <translation id="2530166226437958497">トラブルシューティング</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />エラーが発生したため、<ph name="DEVICE_OS" /> をインストールできませんでした。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">詳細</translation>
 <translation id="2532144599248877204">バッテリーを 80% 前後に保つことでバッテリー寿命を伸ばします。電源から取り外すいつもの頃合いでバッテリーが完全に充電されます。</translation>
 <translation id="2532146950330687938">デバイスを準備しています...</translation>
 <translation id="2532198298278778531">ChromeOS Flex の設定でセキュア DNS を管理する</translation>
@@ -2703,7 +2702,7 @@
 <translation id="2855243985454069333">同期しているすべてのデバイスから履歴を削除します</translation>
 <translation id="2855812646048059450"><ph name="CREDENTIAL_PROVIDER" /> でログイン</translation>
 <translation id="2856776373509145513">新しいコンテナの作成</translation>
-<translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポート</translation>
+<translation id="2859741939921354763"><ph name="BRAND" /> にパスワードをインポートします</translation>
 <translation id="2860710618359053450">あごを右に動かす</translation>
 <translation id="2861301611394761800">システムの更新が完了しました。システムを再起動してください。</translation>
 <translation id="2861402191395139055">Passpoint の登録</translation>
@@ -2791,7 +2790,6 @@
 <translation id="2921081876747860777">ローカルデータを保護するパスワードを作成してください。</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> は今すぐロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />。同じタスクグループ内の他 <ph name="OTHER_TASK_NUM" /> 件のタスク: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">このアカウントを削除</translation>
 <translation id="2923644930701689793">スマートフォンのカメラロールにアクセス</translation>
 <translation id="292371311537977079">Chrome の設定</translation>
@@ -5398,7 +5396,7 @@
 <translation id="4789348252524569426">音声ファイルをインストールできません。デバイスを更新する必要があります。デバイスを再起動してもう一度お試しください。</translation>
 <translation id="4789550509729954245">付近に共有を行っているデバイスがある場合に通知を表示します</translation>
 <translation id="4791037424585594169">（UDP）</translation>
-<translation id="4791793693640849493">アカウントに項目を保存</translation>
+<translation id="4791793693640849493">アカウントに設定を保存</translation>
 <translation id="4792290259143007505">TrackPoint アクセラレーションを有効にする</translation>
 <translation id="4792711294155034829">問題の報告(&amp;R)...</translation>
 <translation id="4794810983896241342">更新は<ph name="BEGIN_LINK" />管理者<ph name="END_LINK" />によって管理されています</translation>
@@ -10611,7 +10609,6 @@
 <translation id="8524841856047224176">ビデオ通話などのカメラの背景をカスタマイズできます</translation>
 <translation id="8525306231823319788">全画面表示</translation>
 <translation id="8525461909394569609">このアプリには、次のウェブ コンテンツが含まれています</translation>
-<translation id="8526313996927074827">リンクや絵文字などを挿入したり、Google AI を使用して文章を作成したりできます。</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">スピーカー</translation>
 <translation id="8527257351549797148">アプリや拡張機能などにアクセスできるように組織から登録を求められる場合があります。登録により、セキュリティやデバイス設定なども組織で管理できるようになります。</translation>

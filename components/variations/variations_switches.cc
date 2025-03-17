@@ -107,5 +107,8 @@ const char kAcceptEmptySeedSignatureForTesting[] =
 // `variations::VariationsCommandLine::WriteToString`.
 const char kVariationsStateFile[] = "variations-state-file";
 
+// Disable fetching of variations seed from the server for testing.
+const char kDisableVariationsSeedFetch[] = "disable-variations-seed-fetch";
+
 }  // namespace switches
 }  // namespace variations

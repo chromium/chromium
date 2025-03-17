@@ -29,6 +29,10 @@ DiscardableMemoryAllocator* DiscardableMemoryAllocator::GetInstance() {
   return g_discardable_allocator;
 }
 
+bool DiscardableMemoryAllocator::HasInstance() {
+  return g_discardable_allocator != nullptr;
+}
+
 std::unique_ptr<base::DiscardableMemory>
 DiscardableMemoryAllocator::AllocateLockedDiscardableMemoryWithRetryOrDie(
     size_t size,

@@ -34,7 +34,7 @@
 #include "ui/views/widget/native_widget.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_widget.h"
+#include "chrome/browser/glic/widget/glic_widget.h"
 #endif
 
 namespace {

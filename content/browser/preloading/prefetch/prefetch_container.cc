@@ -289,6 +289,14 @@ bool CalculateIsLikelyAheadOfPrerender(
   }
 }
 
+PrefetchContainer::PrefetchResponseCompletedCallbackForTesting&
+GetPrefetchResponseCompletedCallbackForTesting() {
+  static base::NoDestructor<
+      PrefetchContainer::PrefetchResponseCompletedCallbackForTesting>
+      prefetch_response_completed_callback_for_testing;
+  return *prefetch_response_completed_callback_for_testing;
+}
+
 }  // namespace
 
 // Holds the state for the request for a single URL in the context of the
@@ -538,6 +546,13 @@ PrefetchContainer::PrefetchContainer(
   redirect_chain_.push_back(std::make_unique<SinglePrefetch>(
       GetURL(), IsCrossSiteRequest(url::Origin::Create(GetURL())),
       is_reusable));
+
+  // Disallow prefetching ServiceWorker-controlled responses for isolated
+  // network contexts.
+  if (!base::FeatureList::IsEnabled(features::kPrefetchServiceWorker) ||
+      IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
+    service_worker_state_ = PrefetchServiceWorkerState::kDisallowed;
+  }
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -1208,7 +1223,8 @@ const network::mojom::URLResponseHead* PrefetchContainer::GetNonRedirectHead()
              : nullptr;
 }
 
-PrefetchRequestHandler PrefetchContainer::Reader::CreateRequestHandler() {
+std::pair<PrefetchRequestHandler, base::WeakPtr<ServiceWorkerClient>>
+PrefetchContainer::Reader::CreateRequestHandler() {
   // Create a `PrefetchRequestHandler` from the current `SinglePrefetch` (==
   // `reader`) and its corresponding `PrefetchStreamingURLLoader`.
   auto handler = GetCurrentSinglePrefetchToServe()
@@ -1307,9 +1323,21 @@ void PrefetchContainer::StartTimeoutTimerIfNeeded(
   }
 }
 
+// static
+void PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
+    PrefetchResponseCompletedCallbackForTesting callback) {
+  GetPrefetchResponseCompletedCallbackForTesting() =  // IN-TEST
+      std::move(callback);
+}
+
 void PrefetchContainer::OnPrefetchComplete(
     const network::URLLoaderCompletionStatus& completion_status) {
   DVLOG(1) << *this << "::OnPrefetchComplete";
+
+  if (GetPrefetchResponseCompletedCallbackForTesting()) {
+    GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST
+        GetWeakPtr());
+  }
 
   UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
                            redirect_chain_.size());
@@ -2121,6 +2149,21 @@ void PrefetchContainer::MaybeRecordPrefetchStatusToUMA(
   base::UmaHistogramEnumeration("Preloading.Prefetch.PrefetchStatus",
                                 prefetch_status);
   prefetch_status_recorded_to_uma_ = true;
+}
+
+void PrefetchContainer::OnServiceWorkerStateDetermined(
+    PrefetchServiceWorkerState service_worker_state) {
+  switch (service_worker_state_) {
+    case PrefetchServiceWorkerState::kDisallowed:
+      CHECK_EQ(service_worker_state, PrefetchServiceWorkerState::kDisallowed);
+      break;
+    case PrefetchServiceWorkerState::kAllowed:
+      CHECK_NE(service_worker_state, PrefetchServiceWorkerState::kAllowed);
+      service_worker_state_ = service_worker_state;
+      break;
+    case PrefetchServiceWorkerState::kControlled:
+      NOTREACHED();
+  }
 }
 
 }  // namespace content

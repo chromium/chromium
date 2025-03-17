@@ -66,6 +66,7 @@ static_library("lobster") {
     "//net/traffic_annotation:traffic_annotation",
     "//services/data_decoder/public/cpp:cpp",
     "//ui/base/ime/ash",
+    "//ui/display",
   ]
 }
 
@@ -130,6 +131,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/ime/ash",
+    "//ui/display",
+    "//ui/display:test_support",
     "//ui/gfx:test_support",
   ]
 }

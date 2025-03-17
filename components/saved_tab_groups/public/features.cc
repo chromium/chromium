@@ -36,13 +36,6 @@ BASE_FEATURE(kTabGroupSyncDisableNetworkLayer,
              "TabGroupSyncDisableNetworkLayer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Builds off of the original TabGroupsSave feature by making some UI tweaks and
-// adjustments. This flag controls the v2 update of sync, restore, dialog
-// triggering, extension support etc. b/325123353
-BASE_FEATURE(kTabGroupsSaveV2,
-             "TabGroupsSaveV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature flag specific to Desktop platforms. When enabled, desktop platforms
 // will use the TabGroupSyncService. When disabled, desktop platforms will
 // continue to use SavedTabGroupKeyedService.
@@ -109,10 +102,6 @@ BASE_FEATURE(kEnableUrlRestriction,
 BASE_FEATURE(kEnableOriginatingSavedGroupCleanUp,
              "EnableOriginatingSavedGroupCleanUp",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsTabGroupsSaveV2Enabled() {
-  return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
-}
 
 bool IsTabGroupSyncServiceDesktopMigrationEnabled() {
   return base::FeatureList::IsEnabled(kTabGroupSyncServiceDesktopMigration);

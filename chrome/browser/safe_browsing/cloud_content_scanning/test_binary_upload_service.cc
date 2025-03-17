@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/test_binary_upload_service.h"
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 

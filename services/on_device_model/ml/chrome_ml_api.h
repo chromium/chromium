@@ -229,6 +229,12 @@ struct GpuConfig {
   WGPUBackendType backend_type;
 };
 
+// A set of capabilities that a model can have.
+struct ChromeMLCapabilities {
+  bool image_input = false;
+  bool audio_input = false;
+};
+
 struct ChromeMLMetricsFns {
   // Logs an exact sample for the named metric.
   void (*RecordExactLinearHistogram)(const char* name,
@@ -328,6 +334,10 @@ struct ChromeMLAPI {
   bool (*QueryGPUAdapter)(void (*adapter_callback_fn)(WGPUAdapter adapter,
                                                       void* userdata),
                           void* userdata);
+
+  // Gets the model capabilities for the model pointed to by `model_data`.
+  bool (*GetCapabilities)(PlatformFile file,
+                          ChromeMLCapabilities& capabilities);
 
   // Same as SetFatalErrorFn(), but for fatal errors that occur outside of the
   // gpu.

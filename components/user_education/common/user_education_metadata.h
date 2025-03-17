@@ -31,14 +31,13 @@ struct Metadata {
     kWindows = 0,
     kMac = 1,
     kLinux = 2,
-    kChromeOSAsh = 3,
-    kChromeOSLacros = 9,
+    kChromeOS = 3,
   };
 
   // All desktop platforms.
   static constexpr std::initializer_list<Platforms> kAllDesktopPlatforms{
       Platforms::kWindows, Platforms::kMac, Platforms::kLinux,
-      Platforms::kChromeOSAsh, Platforms::kChromeOSLacros};
+      Platforms::kChromeOS};
 
   using FeatureSet =
       base::flat_set<raw_ptr<const base::Feature, CtnExperimental>>;

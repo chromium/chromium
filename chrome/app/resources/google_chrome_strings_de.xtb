@@ -37,6 +37,7 @@
 <translation id="1497802159252041924">Installationsfehler: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Personalisiere dein neues Chrome-Profil</translation>
 <translation id="1547295885616600893">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
+<translation id="1547469039832541117">Beendet den ausgewählten Task.</translation>
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
 <translation id="1587223624401073077">Google Chrome verwendet deine Kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ist schädlich und wurde daher von Chrome blockiert.</translation>
@@ -171,6 +172,7 @@
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
 <translation id="3161522574479303604">Alle Sprachen</translation>
+<translation id="319199214552513804">Wenn du auf allen deinen Computern auf diese Erweiterung und mehr zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="3196187562065225381">Chrome hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
 <translation id="3222857603094643834">Mit Google Lens nach beliebigen Inhalten auf dieser Seite suchen</translation>
 <translation id="3226612997184048185">Wenn du auch deine Lesezeichen in deinem Google-Konto speicherst, kannst du in Chrome Produktpreise im Auge behalten und dich benachrichtigen lassen, wenn der Preis sinkt</translation>

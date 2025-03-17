@@ -25,8 +25,8 @@ class PlainTextNodeTest : public testing::Test {
   static PlainTextNode& CreatePlainTextNode(const TextRun& run,
                                             bool normalize_space,
                                             bool supports_bidi) {
-    return *MakeGarbageCollected<PlainTextNode>(run, normalize_space,
-                                                TestFont(), supports_bidi);
+    return *MakeGarbageCollected<PlainTextNode>(
+        run, normalize_space, TestFont(), supports_bidi, nullptr);
   }
 
   static constexpr bool kDirectionalOverride = true;
@@ -255,7 +255,7 @@ TEST_F(PlainTextNodeTest, SegmentTextBidiOverrideNested) {
   PlainTextNode& node =
       CreatePlainTextNode(run, !kNormalizeSpace, kSupportsBidi);
 
-  ASSERT_EQ(node.ItemList().size(), 3u);
+  ASSERT_EQ(node.ItemList().size(), 5u);
 
   const PlainTextItem& item1 = node.ItemList()[0];
   EXPECT_EQ(item1.StartOffset(), 0u);
@@ -263,14 +263,24 @@ TEST_F(PlainTextNodeTest, SegmentTextBidiOverrideNested) {
   EXPECT_EQ(item1.Text(), "123");
 
   const PlainTextItem& item2 = node.ItemList()[1];
-  EXPECT_EQ(item2.StartOffset(), 3u);
+  EXPECT_EQ(item2.StartOffset(), 4u);
   EXPECT_EQ(item2.Direction(), TextDirection::kRtl);
-  EXPECT_EQ(item2.Text(), u"\u200B\u05E9\u05DC\u05D5\u05DD");
+  EXPECT_EQ(item2.Text(), u"\u05E9\u05DC\u05D5\u05DD");
 
   const PlainTextItem& item3 = node.ItemList()[2];
-  EXPECT_EQ(item3.StartOffset(), 8u);
-  EXPECT_EQ(item3.Direction(), TextDirection::kLtr);
-  EXPECT_EQ(item3.Text(), u"\u200B456");
+  EXPECT_EQ(item3.StartOffset(), 3u);
+  EXPECT_EQ(item3.Direction(), TextDirection::kRtl);
+  EXPECT_EQ(item3.Text(), u"\u200B");
+
+  const PlainTextItem& item4 = node.ItemList()[3];
+  EXPECT_EQ(item4.StartOffset(), 8u);
+  EXPECT_EQ(item4.Direction(), TextDirection::kLtr);
+  EXPECT_EQ(item4.Text(), u"\u200B");
+
+  const PlainTextItem& item5 = node.ItemList()[4];
+  EXPECT_EQ(item5.StartOffset(), 9u);
+  EXPECT_EQ(item5.Direction(), TextDirection::kLtr);
+  EXPECT_EQ(item5.Text(), u"456");
 }
 
 TEST_F(PlainTextNodeTest, Shape) {

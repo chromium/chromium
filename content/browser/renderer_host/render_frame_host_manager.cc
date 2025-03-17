@@ -1739,8 +1739,8 @@ RenderFrameHostManager::GetFrameHostForNavigation(
       GetSiteInstanceForNavigationRequest(request, is_same_site_getter,
                                           browsing_context_group_swap,
                                           reason_output);
-  if (base::FeatureList::IsEnabled(
-          features::kHoldbackDebugReasonStringRemoval)) {
+  if (reason && base::FeatureList::IsEnabled(
+                    features::kHoldbackDebugReasonStringRemoval)) {
     reason->append(site_instance_reason);
   }
 

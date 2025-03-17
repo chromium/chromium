@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "services/device/usb/mock_usb_device.h"
+#include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,8 +28,10 @@ class MockBlockingTaskRunnerHelper
   MockBlockingTaskRunnerHelper() {
     ON_CALL(*this, ClaimInterface).WillByDefault(testing::Return(true));
     ON_CALL(*this, ReleaseInterface).WillByDefault(testing::Return(true));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
     ON_CALL(*this, DetachInterface).WillByDefault(testing::Return(true));
     ON_CALL(*this, ReattachInterface).WillByDefault(testing::Return(true));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   }
   ~MockBlockingTaskRunnerHelper() override = default;
 
@@ -41,8 +44,13 @@ class MockBlockingTaskRunnerHelper
               (override));
   MOCK_METHOD(bool, ClaimInterface, (int), (override));
   MOCK_METHOD(bool, ReleaseInterface, (int), (override));
-  MOCK_METHOD(bool, DetachInterface, (int), (override));
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+  MOCK_METHOD(bool,
+              DetachInterface,
+              (int, const CombinedInterfaceInfo& interfaceInfo),
+              (override));
   MOCK_METHOD(bool, ReattachInterface, (int), (override));
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 };
 
 class UsbDeviceHandleUsbfsTest : public ::testing::Test {
@@ -50,6 +58,13 @@ class UsbDeviceHandleUsbfsTest : public ::testing::Test {
   UsbDeviceHandleUsbfsTest()
       : usb_device_(base::MakeRefCounted<MockUsbDevice>(/*bus_number=*/0,
                                                         /*port_number=*/0)) {
+    mojom::UsbConfigurationInfoPtr config = BuildUsbConfigurationInfoPtr(
+        /*configuration_value=*/0, /*self_powered=*/false,
+        /*remote_wakeup=*/false, /*maximum_power=*/0);
+    config->interfaces.push_back(CreateInterface(0));
+    config->interfaces.push_back(CreateInterface(1));
+    config->interfaces.push_back(CreateInterface(2));
+    usb_device_->AddMockConfig(std::move(config));
     handle1_ = CreateHandle(usb_device_);
     handle2_ = CreateHandle(usb_device_);
   }
@@ -58,7 +73,13 @@ class UsbDeviceHandleUsbfsTest : public ::testing::Test {
     handle2_->Close();
   }
 
-  scoped_refptr<UsbDeviceHandleUsbfs> CreateHandle(
+  static mojom::UsbInterfaceInfoPtr CreateInterface(int interface_number) {
+    return BuildUsbInterfaceInfoPtr(
+        interface_number, /*alternate_setting=*/0, /*interface_class=*/0,
+        /*interface_subclass=*/0, /*interface_protocol=*/0);
+  }
+
+  static scoped_refptr<UsbDeviceHandleUsbfs> CreateHandle(
       scoped_refptr<UsbDevice> usb_device) {
     scoped_refptr<UsbDeviceHandleUsbfs> handle =
         base::MakeRefCounted<UsbDeviceHandleUsbfs>(
@@ -75,7 +96,7 @@ class UsbDeviceHandleUsbfsTest : public ::testing::Test {
       features::kAutomaticUsbDetach};
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<UsbDevice> usb_device_;
+  scoped_refptr<MockUsbDevice> usb_device_;
   scoped_refptr<UsbDeviceHandleUsbfs> handle1_;
   scoped_refptr<UsbDeviceHandleUsbfs> handle2_;
 };

@@ -60,7 +60,8 @@ class TabModelJniBridge : public TabModel {
   void HandlePopupNavigation(TabAndroid* parent,
                              NavigateParams* params) override;
 
-  content::WebContents* CreateNewTabForDevTools(const GURL& url) override;
+  content::WebContents* CreateNewTabForDevTools(const GURL& url,
+                                                bool new_window) override;
 
   // Return true if we are currently restoring sessions asynchronously.
   bool IsSessionRestoreInProgress() const override;

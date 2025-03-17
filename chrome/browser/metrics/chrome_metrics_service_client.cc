@@ -703,13 +703,10 @@ void ChromeMetricsServiceClient::Initialize() {
     identifiability_study_state_ =
         std::make_unique<IdentifiabilityStudyState>(local_state);
 
-    uint64_t client_id = 0;
-
     ukm_service_ = std::make_unique<ukm::UkmService>(
         local_state, this,
         MakeDemographicMetricsProvider(
-            metrics::MetricsLogUploader::MetricServiceType::UKM),
-        client_id);
+            metrics::MetricsLogUploader::MetricServiceType::UKM));
     ukm_service_->SetIsWebstoreExtensionCallback(
         base::BindRepeating(&IsWebstoreExtension));
     ukm_service_->RegisterEventFilter(

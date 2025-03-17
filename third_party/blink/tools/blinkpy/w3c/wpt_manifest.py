@@ -425,8 +425,8 @@ class WPTManifest:
                            base_manifest_path, manifest_path)
                 fs.copyfile(base_manifest_path, manifest_path)
             else:
-                _log.error('Manifest base not found at "%s".',
-                           base_manifest_path)
+                _log.info('Manifest base not found at "%s".',
+                          base_manifest_path)
             url_base = '/'
         elif path.startswith('wpt_internal'):
             url_base = '/wpt_internal/'

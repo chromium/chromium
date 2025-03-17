@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/editing/drag_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -351,6 +352,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(pending_snap_updates_);
   visitor->Trace(pending_perform_snap_);
   visitor->Trace(disconnected_elements_with_remembered_size_);
+  visitor->Trace(pending_scroll_marker_selection_updates_);
 }
 
 void LocalFrameView::ForAllChildViewsAndPlugins(
@@ -1714,33 +1716,6 @@ float LocalFrameView::InputEventsScaleFactor() const {
          frame_->GetPage()->GetChromeClient().InputEventsScaleForEmulation();
 }
 
-void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
-  Page* page = frame_->GetPage();
-  if (!page)
-    return;
-
-  if (RuntimeEnabledFeatures::
-          ScrollableAreasWithScrollNodeOptimizationEnabled()) {
-    for (const auto& scrollable_area : scrollable_areas_with_scroll_node_) {
-      // TODO(pdr): This check is the same for all areas and can be moved out of
-      // the loop.
-      if (!scrollable_area->ScrollbarsCanBeActive()) {
-        continue;
-      }
-      scrollable_area->ContentAreaWillPaint();
-    }
-  } else {
-    for (const auto& scrollable_area : scrollable_areas_.Values()) {
-      // TODO(pdr): This check is the same for all areas and can be moved out of
-      // the loop.
-      if (!scrollable_area->ScrollbarsCanBeActive()) {
-        continue;
-      }
-      scrollable_area->ContentAreaWillPaint();
-    }
-  }
-}
-
 void LocalFrameView::UpdateDocumentDraggableRegions() const {
   Document* document = frame_->GetDocument();
   if (!document->HasDraggableRegions() ||
@@ -2548,6 +2523,8 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
   // Fire scrollsnapchanging events based on the new layout if necessary.
   EnqueueScrollSnapChangingFromImplIfNecessary();
 
+  ExecutePendingScrollMarkerSelectionUpdates();
+
   EnqueueScrollEvents();
 
   frame_->GetPage()->GetValidationMessageClient().LayoutOverlay();
@@ -2969,6 +2946,8 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 
   paint_artifact_compositor_->SetLCDTextPreference(
       page->GetSettings().GetLCDTextPreference());
+  paint_artifact_compositor_->SetDevicePixelRatio(
+      frame_->GetDocument()->DevicePixelRatio());
 
   SCOPED_UMA_AND_UKM_TIMER(GetUkmAggregator(),
                            LocalFrameUkmAggregator::kCompositingCommit);
@@ -5169,6 +5148,35 @@ void LocalFrameView::ExecutePendingSnapUpdates() {
 void LocalFrameView::NotifyElementWithRememberedSizeDisconnected(
     Element* element) {
   disconnected_elements_with_remembered_size_.insert(element);
+}
+
+void LocalFrameView::AddPendingScrollMarkerSelectionUpdate(
+    ScrollMarkerGroupPseudoElement* scroll_marker_group,
+    bool apply_snap) {
+  if (!pending_scroll_marker_selection_updates_) {
+    pending_scroll_marker_selection_updates_ = MakeGarbageCollected<
+        GCedHeapHashMap<Member<ScrollMarkerGroupPseudoElement>, bool>>();
+  }
+  pending_scroll_marker_selection_updates_->insert(scroll_marker_group,
+                                                   apply_snap);
+}
+
+void LocalFrameView::RemovePendingScrollMarkerSelectionUpdate(
+    ScrollMarkerGroupPseudoElement* scroll_marker_group) {
+  if (pending_scroll_marker_selection_updates_) {
+    pending_scroll_marker_selection_updates_->erase(scroll_marker_group);
+  }
+}
+
+void LocalFrameView::ExecutePendingScrollMarkerSelectionUpdates() {
+  if (pending_scroll_marker_selection_updates_) {
+    for (const auto& update : *pending_scroll_marker_selection_updates_) {
+      ScrollMarkerGroupPseudoElement* scroll_marker_group = update.key;
+      scroll_marker_group->ScrollSelectedIntoView(
+          /*apply_snap_alignment*/ update.value);
+    }
+    pending_scroll_marker_selection_updates_->clear();
+  }
 }
 
 }  // namespace blink

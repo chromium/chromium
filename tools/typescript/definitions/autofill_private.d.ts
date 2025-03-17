@@ -129,6 +129,12 @@ declare global {
         ACCOUNT = 'ACCOUNT',
       }
 
+      export enum AttributeTypeDataType {
+        COUNTRY = 'COUNTRY',
+        DATE = 'DATE',
+        STRING = 'STRING',
+      }
+
       export interface AutofillMetadata {
         summaryLabel: string;
         summarySublabel?: string;
@@ -201,6 +207,7 @@ declare global {
       export interface AttributeType {
         typeName: number;
         typeNameAsString: string;
+        dataType: AttributeTypeDataType;
       }
 
       export interface EntityType {

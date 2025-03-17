@@ -68,7 +68,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
 
     private ClickHandler mClickHandler;
     private Callback<LogoBridge.Logo> mOnLogoAvailableCallback;
-    private int mLogoSizeForLogoPolish;
+    private int mDoodleSize;
 
     private final FloatProperty<LogoView> mTransitionProperty =
             new FloatProperty<LogoView>("") {
@@ -142,11 +142,11 @@ public class LogoView extends FrameLayout implements OnClickListener {
     }
 
     /**
-     * Sets the logo size to use when logo polish is enabled. When logo polish is disabled, this
-     * value should be invalid.
+     * Sets the logo size to use when logo is a google doodle. When logo is not a google doodle,
+     * this value should be invalid.
      */
-    void setLogoSizeForLogoPolish(int logoSizeForLogoPolish) {
-        mLogoSizeForLogoPolish = logoSizeForLogoPolish;
+    void setDoodleSize(int doodleSize) {
+        mDoodleSize = doodleSize;
     }
 
     /** Jumps to the end of the logo cross-fading animation, if any. */
@@ -261,8 +261,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         int oldLogoHeight = logoViewLayoutParams.height;
         int oldLogoTopMargin = logoViewLayoutParams.topMargin;
         int[] newLogoViewLayoutParams =
-                LogoUtils.getLogoViewLayoutParams(
-                        getResources(), !isDefaultLogo, mLogoSizeForLogoPolish);
+                LogoUtils.getLogoViewLayoutParams(getResources(), !isDefaultLogo, mDoodleSize);
         int newLogoHeight = newLogoViewLayoutParams[0];
         int newLogoTopMargin = newLogoViewLayoutParams[1];
 
@@ -298,7 +297,8 @@ public class LogoView extends FrameLayout implements OnClickListener {
                                                         * 2
                                                         * (animationValue - 0.5f)));
 
-                        LogoUtils.setLogoViewLayoutParams(LogoView.this, logoHeight, logoTopMargin);
+                        LogoUtils.setLogoViewLayoutParamsForDoodle(
+                                LogoView.this, logoHeight, logoTopMargin);
                     }
                 });
         mFadeAnimation.addListener(
@@ -319,7 +319,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                         mTransitionAmount = 0f;
                         mFadeAnimation = null;
                         if (newLogoHeight != oldLogoHeight) {
-                            LogoUtils.setLogoViewLayoutParams(
+                            LogoUtils.setLogoViewLayoutParamsForDoodle(
                                     LogoView.this, newLogoHeight, newLogoTopMargin);
                         }
                         setContentDescription(contentDescription);
@@ -504,7 +504,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
         mLoadingView.setVisibility(visibility);
     }
 
-    int getLogoSizeForLogoPolishForTesting() {
-        return mLogoSizeForLogoPolish;
+    int getDoodleSizeForTesting() {
+        return mDoodleSize;
     }
 }

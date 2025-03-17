@@ -224,10 +224,10 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
             : "",
         crx_component->lang.empty() ? config_->GetLang() : crx_component->lang,
         metadata->GetInstallDate(app_id), install_source,
-        crx_component->install_location, crx_component->fingerprint,
-        crx_component->installer_attributes, metadata->GetCohort(app_id),
-        metadata->GetCohortHint(app_id), metadata->GetCohortName(app_id),
-        crx_component->channel, crx_component->disabled_reasons, cached_hashes,
+        crx_component->install_location, crx_component->installer_attributes,
+        metadata->GetCohort(app_id), metadata->GetCohortHint(app_id),
+        metadata->GetCohortName(app_id), crx_component->channel,
+        crx_component->disabled_reasons, cached_hashes,
         MakeProtocolUpdateCheck(
             !crx_component->updates_enabled ||
                 (!crx_component->allow_updates_on_metered_connection &&
@@ -326,18 +326,15 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
 
   PersistedData* metadata = config_->GetPersistedData();
   const int daynum = results.daystart_elapsed_days;
-  for (const auto& result : results.list) {
-    auto entry = result.cohort_attrs.find(ProtocolParser::Result::kCohort);
-    if (entry != result.cohort_attrs.end()) {
-      metadata->SetCohort(result.extension_id, entry->second);
+  for (const auto& result : results.apps) {
+    if (result.cohort) {
+      metadata->SetCohort(result.app_id, *result.cohort);
     }
-    entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortName);
-    if (entry != result.cohort_attrs.end()) {
-      metadata->SetCohortName(result.extension_id, entry->second);
+    if (result.cohort_name) {
+      metadata->SetCohortName(result.app_id, *result.cohort_name);
     }
-    entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortHint);
-    if (entry != result.cohort_attrs.end()) {
-      metadata->SetCohortHint(result.extension_id, entry->second);
+    if (result.cohort_hint) {
+      metadata->SetCohortHint(result.app_id, *result.cohort_hint);
     }
   }
 

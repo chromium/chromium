@@ -758,6 +758,10 @@ id<GREYMatcher> IncognitoTabGrid() {
   return [ChromeMatchersAppInterface incognitoTabGrid];
 }
 
+id<GREYMatcher> InactiveTabGrid() {
+  return [ChromeMatchersAppInterface inactiveTabGrid];
+}
+
 id<GREYMatcher> TabGridCloseButtonForCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGridCloseButtonForCellAtIndex:index];
 }

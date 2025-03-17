@@ -13,9 +13,10 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/background/glic/glic_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
-#include "chrome/browser/glic/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/status_icons/status_icon.h"
@@ -131,14 +132,14 @@ GlicStatusIcon::~GlicStatusIcon() {
 }
 
 void GlicStatusIcon::OnStatusIconClicked() {
-  controller_->Toggle(InvocationSource::kOsButton);
+  controller_->Toggle(mojom::InvocationSource::kOsButton);
 }
 
 void GlicStatusIcon::ExecuteCommand(int command_id, int event_flags) {
   auto* profile = GlicProfileManager::GetInstance()->GetProfileForLaunch();
   switch (command_id) {
     case IDC_GLIC_STATUS_ICON_MENU_SHOW: {
-      controller_->Show(InvocationSource::kOsButtonMenu);
+      controller_->Show(mojom::InvocationSource::kOsButtonMenu);
       base::RecordAction(base::UserMetricsAction(
           "GlicOsEntrypoint.ContextMenuSelection.OpenGlic"));
       break;

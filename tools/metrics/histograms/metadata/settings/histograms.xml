@@ -92,6 +92,21 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/histograms.xml:AllPermissionTypes) -->
 
+<variants name="TrackedPreferencesExternalValidators">
+  <variant name=".FromRegistry"
+      summary="Validation using MACs in the Windows Registry."/>
+</variants>
+
+<histogram name="Settings.AddSiteDialog.Incognito" enum="BooleanEnabled"
+    expires_after="2025-08-31">
+  <owner>fmacintosh@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records whether a content setting was submitted for incognito via the add
+    site dialog. Recorded only when the incognito checkbox is available.
+  </summary>
+</histogram>
+
 <histogram name="Settings.AdvancedSpellcheck.OnStartup2" enum="BooleanEnabled"
     expires_after="2024-10-13">
   <owner>harrisonsean@chromium.org</owner>
@@ -1100,8 +1115,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   </summary>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceChanged" enum="TrackedPreference"
-    expires_after="2026-02-01">
+<histogram
+    name="Settings.TrackedPreferenceChanged{TrackedPreferencesExternalValidators}"
+    enum="TrackedPreference" expires_after="2026-02-01">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
@@ -1111,11 +1127,17 @@ useful for Chirp alerts (go/crca-alerts). -->
     The id of a tracked preference whose value has been changed since the last
     time Chrome set it. Without a suffix, this histogram stands for preference
     validation using MACs in the JSON pref files.
+    {TrackedPreferencesExternalValidators}
   </summary>
+  <token key="TrackedPreferencesExternalValidators"
+      variants="TrackedPreferencesExternalValidators">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceCleared" enum="TrackedPreference"
-    expires_after="2026-02-01">
+<histogram
+    name="Settings.TrackedPreferenceCleared{TrackedPreferencesExternalValidators}"
+    enum="TrackedPreference" expires_after="2026-02-01">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1124,11 +1146,16 @@ useful for Chirp alerts (go/crca-alerts). -->
     validation using MACs in the JSON pref files.
 
     Warning: This histogram was expired from 2022-12 to 2025-03; data may be
-    missing.
+    missing. {TrackedPreferencesExternalValidators}
   </summary>
+  <token key="TrackedPreferencesExternalValidators"
+      variants="TrackedPreferencesExternalValidators">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceInitialized"
+<histogram
+    name="Settings.TrackedPreferenceInitialized{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-02-01">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
@@ -1140,11 +1167,16 @@ useful for Chirp alerts (go/crca-alerts). -->
     in the JSON pref files.
 
     Warning: This histogram was expired from 2022-12 to 2025-03; data may be
-    missing.
+    missing. {TrackedPreferencesExternalValidators}
   </summary>
+  <token key="TrackedPreferencesExternalValidators"
+      variants="TrackedPreferencesExternalValidators">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceMigratedLegacyDeviceId"
+<histogram
+    name="Settings.TrackedPreferenceMigratedLegacyDeviceId{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-02-01">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
@@ -1156,11 +1188,16 @@ useful for Chirp alerts (go/crca-alerts). -->
     stands for preference validation using MACs in the JSON pref files.
 
     Warning: This histogram was expired from 2022-12 to 2025-03; data may be
-    missing.
+    missing. {TrackedPreferencesExternalValidators}
   </summary>
+  <token key="TrackedPreferencesExternalValidators"
+      variants="TrackedPreferencesExternalValidators">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceNullInitialized"
+<histogram
+    name="Settings.TrackedPreferenceNullInitialized{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-02-01">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
@@ -1170,8 +1207,12 @@ useful for Chirp alerts (go/crca-alerts). -->
     preference validation using MACs in the JSON pref files.
 
     Warning: This histogram was expired from 2022-12 to 2025-03; data may be
-    missing.
+    missing. {TrackedPreferencesExternalValidators}
   </summary>
+  <token key="TrackedPreferencesExternalValidators"
+      variants="TrackedPreferencesExternalValidators">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceReset" enum="TrackedPreference"
@@ -1181,7 +1222,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>The id of a tracked preference which was reset by Chrome.</summary>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceTrustedInitialized"
+<histogram
+    name="Settings.TrackedPreferenceTrustedInitialized{TrackedPreferencesExternalValidators}"
     enum="TrackedPreference" expires_after="2026-02-01">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
@@ -1192,12 +1234,17 @@ useful for Chirp alerts (go/crca-alerts). -->
     validation using MACs in the JSON pref files.
 
     Warning: This histogram was expired from 2022-12 to 2025-03; data may be
-    missing.
+    missing. {TrackedPreferencesExternalValidators}
   </summary>
+  <token key="TrackedPreferencesExternalValidators"
+      variants="TrackedPreferencesExternalValidators">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Settings.TrackedPreferenceUnchanged" enum="TrackedPreference"
-    expires_after="2026-02-01">
+<histogram
+    name="Settings.TrackedPreferenceUnchanged{TrackedPreferencesExternalValidators}"
+    enum="TrackedPreference" expires_after="2026-02-01">
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
@@ -1206,8 +1253,12 @@ useful for Chirp alerts (go/crca-alerts). -->
     validation using MACs in the JSON pref files.
 
     Warning: This histogram was expired from 2022-12 to 2025-03; data may be
-    missing.
+    missing. {TrackedPreferencesExternalValidators}
   </summary>
+  <token key="TrackedPreferencesExternalValidators"
+      variants="TrackedPreferencesExternalValidators">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Settings.TrackedPreferenceWantedReset"

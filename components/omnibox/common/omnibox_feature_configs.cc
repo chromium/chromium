@@ -159,7 +159,7 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
           .Get();
   scoring_scoped_max_low_quality_matches =
       base::FeatureParam<size_t>(&kSearchAggregatorProvider,
-                                 "scoring_scoped_max_low_quality_matches", 6)
+                                 "scoring_scoped_max_low_quality_matches", 8)
           .Get();
   scoring_unscoped_max_low_quality_matches =
       base::FeatureParam<size_t>(&kSearchAggregatorProvider,
@@ -249,20 +249,20 @@ SuggestionAnswerMigration::SuggestionAnswerMigration() {
   enabled = base::FeatureList::IsEnabled(kOmniboxSuggestionAnswerMigration);
 }
 
-BASE_FEATURE(UrlSuggestionsOnFocus::kUrlSuggestionsOnFocus,
-             "UrlSuggestionsOnFocus",
+BASE_FEATURE(OmniboxUrlSuggestionsOnFocus::kOmniboxUrlSuggestionsOnFocus,
+             "OmniboxUrlSuggestionsOnFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
-UrlSuggestionsOnFocus::UrlSuggestionsOnFocus() {
-  enabled = base::FeatureList::IsEnabled(kUrlSuggestionsOnFocus);
-  max_suggestions = base::FeatureParam<size_t>(&kUrlSuggestionsOnFocus,
-                                               "OnFocusMaxSearchSuggestions", 8)
+OmniboxUrlSuggestionsOnFocus::OmniboxUrlSuggestionsOnFocus() {
+  enabled = base::FeatureList::IsEnabled(kOmniboxUrlSuggestionsOnFocus);
+  max_suggestions = base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
+                                               "OnFocusMaxSuggestions", 8)
                         .Get();
   max_search_suggestions =
-      base::FeatureParam<size_t>(&kUrlSuggestionsOnFocus,
+      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
                                  "OnFocusMaxSearchSuggestions", 4)
           .Get();
   max_url_suggestions =
-      base::FeatureParam<size_t>(&kUrlSuggestionsOnFocus,
+      base::FeatureParam<size_t>(&kOmniboxUrlSuggestionsOnFocus,
                                  "OnFocusMaxUrlSuggestions", 4)
           .Get();
 }

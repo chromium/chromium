@@ -406,22 +406,18 @@ void BM_Fifo(benchmark::State& state) {
 template <typename T>
 void BM_FwdIter(benchmark::State& state) {
   using V = typename remove_pair_const<typename T::value_type>::type;
-  using R = typename T::value_type const*;
 
   std::vector<V> values = GenerateValues<V>(kBenchmarkValues);
   T container(values.begin(), values.end());
 
   auto iter = container.end();
 
-  R r = nullptr;
-
   while (state.KeepRunning()) {
     if (iter == container.end()) iter = container.begin();
-    r = &(*iter);
-    ++iter;
+    auto *v = &(*iter);
+    benchmark::DoNotOptimize(v);
+    benchmark::DoNotOptimize(++iter);
   }
-
-  benchmark::DoNotOptimize(r);
 }
 
 // Benchmark random range-construction of a container.

@@ -508,7 +508,7 @@ TEST_P(ConnectionTest, MAYBE_Disconnect) {
               OnConnectionState(ConnectionToHost::CLOSED, ErrorCode::OK));
   EXPECT_CALL(host_event_handler_, OnConnectionClosed(ErrorCode::OK));
 
-  client_session_->Close(ErrorCode::OK);
+  client_session_->Close(ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
   base::RunLoop().RunUntilIdle();
 }
 

@@ -5,7 +5,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -29,10 +29,10 @@
 namespace extensions {
 namespace {
 
-class WebAccessibleResourcesApiTest : public ExtensionPlatformApiTest {
+class WebAccessibleResourcesApiTest : public ExtensionApiTest {
  public:
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
@@ -212,12 +212,12 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
 
 // Useful for testing web accessible resources loaded from a content script.
 class WebAccessibleResourcesDynamicUrlScriptingApiTest
-    : public ExtensionPlatformApiTest {
+    : public ExtensionApiTest {
  public:
   WebAccessibleResourcesDynamicUrlScriptingApiTest() = default;
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(StartEmbeddedTestServer());
   }

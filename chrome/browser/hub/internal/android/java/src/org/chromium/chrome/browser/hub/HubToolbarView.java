@@ -42,7 +42,6 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.animation.AnimationHandler;
-import org.chromium.ui.base.ViewUtils;
 
 import java.util.List;
 
@@ -104,14 +103,10 @@ public class HubToolbarView extends LinearLayout {
         mMenuButtonContainer.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
     }
 
-    void setActionButton(@Nullable FullButtonData buttonData, boolean showText) {
+    void setActionButton(@Nullable FullButtonData buttonData) {
         ApplyButtonData.apply(buttonData, mActionButton);
-        if (!showText) {
-            mActionButton.setCompoundDrawablePadding(0);
-            mActionButton.setText(null);
-        } else {
-            mActionButton.setCompoundDrawablePadding(ViewUtils.dpToPx(getContext(), 16));
-        }
+        mActionButton.setText(null);
+        mActionButton.setCompoundDrawablePadding(0);
     }
 
     void setPaneSwitcherButtonData(
@@ -269,7 +264,6 @@ public class HubToolbarView extends LinearLayout {
     private void updateActionButtonColorInternal(Context context, @ColorInt int color) {
         ColorStateList actionButtonColor = HubColors.getActionButtonColor(context, color);
         TextViewCompat.setCompoundDrawableTintList(mActionButton, actionButtonColor);
-        mActionButton.setTextColor(actionButtonColor);
     }
 
     private void updateSearchLoupeColor(@ColorInt int color) {

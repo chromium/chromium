@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.CheckableImageView;
@@ -34,15 +35,18 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
     private View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeEEA(
-            Context context,
+            Activity activity,
             PrivacySandboxBridge privacySandboxBridge,
             @SurfaceType int surfaceType) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
 
         mPrivacySandboxBridge = privacySandboxBridge;
         mSurfaceType = surfaceType;
         mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_eea, null);
+                LayoutInflater.from(activity).inflate(R.layout.privacy_sandbox_notice_eea, null);
         setContentView(mContentView);
         mOnClickListener = getOnClickListener();
 
@@ -68,7 +72,7 @@ public class PrivacySandboxDialogNoticeEEA extends ChromeDialog
         mDropdownElement.setOnClickListener(mOnClickListener);
         mDropdownContainer = mContentView.findViewById(R.id.dropdown_container);
         mExpandArrowView = mContentView.findViewById(R.id.expand_arrow);
-        mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(context));
+        mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(activity));
         mExpandArrowView.setChecked(isDropdownExpanded());
 
         setBulletsDescription();

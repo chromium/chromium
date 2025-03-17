@@ -226,18 +226,19 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   bool delay_presenetation_until_next_vsync =
       features::IsVSyncAlignedPresentEnabled();
 
+  // The current frame has been added to
+  // ca_layer_tree_coordinator_->NumPendingSwaps() after calling
+  // ca_layer_tree_coordinator_->Present(). Check NumPendingSwaps() > 1 to see
+  // whether there is any previous pending frame. The current frame must wait in
+  // the queue if there is already one before this.
   if (base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames) &&
-      !ca_layer_tree_coordinator_->NumPendingSwaps() &&
+      ca_layer_tree_coordinator_->NumPendingSwaps() > 1 &&
       !data.is_handling_interaction && !data.is_handling_animation) {
     delay_presenetation_until_next_vsync = false;
   }
 
   if (features::IsVSyncAlignedPresentEnabled() &&
       base::FeatureList::IsEnabled(kPresentationDelayForInteractiveFrames)) {
-    // This is recorded after calling ca_layer_tree_coordinator_->Present(). The
-    // current frame has been added to
-    // ca_layer_tree_coordinator_->NumPendingSwaps(). Check NumPendingSwaps() >
-    // 1 to see whether there is any previous pending frame.
     bool has_prev_pending_frame =
         ca_layer_tree_coordinator_->NumPendingSwaps() > 1;
     RecordFrameTypes(data.is_handling_interaction, data.is_handling_animation,

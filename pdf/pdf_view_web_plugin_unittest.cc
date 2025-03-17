@@ -3004,8 +3004,9 @@ TEST_F(PdfViewWebPluginInkTest, DrawInProgressStroke) {
 
   // Draw the canvas for the in-progress stroke.
   plugin_->Paint(canvas_.sk_canvas(), kScreenRect);
-  EXPECT_TRUE(MatchesPngFile(canvas_.GetBitmap().asImage().get(),
-                             GetInkTestDataFilePath("diagonal_stroke.png")));
+  EXPECT_TRUE(MatchesPngFile(
+      canvas_.GetBitmap().asImage().get(),
+      GetInkTestDataFilePath(FILE_PATH_LITERAL("diagonal_stroke.png"))));
 
   // Finish the stroke.  After a stroke is finished there is nothing more to
   // be drawn by PdfInkModule, as the completed stroke is provided by a

@@ -78,13 +78,13 @@ constexpr size_t kPdfUploadLimitBytes = 128 * kBytesPerMegabyte;
 
 void OnGotAIPageContentForModelPrototyping(
     AiDataKeyedService::AiDataCallback continue_callback,
-    std::optional<optimization_guide::proto::AnnotatedPageContent> proto) {
+    std::optional<optimization_guide::AIPageContentResult> page_content) {
   TRACE_EVENT("browser", "OnGotAIPageContentForModelPrototyping");
 
   AiDataKeyedService::BrowserData data;
-  if (proto) {
+  if (page_content) {
     *data.mutable_page_context()->mutable_annotated_page_content() =
-        std::move(*proto);
+        std::move(page_content->proto);
     std::move(continue_callback).Run(std::move(data));
     return;
   }
@@ -704,7 +704,9 @@ std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
                                        // https://issues.chromium.org/377129777
                                        "bgbpcgpcobgjpnpiginpidndjpggappi",
                                        // https://issues.chromium.org/376699519
-                                       "eefninhhiifgcimjkmkongegpoaikmhm"});
+                                       "eefninhhiifgcimjkmkongegpoaikmhm",
+                                       // https://issues.chromium.org/403366603
+                                       "abdciamfdmknaeggbnmafmbdfdmhfgfa"});
   allowlisted_extensions.insert(allowlisted_extensions.end(),
                                 kHardcodedAllowlistedExtensions->begin(),
                                 kHardcodedAllowlistedExtensions->end());

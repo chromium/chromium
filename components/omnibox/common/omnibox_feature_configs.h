@@ -247,9 +247,9 @@ struct SuggestionAnswerMigration : Config<SuggestionAnswerMigration> {
 };
 
 // Enables url suggestions when omnibox is focused on Web/SRP.
-struct UrlSuggestionsOnFocus : Config<UrlSuggestionsOnFocus> {
-  DECLARE_FEATURE(kUrlSuggestionsOnFocus);
-  UrlSuggestionsOnFocus();
+struct OmniboxUrlSuggestionsOnFocus : Config<OmniboxUrlSuggestionsOnFocus> {
+  DECLARE_FEATURE(kOmniboxUrlSuggestionsOnFocus);
+  OmniboxUrlSuggestionsOnFocus();
   bool enabled;
   // Max number of zps suggestions to show.
   size_t max_suggestions;

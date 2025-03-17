@@ -49,6 +49,8 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
   void UnPinSelectedMarker();
   bool SelectedMarkerIsPinned() const;
 
+  void ScrollSelectedIntoView(bool apply_snap_alignment);
+
  private:
 
   ScrollMarkerPseudoElement* FindNextScrollMarker(const Element* current);

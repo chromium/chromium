@@ -223,6 +223,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             }
 
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator = null;
+            @Nullable SharedImageTilesConfig.Builder sharedImageTilesConfigBuilder = null;
             Profile profile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
             CollaborationService collaborationService =
                     CollaborationServiceFactory.getForProfile(profile);
@@ -230,11 +231,15 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             if (serviceStatus.isAllowedToJoin()) {
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(profile);
-                SharedImageTilesConfig config =
-                        new SharedImageTilesConfig.Builder(activity).build();
+                sharedImageTilesConfigBuilder =
+                        new SharedImageTilesConfig.Builder(activity)
+                                .setIconSizeDp(R.dimen.tab_strip_shared_image_tiles_size);
                 sharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
-                                activity, config, dataSharingService, collaborationService);
+                                activity,
+                                sharedImageTilesConfigBuilder.build(),
+                                dataSharingService,
+                                collaborationService);
                 FrameLayout container =
                         mToolbarView.findViewById(R.id.toolbar_image_tiles_container);
                 TabUiUtils.attachSharedImageTilesCoordinatorToFrameLayout(
@@ -254,6 +259,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mTabGridDialogControllerSupplier,
                             mOmniboxFocusStateSupplier,
                             sharedImageTilesCoordinator,
+                            sharedImageTilesConfigBuilder,
                             mThemeColorProvider,
                             onSnapshotTokenChange,
                             tabStripTokenSupplier);

@@ -303,7 +303,7 @@ MostVisitedURLList TopSitesDatabase::GetSites() {
 
   while (statement.Step()) {
     // Results are sorted by url_rank.
-    urls.emplace_back(GURL(statement.ColumnString(0)),
+    urls.emplace_back(GURL(statement.ColumnStringView(0)),
                       /*title=*/statement.ColumnString16(1));
   }
 

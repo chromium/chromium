@@ -525,11 +525,11 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
   if (auto* image_data = dispatcher.ToMostDerived<ImageData>()) {
     WriteAndRequireInterfaceTag(kImageDataTag);
     SerializedImageDataSettings settings(image_data->GetPredefinedColorSpace(),
-                                         image_data->storageFormat());
+                                         image_data->pixelFormat());
     WriteUint32Enum(ImageSerializationTag::kPredefinedColorSpaceTag);
     WriteUint32Enum(settings.GetSerializedPredefinedColorSpace());
-    WriteUint32Enum(ImageSerializationTag::kImageDataStorageFormatTag);
-    WriteUint32Enum(settings.GetSerializedImageDataStorageFormat());
+    WriteUint32Enum(ImageSerializationTag::kImageDataPixelFormatTag);
+    WriteUint32Enum(settings.GetSerializedImageDataPixelFormat());
     WriteUint32Enum(ImageSerializationTag::kEndTag);
     WriteUint32(image_data->width());
     WriteUint32(image_data->height());

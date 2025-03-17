@@ -144,6 +144,8 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_KEYBOARD_QUICK_INSERT_LABEL;
     case ash::SearchResultTextItem::kKeyboardShortcutDoNotDisturb:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB;
+    case ash::SearchResultTextItem::kKeyboardShortcutCameraAccessToggle:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CAMERA_ACCESS_TOGGLE;
   }
 }
 
@@ -282,6 +284,8 @@ std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     case (KeyboardCode::VKEY_QUICK_INSERT):
       return IconCode::kKeyboardShortcutKeyboardQuickInsert;
 #endif
+    case (KeyboardCode::VKEY_CAMERA_ACCESS_TOGGLE):
+      return IconCode::kKeyboardShortcutCameraAccessToggle;
     default:
       return std::nullopt;
   }
@@ -308,6 +312,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"BrowserHome", IconCode::kKeyboardShortcutBrowserHome},
        {u"BrowserRefresh", IconCode::kKeyboardShortcutBrowserRefresh},
        {u"BrowserSearch", IconCode::kKeyboardShortcutBrowserSearch},
+       {u"CameraAccessToggle", IconCode::kKeyboardShortcutCameraAccessToggle},
        {u"DoNotDisturb", IconCode::kKeyboardShortcutDoNotDisturb},
        {u"EmojiPicker", IconCode::kKeyboardShortcutEmojiPicker},
        {u"EnableOrToggleDictation", IconCode::kKeyboardShortcutDictationToggle},

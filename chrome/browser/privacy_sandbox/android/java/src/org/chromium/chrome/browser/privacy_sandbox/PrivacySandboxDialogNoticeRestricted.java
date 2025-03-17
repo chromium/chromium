@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -30,16 +31,19 @@ public class PrivacySandboxDialogNoticeRestricted extends ChromeDialog
     private boolean mShowMoreButtonForTesting;
 
     public PrivacySandboxDialogNoticeRestricted(
-            Context context,
+            Activity activity,
             PrivacySandboxBridge privacySandboxBridge,
             @SurfaceType int surfaceType,
             boolean showMoreButtonForTesting) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mPrivacySandboxBridge = privacySandboxBridge;
         mSurfaceType = surfaceType;
         mShowMoreButtonForTesting = showMoreButtonForTesting;
         mContentView =
-                LayoutInflater.from(context)
+                LayoutInflater.from(activity)
                         .inflate(R.layout.privacy_sandbox_notice_restricted, null);
         setContentView(mContentView);
         mOnClickListener = getOnClickListener();

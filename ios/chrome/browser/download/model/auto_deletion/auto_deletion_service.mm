@@ -25,18 +25,13 @@
 
 namespace {
 
-// Creates an MD5Hash of the downloaded file's contents.
+// Creates an MD5Hash of the downloaded file's contents. This hash is used to
+// verify that the file that is scheduled to be deleted is the same file that
+// was originally scheduled for deletion.
 std::string HashDownloadData(base::span<const uint8_t> data_span) {
   base::MD5Digest hash;
   base::MD5Sum(data_span, &hash);
   return base::MD5DigestToBase16(hash);
-}
-
-// Creates an MD5Hash of the downloaded file's contents. This hash is used to
-// verify that the file that is scheduled to be deleted is the same file that
-// was originally scheduled for deletion.
-std::string HashDownloadData(NSData* data) {
-  return HashDownloadData(base::apple::NSDataToSpan(data));
 }
 
 // Removes the ScheduledFiles from the device. It is intended to be invoked on a
@@ -98,9 +93,14 @@ void AutoDeletionService::RemoveScheduledFilesReadyForDeletion(
                      weak_ptr_factory_.GetWeakPtr(), now, std::move(closure)));
 }
 
+void AutoDeletionService::Clear() {
+  scheduler_.Clear();
+}
+
 void AutoDeletionService::ScheduleFileForDeletionHelper(web::DownloadTask* task,
                                                         NSData* data) {
-  ScheduledFile file(task->GetResponsePath(), HashDownloadData(data),
+  ScheduledFile file(task->GetResponsePath(),
+                     HashDownloadData(base::apple::NSDataToSpan(data)),
                      base::Time::Now());
   scheduler_.ScheduleFile(std::move(file));
 }

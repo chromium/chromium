@@ -21,7 +21,6 @@ items:
   name: PrimaryAccountSignin
   value: primary_account_signin
 owners:
-- rodmartin@google.com
 - sinhak@chromium.org
 - chromeos-commercial-identity@google.com
 schema:

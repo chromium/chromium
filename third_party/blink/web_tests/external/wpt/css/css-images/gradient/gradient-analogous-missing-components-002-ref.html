@@ -11,7 +11,20 @@
             width: 200px;
             height: 50px;
             border: 1px solid black;
-            background: lime;
+            --color: lime;
+        }
+
+        .test1 {
+            background: linear-gradient(to right, var(--color));
+        }
+        .test2 {
+            background: linear-gradient(to right in srgb, var(--color));
+        }
+        .test3 {
+            background: linear-gradient(to right in oklab, var(--color));
+        }
+        .test4 {
+            background: linear-gradient(to right in display-p3, var(--color));
         }
     </style>
 </head>

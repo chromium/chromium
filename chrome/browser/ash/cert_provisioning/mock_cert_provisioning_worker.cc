@@ -78,7 +78,7 @@ void MockCertProvisioningWorker::SetExpectations(
   EXPECT_CALL(*this, IsWaiting).WillRepeatedly(Return(is_waiting));
   EXPECT_CALL(*this, GetProcessId).WillRepeatedly(ReturnRef(process_id_));
   EXPECT_CALL(*this, GetCertProfile).WillRepeatedly(ReturnRef(cert_profile_));
-  EXPECT_CALL(*this, GetFailureMessage)
+  EXPECT_CALL(*this, GetFailureMessageWithPii)
       .WillRepeatedly(Return(failure_message_));
 }
 

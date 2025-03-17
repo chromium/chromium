@@ -2523,6 +2523,15 @@ bool CSSMathExpressionOperation::IsComputationallyIndependent() const {
   return true;
 }
 
+bool CSSMathExpressionOperation::IsElementDependent() const {
+  for (const CSSMathExpressionNode* operand : operands_) {
+    if (operand->IsElementDependent()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 String CSSMathExpressionOperation::CustomCSSText() const {
   switch (operator_) {
     case CSSMathOperator::kAdd:
@@ -3730,6 +3739,9 @@ class CSSMathExpressionNodeParser {
                                                   State state) {
     if (function_id != CSSValueID::kSiblingCount &&
         function_id != CSSValueID::kSiblingIndex) {
+      return nullptr;
+    }
+    if (!context_.InElementContext()) {
       return nullptr;
     }
     if (!stream.AtEnd()) {

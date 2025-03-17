@@ -45,6 +45,8 @@ class AutofillProgressDialogViewsBrowserTest
     } else if (GetParam() == "CardInfoRetrievalEnrolledUnmask") {
       return AutofillProgressDialogType::
           kCardInfoRetrievalEnrolledUnmaskProgressDialog;
+    } else if (GetParam() == "BnplFetchVirtualCard") {
+      return AutofillProgressDialogType::kBnplFetchVcnProgressDialog;
     }
     NOTREACHED();
   }
@@ -194,6 +196,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          testing::Values("VirtualCardUnmask",
                                          "ServerCardUnmask",
                                          "3dsFetchVirtualCard",
-                                         "CardInfoRetrievalEnrolledUnmask"));
+                                         "CardInfoRetrievalEnrolledUnmask",
+                                         "BnplFetchVirtualCard"));
 
 }  // namespace autofill

@@ -92,6 +92,7 @@ export const KeyToIconNameMap: {[key: string]: string|undefined} = {
   'BrowserHome': 'browser-home',
   'BrowserRefresh': 'refresh',
   'BrowserSearch': 'browser-search',
+  'CameraAccessToggle': 'camera-access-toggle',
   'ContextMenu': 'menu',
   'DoNotDisturb': 'do-not-disturb',
   'EmojiPicker': 'emoji-picker',

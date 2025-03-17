@@ -441,7 +441,8 @@ void ChromeExtensionSystem::InstallUpdate(
   ExtensionService* service = extension_service();
   DCHECK(service);
 
-  scoped_refptr<CrxInstaller> installer = CrxInstaller::CreateSilent(service);
+  scoped_refptr<CrxInstaller> installer =
+      CrxInstaller::CreateSilent(service->profile());
   installer->set_delete_source(true);
   installer->AddInstallerCallback(std::move(install_update_callback));
   installer->set_install_immediately(install_immediately);

@@ -16,8 +16,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
 /**
- * The view for a list item inside of {@link NtpCardsContainerView} on the "New tab page cards"
- * bottom sheet.
+ * The view for a list item inside {@link NtpCardsContainerView} in the "New tab page cards" bottom
+ * sheet.
  */
 public class NtpCardsListItemView extends LinearLayout {
     private MaterialSwitchWithText mMaterialSwitchWithText;
@@ -34,18 +34,18 @@ public class NtpCardsListItemView extends LinearLayout {
 
     /**
      * Set the title for the Textview besides the material switch in this {@link
-     * NtpCardsListItemView}
+     * NtpCardsListItemView}.
      *
-     * @param title The string besides the material switch
+     * @param title The string besides the material switch.
      */
     void setTitle(@NonNull String title) {
         mMaterialSwitchWithText.setText(title);
     }
 
     /**
-     * Set the background of this {@link NtpCardsListItemView}
+     * Set the background of this {@link NtpCardsListItemView}.
      *
-     * @param resId The resource ID of the background drawable
+     * @param resId The resource ID of the background drawable.
      */
     void setBackground(@DrawableRes int resId) {
         this.setBackground(AppCompatResources.getDrawable(getContext(), resId));

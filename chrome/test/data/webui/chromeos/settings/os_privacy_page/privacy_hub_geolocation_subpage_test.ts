@@ -10,6 +10,7 @@ import type {appPermissionHandlerMojom, ControlledButtonElement, ControlledRadio
 import {GeolocationAccessLevel, OpenWindowProxyImpl, Router, routes, ScheduleType, setAppPermissionProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeat} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertLT, assertNotReached, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -76,6 +77,8 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     privacyHubGeolocationSubpage.prefs = prefs;
     document.body.appendChild(privacyHubGeolocationSubpage);
     await flushTasks();
+    // Default geolocation access level is `ALLOWED` in the backend.
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.ALLOWED);
   }
 
 
@@ -113,10 +116,8 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
   async function setGeolocationAccessLevelPref(
       accessLevel: GeolocationAccessLevel) {
-    privacyHubGeolocationSubpage.prefs.ash.user.geolocation_access_level.value =
-        accessLevel;
-    privacyHubGeolocationSubpage.notifyPath(
-        'prefs.ash.user.geolocation_access_level', accessLevel);
+    webUIListenerCallback(
+        'system-geolocation-access-level-changed', accessLevel);
     await flushTasks();
   }
 
@@ -324,7 +325,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         getGeolocationSubLabel());
 
     // Check "Allowed For System Services"
-    setGeolocationAccessLevelPref(
+    await setGeolocationAccessLevelPref(
         GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
     assertTrue(
         getGeolocationAccessLevel() ===
@@ -339,7 +340,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         getGeolocationSubLabel());
 
     // Check "Blocked for all"
-    setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
     assertTrue(
         getGeolocationAccessLevel() === GeolocationAccessLevel.DISALLOWED);
     assertEquals(
@@ -440,7 +441,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   test('App list not displayed when geolocation not allowed', async () => {
     await initPage();
     // Disable geolocation access.
-    setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
 
     assertNull(getAppList());
     assertTrue(!!getNoAppHasAccessTextSection());
@@ -450,7 +451,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
     // Setting location permission to "Only allowed for system" should have
     // similar effect.
-    setGeolocationAccessLevelPref(
+    await setGeolocationAccessLevelPref(
         GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
     assertNull(getAppList());
     assertTrue(!!getNoAppHasAccessTextSection());
@@ -610,14 +611,14 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         getManagePermissionsInChromeRow()!.label, 'problem 2');
 
     // Disable geolocation access.
-    setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
     assertEquals(
         privacyHubGeolocationSubpage.i18n('noWebsiteCanUseLocationText'),
         getNoWebsiteHasAccessTextRow()!.innerText.trim(), 'problem 3');
 
     // Setting location to "only allowed for system services" should have same
     // effect as disabling.
-    setGeolocationAccessLevelPref(
+    await setGeolocationAccessLevelPref(
         GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
     assertEquals(
         privacyHubGeolocationSubpage.i18n('noWebsiteCanUseLocationText'),
@@ -658,12 +659,12 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
   test('Websites section is hidden when location is not allowed', async () => {
     await initPage();
     // Disable location access.
-    setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
     assertNull(getManagePermissionsInChromeRow());
     assertTrue(!!getNoWebsiteHasAccessTextRow());
 
     // Set location to "only allowed for system", UI should remain the same.
-    setGeolocationAccessLevelPref(
+    await setGeolocationAccessLevelPref(
         GeolocationAccessLevel.ONLY_ALLOWED_FOR_SYSTEM);
     assertNull(getManagePermissionsInChromeRow());
     assertTrue(!!getNoWebsiteHasAccessTextRow());
@@ -728,7 +729,7 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
   test('Timezone update in system services section', async () => {
     await initPage();
-    setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
+    await setGeolocationAccessLevelPref(GeolocationAccessLevel.DISALLOWED);
     const systemServices =
         getSystemServicesFromSubpage(privacyHubGeolocationSubpage);
 

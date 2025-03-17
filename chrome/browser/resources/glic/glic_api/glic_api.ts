@@ -66,17 +66,23 @@ export declare interface GlicWebClient {
    *       client should be updated to set the panel size when handling this
    *       call. https://crbug.com/392141194
    *
+   * @todo Remove PanelState from the input argument type once the web client
+   *       adopts PanelOpeningData.
+   *       https://crbug.com/402147705
+   *
    * Called right before the panel is made visible to the user. This event is
    * always called no matter how the panel opening is initiated.
    *
    * The web client should use the handling of this call to execute any
    * preparations needed to become user-visible, and return a fully populated
-   * OpenPanelInfo.
+   * OpenPanelInfo. `panelOpeningData` holds information about the open request
+   * and the state of the panel that is about to be presented.
    *
    * Important: The panel is only made user-visible once the returned promise is
    * resolved or failed (failures are ignored and the panel is still shown).
    */
-  notifyPanelWillOpen?(panelState: PanelState): Promise<void|OpenPanelInfo>;
+  notifyPanelWillOpen?(panelOpeningData: PanelOpeningData&
+                       PanelState): Promise<void|OpenPanelInfo>;
 
   /**
    * Called right after the panel was hidden away and is not visible to
@@ -154,6 +160,16 @@ export declare interface GlicBrowserHost {
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void>;
 
   /**
+   * Sets the minimum possible size a user can resize to for the glic window.
+   *
+   * All provided values will go through sanity checks (e.g. checking min
+   * values for height and width) and may be adjusted. The web client should
+   * expect that the provided values may not be applied verbatim. Note: This
+   * will not affect the current glic window size.
+   */
+  setMinimumWidgetSize?(width: number, height: number): Promise<void>;
+
+  /**
    * Fetches page context for the currently focused tab, optionally including
    * more expensive-to-generate data.
    *
@@ -161,6 +177,17 @@ export declare interface GlicBrowserHost {
    */
   getContextFromFocusedTab?
       (options: TabContextOptions): Promise<TabContextResult>;
+
+  /**
+   * @todo Not yet implemented. https://crbug.com/402086021
+   *
+   * Inform Chrome about an action. Chrome Takes an action based on the
+   * action proto and returns new context based on the tab context options.
+   *
+   * @throws {ActInFocusedTabError} on failure.
+   */
+  actInFocusedTab?
+      (params: ActInFocusedTabParams): Promise<ActInFocusedTabResult>;
 
   /**
    * Requests the host to capture a screenshot. The choice of the screenshot
@@ -351,6 +378,12 @@ export declare interface GlicBrowserHost {
    * and end when Chrome closes.
    */
   setSyntheticExperimentState?(trialName: string, groupName: string): void;
+
+  /**
+   * Opens the OS permission settings menu for the given permission type.
+   * Supports `media` for microphone ad `geolocation` for location.
+   */
+  openOsPermissionSettingsMenu?(permission: string): void;
 }
 
 /** Holds optional parameters for `GlicBrowserHost#resizeWindow`. */
@@ -457,6 +490,39 @@ export declare interface PanelState {
    * attached to.
    */
   windowId?: string;
+}
+
+/**
+ * Data structure sent from the browser to the web client with panel opening
+ * information.
+ */
+export declare interface PanelOpeningData {
+  /** The state of the panel as it's being opened. */
+  panelState: PanelState;
+  /** Indicates the entry point used to trigger the opening of the panel. */
+  invocationSource: InvocationSource;
+}
+
+/** Entry points that can trigger the opening of the panel. */
+export enum InvocationSource {
+  /** Button in the OS. */
+  OS_BUTTON = 0,
+  /** Menu from button in the OS. */
+  OS_BUTTON_MENU = 1,
+  /** OS-level hotkey. */
+  OS_HOTKEY = 2,
+  /** Button in top-chrome. */
+  TOP_CHROME_BUTTON = 3,
+  /** First run experience. */
+  FRE = 4,
+  /** From the profile picker. */
+  PROFILE_PICKER = 5,
+  /** From contextual cueing. */
+  NUDGE = 6,
+  /** From 3-dot menu. */
+  THREE_DOTS_MENU = 7,
+  /** An unsupported/unknown source. */
+  UNSUPPORTED = 8,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */
@@ -654,6 +720,7 @@ export declare interface ErrorReasonTypes {
   captureScreenshot: CaptureScreenshotErrorReason;
   scrollTo: ScrollToErrorReason;
   webClientInitialize: WebClientInitializeErrorReason;
+  actInFocusedTab: ActInFocusedTabErrorReason;
 }
 
 /** Reason why the web client could not initialize. */
@@ -688,6 +755,17 @@ export enum GetTabContextErrorReason {
   UNSUPPORTED_URL = 3,
   /** There are no Chrome tabs available to be focused. */
   NO_FOCUSABLE_TABS = 4,
+}
+
+/** Reason for failure while acting in the focused tab. */
+export enum ActInFocusedTabErrorReason {
+  UNKNOWN = 0,
+  /** Context could not be gathered after acting. */
+  GET_CONTEXT_FAILED = 1,
+  /** The action proto is invalid. */
+  INVALID_ACTION_PROTO = 2,
+  /** Action target is not found. */
+  TARGET_NOT_FOUND = 3,
 }
 
 /**
@@ -730,11 +808,28 @@ export enum CaptureScreenshotErrorReason {
   USER_CANCELLED_SCREEN_PICKER_DIALOG = 2,
 }
 
+export declare interface ActInFocusedTabResult {
+  // The tab context result after acting and gathering new context.
+  tabContextResult?: TabContextResult;
+}
+
+export declare interface ActInFocusedTabParams {
+  // Corresponds to
+  // components/optimization_guide/proto/features/actions_data.proto:
+  // BrowserAction
+  actionProto: ArrayBuffer;
+  // Tab context options to gather context after acting.
+  tabContextOptions: TabContextOptions;
+}
+
 /** Error type used for tab context extraction errors. */
 export type GetTabContextError = ErrorWithReason<'tabContext'>;
 
 /** Error type used for screenshot capture errors. */
 export type CaptureScreenshotError = ErrorWithReason<'captureScreenshot'>;
+
+/** Error type used for actuation errors. */
+export type ActInFocusedTabError = ErrorWithReason<'actInFocusedTab'>;
 
 /** Params for scrollTo(). */
 export declare interface ScrollToParams {
@@ -905,6 +1000,8 @@ export interface TypesConsumedByClient {
   documentData: DocumentData;
   panelState: PanelState;
   annotatedPageData: AnnotatedPageData;
+  panelOpeningData: PanelOpeningData;
+  actInFocusedTabResult: ActInFocusedTabResult;
 }
 
 // Types consumed by the host.
@@ -921,6 +1018,7 @@ export interface TypesConsumedByHost {
   scrollToSelector: ScrollToSelector;
   scrollToTextSelector: ScrollToTextSelector;
   scrollToTextFragmentSelector: ScrollToTextFragmentSelector;
+  actInFocusedTabParams: ActInFocusedTabParams;
 }
 
 // Enums that should not be changed.
@@ -937,4 +1035,6 @@ export interface ExtensibleEnums {
   invalidCandidateError: typeof InvalidCandidateError;
   noCandidateTabError: typeof NoCandidateTabError;
   webClientInitializeErrorReason: typeof WebClientInitializeErrorReason;
+  invocationSource: typeof InvocationSource;
+  actInFocusedTabErrorReason: typeof ActInFocusedTabErrorReason;
 }

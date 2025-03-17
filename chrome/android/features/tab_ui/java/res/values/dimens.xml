@@ -140,6 +140,7 @@ found in the LICENSE file.
     <dimen name="tab_strip_tooltip_label_vertical_padding">4dp</dimen>
     <dimen name="tab_strip_tooltip_corner_radius">4dp</dimen>
     <dimen name="tab_strip_favicon_background_elevation">@dimen/default_elevation_2</dimen>
+    <dimen name="tab_strip_shared_image_tiles_size">26dp</dimen>
 
     <!-- Dimens for tab group list bottom sheet. -->
     <dimen name="tab_group_list_bottom_sheet_horizontal_padding">18dp</dimen>
@@ -152,4 +153,8 @@ found in the LICENSE file.
     <dimen name="tab_group_list_new_group_icon_button_height">44dp</dimen>
     <dimen name="tab_group_list_new_group_icon_height">30dp</dimen>
     <dimen name="tab_group_list_first_element_left_right_margin">16dp</dimen>
+
+    <!-- Dimens for tab switcher context menu. -->
+    <dimen name="tab_switcher_context_menu_max_width">225dp</dimen>
+
 </resources>

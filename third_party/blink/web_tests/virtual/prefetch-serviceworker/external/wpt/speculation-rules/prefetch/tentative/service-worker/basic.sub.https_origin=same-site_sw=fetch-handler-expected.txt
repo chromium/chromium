@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Prefetch with ServiceWorker (fetch-handler)
+  assert_equals: prefetch requests should not be sent to the server. expected 0 but got 1
+Harness: the test ran to completion.
+

@@ -57,8 +57,173 @@ CPP_VERSION = 'c++17'
 
 EXTRAS_ANDROID_BP_FILE = "Android.extras.bp"
 
+# TODO: crbug.com/xxx - Relying on (and modifying this) this global variable is bad. Refactor and properly inject this into what requires it.
+IMPORT_CHANNEL = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
 # All module names are prefixed with this string to avoid collisions.
-module_prefix = 'cronet_aml_'
+MODULE_PREFIX = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
+# Include directories that will be removed from all targets.
+include_dirs_denylist = None
+# Name of the module which settings such as compiler flags for all other modules.
+cc_defaults_module = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
+# Additional arguments to apply to Android.bp rules.
+additional_args = None
+# Name of the java default module for non-test java modules defined in Android.extras.bp
+java_framework_defaults_module = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
+# Location of the project in the Android source tree.
+tree_path = 'MODIFIED_BY_MAIN_AFTER_PARSING_ARGS_IF_YOU_SEE_THIS_SOMETHING_BROKE_'
+
+
+def initialize_globals(import_channel: str):
+  global IMPORT_CHANNEL
+  IMPORT_CHANNEL = import_channel
+
+  global MODULE_PREFIX
+  MODULE_PREFIX = f'{IMPORT_CHANNEL}_cronet_'
+
+  global include_dirs_denylist
+  include_dirs_denylist = [
+      f'external/cronet/{IMPORT_CHANNEL}/third_party/zlib/',
+  ]
+
+  global cc_defaults_module
+  cc_defaults_module = f'{MODULE_PREFIX}cc_defaults'
+
+  global java_framework_defaults_module
+  java_framework_defaults_module = f'{MODULE_PREFIX}java_framework_defaults'
+
+  global tree_path
+  tree_path = f'external/cronet/{IMPORT_CHANNEL}'
+
+  global additional_args
+  additional_args = {
+      f'{MODULE_PREFIX}net_third_party_quiche_net_quic_test_tools_proto_gen_headers':
+      [('export_include_dirs', {
+          "net/third_party/quiche/src",
+      })],
+      f'{MODULE_PREFIX}net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers':
+      [('export_include_dirs', {
+          "net/third_party/quiche/src",
+      })],
+      f'{MODULE_PREFIX}third_party_quic_trace_quic_trace_proto_gen__testing_headers':
+      [('export_include_dirs', {
+          "third_party/quic_trace/src",
+      })],
+      # TODO: fix upstream. Both //base:base and
+      # //base/allocator/partition_allocator:partition_alloc do not create a
+      # dependency on gtest despite using gtest_prod.h.
+      f'{MODULE_PREFIX}base_base': [
+          ('header_libs', {
+              'libgtest_prod_headers',
+          }),
+          ('export_header_lib_headers', {
+              'libgtest_prod_headers',
+          }),
+      ],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_partition_alloc': [
+          ('header_libs', {
+              'libgtest_prod_headers',
+          }),
+      ],
+      # TODO(b/309920629): Remove once upstreamed.
+      f'{MODULE_PREFIX}components_cronet_android_cronet_api_java__compile_java':
+      [
+          ('srcs', {
+              'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
+              'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
+          }),
+      ],
+      f'{MODULE_PREFIX}components_cronet_android_cronet_api_java__compile_java__testing':
+      [
+          ('srcs', {
+              'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
+              'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
+          }),
+      ],
+      f'{MODULE_PREFIX}components_cronet_android_cronet_javatests__compile_java__testing':
+      [
+          # Needed to @SkipPresubmit annotations
+          ('static_libs', {
+              'net-tests-utils',
+          }),
+          # This is necessary because net-tests-utils compiles against private SDK.
+          ('sdk_version', ""),
+      ],
+      f'{MODULE_PREFIX}components_cronet_android_cronet__testing': [
+          ('target', ('android_riscv64', {
+              'stem': "libmainlinecronet_riscv64"
+          })),
+          ('comment', """TODO: remove stem for riscv64
+// This is essential as there can't be two different modules
+// with the same output. We usually got away with that because
+// the non-testing Cronet is part of the Tethering APEX and the
+// testing Cronet is not part of the Tethering APEX which made them
+// look like two different outputs from the build system perspective.
+// However, Cronet does not ship to Tethering APEX for RISCV64 which
+// raises the conflict. Once we start shipping Cronet for RISCV64,
+// this can be removed."""),
+      ],
+      f'{MODULE_PREFIX}third_party_netty_tcnative_netty_tcnative_so__testing': [
+          ('cflags', {"-Wno-error=pointer-bool-conversion"})
+      ],
+      f'{MODULE_PREFIX}third_party_apache_portable_runtime_apr__testing': [
+          ('cflags', {
+              "-Wno-incompatible-pointer-types-discards-qualifiers",
+          })
+      ],
+      # TODO(b/324872305): Remove when gn desc expands public_configs and update code to propagate the
+      # include_dir from the public_configs
+      # We had to add the export_include_dirs for each target because soong generates each header
+      # file in a specific directory named after the target.
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags__testing':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags__testing':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags__testing':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_buildflags':
+      [('export_include_dirs', {
+          ".",
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_buildflags__testing':
+      [('export_include_dirs', {
+          ".",
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags__testing':
+      [('export_include_dirs', {
+          "base/allocator/partition_allocator/src/",
+      })],
+      f'{MODULE_PREFIX}base_base_java_test_support__testing': [
+          ('errorprone', ('javacflags', {
+              "-Xep:ReturnValueIgnored:WARN",
+          }))
+      ]
+      # end export_include_dir.
+  }
+
 
 # Shared libraries which are directly translated to Android system equivalents.
 shared_library_allowlist = [
@@ -77,9 +242,8 @@ BLUEPRINTS_EXTRAS = {"": ["build = [\"Android.extras.bp\"]"]}
 # that all targets which should live in relative_path_A/Android.bp will live
 # inside relative_path_B/Android.bp.
 BLUEPRINTS_MAPPING = {
-    # An Android.bp already exists inside boringssl, creating another one will
-    # lead to conflicts, add all of the boringssl generated targets to the
-    # top-level Android.bp as they are only used for tests.
+    # BoringSSL's Android.bp is manually maintained and generated via a template,
+    # see run_gen2bp.py's _gen_boringssl.
     "third_party/boringssl": "",
     # Moving is undergoing, see crbug/40273848
     "buildtools/third_party/libc++": "third_party/libc++",
@@ -88,21 +252,6 @@ BLUEPRINTS_MAPPING = {
 }
 
 _MIN_SDK_VERSION = 30
-
-# Include directories that will be removed from all targets.
-include_dirs_denylist = [
-    'external/cronet/third_party/zlib/',
-]
-
-# Name of the module which settings such as compiler flags for all other
-# modules.
-cc_defaults_module = module_prefix + 'cc_defaults'
-
-# Name of the java default module for non-test java modules defined in Android.extras.bp
-java_framework_defaults_module = 'cronet_aml_java_framework_defaults'
-
-# Location of the project in the Android source tree.
-tree_path = 'external/cronet'
 
 # Path for the protobuf sources in the standalone build.
 buildtools_protobuf_src = '//buildtools/protobuf/src'
@@ -152,135 +301,6 @@ ldflag_allowlist = [
 def get_linker_script_ldflag(script_path):
   return f'-Wl,--script,{tree_path}/{script_path}'
 
-# Additional arguments to apply to Android.bp rules.
-additional_args = {
-    'cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen_headers': [
-        ('export_include_dirs', {
-            "net/third_party/quiche/src",
-        })
-    ],
-    'cronet_aml_net_third_party_quiche_net_quic_test_tools_proto_gen__testing_headers':
-    [('export_include_dirs', {
-        "net/third_party/quiche/src",
-    })],
-    'cronet_aml_third_party_quic_trace_quic_trace_proto_gen__testing_headers': [
-        ('export_include_dirs', {
-            "third_party/quic_trace/src",
-        })
-    ],
-    # TODO: fix upstream. Both //base:base and
-    # //base/allocator/partition_allocator:partition_alloc do not create a
-    # dependency on gtest despite using gtest_prod.h.
-    'cronet_aml_base_base': [
-        ('header_libs', {
-            'libgtest_prod_headers',
-        }),
-        ('export_header_lib_headers', {
-            'libgtest_prod_headers',
-        }),
-    ],
-    'cronet_aml_base_allocator_partition_allocator_partition_alloc': [
-        ('header_libs', {
-            'libgtest_prod_headers',
-        }),
-    ],
-    # TODO(b/309920629): Remove once upstreamed.
-    'cronet_aml_components_cronet_android_cronet_api_java__compile_java': [
-        ('srcs', {
-            'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
-            'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
-        }),
-    ],
-    'cronet_aml_components_cronet_android_cronet_api_java__compile_java__testing':
-    [
-        ('srcs', {
-            'components/cronet/android/api/src/org/chromium/net/UploadDataProviders.java',
-            'components/cronet/android/api/src/org/chromium/net/apihelpers/UploadDataProviders.java',
-        }),
-    ],
-    'cronet_aml_components_cronet_android_cronet_javatests__compile_java__testing':
-    [
-        # Needed to @SkipPresubmit annotations
-        ('static_libs', {
-            'net-tests-utils',
-        }),
-        # This is necessary because net-tests-utils compiles against private SDK.
-        ('sdk_version', ""),
-    ],
-    'cronet_aml_components_cronet_android_cronet__testing': [
-        ('target', ('android_riscv64', {
-            'stem': "libmainlinecronet_riscv64"
-        })),
-        ('comment', """TODO: remove stem for riscv64
-// This is essential as there can't be two different modules
-// with the same output. We usually got away with that because
-// the non-testing Cronet is part of the Tethering APEX and the
-// testing Cronet is not part of the Tethering APEX which made them
-// look like two different outputs from the build system perspective.
-// However, Cronet does not ship to Tethering APEX for RISCV64 which
-// raises the conflict. Once we start shipping Cronet for RISCV64,
-// this can be removed."""),
-    ],
-    'cronet_aml_third_party_netty_tcnative_netty_tcnative_so__testing': [
-        ('cflags', {"-Wno-error=pointer-bool-conversion"})
-    ],
-    'cronet_aml_third_party_apache_portable_runtime_apr__testing': [('cflags', {
-        "-Wno-incompatible-pointer-types-discards-qualifiers",
-    })],
-    # TODO(b/324872305): Remove when gn desc expands public_configs and update code to propagate the
-    # include_dir from the public_configs
-    # We had to add the export_include_dirs for each target because soong generates each header
-    # file in a specific directory named after the target.
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromecast_buildflags__testing':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_chromeos_buildflags__testing':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_debugging_buildflags__testing':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_buildflags':
-    [('export_include_dirs', {
-        ".",
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_buildflags__testing':
-    [('export_include_dirs', {
-        ".",
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_allocator_partition_allocator_src_partition_alloc_raw_ptr_buildflags__testing':
-    [('export_include_dirs', {
-        "base/allocator/partition_allocator/src/",
-    })],
-    'cronet_aml_base_base_java_test_support__testing': [
-        ('errorprone', ('javacflags', {
-            "-Xep:ReturnValueIgnored:WARN",
-        }))
-    ]
-    # end export_include_dir.
-}
-
 _FEATURE_REGEX = "feature=\\\"(.+)\\\""
 _RUST_FLAGS_TO_REMOVE = [
     "--target",  # Added by Soong
@@ -293,7 +313,6 @@ _RUST_FLAGS_TO_REMOVE = [
     "@",  # Used by build_script outputs to have rustc load flags from a file.
     "-Z",  # Those are unstable features, completely remove those.
 ]
-
 
 class JniZeroTargetType(enum.Enum):
   GENERATOR = enum.auto()
@@ -346,9 +365,9 @@ def enable_boringssl(module, arch):
     shared_libs = module.shared_libs
   else:
     shared_libs = module.target[arch].shared_libs
-  shared_libs.add('//external/cronet/third_party/boringssl:libcrypto')
-  shared_libs.add('//external/cronet/third_party/boringssl:libssl')
-  shared_libs.add('//external/cronet/third_party/boringssl:libpki')
+  shared_libs.add(f'{MODULE_PREFIX}libcrypto')
+  shared_libs.add(f'{MODULE_PREFIX}libssl')
+  shared_libs.add(f'{MODULE_PREFIX}libpki')
 
 def add_androidx_experimental_java_deps(module, arch):
   module.libs.add("androidx.annotation_annotation-experimental")
@@ -970,8 +989,8 @@ def label_to_module_name(label):
   module = re.sub(r'^//:?', '', label)
   module = re.sub(r'[^a-zA-Z0-9_]', '_', module)
 
-  if not module.startswith(module_prefix):
-    return module_prefix + module
+  if not module.startswith(MODULE_PREFIX):
+    return MODULE_PREFIX + module
   return module
 
 
@@ -1192,7 +1211,8 @@ def create_proto_modules(blueprint, gn, target):
     return None
 
   sources = {gn_utils.label_to_path(src) for src in target.sources}
-  absolute_sources = sorted([f"external/cronet/{src}" for src in sources])
+  absolute_sources = sorted(
+      [f"external/cronet/{IMPORT_CHANNEL}/{src}" for src in sources])
 
   # Descriptor targets only generate a single target.
   if target.proto_plugin == 'descriptor':
@@ -1564,7 +1584,7 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
     super().__init__(target, arch)
     self.binary_to_target = {
         "clang_x64/transport_security_state_generator":
-        "cronet_aml_net_tools_transport_security_state_generator_transport_security_state_generator__testing",
+        f"{MODULE_PREFIX}net_tools_transport_security_state_generator_transport_security_state_generator__testing",
     }
     self.binary = self.binary_to_target[self.target.args[0]]
 
@@ -2201,7 +2221,7 @@ def create_bindgen_module(blueprint: Blueprint, target,
   # Note: this module is not part of the generated build rules; it is expected
   # to already be present in AOSP (currently, in Android.extras.bp). See
   # https://r.android.com/3413202.
-  module.header_libs = {"cronet_repository_root_include_dirs_anchor"}
+  module.header_libs = {f"{MODULE_PREFIX}repository_root_include_dirs_anchor"}
   module.min_sdk_version = _MIN_SDK_VERSION
   module.apex_available = [tethering_apex]
   blueprint.add_module(module)
@@ -2310,7 +2330,8 @@ def set_module_flags(module, module_type, cflags, defines, ldflags, libs):
 def set_module_include_dirs(module, cflags, include_dirs):
   for flag in cflags:
     if '-isystem' in flag:
-      module.include_dirs.add(f"external/cronet/{flag[len('-isystem../../'):]}")
+      module.include_dirs.add(
+          f"external/cronet/{IMPORT_CHANNEL}/{flag[len('-isystem../../'):]}")
 
   # Adding include_dirs is necessary due to source_sets / filegroups
   # which do not properly propagate include directories.
@@ -2321,8 +2342,8 @@ def set_module_include_dirs(module, cflags, include_dirs):
   # can't access other directories outside of its current directory. This
   # is worked around by using include_dirs.
   module.include_dirs.update([
-      f"external/cronet/{gn_utils.label_to_path(d)}" for d in include_dirs
-      if not d.startswith('//out')
+      f"external/cronet/{IMPORT_CHANNEL}/{gn_utils.label_to_path(d)}"
+      for d in include_dirs if not d.startswith('//out')
   ])
   # Remove prohibited include directories
   module.include_dirs = [
@@ -2992,7 +3013,8 @@ def _rebase_module(module: Module, blueprint_path: str) -> Union[Module, None]:
   return module_copy
 
 def _path_to_name(path: str) -> str:
-  return "external_cronet_%s_license" % (path.replace("/", "_").lower())
+  path = path.replace("/", "_").lower()
+  return f"{MODULE_PREFIX}{path}_license"
 
 
 def _maybe_create_license_module(path: str) -> Union[Module, None]:
@@ -3216,6 +3238,12 @@ def main():
       '--suffix',
       help='The suffix to the Android.bp filename. Pass "" if no suffix.',
       default='.gn2bp')
+  parser.add_argument(
+      '--channel',
+      help='The channel this Android.bp generation is being performed for.',
+      type=str,
+      choices=['tot', 'stable'],
+      default='tot')
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--license',
@@ -3236,6 +3264,7 @@ def main():
     log.basicConfig(format='%(levelname)s:%(funcName)s:%(message)s',
                     level=log.DEBUG)
 
+  initialize_globals(args.channel)
   targets = args.targets or gn2bp_targets.DEFAULT_TARGETS
   build_scripts_output = None
   with open(args.build_script_output) as f:

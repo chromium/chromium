@@ -40,11 +40,11 @@ import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.input.InputUtils;
 import org.chromium.content_public.browser.InputTransferHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.SurfaceInputTransferHandlerMap;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.InputUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
@@ -477,6 +477,7 @@ public class CompositorView extends FrameLayout
         }
     }
 
+    @SuppressWarnings("NewApi")
     @Override
     public void surfaceChanged(Surface surface, int format, int width, int height) {
         if (mNativeCompositorView == 0) return;
@@ -531,6 +532,7 @@ public class CompositorView extends FrameLayout
         CompositorViewJni.get().surfaceCreated(mNativeCompositorView, CompositorView.this);
     }
 
+    @SuppressWarnings("NewApi")
     @Override
     public void surfaceDestroyed(Surface surface, boolean androidSurfaceDestroyed) {
         if (mNativeCompositorView == 0) return;

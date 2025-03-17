@@ -91,6 +91,9 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingTitle() const {
         kCardInfoRetrievalEnrolledUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_INFO_RETRIEVAL_ENROLLED_CARD_UNMASK_PROGRESS_DIALOG_TITLE);
+    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_TITLE);
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
@@ -108,6 +111,9 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationTitle()
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_LOADING_AND_CONSENT_DIALOG_TITLE_VCN_3DS);
+    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_TITLE);
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
@@ -124,6 +130,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
     // IDS_AUTOFILL_PAYMENT_METHOD_UNMASK_CANCEL_BUTTON_LABEL
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
+    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
     case AutofillProgressDialogType::
         kCardInfoRetrievalEnrolledUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
@@ -149,6 +156,9 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_3DS_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE);
+    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_LOADING_MESSAGE);
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
@@ -166,6 +176,9 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
     case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_3DS_FETCH_VCN_PROGRESS_DIALOG_CONFIRMATION_MESSAGE);
+    case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_CONFIRMATION_MESSAGE);
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();

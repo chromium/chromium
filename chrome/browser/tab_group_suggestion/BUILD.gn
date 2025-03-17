@@ -2,18 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/rules.gni")
-import("//third_party/jni_zero/jni_zero.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 
-android_library("java") {
-  sources = [ "java/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionEventObserver.java" ]
-  deps = [
-    "//base:base_java",
-    "//build/android:build_java",
-    "//chrome/browser/hub:java",
-    "//chrome/browser/tab:java",
-    "//chrome/browser/tabmodel:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-  resources_package = "org.chromium.chrome.browser.tab_group_suggestion"
+  android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [
+      "java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsServiceFactory.java",
+      "java/src/org/chromium/chrome/browser/tab_group_suggestion/SuggestionEventObserver.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/hub:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
+      "//components/visited_url_ranking/public:public_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    resources_package = "org.chromium.chrome.browser.tab_group_suggestion"
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "java/src/org/chromium/chrome/browser/tab_group_suggestion/GroupSuggestionsServiceFactory.java" ]
+  }
 }

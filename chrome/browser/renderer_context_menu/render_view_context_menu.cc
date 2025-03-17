@@ -521,7 +521,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        // Removed:
        // {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS,
        // 150},
-       {IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS, 151},
+       // Removed: {IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS, 151},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE,
         152},
        {IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE, 153},
@@ -1740,6 +1740,16 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+    const bool is_link_to_iwa = IsLinkToIsolatedWebApp();
+    // Opening links to IWAs in Chrome windows is not supported - opening in
+    // new instance of app itself is already handled below, in
+    // `AppendOpenInWebAppLinkItems()`.
+    if (is_link_to_iwa) {
+      show_open_in_new_tab = false;
+      show_open_in_new_window = false;
+      show_open_link_off_the_record = false;
+    }
+
     if (show_open_in_new_tab) {
       menu_model_.AddItemWithStringId(
           IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
@@ -1764,7 +1774,8 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 
 #if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
+    if (base::FeatureList::IsEnabled(blink::features::kLinkPreview) &&
+        !is_link_to_iwa) {
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKPREVIEW,
                                       IDS_CONTENT_CONTEXT_OPENLINKPREVIEW);
       // We don't show in-production-help for ChromeOS for now because we should
@@ -4846,3 +4857,11 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
           kRenderViewContextMenu);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+bool RenderViewContextMenu::IsLinkToIsolatedWebApp() const {
+  // Using `unfiltered_link_url`, because `link_url` is being replaced with
+  // about:blank#blocked if the source is a normal site.
+  return params_.unfiltered_link_url.has_scheme() &&
+         params_.unfiltered_link_url.scheme_piece() ==
+             chrome::kIsolatedAppScheme;
+}

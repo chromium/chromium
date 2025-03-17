@@ -13,6 +13,7 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
+#include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
@@ -77,7 +78,7 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
                 .Set("name", "Google")
                 .Set("url", GURL("http://google.com/").spec())));
 
-    bookmarks::test::WaitForBookmarkModelToLoad(model());
+    WaitForBookmarkMergedSurfaceServiceToLoad(bookmark_service());
     model()->CreateAccountPermanentFolders();
 
     CHECK(managed_node());

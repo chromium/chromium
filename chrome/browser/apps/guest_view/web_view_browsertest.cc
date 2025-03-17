@@ -7421,6 +7421,10 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest, ZoomFencedFrame) {
   auto* fenced_frame_rwh = fenced_frame->GetRenderWidgetHost();
   // See Javascript fcn testZoomFencedFrame for source of the 0.95 zoom factor.
   double expected_zoom_level = blink::ZoomFactorToZoomLevel(0.95);
+  // Guest has `expected_zoom_level`.
+  EXPECT_DOUBLE_EQ(expected_zoom_level, content::GetPendingZoomLevel(
+                                            guest_rfh->GetRenderWidgetHost()));
+  // FencedFrame has `expected_zoom_level`.
   EXPECT_DOUBLE_EQ(expected_zoom_level,
                    content::GetPendingZoomLevel(fenced_frame_rwh));
 

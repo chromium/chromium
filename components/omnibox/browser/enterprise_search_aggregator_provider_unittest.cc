@@ -80,6 +80,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         ],
         "peopleSuggestions": [
           {
+            "suggestion": "john@example.com",
             "document": {
               "name": "sundar",
               "derivedStructData": {
@@ -90,7 +91,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                   "given_name_lower": "john",
                   "family_name_lower": "doe",
                   "displayName": "John Doe",
-                  "userName": "john@example.com"
+                  "userName": "john"
                 },
                 "emails": [
                   {
@@ -116,12 +117,13 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 "source_type": "jira",
                 "entity_type": "issue",
                 "title": "John's doodle",
-                "link": "https://www.example.com",
+                "link": "https://www.example.co.uk",
                 "owner": "John Doe",
                 "mime_type": "application/vnd.google-apps.document",
                 "updated_time": 1192487100
               }
             },
+            "destinationUri": "https://www.example.com",
             "iconUri": "https://example.com/icon.png",
             "dataStore": "project2"
           }
@@ -149,10 +151,11 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
         ],
         "peopleSuggestions": [
           {
+            "suggestion": "missingDisplayName@example.com",
             "document": {
               "derivedStructData": {
                 "name": {
-                  "userName": "missingDisplayName@example.com"
+                  "userName": "missingDisplayName"
                 }
               }
             }
@@ -161,17 +164,18 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
             "document": {
               "derivedStructData": {
                 "name": {
-                  "displayName": "Missing user name"
+                  "displayName": "Missing suggestion / user name"
                 }
               }
             }
           },
           {
+            "suggestion": "john@example.com",
             "document": {
               "derivedStructData": {
                 "name": {
                   "displayName": "John Doe",
-                  "userName": "john@example.com"
+                  "userName": "john"
                 }
               }
             }
@@ -189,18 +193,29 @@ const std::string kMissingFieldsJsonResponse = base::StringPrintf(
             "document": {
               "name": "Document 2",
               "derivedStructData": {
-                "link": "https://www.missingTitle.com"
+                "link": "https://www.missingTitle.co.uk"
               }
-            }
+            },
+            "destinationUri": "https://www.missingTitle.com"
           },
           {
             "document": {
               "name": "Document 2",
               "derivedStructData": {
                 "title": "John's doodle'",
-                "link": "https://www.example.com"
+                "link": "https://www.missinguributlinkavailable.co.uk"
               }
             }
+          },
+          {
+            "document": {
+              "name": "Document 3",
+              "derivedStructData": {
+                "title": "John's doodle'",
+                "link": "https://www.example.co.uk"
+              }
+            },
+            "destinationUri": "https://www.example.com"
           }
         ]
         })");
@@ -223,11 +238,11 @@ std::string CreatePeopleResult(const std::string& displayName,
   return base::StringPrintf(
       R"(
         {
+          "suggestion": "%s",
           "document": {
             "derivedStructData": {
               "name": {
                 "displayName": "%s",
-                "userName": "%s",
                 "givenName": "%s",
                 "familyName": "%s"
               }
@@ -235,7 +250,7 @@ std::string CreatePeopleResult(const std::string& displayName,
           }
         }
             )",
-      displayName, userName, givenName, familyName);
+      userName, displayName, givenName, familyName);
 }
 std::string CreateContentResult(const std::string& title,
                                 const std::string& owner_email,
@@ -246,10 +261,10 @@ std::string CreateContentResult(const std::string& title,
           "document": {
             "derivedStructData": {
               "title": "%s",
-              "owner_email": "%s",
-              "link": "%s"
+              "owner_email": "%s"
             }
-          }
+          },
+          "destinationUri": "%s"
         }
         )",
       title, owner_email, url);
@@ -606,6 +621,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, ParseWithMissingFields) {
   EXPECT_THAT(
       GetMatches(),
       testing::ElementsAre(u"https://www.google.com/?q=john%40example.com",
+                           u"https://www.missinguributlinkavailable.co.uk/",
                            u"https://www.example.com/",
                            u"https://www.google.com/?q=John%27s+Document+1"));
 }
@@ -1075,14 +1091,17 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
           CreateContentResult("mango-3-content", "mime_type",
                               "https://url-mango-3/"),
       }));
-  EXPECT_THAT(GetScoredMatches(),
-              testing::UnorderedElementsAre(
-                  ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
-                  ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300},
-                  ScoredMatch{u"https://www.google.com/?q=mango-3-people", 300},
-                  ScoredMatch{u"https://url-mango-1/", 201},
-                  ScoredMatch{u"https://url-mango-2/", 201},
-                  ScoredMatch{u"https://url-mango-3/", 201}));
+  EXPECT_THAT(
+      GetScoredMatches(),
+      testing::UnorderedElementsAre(
+          ScoredMatch{u"https://www.google.com/?q=mango-1-people", 300},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-people", 300},
+          ScoredMatch{u"https://www.google.com/?q=mango-3-people", 300},
+          ScoredMatch{u"https://url-mango-1/", 201},
+          ScoredMatch{u"https://url-mango-2/", 201},
+          ScoredMatch{u"https://url-mango-3/", 201},
+          ScoredMatch{u"https://www.google.com/?q=mango-1-query", 200},
+          ScoredMatch{u"https://www.google.com/?q=mango-2-query", 200}));
 }
 
 TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {

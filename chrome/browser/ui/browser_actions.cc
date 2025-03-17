@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_action_prefs_listener.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -79,6 +80,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 
@@ -271,6 +273,24 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                chrome::ShowOffersAndRewardsForPage(browser);
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionOffersAndRewardsForPage)
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kLocalOfferFlippedRefreshIcon, ui::kColorIcon,
+              ui::SimpleMenuModel::kDefaultIconSize))
+          .Build());
+
   // Create the lens action item. The icon and text are set appropriately in the
   // lens side panel coordinator. They have default values here.
   root_action_item_->AddChild(
@@ -313,6 +333,7 @@ void BrowserActions::InitializeBrowserActions() {
           .SetText(l10n_util::GetStringUTF16((IDS_ZOOM_NORMAL)))
           .SetTooltipText(l10n_util::GetStringUTF16((IDS_TOOLTIP_ZOOM)))
           .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
+          .SetProperty(views::kElementIdentifierKey, kActionItemZoomElementId)
           .Build());
 
   //------- Chrome Menu Actions --------//

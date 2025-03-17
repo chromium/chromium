@@ -44,6 +44,7 @@
 #include "components/page_image_service/image_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/local_data_description.h"
 #include "content/public/browser/web_contents.h"
@@ -76,6 +77,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBubbleOkButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolderFieldId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkNameFieldId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkSecondaryButtonId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kBookmarkBubbleFrameViewId);
 
 namespace {
 
@@ -448,7 +450,10 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
                                            bookmark_node)) {
     bubble->SetFootnoteView(
         std::make_unique<commerce::ShoppingCollectionIphView>());
-  } else if (signin::ShouldShowSyncPromo(*profile)) {
+  } else if (signin::ShouldShowBookmarkSignInPromo(*profile) ||
+             (signin::ShouldShowSyncPromo(*profile) &&
+              !base::FeatureList::IsEnabled(
+                  switches::kSyncEnableBookmarksInTransportMode))) {
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(pbos): Consider adding model support for footnotes so that this does
     // not need to be tied to views.
@@ -456,7 +461,8 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
     // widget to account for it.
     bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
         web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
-        syncer::LocalDataItemModel::DataId(), ui::ButtonStyle::kDefault));
+        syncer::LocalDataItemModel::DataId(bookmark_node->id()),
+        ui::ButtonStyle::kDefault));
 #endif
   }
 
@@ -465,6 +471,9 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
+
+  bookmark_bubble_->GetBubbleFrameView()->SetProperty(
+      views::kElementIdentifierKey, kBookmarkBubbleFrameViewId);
 }
 
 // static

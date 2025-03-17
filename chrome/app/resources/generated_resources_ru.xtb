@@ -545,7 +545,7 @@
 <translation id="1365650529628379165">Поднять брови</translation>
 <translation id="1367817137674340530">Сгенерировано изображений: <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">Linux не поддерживается на вашем устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="1370249617397887619">Добавить пароли в аккаунт Google, чтобы они были доступны на других устройствах</translation>
+<translation id="1370249617397887619">Добавьте пароли в аккаунт Google, чтобы они были доступны на других устройствах.</translation>
 <translation id="1370384480654163477">Просмотр и редактирование файлов, к которым вы разрешили доступ при предыдущем посещении этого сайта:</translation>
 <translation id="1372259917802609049">Не получилось удалить ограничение.</translation>
 <translation id="1372841398847029212">Синхронизировать с моим аккаунтом</translation>
@@ -2243,7 +2243,6 @@
 <translation id="2530166226437958497">Устранение неполадок</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Произошла ошибка. Не удалось установить <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Узнайте больше на странице g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Подробнее</translation>
 <translation id="2532144599248877204">Продлевает срок службы батареи, удерживая заряд на уровне 80 %. Полностью устройство заряжается только к тому времени, когда вы обычно отключаете его от источника питания.</translation>
 <translation id="2532146950330687938">Подготовка устройства…</translation>
 <translation id="2532198298278778531">Управление безопасным DNS-сервером в настройках Chrome OS Flex</translation>
@@ -2711,7 +2710,7 @@
 <translation id="2855243985454069333">История будет удалена со всех синхронизируемых устройств</translation>
 <translation id="2855812646048059450">Войти с аккаунтом <ph name="CREDENTIAL_PROVIDER" /></translation>
 <translation id="2856776373509145513">Создайте контейнер</translation>
-<translation id="2859741939921354763">Импортировать пароли в <ph name="BRAND" /></translation>
+<translation id="2859741939921354763">Импортируйте пароли в <ph name="BRAND" />.</translation>
 <translation id="2860710618359053450">Сместить губы вправо</translation>
 <translation id="2861301611394761800">Обновление системы завершено. Перезапустите компьютер.</translation>
 <translation id="2861402191395139055">Подписки Passpoint</translation>
@@ -2799,7 +2798,6 @@
 <translation id="2921081876747860777">Введите пароль, чтобы защитить свои локальные данные</translation>
 <translation id="2923006468155067296">Устройство <ph name="DEVICE_TYPE" /> будет заблокировано.
 По правилам домена <ph name="DOMAIN" /> смарт-карта должна быть вставлена.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задача: <ph name="OTHER_TASKS" />.}few{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задачи: <ph name="OTHER_TASKS" />.}many{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задач: <ph name="OTHER_TASKS" />.}other{<ph name="TASK_ROW" />. В группе ещё <ph name="OTHER_TASK_NUM" /> задачи: <ph name="OTHER_TASKS" />.}}</translation>
 <translation id="2923234477033317484">Удалить этот аккаунт</translation>
 <translation id="2923644930701689793">Доступ к фотографиям с камеры телефона</translation>
 <translation id="292371311537977079">Настройки Chrome</translation>
@@ -6904,6 +6902,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" />: работа скоро будет приостановлена</translation>
 <translation id="586567932979200359">Вы запускаете <ph name="PRODUCT_NAME" /> с образа на диске. Установка его на компьютере позволит запускать браузер без использования образа и обеспечит его регулярное обновление.</translation>
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
+<translation id="5866363217037791319">Завершить задачу</translation>
 <translation id="5868434909835797817">На устройстве отключен микрофон</translation>
 <translation id="5868479397518301468">Время ожидания входа истекло</translation>
 <translation id="5868822853313956582">Использовать настройки цветопередачи устройства</translation>
@@ -7341,7 +7340,7 @@
 <translation id="6185151644843671709">Ключ доступа сохранен, PIN-код создан</translation>
 <translation id="6186177419203903310">Уведомления обо всех новых периферийных USB-устройствах будут включены. Продолжить?</translation>
 <translation id="6190953336330058278">Управление телефоном: приложения</translation>
-<translation id="6192333916571137726">Скачивание файла</translation>
+<translation id="6192333916571137726">Скачать файл</translation>
 <translation id="6192413564913825901">Переместить во "Все закладки"</translation>
 <translation id="6194333736420234626">Способы оплаты</translation>
 <translation id="6195005504600220730">Доступ к информации о вашем браузере, ОС и устройстве</translation>
@@ -10635,7 +10634,6 @@
 <translation id="8524841856047224176">Персонализируйте фон для камеры при видеовызовах и не только.</translation>
 <translation id="8525306231823319788">Полноэкранный режим</translation>
 <translation id="8525461909394569609">В этом приложении есть веб-контент из других источников</translation>
-<translation id="8526313996927074827">Вставляйте ссылки, эмодзи и не только, а также пишите тексты с помощью ИИ от Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527257351549797148">Вам может потребоваться зарегистрировать устройство, чтобы получить доступ к приложениям, расширениям и другим возможностям. Это позволит вашей организации управлять настройками устройства и параметрами безопасности.</translation>
@@ -11094,6 +11092,7 @@
 <translation id="883924185304953854">Поиск по картинке</translation>
 <translation id="8841786407272321022">Пароли сохраняются только на устройстве. Чтобы добавлять их в аккаунт Google, обновите сервисы Google Play.</translation>
 <translation id="8841843049738266382">Читать и изменять список разрешенных пользователей</translation>
+<translation id="8841884135319684422">Завершить задачу</translation>
 <translation id="8842594465773264717">Удалить этот отпечаток пальца</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8846132060409673887">Доступ к информации о производителе и модели компьютера</translation>

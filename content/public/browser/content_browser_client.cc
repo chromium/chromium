@@ -1940,4 +1940,8 @@ ContentBrowserClient::MaybeOverrideLocalURLCrossOriginEmbedderPolicy(
   return std::nullopt;
 }
 
+bool ContentBrowserClient::ShouldEnableSubframeZoom() {
+  return false;
+}
+
 }  // namespace content

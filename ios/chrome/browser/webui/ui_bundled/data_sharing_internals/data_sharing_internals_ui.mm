@@ -45,7 +45,10 @@ DataSharingInternalsUI::DataSharingInternalsUI(web::WebUIIOS* web_ui,
                           base::Unretained(this)));
 }
 
-DataSharingInternalsUI::~DataSharingInternalsUI() {}
+DataSharingInternalsUI::~DataSharingInternalsUI() {
+  web_ui()->GetWebState()->GetInterfaceBinderForMainFrame()->RemoveInterface(
+      "data_sharing_internals.mojom.PageHandlerFactory");
+}
 
 void DataSharingInternalsUI::BindInterface(
     mojo::PendingReceiver<data_sharing_internals::mojom::PageHandlerFactory>

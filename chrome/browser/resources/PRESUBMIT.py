@@ -134,6 +134,9 @@ def CheckNoNewJs(input_api, output_api):
     'chrome/browser/resources/bluetooth_internals/',
     'chrome/browser/resources/chromeos/',
     'chrome/browser/resources/device_log/',
+    # TODO(crbug.com/403113291): Migrate incognito_navigation_blocked_page to
+    # TypeScript and remove exception.
+    'chrome/browser/resources/enterprise/incognito_navigation_blocked_page/',
     'chrome/browser/resources/gaia_auth_host/',
     'chrome/browser/resources/hangout_services/',
     'chrome/browser/resources/inspect/',

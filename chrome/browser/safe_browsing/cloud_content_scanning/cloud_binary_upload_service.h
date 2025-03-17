@@ -6,9 +6,10 @@
 #define CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_CLOUD_BINARY_UPLOAD_SERVICE_H_
 
 #include <list>
+#include <memory>
 #include <queue>
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
+#include "base/callback_list.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
@@ -26,12 +27,10 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
   explicit CloudBinaryUploadService(Profile* profile);
 
-  // This constructor is useful in tests, if you want to keep a reference to the
-  // service's `binary_fcm_service_`.
+  // This constructor is useful in tests.
   CloudBinaryUploadService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      Profile* profile,
-      std::unique_ptr<BinaryFCMService> binary_fcm_service);
+      Profile* profile);
   ~CloudBinaryUploadService() override;
 
   // Upload the given file contents for deep scanning if the browser is
@@ -50,16 +49,14 @@ class CloudBinaryUploadService : public BinaryUploadService {
                     const std::string& dm_token,
                     enterprise_connectors::AnalysisConnector connector);
 
-  // Run every matching callback in `authorization_callbacks_` and remove them.
-  void RunAuthorizationCallbacks(
+  // If auth check results are available for the matching
+  // `authorization_callbacks`, run and clear the callbacks.
+  void MaybeRunAuthorizationCallbacks(
       const std::string& dm_token,
       enterprise_connectors::AnalysisConnector connector);
 
   // Resets `can_upload_data_`. Called every 24 hour by `timer_`.
   void ResetAuthorizationData(const GURL& url);
-
-  // Performs cleanup needed at shutdown.
-  void Shutdown() override;
 
   // Sets `can_upload_data_` for tests.
   void SetAuthForTesting(const std::string& dm_token, Result auth_check_result);
@@ -104,9 +101,6 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // returned asynchronously by calling `request`'s `callback`. This must be
   // called on the UI thread.
   virtual void UploadForDeepScanning(std::unique_ptr<Request> request);
-
-  // This may destroy `request`.
-  void OnGetInstanceID(Request::Id request_id, const std::string& token);
 
   // Get the access token only if the user matches the management and
   // affiliation requirements.
@@ -155,12 +149,6 @@ class CloudBinaryUploadService : public BinaryUploadService {
       CloudBinaryUploadService::Result result,
       enterprise_connectors::ContentAnalysisResponse response);
 
-  // Callback once a request's instance ID is unregistered.
-  void InstanceIDUnregisteredCallback(
-      const std::string& dm_token,
-      enterprise_connectors::AnalysisConnector connector,
-      bool);
-
   void RecordRequestMetrics(Request::Id request_id, Result result);
   void RecordRequestMetrics(
       Request::Id request_id,
@@ -177,14 +165,12 @@ class CloudBinaryUploadService : public BinaryUploadService {
   // possible.
   void PopRequestQueue();
 
-  // Tries to connect to `binary_fcm_service_`. Regardless of the connection
-  // status, continues the upload of the scanning request.
-  void MaybeConnectToFCM(Request::Id request_id);
+  // Prepares auth and non-auth requests for uploading to the server.
+  void PrepareRequestForUpload(Request::Id request_id);
 
   bool ResponseIsComplete(Request::Id request_id);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<BinaryFCMService> binary_fcm_service_;
 
   const raw_ptr<Profile> profile_;
 
@@ -217,7 +203,8 @@ class CloudBinaryUploadService : public BinaryUploadService {
 
   // Callbacks waiting on IsAuthorized request. These are organized by DM token
   // and Connector.
-  base::flat_map<TokenAndConnector, std::list<base::OnceCallback<void(Result)>>>
+  base::flat_map<TokenAndConnector,
+                 std::unique_ptr<base::OnceCallbackList<void(Result)>>>
       authorization_callbacks_;
 
   // Indicates if this service is waiting on the backend to validate event

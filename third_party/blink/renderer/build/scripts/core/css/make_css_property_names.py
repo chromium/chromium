@@ -41,6 +41,10 @@ class CSSPropertyNamesWriter(json5_generator.Writer):
             "\n".join(map(self._array_item, self._css_properties.aliases)),
             'computable_properties':
             "\n".join(map(self._array_item, self._css_properties.computable)),
+            'includes_currentcolor_properties':
+            "\n".join(
+                map(self._array_item,
+                    self._css_properties.includes_currentcolor)),
             'first_property_id':
             self._css_properties.first_property_id,
             'properties_count':

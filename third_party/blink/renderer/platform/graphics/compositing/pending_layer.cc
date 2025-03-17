@@ -207,6 +207,7 @@ static constexpr float kMergeSparsityAreaTolerance = 10000;
 bool PendingLayer::CanMerge(
     const PendingLayer& guest,
     LCDTextPreference lcd_text_preference,
+    float device_pixel_ratio,
     IsCompositedScrollFunction is_composited_scroll,
     gfx::RectF& merged_bounds,
     PropertyTreeState& merged_state,
@@ -272,8 +273,11 @@ bool PendingLayer::CanMerge(
   if (!guest.has_decomposited_blend_mode_) {
     float sum_area = new_home_bounds.Rect().size().GetArea() +
                      new_guest_bounds.Rect().size().GetArea();
-    if (merged_bounds.size().GetArea() - sum_area >
-        kMergeSparsityAreaTolerance) {
+    float tolerance = kMergeSparsityAreaTolerance;
+    if (RuntimeEnabledFeatures::FewerSubsequencesEnabled()) {
+      tolerance *= device_pixel_ratio * device_pixel_ratio;
+    }
+    if (merged_bounds.size().GetArea() - sum_area > tolerance) {
       return false;
     }
 
@@ -344,6 +348,7 @@ bool PendingLayer::CanMerge(
 
 bool PendingLayer::Merge(const PendingLayer& guest,
                          LCDTextPreference lcd_text_preference,
+                         float device_pixel_ratio,
                          IsCompositedScrollFunction is_composited_scroll) {
   gfx::RectF merged_bounds;
   PropertyTreeState merged_state(PropertyTreeState::kUninitialized);
@@ -353,8 +358,9 @@ bool PendingLayer::Merge(const PendingLayer& guest,
   cc::HitTestOpaqueness merged_hit_test_opaqueness =
       cc::HitTestOpaqueness::kMixed;
 
-  if (!CanMerge(guest, lcd_text_preference, is_composited_scroll, merged_bounds,
-                merged_state, merged_rect_known_to_be_opaque,
+  if (!CanMerge(guest, lcd_text_preference, device_pixel_ratio,
+                is_composited_scroll, merged_bounds, merged_state,
+                merged_rect_known_to_be_opaque,
                 merged_text_known_to_be_on_opaque_background,
                 merged_solid_color_chunk_index, merged_hit_test_opaqueness)) {
     return false;

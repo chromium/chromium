@@ -41,7 +41,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.DefaultBrowserInfo2;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -51,6 +50,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -88,7 +88,7 @@ public class ReengagementNotificationControllerIntegrationTest {
 
     @After
     public void tearDown() {
-        DefaultBrowserInfo2.clearDefaultInfoForTests();
+        DefaultBrowserInfo.clearDefaultInfoForTests();
         closeReengagementNotifications();
     }
 
@@ -96,7 +96,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1464558")
     public void testReengagementNotificationSent() {
-        DefaultBrowserInfo2.setDefaultInfoForTests(
+        DefaultBrowserInfo.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(true)
                 .when(mTracker)
@@ -119,7 +119,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @MediumTest
     @DisabledTest(message = "Flaky on multiple bots, see crbug.com/1459539")
     public void testReengagementDifferentNotificationSent() {
-        DefaultBrowserInfo2.setDefaultInfoForTests(
+        DefaultBrowserInfo.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(true)
                 .when(mTracker)
@@ -142,7 +142,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1464323")
     public void testReengagementNotificationNotSentDueToIph() {
-        DefaultBrowserInfo2.setDefaultInfoForTests(
+        DefaultBrowserInfo.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition= */ true));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -166,7 +166,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @Test
     @MediumTest
     public void testReengagementNotificationNotSentDueToPreconditions() {
-        DefaultBrowserInfo2.setDefaultInfoForTests(
+        DefaultBrowserInfo.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition= */ false));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -190,7 +190,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @Test
     @MediumTest
     public void testReengagementNotificationNotSentDueToUnavailablePreconditions() {
-        DefaultBrowserInfo2.setDefaultInfoForTests(null);
+        DefaultBrowserInfo.setDefaultInfoForTests(null);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(),
@@ -248,7 +248,7 @@ public class ReengagementNotificationControllerIntegrationTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.REENGAGEMENT_NOTIFICATION)
     public void testEngagementNotificationNotSentDueToDisabled() {
-        DefaultBrowserInfo2.setDefaultInfoForTests(
+        DefaultBrowserInfo.setDefaultInfoForTests(
                 createDefaultInfo(/* passesPrecondition= */ true));
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -369,14 +369,14 @@ public class ReengagementNotificationControllerIntegrationTest {
                         ReengagementNotificationController.NOTIFICATION_ID);
     }
 
-    private DefaultBrowserInfo2.DefaultInfo createDefaultInfo(boolean passesPrecondition) {
+    private DefaultBrowserInfo.DefaultInfo createDefaultInfo(boolean passesPrecondition) {
         int browserCount = passesPrecondition ? 2 : 1;
-        return new DefaultBrowserInfo2.DefaultInfo(
+        return new DefaultBrowserInfo.DefaultInfo(
+                DefaultBrowserInfo.DefaultBrowserState.CHROME_DEFAULT,
                 /* isChromeSystem= */ true,
-                /* isChromeDefault= */ true,
                 /* isDefaultSystem= */ true,
-                /* hasDefault= */ true,
                 browserCount,
-                /* systemCount= */ 0);
+                /* systemCount= */ 0,
+                /* isChromePreStableInstalled */ false);
     }
 }

@@ -20,8 +20,9 @@ void testPointerPassing() {
   // Not using &.
   // No rewrite expected.
   processIntBuffer(intArray);
-  // Operand for & is not a simple variable.
-  // No rewrite expected. (crrev.com/c/6286045)
+  // Triggers pointer-into-array rewriting (issue 402806166).
+  // Expected rewrite:
+  // processIntBuffer(intArray);
   processIntBuffer(&intArray[0]);
 
   std::vector<int> intVector;
@@ -47,14 +48,16 @@ void testPointerToPointerPassing() {
   // Not using &.
   // No rewrite expected.
   processIntPointerBuffer(intArrayOfPointers);
-  // Operand for & is not a simple variable.
-  // No rewrite expected. (crrev.com/c/6286045)
+  // Triggers pointer-into-array rewriting (issue 402806166).
+  // Expected rewrite:
+  // processIntPointerBuffer(intArrayOfPointers);
   processIntPointerBuffer(&intArrayOfPointers[0]);
 
-  std::vector<int> intVector;
-  // Operand for & is not a simple variable.
-  // No rewrite expected. (crrev.com/c/6286045)
-  processIntPointerBuffer(&intArrayOfPointers[0]);
+  std::vector<int*> intVector;
+  // Triggers pointer-into-container rewriting (crrev.com/c/6304404).
+  // Expected rewrite:
+  // processIntPointerBuffer(intVector);
+  processIntPointerBuffer(&intVector[0]);
 }
 
 struct MyStruct {

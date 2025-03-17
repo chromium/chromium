@@ -51,6 +51,7 @@ struct ToastParams {
   ToastId toast_id;
   std::vector<std::u16string> body_string_replacement_params;
   std::vector<std::u16string> action_button_string_replacement_params;
+  std::optional<std::u16string> body_string_override;
   std::optional<ui::ImageModel> image_override;
   std::unique_ptr<ui::MenuModel> menu_model;
 };

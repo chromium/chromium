@@ -562,6 +562,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enableWebAppInstallation",
       base::FeatureList::IsEnabled(blink::features::kWebAppInstallation));
 
+  html_source->AddBoolean(
+      "enableLocalNetworkAccessSetting",
+      base::FeatureList::IsEnabled(
+          network::features::kLocalNetworkAccessChecks) &&
+          !network::features::kLocalNetworkAccessChecksWarn.Get());
+
   bool glic_enabled = false;
 #if BUILDFLAG(ENABLE_GLIC)
   AddSettingsPageUIHandler(std::make_unique<GlicHandler>());

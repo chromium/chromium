@@ -31,6 +31,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
@@ -265,5 +266,11 @@ void SetMockCursorPositionForTesting(WebContents* web_contents,
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/40278950): Use
+// `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
+void WaitForCopyableView(WebContents* web_contents) {
+  WaitForCopyableViewInWebContents(web_contents);
+}
 
 }  // namespace content

@@ -140,7 +140,7 @@ viz::SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
     format.SetPrefersExternalSampler();
   }
 #endif
-  NOTREACHED();
+  return format;
 }
 
 // Helper to create ClientSharedImage.

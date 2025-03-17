@@ -70,8 +70,6 @@ void WaitUntilTabResumptionTileVisibleOrTimeout(bool should_show) {
       ".Test:" + std::string(kReturnToStartSurfaceInactiveDurationInSeconds) +
       "/" + "0");
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
-  // Tests need to be adapted to make sure local server tabs appear with TR2.
-  config.features_disabled.push_back(kTabResumption2);
   return config;
 }
 

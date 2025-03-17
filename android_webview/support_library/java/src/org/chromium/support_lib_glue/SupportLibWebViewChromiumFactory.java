@@ -244,14 +244,14 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.GET_WEBVIEW_NAVIGATION_CLIENT,
         ApiCall.SET_WEBVIEW_NAVIGATION_CLIENT,
         ApiCall.NAVIGATION_GET_URL,
-        ApiCall.NAVIGATION_IS_PAGE_INITIATED,
+        ApiCall.NAVIGATION_WAS_INITIATED_BY_PAGE,
         ApiCall.NAVIGATION_IS_SAME_DOCUMENT,
         ApiCall.NAVIGATION_IS_RELOAD,
         ApiCall.NAVIGATION_IS_HISTORY,
         ApiCall.NAVIGATION_IS_RESTORE,
         ApiCall.NAVIGATION_IS_BACK,
         ApiCall.NAVIGATION_IS_FORWARD,
-        ApiCall.NAVIGATION_HAS_COMMITTED,
+        ApiCall.NAVIGATION_DID_COMMIT,
         ApiCall.NAVIGATION_DID_COMMIT_ERROR_PAGE,
         ApiCall.NAVIGATION_GET_STATUS_CODE,
         ApiCall.CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST,
@@ -261,6 +261,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.WEB_RESPONSE_CALLBACK_DO_NOT_INTERCEPT,
         ApiCall.WEB_RESPONSE_CALLBACK_INTERCEPT,
         ApiCall.NAVIGATION_GET_PAGE,
+        ApiCall.SET_PAYMENT_REQUEST_ENABLED,
+        ApiCall.GET_PAYMENT_REQUEST_ENABLED,
+        ApiCall.SET_HAS_ENROLLED_INSTRUMENT_ENABLED,
+        ApiCall.GET_HAS_ENROLLED_INSTRUMENT_ENABLED,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -391,14 +395,14 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int GET_WEBVIEW_NAVIGATION_CLIENT = 121;
         int SET_WEBVIEW_NAVIGATION_CLIENT = 122;
         int NAVIGATION_GET_URL = 123;
-        int NAVIGATION_IS_PAGE_INITIATED = 124;
+        int NAVIGATION_WAS_INITIATED_BY_PAGE = 124;
         int NAVIGATION_IS_SAME_DOCUMENT = 125;
         int NAVIGATION_IS_RELOAD = 126;
         int NAVIGATION_IS_HISTORY = 127;
         int NAVIGATION_IS_RESTORE = 128;
         int NAVIGATION_IS_BACK = 129;
         int NAVIGATION_IS_FORWARD = 130;
-        int NAVIGATION_HAS_COMMITTED = 131;
+        int NAVIGATION_DID_COMMIT = 131;
         int NAVIGATION_DID_COMMIT_ERROR_PAGE = 132;
         int NAVIGATION_GET_STATUS_CODE = 133;
         int CLEAR_ASYNC_SHOULD_INTERCEPT_REQUEST = 134;
@@ -408,9 +412,13 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int WEB_RESPONSE_CALLBACK_DO_NOT_INTERCEPT = 138;
         int WEB_RESPONSE_CALLBACK_INTERCEPT = 139;
         int NAVIGATION_GET_PAGE = 140;
+        int SET_PAYMENT_REQUEST_ENABLED = 141;
+        int GET_PAYMENT_REQUEST_ENABLED = 142;
+        int SET_HAS_ENROLLED_INSTRUMENT_ENABLED = 143;
+        int GET_HAS_ENROLLED_INSTRUMENT_ENABLED = 144;
 
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 141;
+        int COUNT = 145;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

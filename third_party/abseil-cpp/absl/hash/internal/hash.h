@@ -1099,7 +1099,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   template <typename T, absl::enable_if_t<IntegralFastPath<T>::value, int> = 0>
   static size_t hash(T value) {
     return static_cast<size_t>(
-        WeakMix(Seed() ^ static_cast<std::make_unsigned_t<T>>(value)));
+        WeakMix(Seed(), static_cast<std::make_unsigned_t<T>>(value)));
   }
 
   // Overload of MixingHashState::hash()
@@ -1152,7 +1152,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
   // optimize Read1To3 and Read4To8 differently for the string case.
   static MixingHashState combine_raw(MixingHashState hash_state,
                                      uint64_t value) {
-    return MixingHashState(WeakMix(hash_state.state_ ^ value));
+    return MixingHashState(WeakMix(hash_state.state_, value));
   }
 
   // Implementation of the base case for combine_contiguous where we actually
@@ -1180,7 +1180,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
       // Empty ranges have no effect.
       return state;
     }
-    return WeakMix(state ^ v);
+    return WeakMix(state, v);
   }
 
   ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t CombineContiguousImpl9to16(
@@ -1297,7 +1297,9 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
 
   // Slightly lower latency than Mix, but with lower quality. The byte swap
   // helps ensure that low bits still have high quality.
-  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t WeakMix(uint64_t n) {
+  ABSL_ATTRIBUTE_ALWAYS_INLINE static uint64_t WeakMix(uint64_t lhs,
+                                                       uint64_t rhs) {
+    const uint64_t n = lhs ^ rhs;
     // WeakMix doesn't work well on 32-bit platforms so just use Mix.
     if constexpr (sizeof(size_t) < 8) return Mix(n, kMul);
 #ifdef __ARM_ACLE

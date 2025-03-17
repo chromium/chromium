@@ -188,12 +188,11 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
     } else {
       pos.push_back(WebCoreDoubleToSkScalar(stops_[i].stop));
       if (color_filter_) {
-        colors.push_back(
-            color_filter_->FilterColor(stops_[i].color.ToGradientStopSkColor4f(
-                color_space_interpolation_space_)));
+        colors.push_back(color_filter_->FilterColor(
+            color.ToGradientStopSkColor4f(color_space_interpolation_space_)));
       } else {
-        colors.push_back(stops_[i].color.ToGradientStopSkColor4f(
-            color_space_interpolation_space_));
+        colors.push_back(
+            color.ToGradientStopSkColor4f(color_space_interpolation_space_));
       }
     }
   }
@@ -211,11 +210,12 @@ void Gradient::FillSkiaStops(ColorBuffer& colors, OffsetBuffer& pos) const {
 }
 
 SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
+  DCHECK(color_space_interpolation_space_ != Color::ColorSpace::kNone);
+
   using sk_colorspace = SkGradientShader::Interpolation::ColorSpace;
   using sk_hue_method = SkGradientShader::Interpolation::HueMethod;
   SkGradientShader::Interpolation sk_interpolation;
 
-  bool has_non_legacy_color = false;
   switch (color_space_interpolation_space_) {
     case Color::ColorSpace::kXYZD65:
     case Color::ColorSpace::kXYZD50:
@@ -248,22 +248,6 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
     case Color::ColorSpace::kHWB:
       sk_interpolation.fColorSpace = sk_colorspace::kHWB;
       break;
-    case Color::ColorSpace::kNone:
-      for (const auto& stop : stops_) {
-        if (!Color::IsLegacyColorSpace(stop.color.GetColorSpace())) {
-          has_non_legacy_color = true;
-        }
-      }
-      if (has_non_legacy_color) {
-        // If no colorspace is provided and the gradient is not entirely
-        // composed of legacy colors, Oklab is the default interpolation space.
-        sk_interpolation.fColorSpace = Color::IsBakedGamutMappingEnabled()
-                                           ? sk_colorspace::kOKLabGamutMap
-                                           : sk_colorspace::kOKLab;
-      } else {
-        sk_interpolation.fColorSpace = sk_colorspace::kSRGB;
-      }
-      break;
     case Color::ColorSpace::kDisplayP3:
       sk_interpolation.fColorSpace = sk_colorspace::kDisplayP3;
       break;
@@ -276,6 +260,8 @@ SkGradientShader::Interpolation Gradient::ResolveSkInterpolation() const {
     case Color::ColorSpace::kRec2020:
       sk_interpolation.fColorSpace = sk_colorspace::kRec2020;
       break;
+    default:
+      NOTREACHED();
   }
 
   switch (hue_interpolation_method_) {
@@ -309,6 +295,21 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   colors.reserve(stops_.size());
   OffsetBuffer pos;
   pos.reserve(stops_.size());
+
+  if (color_space_interpolation_space_ == Color::ColorSpace::kNone) {
+    bool has_non_legacy_color = false;
+    for (const auto& stop : stops_) {
+      if (!Color::IsLegacyColorSpace(stop.color.GetColorSpace())) {
+        has_non_legacy_color = true;
+      }
+    }
+
+    if (has_non_legacy_color) {
+      color_space_interpolation_space_ = Color::ColorSpace::kOklab;
+    } else {
+      color_space_interpolation_space_ = Color::ColorSpace::kSRGB;
+    }
+  }
 
   FillSkiaStops(colors, pos);
   DCHECK_GE(colors.size(), 1ul);

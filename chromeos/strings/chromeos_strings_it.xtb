@@ -1085,7 +1085,7 @@
 <translation id="6073292342939316679">riduci la luminosità della tastiera</translation>
 <translation id="6074752328838739425">Nascondi riepilogo</translation>
 <translation id="6075872808778243331">(Android) Latenza HTTP</translation>
-<translation id="6078323886959318429">Scorciatoia</translation>
+<translation id="6078323886959318429">Aggiungi scorciatoia</translation>
 <translation id="6079693086494835199">Reimposta per assicurarti che la home page predefinita non sia un sito di phishing. Utilizza solo siti web che ritieni affidabili.</translation>
 <translation id="6091080061796993741">giallo</translation>
 <translation id="6104112872696127344">La scansione è stata annullata</translation>
@@ -1300,6 +1300,7 @@
 <translation id="7040230719604914234">Operatore</translation>
 <translation id="7040729769968826896">Consenti l'identificazione dell'interlocutore</translation>
 <translation id="7041549558901442110">Il dispositivo non è collegato.</translation>
+<translation id="704183341263526038">Giove</translation>
 <translation id="7046522406494308071">Vuoi reimpostare i valori predefiniti di tutte le scorciatoie?</translation>
 <translation id="7049916119678019302">Scarica il modello di trascrizione nelle Impostazioni</translation>
 <translation id="7058278511608979688">Termina e salva</translation>
@@ -1394,6 +1395,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7388345524791662148">Altre opzioni per <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Touchpad integrato</translation>
 <translation id="7397270852490618635">Disattiva il tema chiaro</translation>
+<translation id="7400166052988585408">L'insegnante bloccherà il tuo schermo tra <ph name="NUM_SECONDS" /> secondi</translation>
 <translation id="7401543881546089382">Elimina collegamento</translation>
 <translation id="7405493795721832710">Il dispositivo <ph name="DEVICE_NAME" /> è pronto per l'aggiornamento</translation>
 <translation id="741244894080940828">conversione</translation>

@@ -12219,6 +12219,52 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Fre.Accept">
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Logged if the FRE is accepted.</description>
+</action>
+
+<action name="Glic.Fre.HelpCenterLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if a help center link is opened from the FRE.
+  </description>
+</action>
+
+<action name="Glic.Fre.MyActivityLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Logged if a myactivity link is opened from the FRE.</description>
+</action>
+
+<action name="Glic.Fre.NoThanks">
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Logged if the user clicked on No Thanks in the FRE.</description>
+</action>
+
+<action name="Glic.Fre.PolicyLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Logged if a policy link is opened from the FRE.</description>
+</action>
+
+<action name="Glic.Fre.PrivacyNoticeLinkOpened">
+  <owner>dullweber@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>
+    Logged if a privacy notice link is opened from the FRE.
+  </description>
+</action>
+
+<action name="Glic.Fre.Shown">
+  <owner>iwells@google.com</owner>
+  <owner>erikchen@chromium.org</owner>
+  <description>Logged if the glic FRE is shown.</description>
+</action>
+
 <action name="Glic.Pinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>
@@ -47608,6 +47654,7 @@ should be able to be added at any place in this file.
       label="For AutoDarkUserEducationMessage feature."/>
   <suffix name="AutoDarkUserEducationMessageOptIn"
       label="For AutoDarkUserEducationMessageOptIn feature."/>
+  <suffix name="AutofillAiOptIn" label="For AutofillAiOptIn feature."/>
   <suffix name="AutofillBnplAffirmOrZipSuggestion"
       label="For AutofillBnplAffirmOrZipSuggestion IPH feature."/>
   <suffix name="AutofillCardInfoRetrievalSuggestion"
@@ -47618,8 +47665,6 @@ should be able to be added at any place in this file.
       label="For AutofillDisabledVirtualCardSuggestion feature."/>
   <suffix name="AutofillExternalAccountProfileSuggestion"
       label="For AutofillExternalAccountProfileSuggestion feature."/>
-  <suffix name="AutofillPredictionImprovements"
-      label="For AutofillPredictionImprovements feature."/>
   <suffix name="AutofillVirtualCardCVCSuggestion"
       label="For autofill suggestion of virtual cards."/>
   <suffix name="AutofillVirtualCardSuggestion"

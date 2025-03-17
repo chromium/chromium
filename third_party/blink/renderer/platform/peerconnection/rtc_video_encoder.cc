@@ -2987,7 +2987,7 @@ void RTCVideoEncoder::UpdateEncoderInfo(
       encoder_info_.is_qp_trusted) {
     // Thresholds based on local QP and PSNR measurements.
     constexpr int kH265QpThresholdLow = 29;
-    constexpr int kH265QpThresholdHigh = 41;
+    constexpr int kH265QpThresholdHigh = 36;
     encoder_info_.scaling_settings = VideoEncoder::ScalingSettings(
         kH265QpThresholdLow, kH265QpThresholdHigh);
   } else {

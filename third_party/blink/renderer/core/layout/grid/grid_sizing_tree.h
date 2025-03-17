@@ -109,18 +109,22 @@ class CORE_EXPORT GridSizingTree {
   GridSizingTree& operator=(GridSizingTree&&) = default;
   GridSizingTree& operator=(const GridSizingTree&) = delete;
 
-  GridTreeNode& CreateSizingTreeNode(const BlockNode& grid_node,
-                                     GridItems* non_subgridded_items,
-                                     bool has_standalone_columns = true,
-                                     bool has_standalone_rows = true);
+  void AddToPreorderTraversal(const BlockNode& grid_node);
 
-  GridTreeNode& At(wtf_size_t index) const {
+  void SetSizingNodeData(const BlockNode& grid_node,
+                         GridItems* grid_items,
+                         GridLayoutData&& layout_data);
+
+  GridItems& GetGridItems(wtf_size_t index = 0) const {
     DCHECK_LT(index, tree_data_.size());
-    return *(tree_data_[index]);
+    return tree_data_[index]->GetGridItems();
   }
 
-  GridItems& RootGridItems() const { return At(0).GetGridItems(); }
-  GridLayoutData& RootLayoutData() const { return At(0).layout_data; }
+  GridLayoutData& LayoutData(wtf_size_t index = 0) const {
+    DCHECK_LT(index, tree_data_.size());
+    return tree_data_[index]->layout_data;
+  }
+
   wtf_size_t Size() const { return tree_data_.size(); }
 
   wtf_size_t SubtreeSize(wtf_size_t index) const {
@@ -142,6 +146,11 @@ class CORE_EXPORT GridSizingTree {
     wtf_size_t item_index_in_parent;
     wtf_size_t parent_grid_index;
   };
+
+  GridTreeNode& At(wtf_size_t index) const {
+    DCHECK_LT(index, tree_data_.size());
+    return *(tree_data_[index]);
+  }
 
   // Stores a subgrid's index in the grid sizing tree; this is useful when we
   // want to create a `GridSizingSubtree` for an arbitrary subgrid.
@@ -208,12 +217,17 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
            sizing_tree_->LookupSubgridIndex(grid_node) == subtree_root_;
   }
 
-  GridItems& GetGridItems() const { return SubtreeRoot().GetGridItems(); }
-  GridLayoutData& LayoutData() const { return SubtreeRoot().layout_data; }
+  GridItems& GetGridItems() const {
+    return SizingTree().GetGridItems(subtree_root_);
+  }
+
+  GridLayoutData& LayoutData() const {
+    return SizingTree().LayoutData(subtree_root_);
+  }
 
   GridSizingTrackCollection& SizingCollection(
       GridTrackSizingDirection track_direction) const {
-    return SubtreeRoot().layout_data.SizingCollection(track_direction);
+    return LayoutData().SizingCollection(track_direction);
   }
 
  private:
@@ -223,11 +237,6 @@ class GridSizingSubtree : public GridSubtree<GridSizingTree> {
   const GridSizingTree& SizingTree() const {
     DCHECK(sizing_tree_);
     return *sizing_tree_;
-  }
-
-  GridSizingTree::GridTreeNode& SubtreeRoot() const {
-    DCHECK(sizing_tree_);
-    return sizing_tree_->At(subtree_root_);
   }
 
   // Pointer to the sizing tree shared by multiple subtree instances.

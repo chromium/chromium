@@ -5,9 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -22,12 +20,10 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -132,17 +128,6 @@ public class HubToolbarViewUnitTest {
 
         mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
         assertEquals(View.VISIBLE, mActionButton.getVisibility());
-    }
-
-    @Test
-    @MediumTest
-    public void testActionButtonText() {
-        FullButtonData fullButtonData = makeTestButtonData();
-        mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
-        assertTrue(TextUtils.isEmpty(mActionButton.getText()));
-
-        mPropertyModel.set(SHOW_ACTION_BUTTON_TEXT, true);
-        assertFalse(TextUtils.isEmpty(mActionButton.getText()));
     }
 
     @Test

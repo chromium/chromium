@@ -1374,6 +1374,12 @@ class _Command:
 
       if any(abi in app_abis for abi in device_abis):
         fully_supported.append(device)
+        if is_webview and not all(abi in app_abis for abi in device_abis):
+          logging.warning(
+              'Using a webview that supports only %s on a device that '
+              'supports %s. You probably need to set GN arg:\n\n'
+              '    enable_android_secondary_abi=true\n', ','.join(app_abis),
+              ','.join(device_abis))
       else:  # No common supported ABIs between the device and app.
         if device_primary_abi == 'x86':
           target_cpu = 'x86'

@@ -1170,6 +1170,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void AddExtraPartForTesting(
       std::unique_ptr<ChromeContentBrowserClientParts> part);
 
+  bool ShouldEnableSubframeZoom() override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

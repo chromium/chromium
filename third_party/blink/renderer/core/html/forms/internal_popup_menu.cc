@@ -374,6 +374,25 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
     }
   }
 
+  if (RuntimeEnabledFeatures::SelectColorsRemoveImportantEnabled()) {
+    // We want to use -internal-inactive-list-box-selection here to match
+    // html.css, but we can't because this isn't a UA stylesheet. This code
+    // figures out what that color would resolve to and uses it.
+    Color disabled_bg_color_light =
+        LayoutTheme::GetTheme().InactiveListBoxSelectionBackgroundColor(
+            mojom::blink::ColorScheme::kLight);
+    Color disabled_bg_color_dark =
+        LayoutTheme::GetTheme().InactiveListBoxSelectionBackgroundColor(
+            mojom::blink::ColorScheme::kDark);
+    String listbox_bg_color = String::Format(
+        "option:checked:disabled {"
+        "background-color: light-dark(%s, %s) !important;"
+        "}",
+        disabled_bg_color_light.SerializeAsCSSColor().Ascii().c_str(),
+        disabled_bg_color_dark.SerializeAsCSSColor().Ascii().c_str());
+    PagePopupClient::AddString(listbox_bg_color, data);
+  }
+
   PagePopupClient::AddString(
       "</style></head><body><div id=main>Loading...</div><script>\n"
       "window.dialogArguments = {\n",

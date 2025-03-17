@@ -74,6 +74,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/video_capture_service.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -632,12 +633,12 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
 
 void ChromeCaptureModeDelegate::GetPrimaryAccountAccessToken(
     base::RepeatingCallback<void(const std::string& access_token)> callback) {
-  const user_manager::User* const primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
+  const user_manager::User* const active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
 
   Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -665,12 +666,12 @@ GURL ChromeCaptureModeDelegate::GetBaseSearchURLAndPostContent(
     gfx::Size image_original_size,
     TemplateURLRef::PostContent* post_content) {
   // What if the default search provider is not Google?
-  const user_manager::User* const primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
+  const user_manager::User* const active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
 
   Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user));
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   DCHECK(template_url_service);
@@ -693,6 +694,18 @@ GURL ChromeCaptureModeDelegate::GetBaseSearchURLAndPostContent(
 
   return GURL(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), post_content));
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+ChromeCaptureModeDelegate::GetSharedURLLoaderFactory() const {
+  const user_manager::User* const active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
+
+  return ash::BrowserContextHelper::Get()
+      ->GetBrowserContextByUser(active_user)
+      ->GetDefaultStoragePartition()
+      ->GetURLLoaderFactoryForBrowserProcess();
 }
 
 void ChromeCaptureModeDelegate::SendMultimodalSearch(

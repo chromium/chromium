@@ -101,6 +101,7 @@ void BrowserCommandHandler::CanExecuteCommand(
                                 can_execute);
       break;
     case Command::kStartTabGroupTutorial:
+    case Command::kStartSavedTabGroupTutorial:
       can_execute = TutorialServiceExists() && BrowserSupportsTabGroups();
       break;
     case Command::kOpenPasswordManager:
@@ -117,11 +118,6 @@ void BrowserCommandHandler::CanExecuteCommand(
       break;
     case Command::kStartPasswordManagerTutorial:
       can_execute = TutorialServiceExists();
-      break;
-    case Command::kStartSavedTabGroupTutorial:
-      can_execute = TutorialServiceExists() &&
-                    BrowserSupportsSavedTabGroups() &&
-                    !tab_groups::IsTabGroupsSaveV2Enabled();
       break;
     case Command::kOpenAISettings:
       can_execute = true;
@@ -184,6 +180,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
           base::UserMetricsAction("NewTabPage_Promos_PrivacyGuide"));
       break;
     case Command::kStartTabGroupTutorial:
+    case Command::kStartSavedTabGroupTutorial:
       StartTabGroupTutorial();
       break;
     case Command::kOpenPasswordManager:
@@ -201,9 +198,6 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       break;
     case Command::kStartPasswordManagerTutorial:
       StartPasswordManagerTutorial();
-      break;
-    case Command::kStartSavedTabGroupTutorial:
-      StartSavedTabGroupTutorial();
       break;
     case Command::kOpenAISettings:
       OpenAISettings();

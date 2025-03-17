@@ -115,21 +115,41 @@ void ExpectNoUpdateSequence(
     const base::Version& version = base::Version(kUpdaterVersion)) {
   test_server->ExpectOnce({request::GetUpdaterUserAgentMatcher(version),
                            request::GetContentMatcher({base::StringPrintf(
-                               R"(.*"appid":"%s".*)", app_id.c_str())})},
-                          base::StringPrintf(")]}'\n"
-                                             R"({"response":{)"
-                                             R"(  "protocol":"3.1",)"
-                                             R"(  "app":[)"
-                                             R"(    {)"
-                                             R"(      "appid":"%s",)"
-                                             R"(      "status":"ok",)"
-                                             R"(      "updatecheck":{)"
-                                             R"(        "status":"noupdate")"
-                                             R"(      })"
-                                             R"(    })"
-                                             R"(  ])"
-                                             R"(}})",
-                                             app_id.c_str()));
+                               R"(.*"appid":"%s".*)", app_id)})},
+                          base::BindRepeating(
+                              [](const std::string& app_id, bool v4) {
+                                return v4 ? base::StringPrintf(
+                                                ")]}'\n"
+                                                R"({"response":{)"
+                                                R"(  "protocol":"4.0",)"
+                                                R"(  "apps":[)"
+                                                R"(    {)"
+                                                R"(      "appid":"%s",)"
+                                                R"(      "status":"ok",)"
+                                                R"(      "updatecheck":{)"
+                                                R"(        "status":"noupdate")"
+                                                R"(      })"
+                                                R"(    })"
+                                                R"(  ])"
+                                                R"(}})",
+                                                app_id)
+                                          : base::StringPrintf(
+                                                ")]}'\n"
+                                                R"({"response":{)"
+                                                R"(  "protocol":"3.1",)"
+                                                R"(  "app":[)"
+                                                R"(    {)"
+                                                R"(      "appid":"%s",)"
+                                                R"(      "status":"ok",)"
+                                                R"(      "updatecheck":{)"
+                                                R"(        "status":"noupdate")"
+                                                R"(      })"
+                                                R"(    })"
+                                                R"(  ])"
+                                                R"(}})",
+                                                app_id);
+                              },
+                              app_id));
 }
 
 void ExpectPingRequest(
@@ -150,8 +170,8 @@ void ExpectPingRequest(
                                    : "")})},
       base::StringPrintf(")]}'\n"
                          R"({"response":{)"
-                         R"(  "protocol":"3.1",)"
-                         R"(  "app":[)"
+                         R"(  "protocol":"4.0",)"
+                         R"(  "apps":[)"
                          R"(    {)"
                          R"(      "appid":"%s",)"
                          R"(      "status":"ok")"
@@ -1205,8 +1225,8 @@ TEST_F(IntegrationTest, ReportsActive) {
             R"("ping":{"ad":-1,.*)"})},
       R"()]}')"
       "\n"
-      R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"
-      R"(days":5098}},"app":[{"appid":"test1","status":"ok",)"
+      R"({"response":{"protocol":"4.0","daystart":{"elapsed_)"
+      R"(days":5098}},"apps":[{"appid":"test1","status":"ok",)"
       R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
       R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
@@ -1637,9 +1657,11 @@ TEST_F(IntegrationTest, InstallUpdaterAndTwoApps) {
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId, /*is_silent_install=*/true,
       base::StrCat({"appguid=", kAppId, "&ap=foo&usagestats=1"})));
+  // The download is skipped because the CRX was cached when installing the
+  // first app.
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId2, "", UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), v1));
+      base::Version({0, 0, 0, 0}), v1, false, true));
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId2, /*is_silent_install=*/true,
       base::StrCat({"appguid=", kAppId2, "&ap=foo2&usagestats=1"})));
@@ -2047,7 +2069,7 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
   const std::string response = base::StringPrintf(
       ")]}'\n"
       R"({"response":{)"
-      R"(  "protocol":"3.1",)"
+      R"(  "protocol":"4.0",)"
       R"(  "app":[)"
       R"(    {)"
       R"(      "appid":"%s",)"
@@ -2090,8 +2112,8 @@ TEST_F(IntegrationTest, InstallDataIndex) {
   const std::string response = base::StringPrintf(
       ")]}'\n"
       R"({"response":{)"
-      R"(  "protocol":"3.1",)"
-      R"(  "app":[)"
+      R"(  "protocol":"4.0",)"
+      R"(  "apps":[)"
       R"(    {)"
       R"(      "appid":"%s",)"
       R"(      "status":"ok",)"
@@ -3783,8 +3805,8 @@ TEST_F(IntegrationTest, CRURegistrationReportsActive) {
             R"("ping":{"ad":-1,.*)"})},
       R"()]}')"
       "\n"
-      R"({"response":{"protocol":"3.1","daystart":{"elapsed_)"
-      R"(days":5098}},"app":[{"appid":"test1","status":"ok",)"
+      R"({"response":{"protocol":"4.0","daystart":{"elapsed_)"
+      R"(days":5098}},"apps":[{"appid":"test1","status":"ok",)"
       R"("updatecheck":{"status":"noupdate"}},{"appid":"test2",)"
       R"("status":"ok","updatecheck":{"status":"noupdate"}}]})");
   ASSERT_NO_FATAL_FAILURE(RunWake(0));

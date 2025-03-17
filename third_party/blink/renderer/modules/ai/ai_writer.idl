@@ -32,7 +32,18 @@ interface AIWriter {
   ]
   ReadableStream writeStreaming(
     DOMString writingTask,
-    optional AIWriterWriteOptions options = {});
+    optional AIWriterWriteOptions options = {}
+  );
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString writingTask,
+    optional AIWriterWriteOptions options = {}
+  );
 
   [
     Measure,
@@ -55,4 +66,6 @@ interface AIWriter {
   readonly attribute FrozenArray<DOMString>? expectedContextLanguages;
   [Measure]
   readonly attribute DOMString? outputLanguage;
+  [Measure]
+  readonly attribute unrestricted double inputQuota;
 };

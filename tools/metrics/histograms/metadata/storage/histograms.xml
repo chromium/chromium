@@ -28,6 +28,13 @@ chromium-metrics-reviews@google.com.
       summary="BiddingAndAuctionServerKeyProtos"/>
   <variant name="KAnonKeyProtos" summary="KAnonKeyProtos"/>
   <variant name="ListOfOrigins" summary="ListOfOrigins"/>
+  <variant name="ListOfTimestamps" summary="ListOfTimestamps"/>
+</variants>
+
+<variants name="LevelDBEnvTypes">
+  <variant name="IDB." summary="Restricted to IndexedDB LevelDB environments"/>
+  <variant name="ServiceWorker."
+      summary="Restricted to ServiceWorker LevelDB environments"/>
 </variants>
 
 <histogram name="API.EffectiveStorageAccess.AllowedByStorageAccessType"
@@ -537,13 +544,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
-    expires_after="2025-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>Methods where leveldb's Chromium environment has IO errors.</summary>
-</histogram>
-
 <histogram name="LevelDBEnv.LockFileInUseByThisProcess" enum="Boolean"
     expires_after="2025-08-10">
   <owner>estade@chromium.org</owner>
@@ -567,16 +567,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LevelDBEnv.MissingFiles" units="files"
-    expires_after="2025-08-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Number of backup files found without corresponding ldb files. As measured by
-    GetChildren when used in LevelDB clients other than IndexedDB.
-  </summary>
-</histogram>
-
 <histogram name="LevelDBEnv.SyncResult" enum="PlatformFileError"
     expires_after="2024-08-06">
   <owner>estade@chromium.org</owner>
@@ -587,6 +577,33 @@ chromium-metrics-reviews@google.com.
     the client requests it (e.g. for a strict durability IndexedDB transaction)
     and after an otherwise successful write.
   </summary>
+</histogram>
+
+<histogram name="LevelDBEnv.{LevelDBEnvTypes}IOError"
+    enum="LevelDBIOErrorMethods" expires_after="2025-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Methods where leveldb's Chromium environment has IO errors.
+    {LevelDBEnvTypes}
+  </summary>
+  <token key="LevelDBEnvTypes" variants="LevelDBEnvTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="LevelDBEnv.{LevelDBEnvTypes}MissingFiles" units="files"
+    expires_after="2025-08-01">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Number of backup files found without corresponding ldb files. As measured by
+    GetChildren when used in LevelDB clients other than IndexedDB.
+    {LevelDBEnvTypes}
+  </summary>
+  <token key="LevelDBEnvTypes" variants="LevelDBEnvTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="LevelDBWrapper.CommitDelay" units="ms"

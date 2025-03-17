@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.TOOLBAR_OVERVIEW_COLOR_SETTER;
 
 import org.chromium.ui.modelutil.PropertyKey;
@@ -25,8 +24,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class HubToolbarViewBinder {
     /** Stateless propagation of properties. */
     public static void bind(PropertyModel model, HubToolbarView view, PropertyKey key) {
-        if (key == ACTION_BUTTON_DATA || key == SHOW_ACTION_BUTTON_TEXT) {
-            view.setActionButton(model.get(ACTION_BUTTON_DATA), model.get(SHOW_ACTION_BUTTON_TEXT));
+        if (key == ACTION_BUTTON_DATA) {
+            view.setActionButton(model.get(ACTION_BUTTON_DATA));
         } else if (key == PANE_SWITCHER_BUTTON_DATA) {
             view.setPaneSwitcherButtonData(
                     model.get(PANE_SWITCHER_BUTTON_DATA), model.get(PANE_SWITCHER_INDEX));

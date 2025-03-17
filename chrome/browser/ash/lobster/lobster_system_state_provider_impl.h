@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/lobster/lobster_system_state_provider.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/display/display_observer.h"
 
 class PrefService;
 
@@ -18,7 +19,12 @@ namespace signin {
 class IdentityManager;
 }
 
-class LobsterSystemStateProviderImpl : public LobsterSystemStateProvider {
+namespace display {
+enum class TabletState;
+}  // namespace display
+
+class LobsterSystemStateProviderImpl : public LobsterSystemStateProvider,
+                                       public display::DisplayObserver {
  public:
   explicit LobsterSystemStateProviderImpl(
       PrefService* pref,
@@ -29,9 +35,14 @@ class LobsterSystemStateProviderImpl : public LobsterSystemStateProvider {
   ash::LobsterSystemState GetSystemState(
       const ash::LobsterTextInputContext& text_input_context) override;
 
+  // display::DisplayObserver overrides
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
+
  private:
   raw_ptr<PrefService> pref_;
   specialized_features::FeatureAccessChecker access_checker_;
+  bool is_in_tablet_mode_ = false;
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_IMPL_H_

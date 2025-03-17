@@ -42,13 +42,13 @@ void AutoOpenGlicPanel() {
   }
 
   Browser* browser = nullptr;
-  InvocationSource pretend_source = InvocationSource::kOsButton;
+  mojom::InvocationSource pretend_source = mojom::InvocationSource::kOsButton;
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           ::switches::kGlicOpenOnStartup) == "attached") {
     // Attachment is best effort; FindLastActiveWithProfile() may return null
     // here.
     browser = chrome::FindLastActiveWithProfile(profile);
-    pretend_source = InvocationSource::kTopChromeButton;
+    pretend_source = mojom::InvocationSource::kTopChromeButton;
   }
   GlicKeyedServiceFactory::GetGlicKeyedService(profile)->ToggleUI(
       browser, /*prevent_close=*/true, pretend_source);
@@ -166,7 +166,7 @@ void GlicProfileManager::DidSelectProfile(Profile* profile) {
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   service->ToggleUI(nullptr, /*prevent_close=*/true,
-                    InvocationSource::kProfilePicker);
+                    mojom::InvocationSource::kProfilePicker);
 }
 
 // static

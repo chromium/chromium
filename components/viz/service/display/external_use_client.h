@@ -46,7 +46,8 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
                  const gfx::Size& size,
                  SharedImageFormat format,
                  const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-                 sk_sp<SkColorSpace> color_space);
+                 sk_sp<SkColorSpace> color_space,
+                 GrSurfaceOrigin origin);
 
     ImageContext(const ImageContext&) = delete;
     ImageContext& operator=(const ImageContext&) = delete;
@@ -75,10 +76,6 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     }
 
     GrSurfaceOrigin origin() const { return origin_; }
-    void set_origin(GrSurfaceOrigin origin) {
-      DCHECK(!image_);
-      origin_ = origin;
-    }
 
     std::optional<gpu::VulkanYCbCrInfo> ycbcr_info() { return ycbcr_info_; }
 
@@ -115,9 +112,9 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
     const gfx::Size size_;
     const SharedImageFormat format_;
     const sk_sp<SkColorSpace> color_space_;
+    const GrSurfaceOrigin origin_;
 
     SkAlphaType alpha_type_ = kPremul_SkAlphaType;
-    GrSurfaceOrigin origin_ = kTopLeft_GrSurfaceOrigin;
 
     // Sampler conversion information which is used in vulkan context for
     // android video.
@@ -142,6 +139,7 @@ class VIZ_SERVICE_EXPORT ExternalUseClient {
       bool maybe_concurrent_reads,
       const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
       sk_sp<SkColorSpace> color_space,
+      GrSurfaceOrigin origin,
       bool raw_draw_if_possible) = 0;
 
   virtual gpu::SyncToken ReleaseImageContexts(

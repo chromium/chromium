@@ -32,6 +32,7 @@
 <translation id="1478370723027452770">Chrome for Testing ব্যবহার করে সহায়তা পান</translation>
 <translation id="1497802159252041924">ইনস্টলেশন সংক্রান্ত সমস্যা: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">একটি Chromium ট্যাব শেয়ার করুন</translation>
+<translation id="1547469039832541117">হাইলাইট করা টাস্ক শেষ করে।</translation>
 <translation id="1553461853655228091">আপনার আশেপাশের 3D ম্যাপ তৈরি করতে এই সাইটটির জন্য Chromium-কে আপনার ক্যামেরা অ্যাক্সেস করার অনুমতি দিতে হবে</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{এই এক্সটেনশন আর কাজ করবে না। Chromium আপনাকে এটি সরিয়ে দেওয়ার সাজেশন দেয়।}one{এইসব এক্সটেনশন আর কাজ করবে না। Chromium আপনাকে এগুলি সরিয়ে দেওয়ার সাজেশন দেয়।}other{এইসব এক্সটেনশন আর কাজ করবে না। Chromium আপনাকে এগুলি সরিয়ে দেওয়ার সাজেশন দেয়।}}</translation>
 <translation id="1574377791422810894">Chromium-এর নিরাপত্তা টুল</translation>

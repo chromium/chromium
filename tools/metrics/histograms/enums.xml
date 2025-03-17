@@ -657,8 +657,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="10" label="Component lost top-level auction"/>
   <int value="11" label="(obsolete) Winning component seller worklet crashed"/>
   <int value="12" label="Invalid server response"/>
-  <int value="13" label="Abort signal"/>
-  <int value="14" label="Document destruction"/>
+  <int value="13" label="Invalid auction nonce"/>
+  <int value="14" label="Abort signal"/>
+  <int value="15" label="Document destruction"/>
 </enum>
 
 <enum name="AuctionState">
@@ -8952,6 +8953,8 @@ from previous Chrome versions.
   <int value="-2015293660" label="AccessibilityExposeDisplayNone:disabled"/>
   <int value="-2014948560" label="TabGroupsAutoCreate:enabled"/>
   <int value="-2014474383" label="GameDashboardUtilities:enabled"/>
+  <int value="-2014144009"
+      label="AutofillEnableAmountExtractionDesktopLogging:enabled"/>
   <int value="-2013948438"
       label="AudioFlexibleLoopbackForSystemLoopback:disabled"/>
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
@@ -9606,6 +9609,7 @@ from previous Chrome versions.
   <int value="-1758468685" label="DownloadHomeV2:disabled"/>
   <int value="-1758074393" label="BorealisWebUIInstaller:disabled"/>
   <int value="-1757014990" label="SystemEmojiPickerVariantGrouping:disabled"/>
+  <int value="-1756299290" label="WebSerialAPI:enabled"/>
   <int value="-1755714804" label="FeedCloseRefresh:enabled"/>
   <int value="-1755301960" label="ClearOldBrowsingData:enabled"/>
   <int value="-1754262889" label="RemoteCopyPersistentNotification:enabled"/>
@@ -10260,6 +10264,7 @@ from previous Chrome versions.
   <int value="-1498334893" label="ExperimentalVRFeatures:enabled"/>
   <int value="-1497450774" label="TreatUnsafeDownloadsAsActive:disabled"/>
   <int value="-1497338981" label="disable-accelerated-overflow-scroll"/>
+  <int value="-1496664643" label="WebSerialAPI:disabled"/>
   <int value="-1496106797" label="IPH_PasswordsAccountStorage:enabled"/>
   <int value="-1496051102" label="PageInfoV2Desktop:disabled"/>
   <int value="-1495973732"
@@ -11420,6 +11425,7 @@ from previous Chrome versions.
   <int value="-1048614257" label="FilesNewDirectoryTree:enabled"/>
   <int value="-1048530703" label="ContextMenuPopupStyle:disabled"/>
   <int value="-1048011353" label="LongPressBackNewDesign:disabled"/>
+  <int value="-1047684585" label="OmniboxUrlSuggestionsOnFocus:enabled"/>
   <int value="-1046641729" label="TranslateUI:enabled"/>
   <int value="-1046627610" label="password-import:enabled"/>
   <int value="-1046335898"
@@ -12006,6 +12012,7 @@ from previous Chrome versions.
   <int value="-815601488" label="CrostiniTerminaDlcForceOta:disabled"/>
   <int value="-815487797" label="WindowSplitting:enabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
+  <int value="-814908813" label="OmniboxUrlSuggestionsOnFocus:disabled"/>
   <int value="-814305011" label="BatchFetchRequests:disabled"/>
   <int value="-814097014" label="disable-session-crashed-bubble"/>
   <int value="-813753274" label="VrBrowsing:disabled"/>
@@ -14320,6 +14327,8 @@ from previous Chrome versions.
   <int value="98218116" label="ContextualSearchLongpressResolve:disabled"/>
   <int value="98273391" label="force-ntp-mobile-promo"/>
   <int value="98773632" label="DesktopPWAsTabStripCustomizations:enabled"/>
+  <int value="98923718"
+      label="CredentialManagementThirdPartyWebApiRequestForwarding:disabled"/>
   <int value="99128921"
       label="SyncOnlySeparateUserDisplayModeForCrOS:disabled"/>
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
@@ -14755,6 +14764,7 @@ from previous Chrome versions.
   <int value="273489120" label="CrostiniDiskResizing:disabled"/>
   <int value="274103741" label="enable-ntp-popular-sites"/>
   <int value="275314794" label="DeprecateUnload:disabled"/>
+  <int value="275484835" label="TabSwitcherContextMenuAndroid:enabled"/>
   <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
   <int value="275690549" label="AppManagementAppDetails:enabled"/>
   <int value="275804776" label="CctSignInPrompt:enabled"/>
@@ -15793,6 +15803,7 @@ from previous Chrome versions.
   <int value="676922235" label="SeparateUserDisplayModeForCrOS:disabled"/>
   <int value="677866592" label="ClickToCallUI:disabled"/>
   <int value="677883800" label="DiagnosticsAppNavigation:disabled"/>
+  <int value="678629816" label="TabSwitcherContextMenuAndroid:disabled"/>
   <int value="678752544" label="VcWebApi:enabled"/>
   <int value="679931272" label="DcheckIsFatal:enabled"/>
   <int value="680070635"
@@ -16570,6 +16581,8 @@ from previous Chrome versions.
   <int value="986796748" label="AccountConsistency:enabled"/>
   <int value="987690332" label="NearbySharingBackgroundScanning:disabled"/>
   <int value="987843084" label="TerminalSystemApp:enabled"/>
+  <int value="987848926"
+      label="CredentialManagementThirdPartyWebApiRequestForwarding:enabled"/>
   <int value="988761165" label="HighEfficiencyMultistateMode:disabled"/>
   <int value="988781221" label="SyncSetupFriendlySettings:disabled"/>
   <int value="988981463" label="ImageCaptureAPI:enabled"/>
@@ -16757,6 +16770,8 @@ from previous Chrome versions.
   <int value="1062273847" label="face-retouch-override"/>
   <int value="1062357243" label="remember-cert-error-decisions"/>
   <int value="1062563622" label="GateNV12GMBVideoFramesOnHWSupport:enabled"/>
+  <int value="1063225359"
+      label="AutofillEnableAmountExtractionDesktopLogging:disabled"/>
   <int value="1063490936" label="ExoSurroundingTextOffset:enabled"/>
   <int value="1063909131" label="CrOSDspBasedAgcAllowed:disabled"/>
   <int value="1064288458" label="OfflineRecentPages:enabled"/>
@@ -22629,6 +22644,19 @@ Called by update_net_error_codes.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeActionBehavior) -->
+
+<!-- LINT.IfChange(PrivacySandboxNoticeEvent) -->
+
+<enum name="PrivacySandboxNoticeEvent">
+  <int value="0" label="Ack"/>
+  <int value="1" label="Closed"/>
+  <int value="2" label="OptIn"/>
+  <int value="3" label="OptOut"/>
+  <int value="4" label="Settings"/>
+  <int value="5" label="Shown"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/privacy_sandbox/privacy_sandbox_notice_storage.h:NoticeEvent) -->
 
 <!-- LINT.IfChange(PrivacySandboxNoticeStartupState) -->
 

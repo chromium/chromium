@@ -6,6 +6,8 @@
   const testValues = ["invalid", "1em", "1rem", "calc(3px + 3px)", "calc(1em + 1px)"];
   const cssWideKeywords = ["initial", "inherit", "unset"];
   const validColorValues = ["aqua", "peachpuff", "blanchedalmond", "rgb(255, 0, 0)", "#0f5ffe", "color-mix(in srgb, plum, #f00)"];
+  const validPercentageExpressions = ["10%", "50%", "calc(10% + 10%)", "calc(10% - 10%)", "calc(10px + 10% - 10%)", "calc(10px + 10px)", "calc(10px + 0%)", "calc(10px + 10%)", "calc(1em + 10%)"];
+  const invalidPercentageExpressions = ["calc(", "%", "calc(10 + 20)%", "calc(10 + 30%"];
 
   var {page, session, dp} = await testRunner.startURL('resources/css-resolve-values.html', 'Test css.resolveValue method');
 
@@ -147,6 +149,82 @@
     async function testElementDisplayNone() {
       testRunner.log('Test on element without computed style');
       await testResolveValues('.display-none', testValues, "height");
+    },
+    async function testResolveValuesValidInnerHeight() {
+      testRunner.log('Test resolveValues for height property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "height");
+    },
+    async function testResolveValuesValidOuterWidth() {
+      testRunner.log('Test resolveValues for width property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "width");
+    },
+    async function testResolveValuesValidInnerMinHeight() {
+      testRunner.log('Test resolveValues for min-height property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "min-height");
+    },
+    async function testResolveValuesValidOuterMinWidth() {
+      testRunner.log('Test resolveValues for min-width property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "min-width");
+    },
+    async function testResolveValuesValidInnerMaxWidth() {
+      testRunner.log('Test resolveValues for max-width property of outer element');
+      await testResolveValues('.inner', validPercentageExpressions, "max-width");
+    },
+    async function testResolveValuesValidOuterMaxHeight() {
+      testRunner.log('Test resolveValues for max-height property of inner element');
+      await testResolveValues('.outer', validPercentageExpressions, "max-height");
+    },
+    async function testResolveValuesValidInnerLeft() {
+      testRunner.log('Test resolveValues for left property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "left");
+    },
+    async function testResolveValuesValidInnerTop() {
+      testRunner.log('Test resolveValues for top property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "top");
+    },
+    async function testResolveValuesValidOuterRight() {
+      testRunner.log('Test resolveValues for right property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "right");
+    },
+    async function testResolveValuesValidOuterBottom() {
+      testRunner.log('Test resolveValues for bottom property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "bottom");
+    },
+    async function testResolveValuesValidInnerMarginLeft() {
+      testRunner.log('Test resolveValues for margin-left property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "margin-left");
+    },
+    async function testResolveValuesValidInnerMarginBottom() {
+      testRunner.log('Test resolveValues for margin-bottom property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "margin-bottom");
+    },
+    async function testResolveValuesValidOuterMarginTop() {
+      testRunner.log('Test resolveValues for margin-top property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "margin-top");
+    },
+    async function testResolveValuesValidOuterMarginRight() {
+      testRunner.log('Test resolveValues for margin-right property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "margin-right");
+    },
+    async function testResolveValuesValidInnerPaddingLeft() {
+      testRunner.log('Test resolveValues for padding-left property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "padding-left");
+    },
+    async function testResolveValuesValidInnerPAddingTop() {
+      testRunner.log('Test resolveValues for padding-top property of inner element');
+      await testResolveValues('.inner', validPercentageExpressions, "padding-top");
+    },
+    async function testResolveValuesValidOuterPaddingRight() {
+      testRunner.log('Test resolveValues for padding-right property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "padding-right");
+    },
+    async function testResolveValuesValidOuterPaddingBottom() {
+      testRunner.log('Test resolveValues for padding-bottom property of outer element');
+      await testResolveValues('.outer', validPercentageExpressions, "padding-bottom");
+    },
+    async function testResolveInvalidPercentageValues() {
+      testRunner.log('Test resolveValues with invalid percentage expressions');
+      await testResolveValues('.inner', invalidPercentageExpressions, "height");
     }
   ]);
 });

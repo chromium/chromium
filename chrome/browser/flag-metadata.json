@@ -591,6 +591,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "autofill-enable-amount-extraction-desktop-logging",
+    "owners": [ "jamessun@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-buy-now-pay-later",
     "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145
@@ -602,8 +607,8 @@
   },
   {
     "name": "autofill-enable-card-benefits-for-american-express",
-    "owners": [ "viplavkadam@google.com"],
-    "expiry_milestone": 135
+    "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
   },
   {
     "name": "autofill-enable-card-benefits-for-bmo",
@@ -1632,6 +1637,13 @@
     "name": "cras-processor-wav-dump",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 150
+  },
+  {
+    "name": "credential-management-third-party-web-api-request-forwarding",
+    "owners": [
+      "izuzic@google.com",
+      "friedrichh@chromium.org" ],
+    "expiry_milestone": 140
   },
   {
     "name": "cros-apps-background-event-handling",
@@ -3459,11 +3471,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-logo-polish",
-    "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-mac-a11y-api-migration",
     "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
     "expiry_milestone": 142
@@ -4591,6 +4598,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "feed-swipe-iph",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@google.com" ],
+    "expiry_milestone": 139
+  },
+  {
     "name": "feedback-include-variations",
     "owners": [ "svenzheng@google.com", "chrome-metrics-team@google.com" ],
     "expiry_milestone": 145
@@ -5652,6 +5664,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "lens-fetch-srp-api-enabled",
+    "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "lens-filters-ablation-mode-enabled",
     "owners": ["cmyang@google.com", "ericappelbaum@google.com"],
     "expiry_milestone": 135
@@ -5719,6 +5736,11 @@
   {
     "name": "lens-prewarm-hard-stickiness-in-query-formulation",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "lens-qr-code-parsing-fix",
+    "owners": ["cmyang@google.com"],
     "expiry_milestone": 140
   },
   {
@@ -6656,6 +6678,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-url-suggestions-on-focus",
+    "owners": ["niharm@google.com", "khalidpeer@chromium.org",  "mahmadi@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "omnibox-zero-suggest-in-memory-caching",
     "owners": [ "khalidpeer@chromium.org", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 130
@@ -7017,7 +7044,7 @@
   {
     "name": "policy-promotion-banner-flag",
     "owners": ["austinzzr@chromium.org"],
-    "expiry_milestone": 135
+    "expiry_milestone": 137
   },
   {
     "name": "pompano",
@@ -8529,24 +8556,9 @@
     "expiry_milestone": 130
   },
   {
-    "name": "tab-resumption-2",
-    "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 135
-  },
-  {
-    "name": "tab-resumption-2-reason",
-    "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "tab-resumption-images",
     "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 140
-  },
-  {
-    "name": "tab-resumption1-5",
-    "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 135
   },
   {
     "name": "tab-scrolling-button-position",
@@ -8596,6 +8608,10 @@
   {
     "name": "tab-switcher-color-blend-animate",
     "owners": [ "skym@chromium.org", "mfiaz@google.com" ],
+    "expiry_milestone": 140
+  },
+  { "name": "tab-switcher-context-menu-android",
+    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 140
   },
   {
@@ -9335,6 +9351,11 @@
     "name": "web-otp-backend",
     "owners": [ "yigu@chromium.org" ],
     "expiry_milestone": 138
+  },
+  {
+    "name": "web-serial-api",
+    "owners": ["ovn@google.com", "cros-web-apps-team@google.com"],
+    "expiry_milestone": 146
   },
   {
     "name": "web-share",

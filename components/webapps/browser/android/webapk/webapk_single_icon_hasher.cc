@@ -83,6 +83,7 @@ WebApkSingleIconHasher::WebApkSingleIconHasher(
       request_initiator, net::SiteForCookies());
   resource_request->request_initiator = request_initiator;
   resource_request->url = icon_->url();
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request),
       TRAFFIC_ANNOTATION_WITHOUT_PROTO("webapk icon hasher"));

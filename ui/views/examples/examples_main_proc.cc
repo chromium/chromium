@@ -102,7 +102,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
   // Disabling Direct Composition works around the limitation that
   // InProcessContextFactory doesn't work with Direct Composition, causing the
   // window to not render. See http://crbug.com/936249.
-  gl::SetGlWorkarounds(gl::GlWorkarounds{.disable_direct_composition = true});
+  command_line->AppendSwitch(switches::kDisableDirectComposition);
 
   base::FeatureList::InitInstance(
       command_line->GetSwitchValueASCII(switches::kEnableFeatures),

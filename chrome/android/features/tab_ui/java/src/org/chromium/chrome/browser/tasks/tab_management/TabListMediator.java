@@ -666,7 +666,7 @@ class TabListMediator implements TabListNotificationHandler {
                         // model match when doing the update afterwards. When moving a tab between
                         // groups, the new tab being added to an existing group is handled in
                         // didMergeTabToGroup().
-                        if (filter.getRelatedTabCountForRootId(movedTab.getRootId()) == 1
+                        if (filter.getTabCountForGroup(movedTab.getTabGroupId()) <= 1
                                 && movedTab != previousGroupTab) {
                             int currentSelectedTabId =
                                     TabModelUtils.getCurrentTabId(filter.getTabModel());
@@ -2041,16 +2041,12 @@ class TabListMediator implements TabListNotificationHandler {
         }
 
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        String storedTitle = filter.getTabGroupTitle(tab.getRootId());
-        if (TextUtils.isEmpty(storedTitle)) {
-            if (useDefault) {
-                return TabGroupTitleUtils.getDefaultTitle(
-                        mActivity, filter.getRelatedTabCountForRootId(tab.getRootId()));
-            } else {
-                return "";
-            }
+        if (useDefault) {
+            return TabGroupTitleUtils.getDisplayableTitle(mActivity, filter, tab.getTabGroupId());
+        } else {
+            String storedTitle = filter.getTabGroupTitle(tab.getRootId());
+            return TextUtils.isEmpty(storedTitle) ? "" : storedTitle;
         }
-        return storedTitle;
     }
 
     int selectedTabId() {

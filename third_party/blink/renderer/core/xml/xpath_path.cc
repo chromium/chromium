@@ -36,7 +36,7 @@
 namespace blink {
 namespace xpath {
 
-Filter::Filter(Expression* expr, HeapVector<Member<Predicate>>& predicates)
+Filter::Filter(Expression* expr, GCedHeapVector<Member<Predicate>>& predicates)
     : expr_(expr) {
   predicates_.swap(predicates);
   SetIsContextNodeSensitive(expr_->IsContextNodeSensitive());

@@ -623,7 +623,7 @@ class IpProtectionCoreHostUserSettingBrowserTest
     : public IpProtectionCoreHostBrowserTest {
  public:
   IpProtectionCoreHostUserSettingBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+    scoped_feature_list_.InitAndEnableFeature(privacy_sandbox::kIpProtectionUx);
   }
 
  private:

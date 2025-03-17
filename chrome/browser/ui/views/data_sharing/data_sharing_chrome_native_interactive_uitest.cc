@@ -54,7 +54,6 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupsSaveV2,
          tab_groups::kTabGroupSyncServiceDesktopMigration},
         {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());

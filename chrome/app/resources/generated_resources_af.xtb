@@ -2254,7 +2254,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2530166226437958497">Foutsporing</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Iets is fout en <ph name="DEVICE_OS" /> kon nie geïnstalleer word nie.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Vir meer hulp, besoek: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Kry meer inligting</translation>
 <translation id="2532144599248877204">Verleng batterylewe deur jou battery op ongeveer 80% te hou. Battery sal volledig laai voordat jy dit gewoonlik van krag ontkoppel.</translation>
 <translation id="2532146950330687938">Kry tans die toestel gereed …</translation>
 <translation id="2532198298278778531">Bestuur Veilige DNS in Chrome OS Flex-instellings</translation>
@@ -2810,7 +2809,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2921081876747860777">Skep asseblief 'n wagwoord om jou plaaslike data te beskerm.</translation>
 <translation id="2923006468155067296">Jou <ph name="DEVICE_TYPE" /> sal nou gesluit word.
 <ph name="DOMAIN" /> vereis dat jy jou slimkaart ingesteek hou.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Ander <ph name="OTHER_TASK_NUM" /> take in dieselfde taakgroep: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Verwyder hierdie rekening</translation>
 <translation id="2923644930701689793">Kry toegang tot jou foon se kameraspoel</translation>
 <translation id="292371311537977079">Chrome-instellings</translation>
@@ -6917,6 +6915,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> sal binnekort onderbreek word</translation>
 <translation id="586567932979200359">Jy laat loop <ph name="PRODUCT_NAME" /> tans van sy skyfafbeelding af. As jy dit op jou rekenaar installeer, kan jy dit sonder die skyfafbeelding laat loop, en verseker dat dit op datum gehou word.</translation>
 <translation id="5865733239029070421">Stuur gebruikstatistieke en omvalverslae outomaties na Google</translation>
+<translation id="5866363217037791319">Beëindig taak</translation>
 <translation id="5868434909835797817">Mikrofoon op jou toestel is af</translation>
 <translation id="5868479397518301468">Aanmelding het uitgetel</translation>
 <translation id="5868822853313956582">Volg toestelkleure</translation>
@@ -10641,7 +10640,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8524841856047224176">Personaliseer jou kamera-agtergronde vir video-oproepe en meer</translation>
 <translation id="8525306231823319788">Volskerm</translation>
 <translation id="8525461909394569609">Hierdie app bevat webinhoud van</translation>
-<translation id="8526313996927074827">Voeg skakels, emosiekone en meer in. Jy kan ook met Google AI hulp kry met skryf.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Luidsprekers</translation>
 <translation id="8527257351549797148">Jou organisasie vereis dalk inskrywing sodat jy toegang tot apps, uitbreidings en meer kan kry. Dit laat jou organisasie ook toe om dinge soos sekuriteit en toestelinstellings te bestuur.</translation>
@@ -11097,6 +11095,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="883924185304953854">Soek volgens prent</translation>
 <translation id="8841786407272321022">Wagwoord is net op hierdie toestel gestoor. Dateer Google Play Dienste op om nuwe wagwoorde in jou Google-rekening te stoor.</translation>
 <translation id="8841843049738266382">Lees en verander toelaatlys van gebruikers</translation>
+<translation id="8841884135319684422">Beëindig Taak</translation>
 <translation id="8842594465773264717">Vee hierdie vingerafdruk uit</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8846132060409673887">Lees die vervaardiger en model van hierdie rekenaar</translation>

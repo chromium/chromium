@@ -15,7 +15,6 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.TOOLBAR_OVERVIEW_COLOR_SETTER;
 
 import android.content.ComponentCallbacks;
@@ -250,10 +249,6 @@ public class HubToolbarMediator {
         }
         mPropertyModel.set(PANE_SWITCHER_INDEX, selectedIndex);
         mPropertyModel.set(PANE_SWITCHER_BUTTON_DATA, buttonDataList);
-
-        // TODO(crbug.com/401522014): Remove this property entirely if we end up not requiring it as
-        // part of the Hub UI refresh.
-        mPropertyModel.set(SHOW_ACTION_BUTTON_TEXT, false);
     }
 
     private void onFocusedPaneChange(@Nullable Pane focusedPane) {

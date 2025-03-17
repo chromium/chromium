@@ -94,6 +94,11 @@ NET_EXPORT
 std::optional<std::vector<QcStatement>> ParseQcStatements(
     bssl::der::Input extension_value);
 
+// Parses the statementInfo of a etsi-qcs-QcType statement. Returns a vector of
+// the OID values, or nullopt on error.
+NET_EXPORT std::optional<std::vector<bssl::der::Input>> ParseQcTypeInfo(
+    bssl::der::Input statement_info);
+
 // Returns true if the given QcStatements extension (as returned by
 // ParseQcStatements) indicates the certificate is a QWAC.
 NET_EXPORT_PRIVATE bool HasQwacQcStatements(

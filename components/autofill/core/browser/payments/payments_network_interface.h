@@ -235,7 +235,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   virtual void CreateBnplPaymentInstrument(
       const CreateBnplPaymentInstrumentRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
-                              std::u16string instrument_id)> callback);
+                              std::string instrument_id)> callback);
 
   // Get the BNPL VCN details.
   virtual void GetBnplPaymentInstrumentForFetchingVcn(

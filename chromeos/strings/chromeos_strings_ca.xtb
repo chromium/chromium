@@ -1300,6 +1300,7 @@
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7040729769968826896">Permet la identificació del parlant</translation>
 <translation id="7041549558901442110">El dispositiu no està connectat.</translation>
+<translation id="704183341263526038">Júpiter</translation>
 <translation id="7046522406494308071">Vols restablir totes les dreceres als valors predeterminats?</translation>
 <translation id="7049916119678019302">Baixa el model de transcripció a Configuració</translation>
 <translation id="7058278511608979688">Finalitza i desa</translation>
@@ -1394,6 +1395,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7388345524791662148">Més opcions per a <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Ratolí tàctil integrat</translation>
 <translation id="7397270852490618635">Desactiva el tema clar</translation>
+<translation id="7400166052988585408">El professor fixarà la teva pantalla d'aquí a <ph name="NUM_SECONDS" /> segons</translation>
 <translation id="7401543881546089382">Suprimeix la drecera</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> està a punt per actualitzar-se</translation>
 <translation id="741244894080940828">conversió</translation>

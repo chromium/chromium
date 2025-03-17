@@ -33,7 +33,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
@@ -199,7 +198,6 @@ class FakeBinaryUploadService : public BinaryUploadService {
 
  private:
   base::flat_map<std::string, BinaryUploadService::Result> saved_results_;
-
   base::flat_map<std::string, enterprise_connectors::ContentAnalysisResponse>
       saved_responses_;
   enterprise_connectors::ContentAnalysisRequest last_request_;

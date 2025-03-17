@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <numbers>
 #include <optional>
 #include <string>
 
@@ -198,6 +199,30 @@ std::optional<mkvmuxer::Colour> ColorFromColorSpace(
   return colour;
 }
 
+void SetProjection(mkvmuxer::VideoTrack* video_track,
+                   VideoTransformation transformation) {
+  mkvmuxer::Projection proj = mkvmuxer::Projection();
+  // This is based off ffmpeg matroska encoding code. The following is to
+  // determine the roll and yaw (mirroring) of the Projection (mirroring).
+  const int roll = [transformation]() {
+    switch (transformation.rotation) {
+      case VIDEO_ROTATION_0:
+        return 0;
+      case VIDEO_ROTATION_90:
+        return transformation.mirrored ? 90 : -90;
+      case VIDEO_ROTATION_180:
+        return 180;
+      case VIDEO_ROTATION_270:
+        return transformation.mirrored ? -90 : 90;
+    }
+  }();
+  proj.set_pose_pitch(0);
+  proj.set_pose_roll(roll);
+  proj.set_pose_yaw(transformation.mirrored ? 180 : 0);
+
+  video_track->SetProjection(proj);
+}
+
 }  // anonymous namespace
 
 // -----------------------------------------------------------------------------
@@ -265,7 +290,8 @@ bool WebmMuxer::Flush() {
 void WebmMuxer::AddVideoTrack(
     const gfx::Size& frame_size,
     double frame_rate,
-    const std::optional<gfx::ColorSpace>& color_space) {
+    std::optional<gfx::ColorSpace> color_space,
+    std::optional<VideoTransformation> transformation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, video_track_index_)
       << "WebmMuxer can only be initialized once.";
@@ -285,6 +311,10 @@ void WebmMuxer::AddVideoTrack(
       video_track->SetColour(*colour);
     }
   }
+  if (transformation) {
+    SetProjection(video_track, transformation.value());
+  }
+
   DCHECK(video_track);
   video_track->set_codec_id(MkvCodeIcForMediaVideoCodecId(video_codec_));
   DCHECK_EQ(0ull, video_track->crop_right());
@@ -395,7 +425,8 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
       // http://www.matroska.org/technical/specs/index.html#Tracks
       video_codec_ = video_params->codec;
       AddVideoTrack(video_params->visible_rect_size,
-                    GetFrameRate(*video_params), video_params->color_space);
+                    GetFrameRate(*video_params), video_params->color_space,
+                    video_params->transformation);
 
       // Add codec private for AV1.
       if (video_params->codec == VideoCodec::kAV1 &&

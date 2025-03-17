@@ -1145,7 +1145,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.{DelayType}.FinalRequestStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-08-31">
+    enum="AggregationServiceObserverReportStatus" expires_after="2025-08-31">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -1560,6 +1560,8 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   <token key="PSNoticeAction" variants="PSNoticeAction"/>
 </histogram>
 
+<!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
+
 <histogram name="PrivacySandbox.Notice.NoticeAction.{PSNotice}"
     enum="PrivacySandboxNoticeAction" expires_after="2025-08-10">
   <owner>chrstne@google.com</owner>
@@ -1580,6 +1582,18 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
   <token key="PSNotice" variants="PSNotice"/>
 </histogram>
+
+<histogram name="PrivacySandbox.Notice.NoticeEvent.{PSNotice}"
+    enum="PrivacySandboxNoticeEvent" expires_after="2026-01-01">
+  <owner>chrstne@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the event performed on a notice {PSNotice} for a profile.
+  </summary>
+  <token key="PSNotice" variants="PSNotice"/>
+</histogram>
+
+<!-- DO NOT USE. To be deprecated soon, use PrivacySandbox.Notice.NoticeEvent.{PSNotice} instead. -->
 
 <histogram name="PrivacySandbox.Notice.NoticeShown.{PSNotice}" enum="Boolean"
     expires_after="2025-08-10">

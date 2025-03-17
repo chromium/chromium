@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MetricsBrowserProxyImpl, playFromSelectionTimeout} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
@@ -29,13 +28,6 @@ export function emitEvent(app: AppElement, name: string, options?: any): void {
   app.$.toolbar.dispatchEvent(new CustomEvent(name, options));
 }
 
-// TODO(crbug.com/40927698): Remove this function and use the above one once
-// we've fully migrated away from polymer to Lit.
-export function emitEventForPolymer(
-    target: HTMLElement, name: string, options?: any): void {
-  target.dispatchEvent(new CustomEvent(name, options));
-}
-
 // Runs the requestAnimationFrame callback immediately
 export function stubAnimationFrame() {
   window.requestAnimationFrame = (callback) => {
@@ -59,7 +51,6 @@ export function getItemsInMenu(
   // We need to call menu.get here to ensure the menu has rendered before we
   // query the dropdown item elements.
   const menu = lazyMenu.get();
-  flush();
   return Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
 }
 

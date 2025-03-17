@@ -2241,7 +2241,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2530166226437958497">Problemen oplossen</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Er is iets misgegaan en <ph name="DEVICE_OS" /> kan niet worden geïnstalleerd.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ga naar g.co/flex/InstallErrors voor meer hulp.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Meer informatie</translation>
 <translation id="2532144599248877204">Verlengt de batterijduur door de batterijlading rond 80% te houden. De batterij wordt helemaal opgeladen voordat je gewoonlijk de stekker uit het stopcontact haalt.</translation>
 <translation id="2532146950330687938">Het apparaat voorbereiden...</translation>
 <translation id="2532198298278778531">Beveiligde DNS beheren in de instellingen van Chrome OS Flex</translation>
@@ -2797,7 +2796,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2921081876747860777">Stel een wachtwoord in om je lokale gegevens te beschermen.</translation>
 <translation id="2923006468155067296">Je <ph name="DEVICE_TYPE" /> wordt nu vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> andere taken in dezelfde takengroep: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Dit account verwijderen</translation>
 <translation id="2923644930701689793">De filmrol van je telefoon openen</translation>
 <translation id="292371311537977079">Chrome-instellingen</translation>
@@ -6896,6 +6894,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> wordt straks onderbroken</translation>
 <translation id="586567932979200359">Je voert <ph name="PRODUCT_NAME" /> uit via de schijfkopie. Als je dit programma installeert op je computer, kun je dit uitvoeren zonder de schijfkopie te gebruiken en blijft het programma bijgewerkt.</translation>
 <translation id="5865733239029070421">Hiermee worden automatisch gebruiksstatistieken en crashrapporten naar Google verzonden</translation>
+<translation id="5866363217037791319">Taak beëindigen</translation>
 <translation id="5868434909835797817">Microfoon staat uit op je apparaat</translation>
 <translation id="5868479397518301468">Time-out bij inloggen</translation>
 <translation id="5868822853313956582">Apparaatkleuren volgen</translation>
@@ -10619,7 +10618,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8524841856047224176">Personaliseer de achtergrond van je camera voor onder meer videogesprekken</translation>
 <translation id="8525306231823319788">Volledig scherm</translation>
 <translation id="8525461909394569609">Deze app heeft webcontent van</translation>
-<translation id="8526313996927074827">Voeg onder andere links en emoji's in. Je kunt ook hulp krijgen bij het schrijven met AI van Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527257351549797148">Voor je organisatie is misschien inschrijving vereist zodat je onder andere apps en extensies kunt openen. Zo kan je organisatie ook functies zoals de beveiliging en apparaatinstellingen beheren.</translation>
@@ -11076,6 +11074,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="883924185304953854">Zoeken op afbeelding</translation>
 <translation id="8841786407272321022">Wachtwoord alleen opgeslagen op dit apparaat. Update Google Play-services om nieuwe wachtwoorden op te slaan in je Google-account.</translation>
 <translation id="8841843049738266382">Gebruikers op de toelatingslijst lezen en wijzigen</translation>
+<translation id="8841884135319684422">Taak beëindigen</translation>
 <translation id="8842594465773264717">Deze vingerafdruk verwijderen</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8846132060409673887">De fabrikant en het model van deze computer lezen</translation>

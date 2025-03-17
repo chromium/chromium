@@ -97,7 +97,7 @@ bool PlainTextPainter::DrawWithBidiReorder(
           : ShapeResultBloberizer::Type::kEmitText;
   const FontDescription& font_desc = font.GetFontDescription();
 
-  if (!is_sub_run) [[likely]] {
+  if (!is_sub_run && !node.ContainsRtlItems()) [[likely]] {
     STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
         font_desc, node, blob_type);
     DrawTextBlobs(bloberizer.Blobs(), canvas, curr_point, flags);
@@ -266,9 +266,24 @@ void PlainTextPainter::DidSwitchFrame() {
 const PlainTextNode& PlainTextPainter::CreateNode(const TextRun& text_run,
                                                   const Font& font,
                                                   bool supports_bidi) {
-  // TODO(crbug.com/389726691): Introduce a cache.
-  return *MakeGarbageCollected<PlainTextNode>(text_run, mode_ == kCanvas, font,
-                                              supports_bidi);
+  FrameShapeCache* cache = GetCacheFor(font);
+  if (!cache || !supports_bidi || text_run.DirectionalOverride()) {
+    // `supports_bidi` and `DirectionalOverride()` affect segmentation results.
+    // So PlainTextNode is not cached.  However we can use ShapeResults in the
+    // cache.
+    return *MakeGarbageCollected<PlainTextNode>(text_run, mode_ == kCanvas,
+                                                font, supports_bidi, cache);
+  }
+  String text = text_run.ToStringView().ToString();
+  FrameShapeCache::NodeEntry* entry =
+      cache->FindOrCreateNodeEntry(text, text_run.Direction());
+  if (entry->node) {
+    return *entry->node;
+  }
+  auto* node = MakeGarbageCollected<PlainTextNode>(text_run, mode_ == kCanvas,
+                                                   font, supports_bidi, cache);
+  cache->RegisterNodeEntry(text, text_run.Direction(), node, entry);
+  return *node;
 }
 
 FrameShapeCache* PlainTextPainter::GetCacheFor(const Font& font) {

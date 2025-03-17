@@ -276,6 +276,18 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="In flight duration too high (after encoding)"/>
 </enum>
 
+<enum name="CastStreamingVideoEncoderType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Software H264 encoder"/>
+  <int value="2" label="Hardware H264 encoder"/>
+  <int value="3" label="Software VP8 encoder"/>
+  <int value="4" label="Hardware VP8 encoder"/>
+  <int value="5" label="Software VP9 encoder"/>
+  <int value="6" label="Hardware VP9 encoder"/>
+  <int value="7" label="Software AV1 encoder"/>
+  <int value="8" label="Hardware AV1 encoder"/>
+</enum>
+
 <enum name="CdmCapabilityQueryStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Unknown"/>

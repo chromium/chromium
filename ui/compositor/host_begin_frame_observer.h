@@ -29,8 +29,11 @@ class COMPOSITOR_EXPORT HostBeginFrameObserver
   class SimpleBeginFrameObserver : public base::CheckedObserver {
    public:
     ~SimpleBeginFrameObserver() override = default;
-    virtual void OnBeginFrame(base::TimeTicks frame_begin_time,
-                              base::TimeDelta frame_interval) = 0;
+    virtual void OnBeginFrame(
+        base::TimeTicks frame_begin_time,
+        base::TimeDelta frame_interval,
+        // Non-empty if more than one begin frame were coalesced.
+        std::optional<base::TimeTicks> first_coalesced_frame_begin_time) = 0;
     virtual void OnBeginFrameSourceShuttingDown() = 0;
   };
 
@@ -48,13 +51,17 @@ class COMPOSITOR_EXPORT HostBeginFrameObserver
 
  private:
   void CoalescedBeginFrame();
-  void CallObservers(const viz::BeginFrameArgs& args);
+  void CallObservers(
+      const viz::BeginFrameArgs& args,
+      std::optional<const base::TimeTicks> first_coalesced_begin_frame_time);
 
   const raw_ref<SimpleBeginFrameObserverList> simple_begin_frame_observers_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   bool pending_coalesce_callback_ = false;
+  std::optional<base::TimeTicks> first_coalesced_begin_frame_time_;
   viz::BeginFrameArgs begin_frame_args_;
+  uint64_t coalesce_flow_id_ = ~0ull;
 
   mojo::Receiver<viz::mojom::BeginFrameObserver> receiver_{this};
   base::WeakPtrFactory<HostBeginFrameObserver> weak_factory_{this};

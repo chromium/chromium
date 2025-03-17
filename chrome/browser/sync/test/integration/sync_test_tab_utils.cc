@@ -74,7 +74,8 @@ std::optional<size_t> OpenNewTab(const GURL& url) {
   size_t tab_index = 0;
 #if BUILDFLAG(IS_ANDROID)
   tab_index = GetActiveTabModel()->GetTabCount();
-  web_contents = GetActiveTabModel()->CreateNewTabForDevTools(url);
+  web_contents =
+      GetActiveTabModel()->CreateNewTabForDevTools(url, /*new_window=*/false);
 #else
   TabStripModel* tab_strip = GetBrowserOrDie()->tab_strip_model();
   tab_index = tab_strip->count();

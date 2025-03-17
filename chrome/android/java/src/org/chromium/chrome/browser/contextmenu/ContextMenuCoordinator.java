@@ -26,6 +26,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
@@ -374,7 +375,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
-                        rect);
+                        rect,
+                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         dialog.setContentView(layout);
 
         return dialog;

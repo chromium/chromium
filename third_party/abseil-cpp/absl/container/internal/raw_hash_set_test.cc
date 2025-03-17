@@ -915,6 +915,8 @@ constexpr size_t kNonSooSize = sizeof(HeapOrSoo) + 8;
 using NonSooIntTableSlotType = SizedValue<kNonSooSize>;
 static_assert(sizeof(NonSooIntTableSlotType) >= kNonSooSize, "too small");
 using NonSooIntTable = ValueTable<NonSooIntTableSlotType>;
+using SooInt32Table =
+    ValueTable<int32_t, /*kTransferable=*/true, /*kSoo=*/true>;
 using SooIntTable = ValueTable<int64_t, /*kTransferable=*/true, /*kSoo=*/true>;
 using NonMemcpyableSooIntTable =
     ValueTable<int64_t, /*kTransferable=*/false, /*kSoo=*/true>;
@@ -1581,7 +1583,10 @@ TEST(Table, InsertOverloads) {
 
 TYPED_TEST(SooTest, LargeTable) {
   TypeParam t;
-  for (int64_t i = 0; i != 10000; ++i) t.emplace(i << 40);
+  for (int64_t i = 0; i != 10000; ++i) {
+    t.emplace(i << 40);
+    ASSERT_EQ(t.size(), i + 1);
+  }
   for (int64_t i = 0; i != 10000; ++i)
     ASSERT_EQ(i << 40, static_cast<int64_t>(*t.find(i << 40)));
 }
@@ -2913,13 +2918,19 @@ TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperatorRehash) {
 template <typename T>
 class RawHashSamplerTest : public testing::Test {};
 
-using RawHashSamplerTestTypes = ::testing::Types<SooIntTable, NonSooIntTable>;
+using RawHashSamplerTestTypes = ::testing::Types<
+    // 32 bits to make sure that table is Soo for 32 bits platform as well.
+    // 64 bits table is not SOO due to alignment.
+    SooInt32Table,
+    NonSooIntTable>;
 TYPED_TEST_SUITE(RawHashSamplerTest, RawHashSamplerTestTypes);
 
 TYPED_TEST(RawHashSamplerTest, Sample) {
-  constexpr bool soo_enabled = std::is_same<SooIntTable, TypeParam>::value;
+  constexpr bool soo_enabled = std::is_same<SooInt32Table, TypeParam>::value;
   // Enable the feature even if the prod default is off.
   SetSamplingRateTo1Percent();
+
+  ASSERT_EQ(TypeParam().capacity(), soo_enabled ? SooCapacity() : 0);
 
   auto& sampler = GlobalHashtablezSampler();
   size_t start_size = 0;
@@ -2992,7 +3003,7 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
 }
 
 std::vector<const HashtablezInfo*> SampleSooMutation(
-    absl::FunctionRef<void(SooIntTable&)> mutate_table) {
+    absl::FunctionRef<void(SooInt32Table&)> mutate_table) {
   // Enable the feature even if the prod default is off.
   SetSamplingRateTo1Percent();
 
@@ -3005,7 +3016,7 @@ std::vector<const HashtablezInfo*> SampleSooMutation(
     ++start_size;
   });
 
-  std::vector<SooIntTable> tables;
+  std::vector<SooInt32Table> tables;
   for (int i = 0; i < 1000000; ++i) {
     tables.emplace_back();
     mutate_table(tables.back());
@@ -3025,16 +3036,16 @@ std::vector<const HashtablezInfo*> SampleSooMutation(
 }
 
 TEST(RawHashSamplerTest, SooTableInsertToEmpty) {
-  if (SooIntTable().capacity() != SooCapacity()) {
+  if (SooInt32Table().capacity() != SooCapacity()) {
     CHECK_LT(sizeof(void*), 8) << "missing SOO coverage";
     GTEST_SKIP() << "not SOO on this platform";
   }
   std::vector<const HashtablezInfo*> infos =
-      SampleSooMutation([](SooIntTable& t) { t.insert(1); });
+      SampleSooMutation([](SooInt32Table& t) { t.insert(1); });
 
   for (const HashtablezInfo* info : infos) {
     ASSERT_EQ(info->inline_element_size,
-              sizeof(typename SooIntTable::value_type));
+              sizeof(typename SooInt32Table::value_type));
     ASSERT_EQ(info->soo_capacity, SooCapacity());
     ASSERT_EQ(info->capacity, NextCapacity(SooCapacity()));
     ASSERT_EQ(info->size, 1);
@@ -3046,16 +3057,16 @@ TEST(RawHashSamplerTest, SooTableInsertToEmpty) {
 }
 
 TEST(RawHashSamplerTest, SooTableReserveToEmpty) {
-  if (SooIntTable().capacity() != SooCapacity()) {
+  if (SooInt32Table().capacity() != SooCapacity()) {
     CHECK_LT(sizeof(void*), 8) << "missing SOO coverage";
     GTEST_SKIP() << "not SOO on this platform";
   }
   std::vector<const HashtablezInfo*> infos =
-      SampleSooMutation([](SooIntTable& t) { t.reserve(100); });
+      SampleSooMutation([](SooInt32Table& t) { t.reserve(100); });
 
   for (const HashtablezInfo* info : infos) {
     ASSERT_EQ(info->inline_element_size,
-              sizeof(typename SooIntTable::value_type));
+              sizeof(typename SooInt32Table::value_type));
     ASSERT_EQ(info->soo_capacity, SooCapacity());
     ASSERT_GE(info->capacity, 100);
     ASSERT_EQ(info->size, 0);
@@ -3069,19 +3080,19 @@ TEST(RawHashSamplerTest, SooTableReserveToEmpty) {
 // This tests that reserve on a full SOO table doesn't incorrectly result in new
 // (over-)sampling.
 TEST(RawHashSamplerTest, SooTableReserveToFullSoo) {
-  if (SooIntTable().capacity() != SooCapacity()) {
+  if (SooInt32Table().capacity() != SooCapacity()) {
     CHECK_LT(sizeof(void*), 8) << "missing SOO coverage";
     GTEST_SKIP() << "not SOO on this platform";
   }
   std::vector<const HashtablezInfo*> infos =
-      SampleSooMutation([](SooIntTable& t) {
+      SampleSooMutation([](SooInt32Table& t) {
         t.insert(1);
         t.reserve(100);
       });
 
   for (const HashtablezInfo* info : infos) {
     ASSERT_EQ(info->inline_element_size,
-              sizeof(typename SooIntTable::value_type));
+              sizeof(typename SooInt32Table::value_type));
     ASSERT_EQ(info->soo_capacity, SooCapacity());
     ASSERT_GE(info->capacity, 100);
     ASSERT_EQ(info->size, 1);
@@ -3095,12 +3106,12 @@ TEST(RawHashSamplerTest, SooTableReserveToFullSoo) {
 // This tests that rehash(0) on a sampled table with size that fits in SOO
 // doesn't incorrectly result in losing sampling.
 TEST(RawHashSamplerTest, SooTableRehashShrinkWhenSizeFitsInSoo) {
-  if (SooIntTable().capacity() != SooCapacity()) {
+  if (SooInt32Table().capacity() != SooCapacity()) {
     CHECK_LT(sizeof(void*), 8) << "missing SOO coverage";
     GTEST_SKIP() << "not SOO on this platform";
   }
   std::vector<const HashtablezInfo*> infos =
-      SampleSooMutation([](SooIntTable& t) {
+      SampleSooMutation([](SooInt32Table& t) {
         t.reserve(100);
         t.insert(1);
         EXPECT_GE(t.capacity(), 100);
@@ -3109,7 +3120,7 @@ TEST(RawHashSamplerTest, SooTableRehashShrinkWhenSizeFitsInSoo) {
 
   for (const HashtablezInfo* info : infos) {
     ASSERT_EQ(info->inline_element_size,
-              sizeof(typename SooIntTable::value_type));
+              sizeof(typename SooInt32Table::value_type));
     ASSERT_EQ(info->soo_capacity, SooCapacity());
     ASSERT_EQ(info->capacity, NextCapacity(SooCapacity()));
     ASSERT_EQ(info->size, 1);
@@ -4047,6 +4058,18 @@ TEST(Table, MovedFromCallsFail) {
     t3 = std::move(t1);
     EXPECT_DEATH_IF_SUPPORTED(t3.contains(1), "moved-from");
   }
+}
+
+TEST(HashtableSize, GenerateNewSeedDoesntChangeSize) {
+  size_t size = 1;
+  do {
+    HashtableSize hs(no_seed_empty_tag_t{});
+    hs.increment_size(size);
+    EXPECT_EQ(hs.size(), size);
+    hs.generate_new_seed();
+    EXPECT_EQ(hs.size(), size);
+    size = size * 2 + 1;
+  } while (size < MaxValidSizeFor1ByteSlot());
 }
 
 TEST(Table, MaxValidSize) {

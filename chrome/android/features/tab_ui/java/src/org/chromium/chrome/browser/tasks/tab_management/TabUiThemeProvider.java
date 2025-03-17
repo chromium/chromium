@@ -204,7 +204,7 @@ public class TabUiThemeProvider {
         if (isIncognito) {
             return context.getColor(R.color.incognito_tab_grid_dialog_background_color);
         } else {
-            return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
+            return SemanticColorUtils.getDialogBgColor(context);
         }
     }
 

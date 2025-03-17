@@ -5,10 +5,16 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_SESSION_STORE_H_
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_STORE_H_
 
+#include <map>
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "net/device_bound_sessions/session.h"
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace net {
 class SchemefulSite;

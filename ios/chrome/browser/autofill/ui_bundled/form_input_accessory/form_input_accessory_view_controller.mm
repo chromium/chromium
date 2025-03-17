@@ -621,11 +621,12 @@ UIImage* GetManualFillSymbol() {
 
   if (IsKeyboardAccessoryUpgradeEnabled() &&
       ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [self.formInputAccessoryView
-        setIsCompact:self.traitCollection.horizontalSizeClass ==
+    BOOL isCompact = self.traitCollection.horizontalSizeClass ==
                          UIUserInterfaceSizeClassCompact ||
                      self.traitCollection.verticalSizeClass ==
-                         UIUserInterfaceSizeClassCompact];
+                         UIUserInterfaceSizeClassCompact;
+    [self.formInputAccessoryView setIsCompact:isCompact];
+    [self.formSuggestionView setIsCompact:isCompact];
   }
 }
 

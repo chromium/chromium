@@ -19,46 +19,6 @@ bool IsSuperscript(ui::AXNode* ax_node) {
          ax::mojom::TextPosition::kSuperscript;
 }
 
-bool IsNodeIgnoredForReadAnything(ui::AXNode* ax_node, bool is_pdf) {
-  // If the node is not in the active tree (this could happen when RM is still
-  // loading), ignore it.
-  if (!ax_node) {
-    return true;
-  }
-  ax::mojom::Role role = ax_node->GetRole();
-
-  // PDFs processed with OCR have additional nodes that mark the start and end
-  // of a page. The start of a page is indicated with a kBanner node that has a
-  // child static text node. Ignore both. The end of a page is indicated with a
-  // kContentInfo node that has a child static text node. Ignore the static text
-  // node but keep the kContentInfo so a line break can be inserted in between
-  // pages in GetHtmlTagForPDF.
-  if (is_pdf) {
-    // The text content of the aforementioned kBanner or kContentInfo nodes is
-    // the same as the text content of its child static text node.
-    std::string text = ax_node->GetTextContentUTF8();
-    ui::AXNode* parent = ax_node->GetParent();
-
-    std::string pdf_begin_message =
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN);
-    std::string pdf_end_message =
-        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END);
-
-    bool is_start_or_end_static_text_node =
-        parent && ((parent->GetRole() == ax::mojom::Role::kBanner &&
-                    text == pdf_begin_message) ||
-                   (parent->GetRole() == ax::mojom::Role::kContentInfo &&
-                    text == pdf_end_message));
-    if ((role == ax::mojom::Role::kBanner && text == pdf_begin_message) ||
-        is_start_or_end_static_text_node) {
-      return true;
-    }
-  }
-
-  // Ignore interactive elements, except for text fields.
-  return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
-}
-
 bool IsTextForReadAnything(ui::AXNode* node, bool is_pdf, bool is_docs) {
   if (!node) {
     return false;

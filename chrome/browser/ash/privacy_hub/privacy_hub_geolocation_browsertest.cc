@@ -7,6 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
+#include "ash/shell.h"
+#include "ash/system/privacy_hub/privacy_hub_controller.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/privacy_hub_handler.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -187,6 +190,71 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
             !IsLocationEnabledForBrowser(primary_user_geolocation_choice));
 }
 
+class MockPrivacyHubHandler : public settings::PrivacyHubHandler {
+ public:
+  MOCK_METHOD(void,
+              SystemGeolocationAccessLevelChanged,
+              (GeolocationAccessLevel),
+              (override));
+};
+
+IN_PROC_BROWSER_TEST_P(PrivacyHubGeolocationBrowsertestMultiUserSession,
+                       CheckCorrectSystemUICallbackIsCalled) {
+  SimpleGeolocationProvider* provider =
+      SimpleGeolocationProvider::GetInstance();
+  CHECK(provider);
+
+  // Log in primary user.
+  LoginUser(regular_primary_user_);
+  ASSERT_EQ(provider->GetGeolocationAccessLevel(),
+            GeolocationAccessLevel::kAllowed);
+
+  // Simulate opening the chrome://os-settings, by artificially setting the mock
+  // frontend. Check that this will automatically notify the UI of the initial
+  // geolocation value.
+  ::testing::StrictMock<MockPrivacyHubHandler> primary_user_frontend;
+  EXPECT_CALL(primary_user_frontend, SystemGeolocationAccessLevelChanged(
+                                         GeolocationAccessLevel::kAllowed));
+  Shell::Get()->privacy_hub_controller()->geolocation_controller()->SetFrontend(
+      &primary_user_frontend);
+
+  // Modify the primary user location preference and check that the UI is
+  // notified.
+  const GeolocationAccessLevel primary_user_geolocation_choice =
+      std::get<0>(GetParam());
+  EXPECT_CALL(primary_user_frontend, SystemGeolocationAccessLevelChanged(
+                                         primary_user_geolocation_choice));
+  SetGeolocationAccessLevelPref(primary_user_geolocation_choice);
+
+  // Add secondary user and log in.
+  ash::UserAddingScreen::Get()->Start();
+  AddUser(regular_secondary_user_1_);
+
+  // Simulate opening the chrome://os-settings, by artificially setting the mock
+  // frontend. Check that this will automatically notify the UI of the initial
+  // geolocation value, but the value should be of the primary user pref.
+  ::testing::StrictMock<MockPrivacyHubHandler> secondary_user_frontend;
+  EXPECT_CALL(secondary_user_frontend, SystemGeolocationAccessLevelChanged(
+                                           primary_user_geolocation_choice));
+  Shell::Get()->privacy_hub_controller()->geolocation_controller()->SetFrontend(
+      &secondary_user_frontend);
+
+  // Modify the underlying location preference for the secondary user and check
+  // that it won't trigger the UI callback.
+  const GeolocationAccessLevel secondary_user_geolocation_choice =
+      std::get<1>(GetParam());
+  EXPECT_CALL(secondary_user_frontend,
+              SystemGeolocationAccessLevelChanged(testing::_))
+      .Times(0);
+  SetGeolocationAccessLevelPref(secondary_user_geolocation_choice);
+
+  // Switch back to primary user and check its UI will re-fetch system
+  // geolocation.
+  EXPECT_CALL(primary_user_frontend, SystemGeolocationAccessLevelChanged(
+                                         primary_user_geolocation_choice));
+  user_manager::UserManager::Get()->SwitchActiveUser(regular_primary_user_);
+}
+
 // std::get<0>(GetParam()) - Location preference of the primary user.
 // std::get<1>(GetParam()) - Location preference of the secondary user[s].
 // Values of these pairs are meant to be different to test that secondary
@@ -264,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyHubGeolocationBrowsertestCheckSystemSettingsLink,
           secondary_profile,
           chrome::GetOSSettingsUrl(
               chromeos::settings::mojom::kPrivacyHubGeolocationSubpagePath),
-          display::kInvalidDisplayId, testing::_));
+          testing::_, testing::_));
   // Directly call the underlying method to simulate the link click.
   privacy_hub_util::OpenSystemSettings(
       privacy_hub_util::ContentType::GEOLOCATION);

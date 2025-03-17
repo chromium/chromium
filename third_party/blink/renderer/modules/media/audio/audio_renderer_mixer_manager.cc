@@ -70,10 +70,6 @@ media::AudioParameters GetMixerOutputParams(
 
   // Adjust output buffer size according to the latency requirement.
   switch (latency) {
-    case media::AudioLatency::Type::kInteractive:
-      output_buffer_size = media::AudioLatency::GetInteractiveBufferSize(
-          hardware_params.frames_per_buffer());
-      break;
     case media::AudioLatency::Type::kRtc:
       output_buffer_size = media::AudioLatency::GetRtcBufferSize(
           output_sample_rate, preferred_output_buffer_size);
@@ -82,8 +78,9 @@ media::AudioParameters GetMixerOutputParams(
       output_buffer_size = media::AudioLatency::GetHighLatencyBufferSize(
           output_sample_rate, preferred_output_buffer_size);
       break;
-    case media::AudioLatency::Type::kExactMS:
     // TODO(olka): add support when WebAudio requires it.
+    case media::AudioLatency::Type::kExactMS:
+    case media::AudioLatency::Type::kInteractive:
     default:
       NOTREACHED();
   }

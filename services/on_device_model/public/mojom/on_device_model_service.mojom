@@ -126,6 +126,10 @@ interface OnDeviceModelService {
   LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model)
       => (LoadModelResult result);
 
+  // Returns the capabilities for a model specified by `params`. Note that this
+  // will not load the model, so is much cheaper than calling LoadModel().
+  GetCapabilities(ModelAssets assets) => (Capabilities capabilities);
+
   // Initializes a new TextSafetyModel with the provided params.
   // The model is disconnected on any errors with it.
   LoadTextSafetyModel(

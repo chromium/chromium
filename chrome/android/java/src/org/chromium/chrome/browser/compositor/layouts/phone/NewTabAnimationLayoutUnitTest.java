@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -72,8 +73,8 @@ import org.chromium.ui.base.TestActivity;
 })
 public class NewTabAnimationLayoutUnitTest {
     private static final long FAKE_TIME = 0;
-    private static final int CURRENT_TAB_ID = 321;
-    private static final int NEW_TAB_ID = 123;
+    private static final @TabId int CURRENT_TAB_ID = 321;
+    private static final @TabId int NEW_TAB_ID = 123;
     private static final long FAKE_NATIVE_ADDRESS_1 = 498723734L;
     private static final long FAKE_NATIVE_ADDRESS_2 = 123210L;
 

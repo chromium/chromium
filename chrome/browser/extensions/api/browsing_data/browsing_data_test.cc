@@ -12,7 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/browsing_data/browsing_data_api.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -34,6 +34,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -401,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsingDataTestWithStoragePartitioning,
   EXPECT_FALSE(UsageInfosHasStorageKey(usage_infos, key8));
 }
 
-using BrowsingDataApiTest = extensions::ExtensionPlatformApiTest;
+using BrowsingDataApiTest = extensions::ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(BrowsingDataApiTest, ValidateFilters) {
   static constexpr char kManifest[] =

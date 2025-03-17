@@ -249,8 +249,14 @@ UIImage* LensOverlaySnapshotController::CropSnapshotToWindowSafeArea(
       (base_window_.bounds.size.height - viewportInsets.bottom) *
           snapshot.scale);
 
-  return [[UIImage alloc] initWithCGImage:CGImageCreateWithImageInRect(
-                                              snapshot.CGImage, croppingRect)];
+  CGImageRef imageRef =
+      CGImageCreateWithImageInRect(snapshot.CGImage, croppingRect);
+  UIImage* croppedImage = [[UIImage alloc] initWithCGImage:imageRef];
+
+  // We are responsible for releasing the `CGImageRef` after being consumed.
+  CGImageRelease(imageRef);
+
+  return croppedImage;
 }
 
 UIImage* LensOverlaySnapshotController::CaptureSnapshotOfBaseWindow() {

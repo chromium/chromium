@@ -162,7 +162,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
 }
 
 bool IsBrowserAppId(const std::string& id) {
-  return id == app_constants::kChromeAppId || id == app_constants::kLacrosAppId;
+  return id == app_constants::kChromeAppId;
 }
 
 base::FilePath GetInformedRestoreImagePath() {

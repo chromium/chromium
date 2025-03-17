@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 
-#import "base/json/json_string_value_serializer.h"
+#import <string>
+
+#import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 
@@ -13,11 +15,8 @@ namespace {
 // Returns a JSON-encoded string representing the given `base::Value`. If
 // `value` is nullptr, returns a string representing a `base::Value` of type
 // NONE.
-std::string SerializeValue(const base::Value value) {
-  std::string serialized_value;
-  JSONStringValueSerializer serializer(&serialized_value);
-  serializer.Serialize(std::move(value));
-  return serialized_value;
+std::string SerializeValue(const base::Value& value) {
+  return base::WriteJson(value).value_or(std::string());
 }
 
 // Merges the json policy corresponding to `policy_key` to the existing

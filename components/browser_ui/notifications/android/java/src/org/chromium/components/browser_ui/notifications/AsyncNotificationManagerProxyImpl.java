@@ -15,10 +15,12 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils.NotificationEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -84,7 +86,8 @@ import java.util.function.Function;
         runAsyncAndReply(
                 "AsyncNotificationManagerProxyImpl.getNotificationChannels",
                 () -> mNotificationManager.getNotificationChannels(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
@@ -92,7 +95,8 @@ import java.util.function.Function;
         runAsyncAndReply(
                 "AsyncNotificationManagerProxyImpl.getNotificationChannelGroups",
                 () -> mNotificationManager.getNotificationChannelGroups(),
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     @Override
@@ -135,11 +139,13 @@ import java.util.function.Function;
     }
 
     @Override
-    public void getNotificationChannel(String channelId, Callback<NotificationChannel> callback) {
+    public void getNotificationChannel(
+            String channelId, Callback<@Nullable NotificationChannel> callback) {
         runAsyncAndReply(
                 "AsyncNotificationManagerProxyImpl.getNotificationChannel",
                 () -> mNotificationManager.getNotificationChannel(channelId),
-                callback);
+                callback,
+                null);
     }
 
     @Override
@@ -161,7 +167,8 @@ import java.util.function.Function;
                     }
                     return result;
                 },
-                callback);
+                callback,
+                Collections.emptyList());
     }
 
     /** Helper method to run an runnable inside a scoped event in background. */
@@ -188,8 +195,9 @@ import java.util.function.Function;
      * on the ui thread.
      */
     @SuppressWarnings("NoDynamicStringsInTraceEventCheck")
-    private <T> void runAsyncAndReply(
-            String eventName, Callable<T> callable, Callback<T> callback) {
+    @NullUnmarked // https://github.com/uber/NullAway/issues/1075
+    private <T extends @Nullable Object> void runAsyncAndReply(
+            String eventName, Callable<T> callable, Callback<T> callback, T defaultValue) {
         new AsyncTask<@Nullable T>() {
             @Override
             protected @Nullable T doInBackground() {
@@ -199,23 +207,17 @@ import java.util.function.Function;
                     return callable.call();
                 } catch (Exception e) {
                     Log.e(TAG, "Unable to call method.", e);
-                    return null;
+                    return defaultValue;
                 }
             }
 
             @Override
             protected void onPostExecute(@Nullable T result) {
-                // TODO(crbug.com/388114708): currently the callback is not called on failure to
-                // match the behavior of NotificationManangerproxyImpl. But this should be changed
-                // to always call the callback as it might cause undesirable consequences.
-                @NotificationEvent int event;
-                if (result != null) {
-                    callback.onResult(result);
-                    event = NotificationEvent.HAS_CALLBACK_SUCCESS;
-                } else {
-                    event = NotificationEvent.HAS_CALLBACK_FAILED;
-                }
-                NotificationProxyUtils.recordNotificationEventHistogram(event);
+                NotificationProxyUtils.recordNotificationEventHistogram(
+                        result == null
+                                ? NotificationEvent.HAS_CALLBACK_FAILED
+                                : NotificationEvent.HAS_CALLBACK_SUCCESS);
+                callback.onResult(result);
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }

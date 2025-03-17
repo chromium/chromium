@@ -320,10 +320,11 @@ void LayoutText::DetachAxHooks() {
   }
 }
 
-void LayoutText::ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) {
+void LayoutText::ClearBlockFlowCachedData() {
   NOT_DESTROYED();
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
-    cache->ClearBlockFlowCachedData(FragmentItemsContainer());
+    cache->ClearBlockFlowCachedData(this);
+    cache->InlineTextBoxesUpdated(this);
   }
 }
 

@@ -20,9 +20,12 @@
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "lobster_system_state_provider_impl.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/display/screen.h"
+#include "ui/display/tablet_state.h"
 
 namespace {
 
@@ -191,6 +194,13 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
         ash::LobsterSystemCheck::kNoInternetConnection);
   }
 
+  // Performs a tablet mode check
+  if (!is_in_tablet_mode_) {
+    system_state.status = ash::LobsterStatus::kBlocked;
+    system_state.failed_checks.Put(
+        ash::LobsterSystemCheck::kUnsupportedFormFactor);
+  }
+
   // Performs an IME check
   if (!IsImeAllowed(GetCurrentImeEngineId())) {
     system_state.status = ash::LobsterStatus::kBlocked;
@@ -214,4 +224,9 @@ ash::LobsterSystemState LobsterSystemStateProviderImpl::GetSystemState(
   }
 
   return system_state;
+}
+
+void LobsterSystemStateProviderImpl::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  is_in_tablet_mode_ = (state == display::TabletState::kInTabletMode);
 }

@@ -4,10 +4,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/background/glic/glic_controller.h"
+#include "chrome/browser/glic/glic.mojom.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,10 +36,14 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {
   RunTestSequence(
       ObserveState(test::internal::kGlicWindowControllerState,
                    std::ref(window_controller())),
-      Do([this]() { glic_controller().Toggle(InvocationSource::kOsButton); }),
+      Do([this]() {
+        glic_controller().Toggle(mojom::InvocationSource::kOsButton);
+      }),
       WaitForState(test::internal::kGlicWindowControllerState,
                    GlicWindowController::State::kOpen),
-      Do([this]() { glic_controller().Toggle(InvocationSource::kOsButton); }),
+      Do([this]() {
+        glic_controller().Toggle(mojom::InvocationSource::kOsButton);
+      }),
       WaitForState(test::internal::kGlicWindowControllerState,
                    GlicWindowController::State::kClosed));
 }
@@ -50,15 +55,18 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Show) {
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   ASSERT_FALSE(glic_keyed_service->window_controller().IsShowing());
 
-  RunTestSequence(
-      ObserveState(test::internal::kGlicWindowControllerState,
-                   std::ref(window_controller())),
-      Do([this]() { glic_controller().Show(InvocationSource::kOsButton); }),
-      WaitForState(test::internal::kGlicWindowControllerState,
-                   GlicWindowController::State::kOpen),
-      Do([this]() { glic_controller().Show(InvocationSource::kOsButton); }),
-      WaitForState(test::internal::kGlicWindowControllerState,
-                   GlicWindowController::State::kOpen));
+  RunTestSequence(ObserveState(test::internal::kGlicWindowControllerState,
+                               std::ref(window_controller())),
+                  Do([this]() {
+                    glic_controller().Show(mojom::InvocationSource::kOsButton);
+                  }),
+                  WaitForState(test::internal::kGlicWindowControllerState,
+                               GlicWindowController::State::kOpen),
+                  Do([this]() {
+                    glic_controller().Show(mojom::InvocationSource::kOsButton);
+                  }),
+                  WaitForState(test::internal::kGlicWindowControllerState,
+                               GlicWindowController::State::kOpen));
 }
 
 }  // namespace glic

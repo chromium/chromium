@@ -124,12 +124,6 @@ void CompositorThreadSchedulerImpl::PostIdleTask(const base::Location& location,
   IdleTaskRunner()->PostIdleTask(location, std::move(task));
 }
 
-void CompositorThreadSchedulerImpl::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
-}
-
 void CompositorThreadSchedulerImpl::PostDelayedIdleTask(
     const base::Location& location,
     base::TimeDelta delay,

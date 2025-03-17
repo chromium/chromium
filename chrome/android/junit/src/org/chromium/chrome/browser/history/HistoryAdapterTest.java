@@ -201,6 +201,77 @@ public class HistoryAdapterTest {
     }
 
     @Test
+    public void testRemove_WithPersistentHeader() {
+        // Add one history item.
+        Date today = new Date();
+        long timestamp = today.getTime();
+        HistoryItem item = StubbedHistoryProvider.createHistoryItem(0, timestamp);
+        mHistoryProvider.addItem(item);
+        // Show the history sync promo header.
+        doReturn(true).when(mHistorySyncPromoCoordinator).canShowPromo();
+        mAdapter.updateHistorySyncPromoVisibility();
+
+        mAdapter.startLoadingItems();
+
+        // There should be three items - the standard and persistent headers, a date header and
+        // a history item.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ true,
+                /* hasPersistentHeader= */ true,
+                /* hasFooter= */ false,
+                null,
+                null,
+                null,
+                item);
+
+        mAdapter.markItemForRemoval(item);
+
+        // The standard and persistent headers should be the only visible items.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ true,
+                /* hasPersistentHeader= */ true,
+                /* hasFooter= */ false,
+                null,
+                null);
+        Assert.assertEquals(1, mHistoryProvider.markItemForRemovalCallback.getCallCount());
+        Assert.assertEquals(0, mHistoryProvider.removeItemsCallback.getCallCount());
+
+        mAdapter.removeItems();
+        Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
+    }
+
+    @Test
+    public void testRemovePersistentHeader() {
+        // Show the history sync promo header.
+        doReturn(true).when(mHistorySyncPromoCoordinator).canShowPromo();
+        mAdapter.updateHistorySyncPromoVisibility();
+
+        mAdapter.startLoadingItems();
+
+        // The standard and persistent headers should be the only visible items.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ true,
+                /* hasPersistentHeader= */ true,
+                /* hasFooter= */ false,
+                null,
+                null);
+
+        // Hide the history sync promo header.
+        doReturn(false).when(mHistorySyncPromoCoordinator).canShowPromo();
+        mAdapter.updateHistorySyncPromoVisibility();
+
+        // No item should be shown.
+        checkAdapterContents(
+                mAdapter,
+                /* hasStandardHeader= */ false,
+                /* hasPersistentHeader= */ false,
+                /* hasFooter= */ false);
+    }
+
+    @Test
     public void testSearch() {
         Date today = new Date();
         long timestamp = today.getTime();

@@ -38,6 +38,8 @@ static_library("signin") {
     "token_handle_fetcher.h",
     "token_handle_store_factory.cc",
     "token_handle_store_factory.h",
+    "token_handle_store_impl.cc",
+    "token_handle_store_impl.h",
     "token_handle_util.cc",
     "token_handle_util.h",
   ]

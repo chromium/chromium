@@ -11,7 +11,7 @@ import("//build/rust/cargo_crate.gni")
 cargo_crate("lib") {
   crate_name = "rustc_demangle_capi"
   epoch = "0.1"
-  crate_type = "cdylib"
+  crate_type = "rlib"
   crate_root = "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/src/lib.rs"
   sources = [ "//third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-0.1.0/src/lib.rs" ]
   inputs = []

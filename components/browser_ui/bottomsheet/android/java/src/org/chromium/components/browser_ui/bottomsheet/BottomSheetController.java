@@ -203,4 +203,11 @@ public interface BottomSheetController {
      *     sheet state.
      */
     boolean isSmallScreen();
+
+    /**
+     * Whether the bottom sheet is anchored on top of the browser controls. When false, the bottom
+     * sheet will be anchored at the bottom of the window and potentially covering the bottom
+     * controls UI.
+     */
+    boolean isAnchoredToBottomControls();
 }

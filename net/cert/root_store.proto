@@ -57,6 +57,9 @@ message TrustAnchor {
 
   // Human-readable display name used to identify the certificate.
   optional string display_name = 5;
+
+  // If true, indicates that this certificate is trusted to issue QWACs.
+  optional bool eutl = 6;
 }
 
 // Message storing a complete Chrome Root Store.
@@ -67,4 +70,8 @@ message RootStore {
   // root_store_1.version_major > root_store_2.version_major, then root_store_1
   // is newer and should be preferred over root_store_2.
   int64 version_major = 2;
+
+  // Additional certificates that are shipped as part of the Chrome Root Store
+  // but convey different trust information than those in trust_anchors.
+  repeated TrustAnchor additional_certs = 3;
 }

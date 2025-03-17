@@ -3701,7 +3701,7 @@ TEST_F(DeveloperPrivateApiTransportModeUnitTest,
 
   // Double check that the extension is now an account extension.
   EXPECT_EQ(
-      AccountExtensionTracker::AccountExtensionType::kAccountInstalledLocally,
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
       GetAccountExtensionType(extension->id()));
 
   // Verify that the extension is now syncing from the sync service.

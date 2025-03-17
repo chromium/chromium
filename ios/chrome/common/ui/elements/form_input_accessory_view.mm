@@ -25,8 +25,7 @@ constexpr CGFloat kLargeAccessoryHeight = 59;
 // Button target area for the large keyboard accessory.
 constexpr CGFloat kLargeButtonTargetArea = 44;
 
-// Numer of pixels of horizontal padding on either side of the keyboard
-// accessory.
+// Trailing horizontal padding.
 constexpr CGFloat kKeyboardHozirontalPadding = 16;
 
 // The padding between the image and the title on the manual fill button.
@@ -114,11 +113,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
   BOOL _isTabletFormFactor;
   // Whether the size of the accessory is compact.
   BOOL _isCompact;
-  // Leading and trailing constraints in non compact mode (tablet only).
-  NSLayoutConstraint* _leadingConstraint;
+  // Trailing constraint in non compact mode (tablet only).
   NSLayoutConstraint* _trailingConstraint;
-  // Leading and trailing constraints in compact mode (tablet only).
-  NSLayoutConstraint* _compactLeadingConstraint;
+  // Trailing constraint in compact mode (tablet only).
   NSLayoutConstraint* _compactTrailingConstraint;
 }
 
@@ -317,6 +314,8 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
         constraintEqualToAnchor:_contentView.topAnchor],
     [leadingViewContainer.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
+    [leadingViewContainer.leadingAnchor
+        constraintEqualToAnchor:layoutGuide.leadingAnchor],
     [trailingView.topAnchor constraintEqualToAnchor:_contentView.topAnchor],
     [trailingView.bottomAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor],
@@ -326,27 +325,19 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     // On tablets, when using the large keyboard accessory, add padding at both
     // ends of the content view to match the keyboard's padding.
 
-    // Leading and trailing constraints in non compact mode.
-    _leadingConstraint = [leadingViewContainer.leadingAnchor
-        constraintEqualToAnchor:layoutGuide.leadingAnchor
-                       constant:kKeyboardHozirontalPadding];
+    // Trailing constraint in non compact mode.
     _trailingConstraint = [trailingView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor
                        constant:-kKeyboardHozirontalPadding];
-    // Leading and trailing constraints in compact mode.
-    _compactLeadingConstraint = [leadingViewContainer.leadingAnchor
-        constraintEqualToAnchor:layoutGuide.leadingAnchor];
+    // Trailing constraint in compact mode.
     _compactTrailingConstraint = [trailingView.trailingAnchor
         constraintEqualToAnchor:layoutGuide.trailingAnchor];
 
     [self setHorizontalConstraints];
   } else {
-    [NSLayoutConstraint activateConstraints:@[
-      [leadingViewContainer.leadingAnchor
-          constraintEqualToAnchor:layoutGuide.leadingAnchor],
-      [trailingView.trailingAnchor
-          constraintEqualToAnchor:layoutGuide.trailingAnchor],
-    ]];
+    [trailingView.trailingAnchor
+        constraintEqualToAnchor:layoutGuide.trailingAnchor]
+        .active = YES;
   }
 
   // When using the blur effect background, do not add top and bottom lines.
@@ -627,9 +618,7 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     return;
   }
 
-  _leadingConstraint.active = !_isCompact;
   _trailingConstraint.active = !_isCompact;
-  _compactLeadingConstraint.active = _isCompact;
   _compactTrailingConstraint.active = _isCompact;
 }
 

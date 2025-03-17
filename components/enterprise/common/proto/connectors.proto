@@ -145,7 +145,7 @@ message ContentAnalysisRequest {
 
   // Firebase Cloud Messaging token used to notify this client of the verdict.
   // This identifies a specific chrome instance.
-  optional string fcm_notification_token = 2;
+  optional string fcm_notification_token = 2 [deprecated = true];
 
   // Token used to correlate requests and responses. This is different than the
   // FCM token in that it is unique for each request.

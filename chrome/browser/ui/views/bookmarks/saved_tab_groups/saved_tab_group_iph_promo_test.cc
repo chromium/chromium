@@ -26,11 +26,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
             {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {{tab_groups::kTabGroupSyncServiceDesktopMigration,
-            tab_groups::kTabGroupsSaveV2}},
-          {});
-    } else {
-      feature_list_.InitWithFeatures({{tab_groups::kTabGroupsSaveV2}}, {});
+          {{tab_groups::kTabGroupSyncServiceDesktopMigration}}, {});
     }
   }
 

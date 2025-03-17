@@ -474,6 +474,25 @@ ScopedMockContentBrowserClient::~ScopedMockContentBrowserClient() {
   EXPECT_EQ(this, SetBrowserClientForTesting(old_browser_client_));
 }
 
+TestPrefetchService::TestPrefetchService(BrowserContext* browser_context)
+    : PrefetchService(browser_context) {}
+
+TestPrefetchService::~TestPrefetchService() = default;
+
+void TestPrefetchService::PrefetchUrl(
+    base::WeakPtr<PrefetchContainer> prefetch_container) {
+  prefetch_container->DisablePrecogLoggingForTest();
+  prefetches_.push_back(prefetch_container);
+}
+
+void TestPrefetchService::EvictPrefetch(size_t index) {
+  ASSERT_LT(index, prefetches_.size());
+  ASSERT_TRUE(prefetches_[index]);
+  base::WeakPtr<PrefetchContainer> prefetch_container = prefetches_[index];
+  prefetches_.erase(prefetches_.begin() + index);
+  MayReleasePrefetch(prefetch_container);
+}
+
 PrefetchingMetricsTestBase::PrefetchingMetricsTestBase()
     : RenderViewHostTestHarness(
           base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}

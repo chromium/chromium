@@ -50,7 +50,8 @@
         white-space: nowrap;
       }
     </style>
-    <div id="sort" hidden$="[[isRwsV2Filtered_(filter)]]">
+    <div id="sort"
+        hidden$="[[hasFilteredRwsSitesV2Ui_(filter, filteredList_)]]">
       <label id="sortLabel">$i18n{siteSettingsAllSitesSort}</label>
       <select id="sortMethod" class="md-select" aria-labelledby="sortLabel"
           on-change="onSortMethodChanged_">
@@ -66,12 +67,12 @@
       </select>
     </div>
     <div id="relatedWebsiteSetsDescription"
-        hidden$="[[!shouldShowRwsV2Descrption_(filter, filteredList_)]]">
+        hidden$="[[!hasFilteredRwsSitesV2Ui_(filter, filteredList_)]]">
       $i18nRaw{allSitesRwsFilterViewDescription}
     </div>
     <div id="clearAllContainer">
       <div id="clearLabel">
-          [[getClearStorageDescription_(totalUsage_, filter)]]
+          [[getClearStorageDescription_(totalUsage_, filter, filteredList_)]]
       </div>
       <div id="clearAllButton"
           hidden$="[[!shouldShowClearAllButton_(filteredList_.length)]]">

@@ -63,6 +63,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         ],
         "peopleSuggestions": [
           {
+            "suggestion": "john@example.com",
             "document": {
               "name": "sundar",
               "derivedStructData": {
@@ -73,7 +74,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                   "given_name_lower": "john",
                   "family_name_lower": "doe",
                   "displayName": "John Doe",
-                  "userName": "john@example.com"
+                  "userName": "john"
                 },
                 "emails": [
                   {
@@ -103,9 +104,10 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 "source_type": "jira",
                 "entity_type": "issue",
                 "title": "John's Document",
-                "link": "https://www.example.com"
+                "link": "https://www.example.co.uk"
               }
             },
+            "destinationUri": "https://www.example.com/",
             "dataStore": "project2"
           }
         ]

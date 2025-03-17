@@ -40,7 +40,8 @@ void TestTabModel::CreateTab(TabAndroid* parent,
 void TestTabModel::HandlePopupNavigation(TabAndroid* parent,
                                          NavigateParams* params) {}
 
-content::WebContents* TestTabModel::CreateNewTabForDevTools(const GURL& url) {
+content::WebContents* TestTabModel::CreateNewTabForDevTools(const GURL& url,
+                                                            bool new_window) {
   return nullptr;
 }
 

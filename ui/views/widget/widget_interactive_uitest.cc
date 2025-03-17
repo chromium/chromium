@@ -526,8 +526,9 @@ TEST_F(DesktopWidgetTestInteractive, FocusChangesOnBubble) {
 
   // Show a bubble.
   auto owned_bubble_delegate_view =
-      std::make_unique<views::BubbleDialogDelegateView>(focusable_view,
-                                                        BubbleBorder::NONE);
+      std::make_unique<views::BubbleDialogDelegateView>(
+          BubbleDialogDelegateView::CreatePassKey(), focusable_view,
+          BubbleBorder::NONE);
   owned_bubble_delegate_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   BubbleDialogDelegateView* bubble_delegate_view =
       owned_bubble_delegate_view.get();

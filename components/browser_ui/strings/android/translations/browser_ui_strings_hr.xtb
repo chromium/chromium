@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu NFC uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati NFC uređaje.</translation>
 <translation id="1660204651932907780">Web-lokacije mogu reproducirati zvuk (preporučeno)</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci web-lokacije koriste se kako bi vas web-lokacija zapamtila, na primjer kako bi vas prijavila na račun ili vam prilagodila oglase. Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Web-lokacije mogu tražiti dopuštenje za upotrebu NFC uređaja</translation>
 <translation id="1686785653877010442">Web-lokacije obično šalju obavijesti o izvanrednim vijestima ili porukama chata.</translation>
 <translation id="169515064810179024">Blokiranje pristupa senzorima kretanja za web-lokacije</translation>
 <translation id="1703666494654169921">Ne dopuštaj web-lokacijama korištenje uređaja ili podataka virtualne stvarnosti</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Izbrisat će se <ph name="DATASIZE" /> podataka i kolačića koje su spremile web-lokacije ili aplikacije na vašem početnom zaslonu.</translation>
 <translation id="2194856509914051091">Važne napomene</translation>
 <translation id="2215727959747642672">Uređivanje datoteke</translation>
+<translation id="2218389616572918761">Web-lokacije mogu zatražiti vaš mikrofon</translation>
 <translation id="2228071138934252756">Da bi aplikacija <ph name="APP_NAME" /> mogla pristupiti vašoj kameri, uključite kameru i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Blokirani su kolačići treće strane</translation>
 <translation id="2238944249568001759">Predložena pretraživanja na temelju vaše posljednje kartice</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Pokrenite Chrome s aktivnim višenamjenskim okvirom, čime se smanjuje vrijeme pokretanja na uređajima nižeg cjenovnog ranga.</translation>
 <translation id="2750481671343847896">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta.</translation>
 <translation id="2787357173144933081">Odmah pokreni višenamjenski okvir</translation>
+<translation id="2789132527330338807">Web-lokacije mogu tražiti dopuštenje za izradu 3D karte vašeg okruženja ili praćenje položaja kamere</translation>
 <translation id="2790501146643349491">Kad je ta postavka uključena, nedavno zatvorene web-lokacije mogu dovršiti slanje i primanje podataka. Kad je ta postavka isključena, nedavno zatvorene web-lokacije ne mogu dovršiti slanje ili primanje podataka.</translation>
 <translation id="2795716239552913152">Web-lokacije upotrebljavaju vašu lokaciju za relevantne značajke ili informacije poput lokalnih vijesti ili trgovina u blizini</translation>
+<translation id="2802908157808345702">Ne dopustite web-lokacijama da šalju skočne prozore ili koriste preusmjeravanja</translation>
 <translation id="2814830417943086299">Chrome sada prikazuje vaše nedavne kartice na popisu aplikacija i u rezultatima pretraživanja na uređaju. To uvijek možete isključiti u postavkama Chromea.</translation>
 <translation id="2822354292072154809">Jeste li sigurni da želite poništiti sva dopuštenja za aplikaciju <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtijevaj prikaz na mobilnom uređaju</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati vaše kolačiće za uvid u vašu aktivnost pregledavanja na web-lokacijama, čak ni na povezanim web-lokacijama. Vaša aktivnost pregledavanja ne koristi se za stvari kao što je personaliziranje oglasa. Značajke na nekim web-lokacijama možda neće funkcionirati.</translation>
 <translation id="461356340001513807">Omogućuje vam da se prijavite na web-lokacije pomoću računa koji imate na usluzi za provjeru identiteta</translation>
 <translation id="4619615317237390068">Kartice s drugih uređaja</translation>
+<translation id="4635969503923889910">Nemojte dopustiti web-lokacijama upotrebu NFC uređaja</translation>
 <translation id="4644713492825682049">Izbriši i poništi</translation>
 <translation id="4645575059429386691">Upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtualna stvarnost</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Sažmi sve zahtjeve</translation>
 <translation id="5884085660368669834">Postavke web-lokacije</translation>
 <translation id="5887687176710214216">Posljednji posjet bio je jučer</translation>
+<translation id="5908617755156109052">Onemogućite web-lokacijama izradu 3D karte vašeg okruženja ili praćenje položaja kamere</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5922853908706496913">Dijeljenje zaslona</translation>
 <translation id="5922967540311291836">Blokiraj kolačiće trećih strana:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Brisanje unosa</translation>
 <translation id="8681886425883659911">Oglasi su blokirani na web-lokacijama za koje se zna da prikazuju ometajuće ili obmanjujuće oglase</translation>
 <translation id="868929229000858085">Pretraživanje kontakata</translation>
+<translation id="8707904142362025782">Web-lokacija može zatražiti vašu kameru</translation>
 <translation id="8712637175834984815">Shvaćam</translation>
 <translation id="8715862698998036666">Povucite od vrha i prijeđite prstom od lijevog ili desnog ruba da biste zatvorili prikaz na cijelom zaslonu.</translation>
 <translation id="8719283222052720129">Uključite dopuštenje za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>

@@ -44,6 +44,7 @@ class CORE_EXPORT ContainerQueryParser {
       return true;
     }
     bool SupportsRange() const override { return false; }
+    bool SupportsElementDependent() const override { return true; }
   };
 
  private:

@@ -20,7 +20,7 @@ Chromium also uses these languages to a lesser degree:
 
 *   [Kernel C style](https://www.kernel.org/doc/html/latest/process/coding-style.html)
     for ChromiumOS firmware.
-*   [IDL](https://sites.google.com/a/chromium.org/dev/blink/webidl#TOC-Style)
+*   [IDL](https://www.chromium.org/blink/webidl/#syntax)
 *   [Jinja style guide](https://sites.google.com/a/chromium.org/dev/developers/jinja#TOC-Style)
     for [Jinja](https://sites.google.com/a/chromium.org/dev/developers/jinja)
     templates.

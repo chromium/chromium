@@ -358,7 +358,7 @@ Refer to README.md for content description and update process.
  <item id="network_diagnostics_stun" added_in_milestone="111" content_hash_code="059bf138" os_list="chromeos" file_path="chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc" />
  <item id="network_diagnostics_tls" added_in_milestone="111" content_hash_code="0170b367" os_list="chromeos" file_path="chrome/browser/ash/net/network_diagnostics/tls_prober.cc" />
  <item id="gstatic_fast_checkout_funnels" added_in_milestone="111" content_hash_code="0531d118" os_list="android" file_path="chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_impl.cc" />
- <item id="webapk_minter_install_request" added_in_milestone="111" content_hash_code="042fed33" os_list="chromeos" file_path="chrome/browser/apps/app_service/webapk/webapk_install_task.cc" />
+ <item id="webapk_minter_install_request" added_in_milestone="111" content_hash_code="04edcfed" os_list="chromeos" file_path="chrome/browser/apps/app_service/webapk/webapk_install_task.cc" />
  <item id="android_feedback_connectivity_checker" added_in_milestone="111" content_hash_code="0011753d" os_list="android" file_path="chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java" />
  <item id="printer_config_fetch" added_in_milestone="111" content_hash_code="042f8883" os_list="chromeos" file_path="chromeos/printing/printer_config_cache.cc" />
  <item id="projector_xhr_loader_allow_cookie" added_in_milestone="112" content_hash_code="04a2140d" os_list="chromeos" file_path="ash/webui/projector_app/projector_xhr_sender.cc" />
@@ -509,4 +509,6 @@ Refer to README.md for content description and update process.
  <item id="chromeos_scanner_provider" added_in_milestone="135" content_hash_code="04db096b" os_list="chromeos" file_path="components/manta/scanner_provider.cc" />
  <item id="glic_fre_preconnect" added_in_milestone="136" content_hash_code="02865907" os_list="linux,windows" file_path="chrome/browser/glic/glic_fre_controller.cc" />
  <item id="client_download_request_android" added_in_milestone="136" type="branchedcompleting" second_id="client_download_request_for_platform" content_hash_code="0829498b" os_list="android" semantics_fields="2,3,4,8,9" file_path="chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.cc" />
+ <item id="chromeos_lens_web_image_search" added_in_milestone="136" content_hash_code="0448d253" os_list="chromeos" file_path="ash/capture_mode/capture_mode_controller.cc" />
+ <item id="chromeos_inline_image_request" added_in_milestone="136" content_hash_code="014aba50" os_list="chromeos" file_path="chrome/browser/ash/lobster/lobster_image_provider_from_snapper.cc" />
 </annotations>

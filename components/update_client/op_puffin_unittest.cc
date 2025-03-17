@@ -70,7 +70,7 @@ TEST_F(PuffOperationTest, Success) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            base::DoNothing(), "appid", "prev_fp", patch_file,
+            base::DoNothing(), "appid", "hash1", patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -106,7 +106,7 @@ TEST_F(PuffOperationTest, BadPatch) {
             base::MakeRefCounted<PatchChromiumFactory>(
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
-            base::DoNothing(), "appid", "prev_fp", patch_file,
+            base::DoNothing(), "appid", "hash1", patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

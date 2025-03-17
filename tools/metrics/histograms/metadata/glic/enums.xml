@@ -26,6 +26,17 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActInFocusedTabErrorReason) -->
+
+<enum name="ActInFocusedTabErrorReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Get context failed"/>
+  <int value="2" label="Invalid action proto"/>
+  <int value="3" label="Target not found"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:ActInFocusedTabErrorReason) -->
+
 <!-- LINT.IfChange(GlicEntryPointImpression) -->
 
 <enum name="GlicEntryPointImpression">
@@ -47,6 +58,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:EntryPointImpression) -->
 
+<!-- LINT.IfChange(GlicInputModesUsed) -->
+
+<enum name="GlicInputModesUsed">
+  <int value="0" label="No input submitted"/>
+  <int value="1" label="Only text input submitted"/>
+  <int value="2" label="Only audio input submitted"/>
+  <int value="3" label="Text and Audio input submitted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:GlicInputModesUsed) -->
+
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
 <enum name="GlicInvocationSource">
@@ -58,9 +80,10 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="From the profile picker"/>
   <int value="6" label="From tab strip nudge"/>
   <int value="7" label="From 3-dot menu"/>
+  <int value="8" label="An unsupported/unknown source"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:InvocationSource) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:InvocationSource) -->
 
 <!-- LINT.IfChange(GlicResponseError) -->
 
@@ -115,15 +138,23 @@ chromium-metrics-reviews@google.com.
   <int value="30" label="3-dot menu, attached, audio mode."/>
   <int value="31" label="3-dot menu, detached, text mode."/>
   <int value="32" label="3-dot menu, detached, audio mode."/>
+  <int value="33" label="Unsupported/unknown, attached, text mode."/>
+  <int value="34" label="Unsupported/unknown, attached, audio mode."/>
+  <int value="35" label="Unsupported/unknown, detached, text mode."/>
+  <int value="36" label="Unsupported/unknown, detached, audio mode."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.cc:ResponseSegmentation) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->
+
+<!-- LINT.IfChange(WebClientMode) -->
 
 <enum name="GlicWebClientMode">
   <int value="0" label="Text"/>
   <int value="1" label="Audio"/>
   <int value="2" label="Unknown"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic.mojom:WebClientMode) -->
 
 <enum name="PdfRequestStates">
   <int value="0" label="PDF main doc; PDF found"/>

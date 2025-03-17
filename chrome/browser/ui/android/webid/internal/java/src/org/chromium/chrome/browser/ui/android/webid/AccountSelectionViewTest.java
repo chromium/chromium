@@ -219,11 +219,13 @@ public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
         assertEquals(View.GONE, getAccountSecondaryDescriptionAt(2).getVisibility());
         assertEquals("Incorrect name", mNicolasAccount.getName(), getAccountNameAt(3).getText());
         assertEquals("Incorrect email", mNicolasAccount.getEmail(), getAccountEmailAt(3).getText());
+        // Even though mNicolasAccount has secondary description, it should not be shown when UI is
+        // not in multi IDP mode.
         assertEquals(
                 "Should not have secondary description",
-                mNicolasAccount.getSecondaryDescription(),
+                "",
                 getAccountSecondaryDescriptionAt(3).getText());
-        assertEquals(View.VISIBLE, getAccountSecondaryDescriptionAt(3).getVisibility());
+        assertEquals(View.GONE, getAccountSecondaryDescriptionAt(3).getVisibility());
     }
 
     @Test

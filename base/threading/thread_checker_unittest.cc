@@ -295,7 +295,7 @@ TEST(ThreadCheckerTest, MoveOffThreadBanned) {
   RunCallbackOnNewThreadSynchronously(
       BindOnce(&ExpectCalledOnValidThread, Unretained(&other_thread)));
 
-  EXPECT_DCHECK_DEATH(ThreadCheckerImpl main_thread(std::move(other_thread)));
+  EXPECT_CHECK_DEATH(ThreadCheckerImpl main_thread(std::move(other_thread)));
 }
 
 namespace {

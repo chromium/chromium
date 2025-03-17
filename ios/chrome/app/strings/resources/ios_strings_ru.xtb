@@ -447,6 +447,7 @@
 <translation id="2829172210806130158">Поиск по экрану</translation>
 <translation id="2834399722155632105">3. Выберите "Настройки паролей".</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Время</translation>
 <translation id="284581348330507117">Создайте уникальные пароли</translation>
 <translation id="2856883624744451946">Название группы</translation>
 <translation id="2858204748079866344">Чтобы обеспечить конфиденциальность ваших данных, мы просим вас ввести пароль вручную.</translation>
@@ -503,6 +504,7 @@
 <translation id="310900540163454140">Удалить пароль для сайта <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Отметить…</translation>
 <translation id="3119874402040566234">Вы выйдете из аккаунта, а данные о работе в браузере будут удалены</translation>
+<translation id="3124568093781685165">Открывайте близким доступ к паролям.</translation>
 <translation id="3130863904455712965">История и другие данные</translation>
 <translation id="313283613037595347">Создать вкладку инкогнито.</translation>
 <translation id="3138611310073113613">Отменить выбор</translation>
@@ -649,7 +651,6 @@
 <translation id="3858860766373142691">Название</translation>
 <translation id="3868495844258915202">Показать URL полностью</translation>
 <translation id="3875783148670536197">Показать</translation>
-<translation id="3876833929577368454">Спрашивать каждый раз</translation>
 <translation id="3885587018298784481">Вступите в семейную группу</translation>
 <translation id="3888863481921783344">Эти данные будут использоваться для показа пользователей, которых можно пригласить на мероприятие.</translation>
 <translation id="3891414008432200754">Цена</translation>
@@ -904,6 +905,7 @@
 <translation id="4896467949657706481">Вкладки были закрыты, вы вышли из аккаунта.</translation>
 <translation id="4913626501929406101">Вы можете поделиться копией пароля с участником семейной группы. Это безопасно. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Принять</translation>
+<translation id="4932733599132424254">Дата</translation>
 <translation id="4936354130727646074">Никогда</translation>
 <translation id="4937410517508563815">Сохраняйте пароли в аккаунте</translation>
 <translation id="4938338714234463591">Так вы сможете использовать голосовые команды для определенных функций на сайтах.</translation>
@@ -1002,6 +1004,7 @@
 <translation id="5352128922772839949">Сохранить файл</translation>
 <translation id="5355191726083956201">Улучшенная защита включена.</translation>
 <translation id="537853552771686272">Управляйте темами и сайтами, которые вам интересны</translation>
+<translation id="5390458669633674385">{count,plural, =1{{count} вкладка закрыта}one{{count} вкладка закрыта}few{{count} вкладки закрыты}many{{count} вкладок закрыты}other{{count} вкладки закрыто}}</translation>
 <translation id="5394975111793637642">Скрыть карточку "Отзывы о товарах для вас"</translation>
 <translation id="5395707839134961196">Скрыть сведения о поисковой системе</translation>
 <translation id="5414763847370083940">Если на одном из сайтов появится скидка, вы получите оповещение.</translation>
@@ -1131,6 +1134,7 @@
 <translation id="5897749768294722429">Чтобы быстро возвращаться к просмотренным сайтам, включите синхронизацию вкладок и истории.</translation>
 <translation id="5898848375214731122">Масса</translation>
 <translation id="5899314093904173337">Чтобы предоставить доступ пользователям поблизости, попросите их отсканировать этот QR-код с помощью камеры или специального приложения.</translation>
+<translation id="5902752768726620872">{count,plural, =1{{count} новая вкладка}one{{count} новая вкладка}few{{count} новые вкладки}many{{count} новых вкладок}other{{count} новой вкладки}}</translation>
 <translation id="5911030830365207728">Google Переводчик</translation>
 <translation id="5917913282764181683">Автоматическое удаление скачанных файлов</translation>
 <translation id="5922999516621365983">Чтобы закрепить вкладку, перетащите ее сюда.</translation>
@@ -1470,7 +1474,6 @@
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7352651011704765696">Ошибка</translation>
-<translation id="7359341089141286329">Автоматически отслеживать все обнаруженные посылки</translation>
 <translation id="7363349185727752629">Все о настройках конфиденциальности</translation>
 <translation id="736564850024123010">Переместите адресную строку в удобное место.</translation>
 <translation id="7366909168761621528">Данные о работе в браузере</translation>
@@ -1674,6 +1677,7 @@
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8132598642024322408">Новая цена: <ph name="PRICE" />, старая цена: <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Используйте разные пароли для каждого сайта или приложения. В противном случае злоумышленники, узнав один пароль, смогут получить доступ к другим вашим аккаунтам. Нажмите, чтобы перейти на сайт и изменить пароли.</translation>
+<translation id="8135556271852808840">{count,plural, =1{{count} вкладка закрыта}one{{count} вкладка закрыта}few{{count} вкладки закрыты}many{{count} вкладок закрыты}other{{count} вкладки закрыто}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 другой объект}one{# другой объект}few{# других объекта}many{# других объектов}other{# другого объекта}}</translation>
 <translation id="8150167929304790980">Полное имя</translation>
 <translation id="8152331954420209374">Открыть Объектив</translation>
@@ -1718,6 +1722,7 @@
 <translation id="8299417921174340354">Чтобы использовать пароли, установите на устройстве код доступа.</translation>
 <translation id="8307481894409578819">Ошибка при загрузке файла</translation>
 <translation id="8319076807703933069">Новый поиск</translation>
+<translation id="8320212361750431956">Недавние действия</translation>
 <translation id="833647236762414178">Создавайте, сохраняйте и изменяйте пароли и ключи доступа, чтобы легко входить в аккаунты на сайтах и в приложениях. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
@@ -1747,7 +1752,6 @@
 <translation id="8438566539970814960">Помогать улучшать просмотр страниц и поиск</translation>
 <translation id="8439758443371991593">Скрыть действие "Добавить в список для чтения"</translation>
 <translation id="8449869326050867919">Доступ к паролю предоставлен</translation>
-<translation id="8453847087068411809">Не определять посылки автоматически</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8474378002946546633">Разрешить оповещения</translation>
 <translation id="8477178913400731244">Удалить данные</translation>

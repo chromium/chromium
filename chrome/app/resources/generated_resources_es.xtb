@@ -2242,7 +2242,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2530166226437958497">Solución de problemas</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Se ha producido un error y <ph name="DEVICE_OS" /> no se ha podido instalar.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Más información</translation>
 <translation id="2532144599248877204">Aumenta la duración de la batería pausando la carga en torno al 80 %. La batería se cargará al 100 % antes de que llegue el momento en que sueles desenchufar el dispositivo de la fuente de alimentación.</translation>
 <translation id="2532146950330687938">Preparando el dispositivo...</translation>
 <translation id="2532198298278778531">Gestionar DNS seguro en los ajustes de ChromeOS Flex</translation>
@@ -2798,7 +2797,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2921081876747860777">Crea una contraseña para proteger tus datos locales</translation>
 <translation id="2923006468155067296">Tu <ph name="DEVICE_TYPE" /> se va a bloquear ahora.
 <ph name="DOMAIN" /> requiere que mantengas insertada tu tarjeta inteligente.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. <ph name="OTHER_TASK_NUM" /> tareas más del mismo grupo de tareas: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Quitar esta cuenta</translation>
 <translation id="2923644930701689793">Accede al carrete de tu teléfono</translation>
 <translation id="292371311537977079">Configuración de Chrome</translation>
@@ -3409,7 +3407,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="338583716107319301">Separador</translation>
 <translation id="3385916046075724800">Ahora tus grupos de pestañas se guardan automáticamente.</translation>
 <translation id="3387023983419383865">,</translation>
-<translation id="3387588771342841525">Si esta opción está activada, las contraseñas se guardan en <ph name="EMAIL" />. Si está desactivada, las contraseñas solo se guardan en este dispositivo.</translation>
+<translation id="3387588771342841525">Si esta opción está activada, las contraseñas se guardan en <ph name="EMAIL" />. Si está desactivada, las contraseñas se guardan solo en este dispositivo.</translation>
 <translation id="3387614642886316601">Usar el corrector ortográfico mejorado</translation>
 <translation id="3387829698079331264">No permitir que sepan cuándo usas activamente tu dispositivo</translation>
 <translation id="3388094447051599208">La bandeja de salida está casi llena</translation>
@@ -6901,6 +6899,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> se pausará pronto</translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Al instalar la aplicación en tu ordenador, podrás ejecutarla sin la imagen de disco y, de esta forma, te asegurarás de que siempre esté actualizada.</translation>
 <translation id="5865733239029070421">Envía automáticamente estadísticas de uso e informes sobre fallos a Google</translation>
+<translation id="5866363217037791319">Finalizar tarea</translation>
 <translation id="5868434909835797817">El micrófono está desactivado en tu dispositivo</translation>
 <translation id="5868479397518301468">Tiempo de espera para iniciar sesión agotado</translation>
 <translation id="5868822853313956582">Seguir colores del dispositivo</translation>
@@ -10627,7 +10626,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8524841856047224176">Personaliza el fondo de tu cámara para videollamadas y más</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8525461909394569609">Esta aplicación incluye contenido web de</translation>
-<translation id="8526313996927074827">Inserta enlaces, emojis y más. También puedes obtener ayuda al escribir con la IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altavoces</translation>
 <translation id="8527257351549797148">Es posible que tu organización requiera que te registres para que puedas acceder a aplicaciones, extensiones y otros elementos. Esto también permite a tu organización gestionar la seguridad y los ajustes de los dispositivos, entre otras cosas.</translation>
@@ -11083,6 +11081,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="883924185304953854">Búsqueda por imágenes</translation>
 <translation id="8841786407272321022">La contraseña se ha guardado solo en este dispositivo. Para guardar contraseñas nuevas en tu cuenta de Google, actualiza Servicios de Google Play.</translation>
 <translation id="8841843049738266382">Consultar y modificar usuarios de la lista de permitidos</translation>
+<translation id="8841884135319684422">Finalizar tarea</translation>
 <translation id="8842594465773264717">Eliminar esta huella digital</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8846132060409673887">Consultar el fabricante y el modelo de este ordenador</translation>

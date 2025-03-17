@@ -194,6 +194,7 @@ Jika Anda menghapusnya, semua orang akan segera kehilangan akses ke grup tab "<p
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Pindahkan tab ke atas</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{Diperbarui <ph name="NUM_MINS_ONE" /> menit lalu}other{Diperbarui <ph name="NUM_MINS_MANY" /> menit lalu}}</translation>
+<translation id="8236097722223016103">Tambahkan ke bookmark</translation>
 <translation id="8261506727792406068">Hapus</translation>
 <translation id="8338427544764842461">Grup tab Anda disimpan di sini dan diperbarui di semua perangkat yang digunakan untuk login</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Luaskan grup tab yang dibagikan yang berisi <ph name="TABS_COUNT_ONE" /> tab, warna <ph name="COLOR_NAME" />.}other{Luaskan grup tab yang dibagikan yang berisi <ph name="TABS_COUNT_MANY" /> tab, warna <ph name="COLOR_NAME" />.}}</translation>

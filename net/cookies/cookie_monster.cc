@@ -82,6 +82,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_base.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster_change_dispatcher.h"
@@ -124,8 +125,7 @@ using TimeRange = net::CookieDeletionInfo::TimeRange;
 // notification of key load completion triggered by the first request for the
 // same eTLD+1.
 
-static const int kDaysInTenYears = 10 * 365;
-static const int kMinutesInTenYears = kDaysInTenYears * 24 * 60;
+static const int kMinutesIn400Days = 60 * 24 * 400;
 
 namespace {
 
@@ -443,11 +443,12 @@ CountCookiesAndGenerateListsForPossibleDeletionPartitionedCookies(
   return could_be_deleted;
 }
 
-// Records minutes until the expiration date of a cookie to the appropriate
-// histogram. Only histograms cookies that have an expiration date (i.e. are
-// persistent).
-void HistogramExpirationDuration(const CanonicalCookie& cookie,
+// Records whether the cookie being set is persistent. If so, this also records
+// minutes until the expiration date of a cookie to the appropriate histogram.
+void RecordPersistanceHistograms(const CanonicalCookie& cookie,
                                  base::Time creation_time) {
+  base::UmaHistogramBoolean("Cookie.IsPersistentWhenSet.Subsampled",
+                            cookie.IsPersistent());
   if (!cookie.IsPersistent())
     return;
 
@@ -455,25 +456,12 @@ void HistogramExpirationDuration(const CanonicalCookie& cookie,
       (cookie.ExpiryDate() - creation_time).InMinutes();
   if (cookie.SecureAttribute()) {
     base::UmaHistogramCustomCounts(
-        "Cookie.ExpirationDurationMinutesSecure.Subsampled",
-        expiration_duration_minutes, 1, kMinutesInTenYears, 50);
+        "Cookie.ExpirationDurationMinutesSecure.Subsampled2",
+        expiration_duration_minutes, 1, kMinutesIn400Days, 100);
   } else {
     base::UmaHistogramCustomCounts(
-        "Cookie.ExpirationDurationMinutesNonSecure.Subsampled",
-        expiration_duration_minutes, 1, kMinutesInTenYears, 50);
-  }
-  // The proposed rfc6265bis sets an upper limit on Expires/Max-Age attribute
-  // values of 400 days. We need to study the impact this change would have:
-  // https://httpwg.org/http-extensions/draft-ietf-httpbis-rfc6265bis.html
-  int expiration_duration_days = (cookie.ExpiryDate() - creation_time).InDays();
-  if (expiration_duration_days > 400) {
-    base::UmaHistogramCustomCounts(
-        "Cookie.ExpirationDuration400DaysGT.Subsampled",
-        expiration_duration_days, 401, kDaysInTenYears, 100);
-  } else {
-    base::UmaHistogramCustomCounts(
-        "Cookie.ExpirationDuration400DaysLTE.Subsampled",
-        expiration_duration_days, 1, 400, 50);
+        "Cookie.ExpirationDurationMinutesNonSecure.Subsampled2",
+        expiration_duration_minutes, 1, kMinutesIn400Days, 100);
   }
 }
 
@@ -1811,7 +1799,7 @@ void CookieMonster::SetCanonicalCookie(
     // was to delete the cookie which we've already done.
     if (!already_expired) {
       if (collect_metrics) {
-        HistogramExpirationDuration(*cc, creation_date);
+        RecordPersistanceHistograms(*cc, creation_date);
 
         base::UmaHistogramBoolean("Cookie.DomainSet.Subsampled",
                                   cc->IsDomainCookie());
@@ -1887,7 +1875,7 @@ void CookieMonster::SetAllCookies(CookieList list,
       continue;
 
     if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
-      HistogramExpirationDuration(cookie, creation_time);
+      RecordPersistanceHistograms(cookie, creation_time);
     }
 
     CookieAccessResult access_result;

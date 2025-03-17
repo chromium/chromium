@@ -7,6 +7,7 @@
 
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
+#include "third_party/lens_server_proto/lens_overlay_geometry.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
@@ -19,7 +20,7 @@ CreateObjectsMojomArrayFromServerResponse(
     const lens::LensOverlayServerResponse& response);
 
 // Returns a text mojom object pointer from a lens overlay server response.
-// Returns a null text ptr if there is no text in response.
+// Returns a empty text ptr if there is no text in response.
 // |resized_bitmap_size| is needed to calculate background image data paddings
 // for translation text data. That calculation is done when rendering the
 // background image data in the overlay.
@@ -28,13 +29,16 @@ lens::mojom::TextPtr CreateTextMojomFromServerResponse(
     const gfx::Size resized_bitmap_size);
 
 // Returns a text mojom object pointer from a lens overlay interaction response.
-// Returns a null text ptr if there is no text in response.
-// |resized_bitmap_size| is needed to calculate background image data paddings
+// Returns a empty text ptr if there is no text in response.
+// `resized_bitmap_size` is needed to calculate background image data paddings
 // for translation text data. That calculation is done when rendering the
-// background image data in the overlay.
+// background image data in the overlay. Also passes the `region_crop_box` to
+// scale the text geometry relative to the full page. Otherwise, it will be
+// render incorrectly.
 lens::mojom::TextPtr CreateTextMojomFromInteractionResponse(
     const lens::LensOverlayInteractionResponse& response,
-    const gfx::Size resized_bitmap_size);
+    const lens::CenterRotatedBox& region_crop_box,
+    const gfx::Size& resized_bitmap_size);
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_PROTO_CONVERTER_H_

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_GROUP_SUGGESTIONS_MANAGER_H_
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_URL_GROUPING_GROUP_SUGGESTIONS_MANAGER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_service.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
@@ -23,15 +24,14 @@ class GroupSuggestionsManager {
 
   // Compute the suggestions based on latest events and tab state, called when
   // new events were observed to try looking for suggestions.
-  UrlGroupingSuggestionId MaybeTriggerSuggestions(
-      const GroupSuggestionsService::Scope& scope);
+  void MaybeTriggerSuggestions(const GroupSuggestionsService::Scope& scope);
 
   // Register and unregister delegate, see SuggestionsDelegate.
   void RegisterDelegate(GroupSuggestionsDelegate* delegate,
                         const GroupSuggestionsService::Scope& scope);
   void UnregisterDelegate(GroupSuggestionsDelegate* delegate);
 
-  UrlGroupingSuggestionId GetCurrentComputationForTesting() const;
+  bool GetCurrentComputationForTesting() const;
 
  private:
   class GroupSuggestionComputer;
@@ -41,12 +41,16 @@ class GroupSuggestionsManager {
     GroupSuggestionsService::Scope scope;
   };
 
+  void ShowSuggestion(const GroupSuggestionsService::Scope& scope,
+                      std::optional<GroupSuggestions> suggestions);
+
   const raw_ptr<VisitedURLRankingService> visited_url_ranking_service_;
-  UrlGroupingSuggestionId::Generator id_generator_;
   base::flat_map<GroupSuggestionsDelegate*, DelegateMetadata>
       registered_delegates_;
 
   std::unique_ptr<GroupSuggestionComputer> suggestion_computer_;
+
+  base::WeakPtrFactory<GroupSuggestionsManager> weak_ptr_factory_{this};
 };
 
 }  // namespace visited_url_ranking

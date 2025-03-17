@@ -152,18 +152,14 @@ void SavedTabGroupUtils::UngroupSavedGroup(const Browser* browser,
       },
       browser, group->local_group_id().value());
 
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    const bool closing_multiple_tabs = group->saved_tabs().size() > 1;
-    DeletionDialogController::DialogMetadata dialog_metadata(
-        DeletionDialogController::DialogType::UngroupSingle,
-        /*closing_group_count=*/1, closing_multiple_tabs);
-    browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-        dialog_metadata,
-        base::IgnoreArgs<DeletionDialogController::DeletionDialogTiming>(
-            std::move(ungroup_callback)));
-  } else {
-    std::move(ungroup_callback).Run();
-  }
+  const bool closing_multiple_tabs = group->saved_tabs().size() > 1;
+  DeletionDialogController::DialogMetadata dialog_metadata(
+      DeletionDialogController::DialogType::UngroupSingle,
+      /*closing_group_count=*/1, closing_multiple_tabs);
+  browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
+      dialog_metadata,
+      base::IgnoreArgs<DeletionDialogController::DeletionDialogTiming>(
+          std::move(ungroup_callback)));
 }
 
 // static
@@ -228,26 +224,22 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
       },
       browser, saved_group_guid);
 
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
-    DeletionDialogController::DialogMetadata saved_dialog_metadata(
-        DeletionDialogController::DialogType::DeleteSingle,
-        /*closing_group_count=*/1,
-        /*closing_multiple_tabs=*/group->saved_tabs().size() > 1);
+  DeletionDialogController::DialogMetadata saved_dialog_metadata(
+      DeletionDialogController::DialogType::DeleteSingle,
+      /*closing_group_count=*/1,
+      /*closing_multiple_tabs=*/group->saved_tabs().size() > 1);
 
-    DeletionDialogController::DialogMetadata shared_dialog_metadata(
-        DeletionDialogController::DialogType::DeleteSingleShared,
-        /*closing_group_count=*/1,
-        /*closing_multiple_tabs=*/group->saved_tabs().size() > 1);
-    shared_dialog_metadata.title_of_closing_group = group->title();
+  DeletionDialogController::DialogMetadata shared_dialog_metadata(
+      DeletionDialogController::DialogType::DeleteSingleShared,
+      /*closing_group_count=*/1,
+      /*closing_multiple_tabs=*/group->saved_tabs().size() > 1);
+  shared_dialog_metadata.title_of_closing_group = group->title();
 
-    const bool is_group_shared = group.value().collaboration_id().has_value();
-    browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
-        is_group_shared ? shared_dialog_metadata : saved_dialog_metadata,
-        base::IgnoreArgs<DeletionDialogController::DeletionDialogTiming>(
-            std::move(close_callback)));
-  } else {
-    std::move(close_callback).Run();
-  }
+  const bool is_group_shared = group.value().collaboration_id().has_value();
+  browser->tab_group_deletion_dialog_controller()->MaybeShowDialog(
+      is_group_shared ? shared_dialog_metadata : saved_dialog_metadata,
+      base::IgnoreArgs<DeletionDialogController::DeletionDialogTiming>(
+          std::move(close_callback)));
 }
 
 // static
@@ -332,7 +324,7 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
 
   // Confirmation is only needed if SavedTabGroups are being deleted. If the
   // service doesnt exist there are no saved tab groups.
-  if (!tab_group_service || !IsTabGroupsSaveV2Enabled()) {
+  if (!tab_group_service) {
     std::move(callback).Run(
         DeletionDialogController::DeletionDialogTiming::Synchronous);
     return;
@@ -735,8 +727,7 @@ bool SavedTabGroupUtils::AreSavedTabGroupsSyncedForProfile(Profile* profile) {
 
 // static
 bool SavedTabGroupUtils::SupportsSharedTabGroups() {
-  return tab_groups::IsTabGroupsSaveV2Enabled() &&
-         tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled() &&
+  return tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled() &&
          base::FeatureList::IsEnabled(
              data_sharing::features::kDataSharingFeature);
 }

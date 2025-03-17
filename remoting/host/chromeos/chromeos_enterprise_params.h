@@ -38,6 +38,8 @@ struct ChromeOsEnterpriseParams {
   bool allow_reconnections = false;
   bool allow_file_transfer = false;
   bool connection_dialog_required = false;
+
+  // Both local and remote machine configuration.
   base::TimeDelta connection_auto_accept_timeout;
 };
 

@@ -115,3 +115,98 @@ Test on element without computed style
 {"input": [invalid,1em,1rem,calc(3px + 3px),calc(1em + 1px)]}
 {"results":[""]}
 
+Running test: testResolveValuesValidInnerHeight
+Test resolveValues for height property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["30px","150px","60px","0px","10px","20px","10px","40px","35px"]}
+
+Running test: testResolveValuesValidOuterWidth
+Test resolveValues for width property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidInnerMinHeight
+Test resolveValues for min-height property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["30px","150px","60px","0px","10px","20px","10px","40px","35px"]}
+
+Running test: testResolveValuesValidOuterMinWidth
+Test resolveValues for min-width property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidInnerMaxWidth
+Test resolveValues for max-width property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidOuterMaxHeight
+Test resolveValues for max-height property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["600px","3000px","1200px","0px","10px","20px","10px","610px","610px"]}
+
+Running test: testResolveValuesValidInnerLeft
+Test resolveValues for left property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidInnerTop
+Test resolveValues for top property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["30px","150px","60px","0px","10px","20px","10px","40px","35px"]}
+
+Running test: testResolveValuesValidOuterRight
+Test resolveValues for right property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidOuterBottom
+Test resolveValues for bottom property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["600px","3000px","1200px","0px","10px","20px","10px","610px","610px"]}
+
+Running test: testResolveValuesValidInnerMarginLeft
+Test resolveValues for margin-left property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidInnerMarginBottom
+Test resolveValues for margin-bottom property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidOuterMarginTop
+Test resolveValues for margin-top property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidOuterMarginRight
+Test resolveValues for margin-right property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidInnerPaddingLeft
+Test resolveValues for padding-left property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidInnerPAddingTop
+Test resolveValues for padding-top property of inner element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["60px","300px","120px","0px","10px","20px","10px","70px","65px"]}
+
+Running test: testResolveValuesValidOuterPaddingRight
+Test resolveValues for padding-right property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveValuesValidOuterPaddingBottom
+Test resolveValues for padding-bottom property of outer element
+{"input": [10%,50%,calc(10% + 10%),calc(10% - 10%),calc(10px + 10% - 10%),calc(10px + 10px),calc(10px + 0%),calc(10px + 10%),calc(1em + 10%)]}
+{"results":["100px","500px","200px","0px","10px","20px","10px","110px","110px"]}
+
+Running test: testResolveInvalidPercentageValues
+Test resolveValues with invalid percentage expressions
+{"input": [calc(,%,calc(10 + 20)%,calc(10 + 30%]}
+{"results":["","","",""]}
+

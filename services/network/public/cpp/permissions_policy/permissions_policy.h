@@ -23,10 +23,6 @@
 
 class GURL;
 
-namespace blink {
-class ResourceRequest;
-}  // namespace blink
-
 namespace network {
 
 // Permissions Policy is a mechanism for controlling the availability of web
@@ -303,7 +299,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
       network::mojom::PermissionsPolicyFeature feature) const;
 
  private:
-  friend class blink::ResourceRequest;
   friend class PermissionsPolicyTest;
   friend struct mojo::StructTraits<network::mojom::PermissionsPolicyDataView,
                                    network::PermissionsPolicy>;
@@ -388,13 +383,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
       const url::Origin& origin,
       const std::set<network::mojom::PermissionsPolicyFeature>& opt_in_features)
       const;
-
-  // Returns whether or not the given feature is enabled by this policy for a
-  // specific origin, given that the feature is an opt-in feature, and the
-  // subresource request for which we are querying has opted-into this feature.
-  bool IsFeatureEnabledForSubresourceRequestAssumingOptIn(
-      network::mojom::PermissionsPolicyFeature feature,
-      const url::Origin& origin) const;
 
   // If the feature is in the declared policy, returns whether the given origin
   // exists in its declared allowlist; otherwise, returns the value from

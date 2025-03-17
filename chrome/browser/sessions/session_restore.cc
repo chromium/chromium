@@ -1049,7 +1049,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       service->ConnectLocalTabGroup(
           sync_guid, local_id,
           tab_groups::OpeningSource::kConnectOnSessionRestore);
-    } else if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+    } else {
       // Default save any groups that are not saved yet. This happens when
       // a user goes from V1 of SavedTabGroups to V2 through an update.
       service->SaveGroup(

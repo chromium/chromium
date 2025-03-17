@@ -243,6 +243,12 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
 }
 
 TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
+  // TODO(crbug.com/357074792): Merge this test with the one below once the
+  // feature is launched.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillDeduplicateAccountAddresses);
+
   // Create a disused address (deletable).
   AutofillProfile profile1 = test::GetFullProfile();
   profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(400));
@@ -250,7 +256,40 @@ TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
 
   // Create a recently-used address (not deletable).
   AutofillProfile profile2 = test::GetFullCanadianProfile();
-  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(4));
+  profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(4));
+  test_adm_.AddProfile(profile2);
+
+  // Create a disused account address (not deletable because the feature is
+  // disabled).
+  AutofillProfile account_profile = test::GetFullProfile2();
+  account_profile.usage_history().set_use_date(AutofillClock::Now() -
+                                               base::Days(400));
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(account_profile);
+
+  test_api(data_cleaner_).DeleteDisusedAddresses();
+  EXPECT_THAT(
+      test_adm_.GetProfiles(),
+      UnorderedElementsAre(Pointee(profile2), Pointee(account_profile)));
+}
+
+TEST_F(AddressDataCleanerTest, DeleteDisusedAccountAddresses) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+
+  // Create a disused account address (deletable).
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.usage_history().set_use_date(AutofillClock::Now() - base::Days(400));
+  test_api(profile1)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(profile1);
+
+  // Create a recently-used account address (not deletable).
+  AutofillProfile profile2 = test::GetFullCanadianProfile();
+  profile2.usage_history().set_use_date(AutofillClock::Now() - base::Days(4));
+  test_api(profile2)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
   test_adm_.AddProfile(profile2);
 
   test_api(data_cleaner_).DeleteDisusedAddresses();

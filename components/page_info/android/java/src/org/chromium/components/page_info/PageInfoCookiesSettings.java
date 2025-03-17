@@ -22,6 +22,7 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
+import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.text.ChromeClickableSpan;
@@ -347,7 +348,10 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                             rwsInfo.getOwner()));
             mRwsInUse.setOnPreferenceClickListener(
                     preference -> {
-                        mPageInfoControllerDelegate.showAllSettingsForRws(mRwsInfo.getOwner());
+                        Website currentWebsite = mRwsInfo.findWebsiteForOrigin(currentOrigin);
+                        if (currentWebsite != null) {
+                            mPageInfoControllerDelegate.showSiteSettings(currentWebsite);
+                        }
                         return false;
                     });
         }

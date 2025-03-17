@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, DraggableArea, FocusedTabCandidate, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, Subscriber, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
-import type {AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
+import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabCandidatePrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType, newTransferableException} from './request_types.js';
 
 
@@ -62,12 +62,14 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
     }
   }
 
-  async glicWebClientNotifyPanelWillOpen(payload: {panelState: PanelState}):
-      Promise<{openPanelInfo?: OpenPanelInfo}> {
+  async glicWebClientNotifyPanelWillOpen(payload: {
+    panelOpeningData: PanelOpeningData,
+  }): Promise<{openPanelInfo?: OpenPanelInfo}> {
     let openPanelInfo: OpenPanelInfo|undefined;
     try {
-      const result =
-          await this.webClient.notifyPanelWillOpen?.(payload.panelState);
+      const mergedArgument: PanelOpeningData&PanelState = Object.assign(
+          {}, payload.panelOpeningData, payload.panelOpeningData.panelState);
+      const result = await this.webClient.notifyPanelWillOpen?.(mergedArgument);
       if (result) {
         openPanelInfo = result;
       }
@@ -206,6 +208,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.scrollToEnabled) {
       (this as GlicBrowserHost).scrollTo = undefined;
     }
+
+    if (!state.actInFocusedTabEnabled) {
+      (this as GlicBrowserHost).actInFocusedTab = undefined;
+    }
   }
 
   webClientInitialized(
@@ -280,6 +286,15 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     return convertTabContextResultFromPrivate(context.tabContextResult);
   }
 
+  async actInFocusedTab(
+      actInFocusedTabParams: ActInFocusedTabParams):
+      Promise<ActInFocusedTabResult> {
+    const context = await this.sender.requestWithResponse(
+        'glicBrowserActInFocusedTab', {actInFocusedTabParams});
+    return convertActInFocusedTabResultFromPrivate(
+        context.actInFocusedTabResult);
+  }
+
   async resizeWindow(width: number, height: number, options?: {
     durationMs?: number,
   }): Promise<void> {
@@ -296,6 +311,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   setWindowDraggableAreas(areas: DraggableArea[]): Promise<void> {
     return this.sender.requestWithResponse(
         'glicBrowserSetWindowDraggableAreas', {areas});
+  }
+
+  setMinimumWidgetSize(width: number, height: number): Promise<void> {
+    return this.sender.requestWithResponse(
+        'glicBrowserSetMinimumWidgetSize', {size: {width, height}});
   }
 
   getPanelState(): ObservableValueImpl<PanelState> {
@@ -385,6 +405,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   setSyntheticExperimentState(trialName: string, groupName: string): void {
     this.sender.requestNoResponse(
         'glicBrowserSetSyntheticExperimentState', {trialName, groupName});
+  }
+
+  openOsPermissionSettingsMenu(permission: string): void {
+    this.sender.requestNoResponse(
+        'glicBrowserOpenOsPermissionSettingsMenu', {permission});
   }
 }
 
@@ -520,6 +545,13 @@ function convertTabContextResultFromPrivate(data: TabContextResultPrivate):
   const annotatedPageData = data.annotatedPageData &&
       convertAnnotatedPageDataFromPrivate(data.annotatedPageData);
   return replaceProperties(data, {tabData, pdfDocumentData, annotatedPageData});
+}
+
+function convertActInFocusedTabResultFromPrivate(
+    data: ActInFocusedTabResultPrivate): ActInFocusedTabResult {
+  const tabContextResult =
+      convertTabContextResultFromPrivate(data.tabContextResult);
+  return replaceProperties(data, {tabContextResult});
 }
 
 class ObservableSubscription<T> implements Subscriber {

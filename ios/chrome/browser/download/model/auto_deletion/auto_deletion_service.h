@@ -39,6 +39,9 @@ class AutoDeletionService {
   // Deletes the files that have been marked as ready for deletion.
   void RemoveScheduledFilesReadyForDeletion(base::OnceClosure closure);
 
+  // Untracks all the files that were scheduled for auto-deletion.
+  void Clear();
+
  private:
   // Invoked after the download task data is read from data. It finishes
   // scheduling the file for deletion.

@@ -76,6 +76,8 @@ class CORE_EXPORT StyleGeneratedImage final : public StyleImage {
                              const Document&) const;
   bool IsUsingCurrentColor() const;
 
+  bool DependsOnCurrentColor() const override { return IsUsingCurrentColor(); }
+
   void Trace(Visitor*) const override;
 
  private:

@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "net/base/features.h"
+#include "net/cookies/cookie_access_params.h"
 #include "net/cookies/cookie_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

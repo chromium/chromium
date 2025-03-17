@@ -114,8 +114,9 @@ public class TabUiUtilsUnitTest {
         when(mFilter.isIncognitoBranded()).thenReturn(false);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.getRootId()).thenReturn(ROOT_ID);
+        when(mFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
         when(mFilter.getRelatedTabListForRootId(ROOT_ID)).thenReturn(mTabsToClose);
-        when(mFilter.getRelatedTabCountForRootId(ROOT_ID)).thenReturn(mTabsToClose.size());
+        when(mFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(mTabsToClose.size());
         when(mFilter.getTabGroupTitle(ROOT_ID)).thenReturn(GROUP_TITLE);
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.isClosing()).thenReturn(false);

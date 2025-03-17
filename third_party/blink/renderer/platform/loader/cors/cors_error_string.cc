@@ -85,9 +85,7 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
                                      const AtomicString& initiator_name) {
   StringBuilder builder;
   static constexpr char kNoCorsInformation[] =
-      " Have the server send the header with a valid value, or, if an opaque "
-      "response serves your needs, set the request's mode to 'no-cors' to "
-      "fetch the resource with CORS disabled.";
+      " Have the server send the header with a valid value.";
 
   using CorsError = network::mojom::CorsError;
   const StringView hint(base::as_byte_span(status.failed_parameter));
@@ -127,11 +125,6 @@ String GetErrorStringForIssueSummary(const network::CorsErrorStatus& status,
       builder.Append(
           "No 'Access-Control-Allow-Origin' header is present on the "
           "requested resource.");
-      if (initiator_name == fetch_initiator_type_names::kFetch) {
-        builder.Append(
-            " If an opaque response serves your needs, set the request's "
-            "mode to 'no-cors' to fetch the resource with CORS disabled.");
-      }
       break;
     case CorsError::kMultipleAllowOriginValues:
     case CorsError::kPreflightMultipleAllowOriginValues:
@@ -277,9 +270,7 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
                                        const AtomicString& initiator_name) {
   StringBuilder builder;
   static constexpr char kNoCorsInformation[] =
-      " Have the server send the header with a valid value, or, if an opaque "
-      "response serves your needs, set the request's mode to 'no-cors' to "
-      "fetch the resource with CORS disabled.";
+      " Have the server send the header with a valid value.";
 
   using CorsError = network::mojom::CorsError;
   const StringView hint(base::as_byte_span(status.failed_parameter));
@@ -334,11 +325,6 @@ String GetErrorStringForConsoleMessage(const network::CorsErrorStatus& status,
       builder.Append(
           "No 'Access-Control-Allow-Origin' header is present on the "
           "requested resource.");
-      if (initiator_name == fetch_initiator_type_names::kFetch) {
-        builder.Append(
-            " If an opaque response serves your needs, set the request's "
-            "mode to 'no-cors' to fetch the resource with CORS disabled.");
-      }
       break;
     case CorsError::kMultipleAllowOriginValues:
     case CorsError::kPreflightMultipleAllowOriginValues:

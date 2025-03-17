@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("model") {
+  sources = [
+    "reader_mode_java_script_feature.h",
+    "reader_mode_java_script_feature.mm",
+  ]
+  deps = [
+    ":features",
+    ":reader_mode_js",
+    "//components/dom_distiller/core",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+optimize_ts("reader_mode_js") {
+  visibility = [ ":model" ]
+  sources = [ "resources/reader_mode.ts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}

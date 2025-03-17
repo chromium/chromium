@@ -268,15 +268,20 @@ MaybeCreateClassifyUrlNavigationThrottleFor(
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
   CHECK(profile);
+
   if (!profile->IsChild()) {
     return nullptr;
   }
 
-  SupervisedUserURLFilter* filter =
-      SupervisedUserServiceFactory::GetForProfile(profile)->GetURLFilter();
-  CHECK(filter) << "profile->IsChild() implies SupervisedUserService, which "
-                   "implies SupervisedUserURLFilter";
+  SupervisedUserService* supervised_user_service =
+      SupervisedUserServiceFactory::GetForProfile(profile);
+  if (!supervised_user_service) {
+    return nullptr;
+  }
 
+  SupervisedUserURLFilter* filter = supervised_user_service->GetURLFilter();
+  CHECK(filter) << "Supervised user service for child users is expected to "
+                   "have the URL filter present";
   return ClassifyUrlNavigationThrottle::MakeUnique(navigation_handle, filter);
 }
 

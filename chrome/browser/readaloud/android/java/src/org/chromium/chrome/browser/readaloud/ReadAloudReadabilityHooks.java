@@ -7,15 +7,27 @@ package org.chromium.chrome.browser.readaloud;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 
 import java.util.HashSet;
+import java.util.Map;
 
 /**
- * Interface providing access to ReadAloud page readability checking.
- * Page can only be played if it's readable, which is true if (among others) there's enough text to
- * be played as audio.
+ * Interface providing access to ReadAloud page readability checking. Page can only be played if
+ * it's readable, which is true if (among others) there's enough text to be played as audio.
  */
 public interface ReadAloudReadabilityHooks {
+    /** Result of a readability check for a specific mode. */
+    public static class ReadabilityResult {
+        public final boolean readable;
+        public final boolean supportsHighlighting;
+
+        public ReadabilityResult(boolean readable, boolean supportsHighlighting) {
+            this.readable = readable;
+            this.supportsHighlighting = supportsHighlighting;
+        }
+    }
+
     /** Interface to receive result for readability check. */
     interface ReadabilityCallback {
         /**
@@ -45,6 +57,20 @@ public interface ReadAloudReadabilityHooks {
         void onFailure(String url, Throwable t);
     }
 
+    interface ReadabilityPerModeCallback {
+        /**
+         * Called if isPageReadable() succeeds.
+         *
+         * <p>This mode contains per-mode readability information and backward compatibility is
+         * maintained through the CLASSIC mode.
+         */
+        default void onSuccess(
+                String url, Map<PlaybackMode, ReadabilityResult> readabilityPerMode) {}
+
+        /** Indicates a failure in readability check. */
+        default void onFailure(String url, Throwable t) {}
+    }
+
     /** Returns true if ReadAloud feature is available. */
     boolean isEnabled();
 
@@ -56,6 +82,8 @@ public interface ReadAloudReadabilityHooks {
      * @param callback callback to get result
      */
     void isPageReadable(String url, ReadabilityCallback callback);
+
+    default void isPageReadable(String url, ReadabilityPerModeCallback callback) {}
 
     /**
      * Checks whether a given page is readable.

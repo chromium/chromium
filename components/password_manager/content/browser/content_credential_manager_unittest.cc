@@ -5,29 +5,31 @@
 #include "components/password_manager/content/browser/content_credential_manager.h"
 
 #include "base/test/mock_callback.h"
-#include "components/password_manager/core/browser/credential_manager_interface.h"
+#include "components/credential_management/credential_manager_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace password_manager {
 
-class MockCredentialManagerImpl : public CredentialManagerInterface {
+class MockCredentialManagerImpl
+    : public credential_management::CredentialManagerInterface {
  public:
   MOCK_METHOD(void,
               Store,
-              (const CredentialInfo& credential, StoreCallback callback),
+              (const CredentialInfo& credential,
+               credential_management::StoreCallback callback),
               (override));
   MOCK_METHOD(void,
               PreventSilentAccess,
-              (PreventSilentAccessCallback callback),
+              (credential_management::PreventSilentAccessCallback callback),
               (override));
   MOCK_METHOD(void,
               Get,
               (CredentialMediationRequirement mediation,
                int requested_credential_type_flags,
                const std::vector<GURL>& federations,
-               GetCallback callback),
+               credential_management::GetCallback callback),
               (override));
   MOCK_METHOD(void, ResetPendingRequest, (), (override));
 };
@@ -49,7 +51,8 @@ TEST_F(ContentCredentialManagerTest,
       ContentCredentialManager(std::move(mock_credential_manager_unique_ptr));
 
   EXPECT_CALL(*mock_credential_manager, Store);
-  content_credential_manager.Store(CredentialInfo(), StoreCallback());
+  content_credential_manager.Store(CredentialInfo(),
+                                   credential_management::StoreCallback());
 }
 
 }  // namespace password_manager

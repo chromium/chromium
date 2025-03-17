@@ -20,14 +20,11 @@ class MetricSample;
 namespace chromecast {
 namespace metrics {
 
-class CastStabilityMetricsProvider;
-
 // ExternalMetrics service allows processes outside of the Chromecast browser
 // process to upload metrics via reading/writing to a known shared file.
 class ExternalMetrics {
  public:
-  explicit ExternalMetrics(CastStabilityMetricsProvider* stability_provider,
-                           const std::string& uma_events_file);
+  explicit ExternalMetrics(const std::string& uma_events_file);
 
   ExternalMetrics(const ExternalMetrics&) = delete;
   ExternalMetrics& operator=(const ExternalMetrics&) = delete;
@@ -69,9 +66,6 @@ class ExternalMetrics {
 
   // Schedules a future collection.
   void ScheduleCollection();
-
-  // Reference to stability metrics provider, for reporting external crashes.
-  CastStabilityMetricsProvider* const stability_provider_;
 
   // File used by libmetrics to send metrics to the browser process.
   const std::string uma_events_file_;

@@ -217,10 +217,6 @@ void BrowserTabStripModelDelegate::GroupAdded(
     return;
   }
 
-  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return;
-  }
-
   tab_groups::SavedTabGroupKeyedService* saved_tab_group_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser_->profile());
@@ -349,7 +345,7 @@ void BrowserTabStripModelDelegate::OnGroupsDestruction(
     const std::vector<tab_groups::TabGroupId>& group_ids,
     base::OnceCallback<void()> close_callback,
     bool delete_groups) {
-  if (!delete_groups && tab_groups::IsTabGroupsSaveV2Enabled()) {
+  if (!delete_groups) {
     // Close the groups rather than delete them to retain the saved group.
     for (auto group_id : group_ids) {
       tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(browser_,

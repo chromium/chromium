@@ -194,7 +194,7 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
 const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
-      return feature_engagement::kIPHAutofillPredictionImprovementsFeature;
+      return feature_engagement::kIPHAutofillAiOptInFeature;
   }
   NOTREACHED();
 }
@@ -202,8 +202,7 @@ const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
 ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
     case AutofillClient::IphFeature::kAutofillAi:
-      return autofill::PopupViewViews::
-          kAutofillPredictionImprovementsIphElementId;
+      return autofill::PopupViewViews::kAutofillAiOptInIphElementId;
   }
   NOTREACHED();
 }

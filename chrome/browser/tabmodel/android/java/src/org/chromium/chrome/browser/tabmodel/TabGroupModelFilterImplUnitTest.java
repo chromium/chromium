@@ -2337,27 +2337,6 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
-    public void testTabGroupExistsForRootId() {
-        assertThat(mTab1.getRootId(), equalTo(TAB1_ROOT_ID));
-        assertThat(mTab3.getRootId(), equalTo(TAB2_ROOT_ID));
-        assertThat(mTab6.getRootId(), equalTo(TAB5_ROOT_ID));
-
-        assertFalse(mTabGroupModelFilter.tabGroupExistsForRootId(Tab.INVALID_TAB_ID));
-        // This is somewhat unexpected behavior as the tab group for tab 1 isn't valid.
-        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab1.getRootId()));
-        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab3.getRootId()));
-        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab5.getRootId()));
-
-        mTabGroupModelFilter.removeTab(mTab1);
-        mTabGroupModelFilter.removeTab(mTab3);
-        mTabGroupModelFilter.removeTab(mTab5);
-
-        assertFalse(mTabGroupModelFilter.tabGroupExistsForRootId(mTab1.getRootId()));
-        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab3.getRootId()));
-        assertTrue(mTabGroupModelFilter.tabGroupExistsForRootId(mTab5.getRootId()));
-    }
-
-    @Test
     public void testTabGroupExists() {
         assertThat(mTab1.getTabGroupId(), equalTo(TAB1_TAB_GROUP_ID));
         assertThat(mTab3.getTabGroupId(), equalTo(TAB2_TAB_GROUP_ID));
@@ -2375,17 +2354,6 @@ public class TabGroupModelFilterImplUnitTest {
         assertFalse(mTabGroupModelFilter.tabGroupExists(mTab1.getTabGroupId()));
         assertTrue(mTabGroupModelFilter.tabGroupExists(mTab3.getTabGroupId()));
         assertTrue(mTabGroupModelFilter.tabGroupExists(mTab5.getTabGroupId()));
-    }
-
-    @Test
-    public void testGetAllTabGroupRootIds() {
-        // With the given setup, mTab2 and mTab3 are in a group and mTab5 and mTab6 are in another
-        // group.
-        Set<Integer> rootIds = new ArraySet<>();
-        rootIds.add(mTab2.getRootId());
-        rootIds.add(mTab5.getRootId());
-
-        assertEquals(rootIds, mTabGroupModelFilter.getAllTabGroupRootIds());
     }
 
     @Test

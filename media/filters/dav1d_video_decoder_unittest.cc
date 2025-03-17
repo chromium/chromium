@@ -7,6 +7,8 @@
 #pragma allow_unsafe_libc_calls
 #endif
 
+#include "media/filters/dav1d_video_decoder.h"
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -25,9 +27,9 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/ffmpeg/ffmpeg_common.h"
-#include "media/filters/dav1d_video_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkData.h"
 
 using ::testing::_;
 
@@ -285,7 +287,8 @@ TEST_F(Dav1dVideoDecoderTest, DecodeFrame_AgtmMetadata) {
 
   const auto& frame = output_frames_.front();
   ASSERT_TRUE(frame->hdr_metadata().has_value());
-  EXPECT_TRUE(frame->hdr_metadata()->agtm.has_value());
+  ASSERT_TRUE(frame->hdr_metadata()->agtm.has_value());
+  EXPECT_EQ(frame->hdr_metadata()->agtm->payload->size(), 99u);
 }
 
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify

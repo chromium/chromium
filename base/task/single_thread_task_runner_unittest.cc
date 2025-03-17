@@ -37,7 +37,7 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, DeathOnImplicitOverride) {
       MakeRefCounted<TestSimpleTaskRunner>());
 
   SingleThreadTaskRunner::CurrentDefaultHandle sttcd(task_runner);
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     SingleThreadTaskRunner::CurrentDefaultHandle overriding_sttcd(
         overidding_task_runner);
   });
@@ -256,7 +256,7 @@ TEST(SingleThreadTaskRunnerCurrentDefaultHandleTest, DeathOnSTTCDOverOverride) {
 
   SingleThreadTaskRunner::CurrentHandleOverrideForTesting sttcd_override(
       task_runner);
-  EXPECT_DCHECK_DEATH({
+  EXPECT_CHECK_DEATH({
     SingleThreadTaskRunner::CurrentDefaultHandle overriding_sttrcd(
         overidding_task_runner);
   });

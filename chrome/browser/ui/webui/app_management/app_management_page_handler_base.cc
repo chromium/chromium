@@ -75,7 +75,6 @@ bool ShouldHidePinToShelf(const std::string& app_id) {
   constexpr auto kAppIdsWithHiddenPinToShelf =
       base::MakeFixedFlatSet<std::string_view>({
           app_constants::kChromeAppId,
-          app_constants::kLacrosAppId,
       });
 
   return kAppIdsWithHiddenPinToShelf.contains(app_id);

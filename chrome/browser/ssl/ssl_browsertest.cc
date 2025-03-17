@@ -7486,9 +7486,9 @@ IN_PROC_BROWSER_TEST_F(RecurrentInterstitialBrowserTest,
   nav_observer.Wait();
 }
 
-// Tests that mixed content is tracked by origin, not by URL. This is tested by
-// checking that mixed content flags are set appropriately for about:blank URLs
-// (who inherit the origin of their opener).
+// Tests that mixed content is tracked by origin hostname, not by URL. This is
+// tested by checking that mixed content flags are set appropriately for
+// about:blank URLs (who inherit the origin of their opener).
 //
 // Note: we test that mixed content flags are propagated from an opener page to
 // about:blank, but not the other way around. This is because there is no way
@@ -7535,33 +7535,14 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, ActiveMixedContentTrackedByOrigin) {
                               embedded_test_server()->GetURL("/title1.html"))));
   first_navigation.Wait();
 
-  if (content::IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
-    // Verify that in process models where sites need to be explicitly isolated,
-    // the new tab ends up in the same process as the original one.
-    // As a result of being in the same process, expect the SSL state to
-    // reflect that the process has run insecure content.
-    EXPECT_EQ(tab->GetSiteInstance()->GetProcess(),
-              opened_tab->GetSiteInstance()->GetProcess());
-    ssl_test_util::CheckAuthenticationBrokenState(
-        opened_tab, CertError::NONE, AuthState::RAN_INSECURE_CONTENT);
-  } else {
-    // Verify that tabs are in different processes and that the new tab does
-    // not have insecure status yet.
-    EXPECT_NE(tab->GetSiteInstance()->GetProcess(),
-              opened_tab->GetSiteInstance()->GetProcess());
-    ssl_test_util::CheckUnauthenticatedState(opened_tab, AuthState::NONE);
-  }
+  ssl_test_util::CheckAuthenticationBrokenState(
+      opened_tab, CertError::NONE, AuthState::RAN_INSECURE_CONTENT);
 
   content::TestNavigationObserver about_blank_navigation(opened_tab);
   ASSERT_TRUE(content::ExecJs(tab, "w.location.href = 'about:blank'"));
   about_blank_navigation.Wait();
   ssl_test_util::CheckAuthenticationBrokenState(
       opened_tab, CertError::NONE, AuthState::RAN_INSECURE_CONTENT);
-
-  // Verify the two tabs are now in the same process independent of
-  // process model.
-  EXPECT_EQ(tab->GetSiteInstance()->GetProcess(),
-            opened_tab->GetSiteInstance()->GetProcess());
 }
 
 // Tests that MixedContentShown histogram doesn't get logged when a site with

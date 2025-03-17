@@ -342,12 +342,12 @@
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_border_view.h"
+#include "chrome/browser/glic/browser_ui/glic_border_view.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/views/layout/box_layout_view.h"
 #endif
 
@@ -533,7 +533,6 @@ class ContentsSeparator : public views::View {
   ContentsSeparator() {
     SetBackground(
         views::CreateSolidBackground(kColorToolbarContentAreaSeparator));
-    SetPaintToLayer();
 
     // BrowserViewLayout will respect either the height or width of this,
     // depending on orientation, not simultaneously both.
@@ -5300,14 +5299,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
   if (new_parent != bookmark_bar_view_->parent()) {
     if (new_parent == top_container_) {
       // BookmarkBarView is attached.
-      std::optional<int> separator_index =
-          new_parent->GetIndexOf(contents_separator_);
-      if (separator_index.has_value()) {
-        new_parent->AddChildViewAt(bookmark_bar_view_.get(),
-                                   separator_index.value());
-      } else {
-        new_parent->AddChildViewRaw(bookmark_bar_view_.get());
-      }
+      new_parent->AddChildViewRaw(bookmark_bar_view_.get());
     } else {
       DCHECK(!new_parent);
       // Bookmark bar is being detached from all views because it is hidden.

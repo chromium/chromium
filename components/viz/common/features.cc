@@ -21,6 +21,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/media_buildflags.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -645,14 +646,11 @@ bool ShouldRemoveRedirectionBitmap() {
   // bitmap via a blit swap chain. DWM_SYSTEMBACKDROP_TYPE is only available
   // on Win11 22H2+, therefore limit the bitmap removal to those versions or
   // higher so that an appropriate background replacement is available.
-  // Note: the DISABLE_DIRECT_COMPOSITION command line check is a workaround for
-  // https://crbug.com/40276881. Additionally, Direct Composition is only
-  // blocklisted for Windows 10 so this feature would not be enabled at the same
-  // time.
+  // Note: the disable-direct-composition command line check is a workaround for
+  // https://crbug.com/40276881.
   return base::win::GetVersion() >= base::win::Version::WIN11_22H2 &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             gpu::GpuDriverBugWorkaroundTypeToString(
-                 gpu::DISABLE_DIRECT_COMPOSITION)) &&
+             switches::kDisableDirectComposition) &&
          base::FeatureList::IsEnabled(kRemoveRedirectionBitmap);
 }
 #endif

@@ -2257,7 +2257,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2530166226437958497">Odpravljanje težav</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Prišlo je do napake. Sistema <ph name="DEVICE_OS" /> ni bilo mogoče namestiti.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Če potrebujete dodatno pomoč, obiščite g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Več informacij</translation>
 <translation id="2532144599248877204">Podaljša čas delovanja baterije tako, da drži bateriji pri približno 80 odstotkih. Baterija se popolnoma napolni, preden napravo običajno izklopite iz napajanja.</translation>
 <translation id="2532146950330687938">Pripravljanje naprave …</translation>
 <translation id="2532198298278778531">Upravljanje varnega DNS-ja v nastavitvah sistema ChromeOS Flex</translation>
@@ -2813,7 +2812,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2921081876747860777">Ustvarite geslo za zaščito lokalnih podatkov.</translation>
 <translation id="2923006468155067296">Naprava <ph name="DEVICE_TYPE" /> se bo zdaj zaklenila.
 Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Drugo <ph name="OTHER_TASK_NUM" /> opravilo v isti skupini opravil: <ph name="OTHER_TASKS" />}two{<ph name="TASK_ROW" />. Drugi <ph name="OTHER_TASK_NUM" /> opravili v isti skupini opravil: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Druga <ph name="OTHER_TASK_NUM" /> opravila v isti skupini opravil: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Drugih <ph name="OTHER_TASK_NUM" /> opravil v isti skupini opravil: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Odstrani ta račun</translation>
 <translation id="2923644930701689793">Dostopajte do fotografij iz naprave v telefonu.</translation>
 <translation id="292371311537977079">Chromove nastavitve</translation>
@@ -6921,6 +6919,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5865508026715185451">Aplikacija <ph name="APP_NAME" /> bo kmalu zaustavljena</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> izvajate s posnetka diska. Če ga namestite v računalnik, ga lahko izvajate brez posnetka diska in s tem zagotovite, da bo vedno posodobljen.</translation>
 <translation id="5865733239029070421">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu</translation>
+<translation id="5866363217037791319">Končaj opravilo</translation>
 <translation id="5868434909835797817">Mikrofon je izklopljen v napravi</translation>
 <translation id="5868479397518301468">Časovna omejitev za prijavo je potekla</translation>
 <translation id="5868822853313956582">Upoštevaj barve naprave</translation>
@@ -10653,7 +10652,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8524841856047224176">Osebno prilagodite ozadja kamere za videoklice in drugo</translation>
 <translation id="8525306231823319788">Celozaslonsko</translation>
 <translation id="8525461909394569609">Ta aplikacija vsebuje spletno vsebino od tod:</translation>
-<translation id="8526313996927074827">Vstavite povezave, emodžije in drugo. Prav tako lahko pri pisanju prejmete pomoč Googlove umetne inteligence.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Zvočniki</translation>
 <translation id="8527257351549797148">Vaša organizacija morda zahteva včlanitev, da boste lahko dostopali do aplikacij, razširitev in drugega. To organizaciji tudi omogoča upravljanje stvari, kot so nastavitve varnosti in naprave.</translation>
@@ -11112,6 +11110,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="883924185304953854">Slikovno iskanje</translation>
 <translation id="8841786407272321022">Geslo je shranjeno samo v tej napravi. Če želite shraniti nova gesla v računu Google, posodobite storitve Google Play.</translation>
 <translation id="8841843049738266382">Branje in spreminjanje uporabnikov s seznama dovoljenih</translation>
+<translation id="8841884135319684422">Končaj opravilo</translation>
 <translation id="8842594465773264717">Izbriši ta prstni odtis</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8846132060409673887">Dostop do podatkov o proizvajalcu in modelu računalnika</translation>

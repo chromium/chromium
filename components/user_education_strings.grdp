@@ -7,6 +7,9 @@
       <message name="IDS_CLOSE_PROMO" desc="Accessible name used by a screen reader for the in-product-help bubble close button." is_accessibility_with_no_ui="true">
         Close help bubble
       </message>
+      <message name="IDS_HELP_BUBBLE" desc="Window title shown in Task Manager for some help bubbles" is_accessibility_with_no_ui="true">
+        Help bubble
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button for the user to acknowledge that they understand the message">
           Got It

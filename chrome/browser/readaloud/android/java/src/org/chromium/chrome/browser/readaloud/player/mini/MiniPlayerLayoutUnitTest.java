@@ -39,7 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Unit tests for {@link PlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -326,7 +326,7 @@ public class MiniPlayerLayoutUnitTest {
     public void testDarkModeBackgroundColor() {
         View spyBackdrop = replaceWithSpy(R.id.backdrop);
         mLayout.onFinishInflate();
-        int bg = ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_4);
+        int bg = SemanticColorUtils.getDefaultBgColor(mActivity);
         verify(spyBackdrop).setBackgroundColor(eq(bg));
         verify(mMediator).onBackgroundColorUpdated(eq(bg));
     }

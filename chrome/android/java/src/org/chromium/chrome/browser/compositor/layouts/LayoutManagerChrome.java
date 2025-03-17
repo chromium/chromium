@@ -292,7 +292,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
         boolean animate = !tabRemoved && animationsEnabled();
         if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
                 && showOverview
-                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
+                && getNextLayoutType() != LayoutType.TAB_SWITCHER
+                && !XrUtils.isXrDevice()) {
             showLayout(LayoutType.TAB_SWITCHER, animate);
         }
         super.tabClosed(id, nextId, incognito, tabRemoved);
@@ -300,7 +301,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     public void onTabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout && !incognito) {
+        if (getActiveLayout() == mStaticLayout && !incognito && !XrUtils.isXrDevice()) {
             showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
         }
         super.onTabsAllClosing(incognito);

@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
@@ -1687,11 +1688,45 @@ void inspector_event_dispatch_event::Data(perfetto::TracedValue context,
 
 void inspector_time_stamp_event::Data(perfetto::TracedValue trace_context,
                                       ExecutionContext* context,
-                                      const String& message) {
+                                      const String& message,
+                                      const v8::LocalVector<v8::Value>& args) {
   auto dict = std::move(trace_context).WriteDictionary();
   dict.Add("message", message);
-  if (LocalFrame* frame = FrameForExecutionContext(context))
-    dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  LocalFrame* frame = FrameForExecutionContext(context);
+  if (!frame) {
+    return;
+  }
+
+  auto* window = frame->DomWindow();
+  v8::Isolate* isolate = frame->DomWindow()->GetIsolate();
+  Performance* performance = DOMWindowPerformance::performance(*window);
+  uint64_t sample_trace_id = InspectorTraceEvents::GetNextSampleTraceId();
+  v8::CpuProfiler::CpuProfiler::CollectSample(isolate, sample_trace_id);
+  dict.Add("sampleTraceId", sample_trace_id);
+  dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  static constexpr std::array<const char*, 6> kNames = {
+      "name", "start", "end", "track", "trackGroup", "color"};
+  for (size_t i = 0; i < args.size() && i < std::size(kNames); ++i) {
+    auto name = kNames[i];
+    auto value = args[i];
+    if (value->IsNumber()) {
+      if (i == 1 || i == 2) {
+        // If the second or third parameter is a number, it's
+        // assumed to be a millisecond timestamp obtained with
+        // performance.now(), so we map it into the tracing clock.
+        dict.Add(perfetto::StaticString(name),
+                 performance->GetTimeOriginInternal() +
+                     base::Milliseconds(value.As<v8::Number>()->Value()));
+        continue;
+      }
+      dict.Add(perfetto::StaticString(name), value.As<v8::Number>()->Value());
+    } else if (value->IsString()) {
+      dict.Add(perfetto::StaticString(name),
+               ToCoreString(isolate, value.As<v8::String>()).Utf8());
+    } else {
+      dict.Add(perfetto::StaticString(name), "");
+    }
+  }
 }
 
 void inspector_tracing_session_id_for_worker_event::Data(

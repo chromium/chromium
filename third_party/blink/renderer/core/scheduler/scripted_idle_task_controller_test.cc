@@ -103,10 +103,6 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
                            Thread::IdleTask) override {
     NOTIMPLEMENTED();
   }
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override {
-    NOTIMPLEMENTED();
-  }
   void RemoveCancelledIdleTasks() override {
     std::erase_if(idle_tasks_, [](const Thread::IdleTask& task) {
       return task.IsCancelled();
@@ -130,6 +126,13 @@ class MockScriptedIdleTaskControllerScheduler final : public ThreadScheduler {
     auto idle_task = std::move(idle_tasks_.front());
     idle_tasks_.pop_front();
     return idle_task;
+  }
+
+  void RunNonIdleTasks() {
+    auto tasks = task_runner_->TakePendingTasksForTesting();
+    for (auto& task : tasks) {
+      std::move(task.first).Run();
+    }
   }
 
   scoped_refptr<TestTaskRunner> TaskRunner() { return task_runner_; }
@@ -269,6 +272,8 @@ class ScriptedIdleTaskControllerTest : public testing::Test {
     scheduler_.reset();
   }
 
+  void DeleteExecutionContext() { execution_context_.reset(); }
+
   ScriptedIdleTaskController* GetController() {
     return &ScriptedIdleTaskController::From(
         execution_context_->GetExecutionContext());
@@ -396,6 +401,48 @@ TEST_F(ScriptedIdleTaskControllerTest,
   // Ask the scheduler to remove cancelled idle tasks. This should remove all
   // idle tasks.
   scheduler_->RemoveCancelledIdleTasks();
+  EXPECT_EQ(0u, scheduler_->GetNumIdleTasks());
+}
+
+TEST_F(ScriptedIdleTaskControllerTest,
+       SchedulerTasksCleanedUpdOnTimeoutTaskRun) {
+  base::test::ScopedFeatureList feature_list(kRemoveCancelledScriptedIdleTasks);
+
+  InitializeScheduler(ShouldYield(false));
+
+  // Register many idle tasks with a timeout.
+  for (int i = 0; i < 1001; ++i) {
+    Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
+    IdleRequestOptions* options = IdleRequestOptions::Create();
+    options->setTimeout(1);
+    GetController()->RegisterCallback(idle_task, options);
+    EXPECT_EQ(i + 1, scheduler_->GetNumIdleTasks());
+  }
+
+  // Run the timeout tasks.
+  scheduler_->RunNonIdleTasks();
+
+  // All idle tasks should have been removed.
+  EXPECT_EQ(0u, scheduler_->GetNumIdleTasks());
+}
+
+TEST_F(ScriptedIdleTaskControllerTest,
+       SchedulerTasksCleanedUpOnExecutionContextDeleted) {
+  base::test::ScopedFeatureList feature_list(kRemoveCancelledScriptedIdleTasks);
+
+  InitializeScheduler(ShouldYield(false));
+
+  // Register many idle tasks with a timeout.
+  for (int i = 0; i < 1001; ++i) {
+    Persistent<MockIdleTask> idle_task(MakeGarbageCollected<MockIdleTask>());
+    GetController()->RegisterCallback(idle_task, IdleRequestOptions::Create());
+    EXPECT_EQ(i + 1, scheduler_->GetNumIdleTasks());
+  }
+
+  // Delete the execution context.
+  DeleteExecutionContext();
+
+  // All idle tasks should have been removed.
   EXPECT_EQ(0u, scheduler_->GetNumIdleTasks());
 }
 

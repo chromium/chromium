@@ -7,5 +7,5 @@ per-file *_lacros*=jamescook@chromium.org
 per-file *x11*=file://ui/ozone/platform/x11/OWNERS
 per-file *linux*=thomasanderson@chromium.org
 per-file system_web_app_non_client_frame_view_browsertest.cc=file://ash/webui/PLATFORM_OWNERS
-per-file top_controls_slide_controller*=afakhry@chromium.org
+per-file top_controls_slide_controller*=oshima@chromium.org
 per-file picture_in_picture_browser_frame_view*=file://chrome/browser/picture_in_picture/OWNERS

@@ -247,6 +247,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsFontsBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_LOCAL_NETWORK_ACCESS,
+      id: Id.LOCAL_NETWORK_ACCESS,
+      label: 'siteSettingsLocalNetworkAccess',
+      icon: 'settings:devices',
+      enabledLabel: 'siteSettingsLocalNetworkAccessAsk',
+      disabledLabel: 'siteSettingsLocalNetworkAccessBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_MICROPHONE,
       id: Id.MIC,
       label: 'siteSettingsMic',
@@ -524,6 +534,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.SMART_CARD_READERS,
               // </if>
               Id.WEB_APP_INSTALLATION,
+              Id.LOCAL_NETWORK_ACCESS,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,

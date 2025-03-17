@@ -1475,10 +1475,9 @@ class Port(object):
         self.set_option('manifest_update', False)
 
     @memoized
-    def wpt_manifest(self,
-                     path: str,
-                     exclude_jsshell: bool = True) -> WPTManifest:
+    def wpt_manifest(self, path: str) -> WPTManifest:
         assert path in self.WPT_DIRS
+        exclude_jsshell = not self.get_option('use_upstream_wpt')
         # Convert '/' to the platform-specific separator.
         path = self._filesystem.normpath(path)
         self._filesystem.maybe_make_directory(
@@ -1498,8 +1497,8 @@ class Port(object):
         contents changed from the last update. The previous hash is cached on
         the filesystem.
         """
-        manifest_path = self._path_finder.path_from_web_tests(
-            path, MANIFEST_NAME)
+        manifest_path = self._filesystem.join(self.web_tests_dir(), path,
+                                              MANIFEST_NAME)
         if not self._filesystem.exists(manifest_path):
             return True
         manifest_update: Optional[bool] = self.get_option('manifest_update')

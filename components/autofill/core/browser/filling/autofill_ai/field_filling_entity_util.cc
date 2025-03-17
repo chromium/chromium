@@ -260,31 +260,15 @@ std::optional<std::u16string> GetValueForDateSelectControl(
   return std::nullopt;
 }
 
-std::u16string GetValueForSelectControl(const std::u16string& value,
-                                        const AutofillField& field,
-                                        AddressNormalizer* address_normalizer) {
-  FieldType type = field.Type().GetStorableType();
-  switch (type) {
-    case ADDRESS_HOME_COUNTRY:
-      return GetCountrySelectControlValue(value, field.options(),
-                                          /*failure_to_fill=*/nullptr);
-    case ADDRESS_HOME_STATE:
-      // TODO(crbug.com/389625753): Support countries other than the US.
-      return GetStateSelectControlValue(value, field.options(),
-                                        /*country_code=*/"US",
-                                        address_normalizer,
-                                        /*failure_to_fill=*/nullptr);
-    default:
-      return GetSelectControlValue(value, field.options(),
-                                   /*failure_to_fill=*/nullptr)
-          .value_or(u"");
-  }
-}
-
 std::u16string GetValueForInput(const AttributeInstance& attribute,
                                 const AutofillField& field,
                                 const std::string& app_locale) {
   FieldType type = field.Type().GetStorableType();
+  // TODO(crbug.com/389625753): Investigate whether only passing the
+  // field type is the right choice here. This would for example
+  // fail the fill a PASSPORT_NUMBER field that gets a
+  // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
+  // prediction logic.
   std::u16string value =
       attribute.GetInfo(type, app_locale, field.format_string());
   switch (field.Type().GetStorableType()) {
@@ -295,6 +279,37 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
                                   /*failure_to_fill=*/nullptr);
     default:
       return value;
+  }
+}
+
+std::u16string GetValueForSelectControl(const AttributeInstance& attribute,
+                                        const AutofillField& field,
+                                        const std::string& app_locale,
+                                        AddressNormalizer* address_normalizer) {
+  FieldType type = field.Type().GetStorableType();
+  if (IsDateFieldType(type)) {
+    return GetValueForDateSelectControl(attribute, field, app_locale)
+        .value_or(u"");
+  }
+  std::u16string fill_value = GetValueForInput(attribute, field, app_locale);
+  if (fill_value.empty()) {
+    return u"";
+  }
+
+  switch (type) {
+    case ADDRESS_HOME_COUNTRY:
+      return GetCountrySelectControlValue(fill_value, field.options(),
+                                          /*failure_to_fill=*/nullptr);
+    case ADDRESS_HOME_STATE:
+      // TODO(crbug.com/389625753): Support countries other than the US.
+      return GetStateSelectControlValue(fill_value, field.options(),
+                                        /*country_code=*/"US",
+                                        address_normalizer,
+                                        /*failure_to_fill=*/nullptr);
+    default:
+      return GetSelectControlValue(fill_value, field.options(),
+                                   /*failure_to_fill=*/nullptr)
+          .value_or(u"");
   }
 }
 
@@ -354,29 +369,16 @@ std::u16string GetFillValueForEntity(
   if (!attribute) {
     return u"";
   }
+
+  std::u16string fill_value =
+      field.IsSelectElement()
+          ? GetValueForSelectControl(*attribute, field, app_locale,
+                                     address_normalizer)
+          : GetValueForInput(*attribute, field, app_locale);
+
   const bool should_obfuscate =
       action_persistence != mojom::ActionPersistence::kFill &&
       !field.IsSelectElement() && attribute->type().is_obfuscated();
-
-  std::u16string fill_value = [&] {
-    FieldType type = field.Type().GetStorableType();
-    if (IsDateFieldType(type) && field.IsSelectElement()) {
-      return GetValueForDateSelectControl(*attribute, field, app_locale)
-          .value_or(u"");
-    }
-
-    // TODO(crbug.com/389625753): Investigate whether only passing the
-    // field type is the right choice here. This would for example
-    // fail the fill a PASSPORT_NUMBER field that gets a
-    // PHONE_HOME_WHOLE_NUMBER classification from regular autofill
-    // prediction logic.
-    std::u16string fill_value = GetValueForInput(*attribute, field, app_locale);
-    if (!fill_value.empty() && field.IsSelectElement()) {
-      fill_value =
-          GetValueForSelectControl(fill_value, field, address_normalizer);
-    }
-    return fill_value;
-  }();
 
   // TODO(crbug.com/394011769): Investigate whether the obfuscation should
   // should include some of the attribute's value, e.g. the last x characters.

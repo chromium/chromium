@@ -24,8 +24,8 @@ class BrowserCredentialManagerFactory
   BrowserCredentialManagerFactory& operator=(
       const BrowserCredentialManagerFactory&) = delete;
 
-  std::unique_ptr<CredentialManagerInterface> CreateCredentialManager()
-      override;
+  std::unique_ptr<credential_management::CredentialManagerInterface>
+  CreateCredentialManager() override;
 
  private:
   raw_ptr<PasswordManagerClient> client_;

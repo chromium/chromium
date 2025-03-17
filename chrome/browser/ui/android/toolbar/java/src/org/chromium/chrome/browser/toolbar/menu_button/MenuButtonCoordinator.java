@@ -12,6 +12,7 @@ import android.graphics.Canvas;
 import android.view.View;
 import android.view.View.OnKeyListener;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 
@@ -257,5 +258,14 @@ public class MenuButtonCoordinator {
     /** Returns whether the menu button is currently showing an update badge. */
     public boolean isShowingUpdateBadge() {
         return mPropertyModel.get(MenuButtonProperties.SHOW_UPDATE_BADGE).mShowUpdateBadge;
+    }
+
+    /**
+     * Updates the menu button background.
+     *
+     * @param backgroundResId The button background resource.
+     */
+    public void updateButtonBackground(@DrawableRes int backgroundResId) {
+        mMenuButton.getImageButton().setBackgroundResource(backgroundResId);
     }
 }

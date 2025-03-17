@@ -5,16 +5,17 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MULTIPLE_REQUEST_PAYMENTS_NETWORK_INTERFACE_BASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MULTIPLE_REQUEST_PAYMENTS_NETWORK_INTERFACE_BASE_H_
 
+#include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/payments_access_token_fetcher.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin {
-class AccessTokenFetcher;
-struct AccessTokenInfo;
 class IdentityManager;
 }  // namespace signin
 
@@ -24,11 +25,10 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace autofill {
+namespace autofill::payments {
 
-class AccountInfoGetter;
-
-namespace payments {
+using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
+using RequestId = base::StrongAlias<struct RequestIdTag, std::string>;
 
 class PaymentsRequest;
 
@@ -36,98 +36,129 @@ class PaymentsRequest;
 // responses and failure conditions. Multiple requests may be active at a time.
 class MultipleRequestPaymentsNetworkInterfaceBase {
  public:
+  // Class that is responsible for managing one request inside the
+  // `MultipleRequestPaymentsNetworkInterfaceBase`.
+  class RequestOperation {
+   public:
+    RequestOperation(std::unique_ptr<PaymentsRequest> request,
+                     MultipleRequestPaymentsNetworkInterfaceBase&
+                         payments_network_interface);
+    RequestOperation(const RequestOperation&) = delete;
+    RequestOperation& operator=(const RequestOperation&) = delete;
+    ~RequestOperation();
+
+    const RequestId& StartOperation();
+
+   private:
+    friend class MultipleRequestsTest;
+
+    // Function invoked when access token is fetched.
+    void AccessTokenFetchFinished(
+        const absl::variant<GoogleServiceAuthError, std::string>& result);
+
+    // Helper function to complete the request with the access token and start
+    // the request.
+    void SetAccessTokenAndStartRequest(const std::string& access_token);
+
+    // Helper function to create `resource_request_` to be used in tne
+    // SetAccessTokenAndStartRequest().
+    [[nodiscard]] std::unique_ptr<network::ResourceRequest>
+    InitializeResourceRequest();
+
+    // Callback from `simple_url_loader_`.
+    void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+    void OnSimpleLoaderCompleteInternal(int response_code,
+                                        const std::string& data);
+
+    // Invoked when the operation is finished with the `result`. Will notify
+    // the `payments_network_interface_`.
+    void ReportOperationResult(
+        PaymentsAutofillClient::PaymentsRpcResult result);
+
+    // The request in this operation.
+    std::unique_ptr<PaymentsRequest> request_;
+
+    // The PaymentsNetworkInterface that owns and handles `this` operation.
+    const raw_ref<MultipleRequestPaymentsNetworkInterfaceBase>
+        payments_network_interface_;
+
+    // The unique id for `this`. Generated in the constructor. It is shared
+    // with the class which initiates the request.
+    RequestId request_operation_id_;
+
+    // The access token fetcher to fetch latest access token.
+    PaymentsAccessTokenFetcher token_fetcher_;
+
+    // The URL loader being used to issue the `request`.
+    std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+
+    // True if `request_` has already retried due to an HTTP 401 response from
+    // the server.
+    bool has_retried_authorization_ = false;
+
+    base::WeakPtrFactory<
+        MultipleRequestPaymentsNetworkInterfaceBase::RequestOperation>
+        weak_ptr_factory_{this};
+  };
+
+  // `url_loader_factory` is reference counted so it has no lifetime or
+  // ownership requirements. `identity_manager`  must outlive `this`.
+  // `is_off_the_record` denotes incognito mode.
+  MultipleRequestPaymentsNetworkInterfaceBase(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager& identity_manager,
+      bool is_off_the_record = false);
+
   MultipleRequestPaymentsNetworkInterfaceBase(
       const MultipleRequestPaymentsNetworkInterfaceBase&) = delete;
   MultipleRequestPaymentsNetworkInterfaceBase& operator=(
       const MultipleRequestPaymentsNetworkInterfaceBase&) = delete;
 
-  // Cancels and clears the current `request_`.
-  void CancelRequest();
-
-  // Exposed for testing.
-  void set_url_loader_factory_for_testing(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-  void set_access_token_for_testing(std::string access_token);
-
- protected:
-  // `url_loader_factory` is reference counted so it has no lifetime or
-  // ownership requirements. `identity_manager` and `account_info_getter` must
-  // all outlive `this`. Either delegate might be nullptr. `is_off_the_record`
-  // denotes incognito mode.
-  MultipleRequestPaymentsNetworkInterfaceBase(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      signin::IdentityManager* identity_manager,
-      AccountInfoGetter* account_info_getter,
-      bool is_off_the_record = false);
-
   virtual ~MultipleRequestPaymentsNetworkInterfaceBase();
 
-  // Initiates a Payments request using the state in `request`, ensuring that an
-  // OAuth token is available first. Takes ownership of `request`.
-  void IssueRequest(std::unique_ptr<PaymentsRequest> request);
+  // TODO: crbug.com/362785295 - Maybe add logic to prefetch the access token if
+  // necessary.
 
-  // Creates `resource_request_` to be used later in
-  // SetOAuth2TokenAndStartRequest().
-  void InitializeResourceRequest();
+  // Initiates a RequestOperation using the info in `request` and start the
+  // operation, ensuring that an access token is available before sending the
+  // request. Takes ownership of `request`.
+  RequestId IssueRequest(std::unique_ptr<PaymentsRequest> request);
 
-  // Callback from `simple_url_loader_`.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
-  void OnSimpleLoaderCompleteInternal(int response_code,
-                                      const std::string& data);
+  // Cancels all current requests and resets the
+  // MultipleRequestPaymentsNetworkInterfaceBase.
+  void CancelRequests();
 
-  // Callback that handles a completed access token request.
-  void AccessTokenFetchFinished(GoogleServiceAuthError error,
-                                signin::AccessTokenInfo access_token_info);
+  // Cancels only the request with `id`.
+  void CancelRequestWithId(const RequestId& id);
 
-  // Handles a completed access token request in the case of failure.
-  void AccessTokenError(const GoogleServiceAuthError& error);
+  bool is_off_the_record() const { return is_off_the_record_; }
 
-  // Initiates a new OAuth2 token request.
-  void StartTokenFetch(bool invalidate_old);
+  signin::IdentityManager& identity_manager() const {
+    return identity_manager_.get();
+  }
 
-  // Creates `simple_url_loader_`, adds the token to it, and starts the request.
-  void SetOAuth2TokenAndStartRequest();
+  network::SharedURLLoaderFactory* url_loader_factory() const {
+    return url_loader_factory_.get();
+  }
+
+ private:
+  friend class MultipleRequestsTest;
+
+  // Function invoked when a request (operation) is finished.
+  void OnRequestFinished(RequestId& id);
 
   // The URL loader factory for the request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Provided in constructor; not owned by PaymentsNetworkInterface.
-  const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  // Provided in constructor; not owned by PaymentsNetworkInterface.
-  const raw_ptr<AccountInfoGetter> account_info_getter_;
-
-  // The current request.
-  std::unique_ptr<PaymentsRequest> request_;
-
-  // The resource request being used to issue the current request.
-  std::unique_ptr<network::ResourceRequest> resource_request_;
-
-  // The URL loader being used to issue the current request.
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-
-  // The OAuth2 token fetcher for any account.
-  std::unique_ptr<signin::AccessTokenFetcher> token_fetcher_;
-
-  // The OAuth2 token, or empty if not fetched.
-  std::string access_token_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
 
   // Denotes incognito mode.
-  // TODO(crbug.com/40888896): Remove this variable, as it should not be the
-  // PaymentsNetworkInterface's responsibility to check if the user is off the
-  // record. The sole responsibility of the PaymentsNetworkInterface is to send
-  // requests to the Google Payments server.
   bool is_off_the_record_;
 
-  // True if `request_` has already retried due to a 401 response from the
-  // server.
-  bool has_retried_authorization_ = false;
-
-  base::WeakPtrFactory<MultipleRequestPaymentsNetworkInterfaceBase>
-      weak_ptr_factory_{this};
+  // The map holding reference to all owned, active request operations.
+  std::unordered_map<RequestId, std::unique_ptr<RequestOperation>> operations_;
 };
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MULTIPLE_REQUEST_PAYMENTS_NETWORK_INTERFACE_BASE_H_

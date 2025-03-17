@@ -571,6 +571,7 @@ component("views") {
     "//skia",
     "//third_party/icu",
     "//ui/accessibility",
+    "//ui/accessibility/platform:platform",
     "//ui/actions",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom",

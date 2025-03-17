@@ -157,6 +157,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // std::nullopt.
     std::optional<features::TaskDeferralPolicy>
         discrete_input_task_deferral_policy;
+
+    bool input_scenario_priority_boost_enabled;
   };
 
   static const char* RAILModeToString(RAILMode rail_mode);
@@ -184,7 +186,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void ResumeTimersForAndroidWebView() override;
 #endif
   void SetRendererProcessType(WebRendererProcessType type) override;
-  void EnableInputScenarioPriorityBoost() override;
   void OnUrgentMessageReceived() override;
   void OnUrgentMessageProcessed() override;
 
@@ -213,8 +214,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // ThreadScheduler implementation:
   bool ShouldYieldForHighPriorityWork() override;
   void PostIdleTask(const base::Location&, Thread::IdleTask) override;
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override;
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta delay,
                            Thread::IdleTask) override;
@@ -774,6 +773,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // Task queues that have been detached from their scheduler and may have
     // pending tasks that need to run.
     WTF::HashSet<scoped_refptr<MainThreadTaskQueue>> detached_task_queues;
+
+    // Temporarily boosts the main thread priority. Only used if
+    // kInputScenarioPriorityBoost is enabled.
+    std::optional<base::ScopedBoostPriority> main_thread_priority_boost;
   };
 
   struct AnyThread {
@@ -851,9 +854,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   PollableThreadSafeFlag policy_may_need_update_;
   WeakPersistent<AgentGroupScheduler> current_agent_group_scheduler_;
-
-  bool input_scenario_priority_boost_enabled_ = false;
-  std::optional<base::ScopedBoostPriority> main_thread_priority_boost_;
 
   // This is accessed from both the main and IO (IPC) threads. It's incremented
   // when an urgent IPC task is posted and decremented when that IPC task runs

@@ -30,6 +30,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -1002,11 +1003,6 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 #pragma mark Multiwindow
 
 - (void)testHistorySyncInMultiwindow {
-  // TODO(crbug.com/40198758): Test is flaky on iPad devices.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"This test is flaky on iPad devices.");
-  }
-
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
@@ -1130,8 +1126,11 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
 
 - (void)openHistoryPanelInWindowWithNumber:(int)windowNumber {
   [ChromeEarlGreyUI openToolsMenuInWindowWithNumber:windowNumber];
-  [ChromeEarlGreyUI
-      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
+  // TODO(crbug.com/249582361): Switch back to using `tapToolsMenuButton:`
+  // helper if/when the issue checking visibility of SwiftUI views in
+  // multiwindow is fixed.
+  chrome_test_util::TapAtOffsetOf(kToolsMenuHistoryId, windowNumber,
+                                  CGVectorMake(0.5, 0.5));
 }
 
 @end

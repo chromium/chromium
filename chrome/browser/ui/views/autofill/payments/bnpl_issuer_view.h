@@ -13,6 +13,8 @@
 
 namespace autofill::payments {
 
+class SelectBnplIssuerDialog;
+
 // View containing the list of available BNPL Issuers from which the user may
 // select.
 class BnplIssuerView : public views::BoxLayoutView {
@@ -20,7 +22,8 @@ class BnplIssuerView : public views::BoxLayoutView {
 
  public:
   explicit BnplIssuerView(
-      base::WeakPtr<SelectBnplIssuerDialogController> controller);
+      base::WeakPtr<SelectBnplIssuerDialogController> controller,
+      SelectBnplIssuerDialog* issuer_dialog);
   BnplIssuerView(const BnplIssuerView&) = delete;
   BnplIssuerView& operator=(const BnplIssuerView&) = delete;
   ~BnplIssuerView() override;
@@ -30,6 +33,7 @@ class BnplIssuerView : public views::BoxLayoutView {
  private:
   void IssuerSelected(BnplIssuer issuer, const ui::Event& event);
 
+  const raw_ptr<SelectBnplIssuerDialog> issuer_dialog_;
   base::WeakPtr<SelectBnplIssuerDialogController> controller_;
 };
 

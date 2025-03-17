@@ -2241,7 +2241,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2530166226437958497">Resolució de problemes</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />S'ha produït un error i no s'ha pogut instal·lar <ph name="DEVICE_OS" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Per obtenir més ajuda, ves a g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Obtén més informació</translation>
 <translation id="2532144599248877204">Mantén la bateria al voltant del 80% per augmentar-ne la durada. La bateria es carregarà completament abans del moment en què l'acostumes a desconnectar de l'alimentació.</translation>
 <translation id="2532146950330687938">S'està preparant el dispositiu...</translation>
 <translation id="2532198298278778531">Gestiona el DNS segur a la configuració de ChromeOS Flex</translation>
@@ -2797,7 +2796,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2921081876747860777">Crea una contrasenya per protegir les teves dades locals.</translation>
 <translation id="2923006468155067296">El teu dispositiu <ph name="DEVICE_TYPE" /> es bloquejarà ara.
 <ph name="DOMAIN" /> requereix que mantinguis la targeta intel·ligent inserida.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Hi ha <ph name="OTHER_TASK_NUM" /> tasques més al mateix grup de tasques: <ph name="OTHER_TASKS" />.}}</translation>
 <translation id="2923234477033317484">Suprimeix aquest compte</translation>
 <translation id="2923644930701689793">Accedeix al carret del teu telèfon</translation>
 <translation id="292371311537977079">Configuració de Chrome</translation>
@@ -6898,6 +6896,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> aviat es posarà en pausa</translation>
 <translation id="586567932979200359">Esteu executant <ph name="PRODUCT_NAME" /> des de la imatge de disc. Si instal·leu l'aplicació a l'equip, podreu executar-la sense la imatge de disc i es mantindrà actualitzada.</translation>
 <translation id="5865733239029070421">Envia automàticament a Google estadístiques d'ús i informes d'error</translation>
+<translation id="5866363217037791319">Finalitza la tasca</translation>
 <translation id="5868434909835797817">El micròfon està desactivat al dispositiu</translation>
 <translation id="5868479397518301468">S'ha esgotat el temps d'espera per iniciar la sessió</translation>
 <translation id="5868822853313956582">Segueix els colors del dispositiu</translation>
@@ -10624,7 +10623,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8524841856047224176">Personalitza els fons de la càmera per a videotrucades i més</translation>
 <translation id="8525306231823319788">Pantalla completa</translation>
 <translation id="8525461909394569609">Aquesta aplicació inclou contingut web de</translation>
-<translation id="8526313996927074827">Insereix enllaços, emojis i més. També pots obtenir ajuda per escriure amb la IA de Google.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Altaveus</translation>
 <translation id="8527257351549797148">És possible que la teva organització requereixi que t'inscriguis per poder accedir a aplicacions, extensions i més. Això també permet a la teva organització gestionar aspectes com la configuració del dispositiu i la seguretat.</translation>
@@ -11080,6 +11078,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="883924185304953854">Cerca per imatge</translation>
 <translation id="8841786407272321022">La contrasenya només s'ha desat en aquest dispositiu. Per desar contrasenyes noves al teu Compte de Google, actualitza Serveis de Google Play.</translation>
 <translation id="8841843049738266382">Llegir i canviar els usuaris de la llista d'accés permès</translation>
+<translation id="8841884135319684422">Finalitza la tasca</translation>
 <translation id="8842594465773264717">Suprimeix aquesta empremta digital</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8846132060409673887">Consultar el fabricant i el model d'aquest ordinador</translation>

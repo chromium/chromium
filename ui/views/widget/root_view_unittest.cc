@@ -1015,9 +1015,9 @@ TEST_F(RootViewTest, MouseEventDispatchedToClosestEnabledView) {
   v2->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
   v3->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
 
-  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
-  v2->set_handle_mode(EventCountView::CONSUME_EVENTS);
-  v3->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
+  v2->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
+  v3->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
 
   ui::MouseEvent pressed_event(ui::EventType::kMousePressed, gfx::Point(5, 5),
                                gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
@@ -1066,19 +1066,19 @@ TEST_F(RootViewTest, DoubleClickHandledIffFirstClickHandled) {
                                 gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
 
   // First click handled, second click unhandled.
-  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
   pressed_event.SetClickCount(1);
   released_event.SetClickCount(1);
   EXPECT_TRUE(root_view->OnMousePressed(pressed_event));
   root_view->OnMouseReleased(released_event);
-  v1->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kPropagateEvents);
   pressed_event.SetClickCount(2);
   released_event.SetClickCount(2);
   EXPECT_TRUE(root_view->OnMousePressed(pressed_event));
   root_view->OnMouseReleased(released_event);
 
   // Both clicks unhandled.
-  v1->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kPropagateEvents);
   pressed_event.SetClickCount(1);
   released_event.SetClickCount(1);
   EXPECT_FALSE(root_view->OnMousePressed(pressed_event));

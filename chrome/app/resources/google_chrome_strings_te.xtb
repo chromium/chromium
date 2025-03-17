@@ -37,6 +37,7 @@
 <translation id="1497802159252041924">ఇన్‌స్టాలేషన్ ఎర్రర్: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">మీ కొత్త Chrome ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="1547295885616600893">ChromeOS అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
+<translation id="1547469039832541117">హైలైట్ అయిన టాస్క్‌ను ముగిస్తుంది.</translation>
 <translation id="1553358976309200471">Chromeని అప్‌డేట్ చేయండి</translation>
 <translation id="1587223624401073077">Google Chrome మీ కెమెరాను ఉపయోగిస్తోంది.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> హానికరం, కావున Chrome దాన్ని బ్లాక్ చేసింది.</translation>
@@ -171,6 +172,7 @@
 <translation id="3140883423282498090">మీ మార్పులు మీరు Google Chromeను మళ్లీ ప్రారంభించినప్పుడు ప్రభావాన్ని చూపుతాయి.</translation>
 <translation id="3149510190863420837">Chrome యాప్‌లు</translation>
 <translation id="3161522574479303604">అన్ని భాషలు</translation>
+<translation id="319199214552513804">మీ కంప్యూటర్‌లన్నింటిలో ఈ ఎక్స్‌టెన్షన్‌తో పాటు మరిన్నింటిని పొందడానికి Chromeకు సైన్ ఇన్ చేయండి</translation>
 <translation id="3196187562065225381">ఫైల్ ప్రమాదకరంగా ఉన్నందున Chrome ఈ డౌన్‌లోడ్‌ను బ్లాక్ చేసింది</translation>
 <translation id="3222857603094643834">Google Lensతో ఈ పేజీలో ఏదైనా సెర్చ్ చేయండి</translation>
 <translation id="3226612997184048185">మీ బుక్‌మార్క్‌లను Google ఖాతాలో కూడా సేవ్ చేస్తే, మీరు Chromeలో ప్రోడక్ట్ ధరలను ట్రాక్ చేయవచ్చు, ధర తగ్గినప్పుడు తెలియజేయబడుతుంది</translation>

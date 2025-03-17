@@ -85,6 +85,60 @@ TEST(HasQwacQcStatements, Empty) {
   EXPECT_FALSE(HasQwacQcStatements({}));
 }
 
+TEST(ParseQcTypeInfo, InvalidSequence) {
+  EXPECT_EQ(std::nullopt, ParseQcTypeInfo(bssl::der::Input("invalid")));
+}
+
+TEST(ParseQcTypeInfo, EmptySequence) {
+  constexpr uint8_t kEmptySequence[] = {0x30, 0x0};
+  // An empty QCTypeInfo sequence doesn't really make sense, but the spec does
+  // not specify that the sequence must be non-empty, so we allow it.
+  auto r = ParseQcTypeInfo(bssl::der::Input(kEmptySequence));
+  ASSERT_TRUE(r.has_value());
+  EXPECT_THAT(r.value(), testing::IsEmpty());
+}
+
+TEST(ParseQcTypeInfo, SingleValue) {
+  // SEQUENCE { OBJECT_IDENTIFIER { 1.2.3 } }
+  constexpr uint8_t kQcTypeInfo[] = {0x30, 0x04, 0x06, 0x02, 0x2a, 0x03};
+  constexpr uint8_t kOid[] = {0x2a, 0x03};
+  auto r = ParseQcTypeInfo(bssl::der::Input(kQcTypeInfo));
+  ASSERT_TRUE(r.has_value());
+  EXPECT_THAT(r.value(), testing::ElementsAre(bssl::der::Input(kOid)));
+}
+
+TEST(ParseQcTypeInfo, MultipleValues) {
+  // SEQUENCE {
+  //   OBJECT_IDENTIFIER { 1.2.3 }
+  //   OBJECT_IDENTIFIER { 2.1.6 }
+  //   OBJECT_IDENTIFIER { 1.2.4 }
+  // }
+  constexpr uint8_t kQcTypeInfo[] = {0x30, 0x0c, 0x06, 0x02, 0x2a, 0x03, 0x06,
+                                     0x02, 0x51, 0x06, 0x06, 0x02, 0x2a, 0x04};
+  constexpr uint8_t kOid1[] = {0x2a, 0x03};
+  constexpr uint8_t kOid2[] = {0x51, 0x06};
+  constexpr uint8_t kOid3[] = {0x2a, 0x04};
+  auto r = ParseQcTypeInfo(bssl::der::Input(kQcTypeInfo));
+  ASSERT_TRUE(r.has_value());
+  EXPECT_THAT(r.value(), testing::ElementsAre(bssl::der::Input(kOid1),
+                                              bssl::der::Input(kOid2),
+                                              bssl::der::Input(kOid3)));
+}
+
+TEST(ParseQcTypeInfo, InvalidTrailingData) {
+  // SEQUENCE { OBJECT_IDENTIFIER { 1.2.3 } } SEQUENCE { }
+  constexpr uint8_t kInvalid[] = {0x30, 0x04, 0x06, 0x02,
+                                  0x2a, 0x03, 0x30, 0x0};
+  EXPECT_EQ(std::nullopt, ParseQcTypeInfo(bssl::der::Input(kInvalid)));
+}
+
+TEST(ParseQcTypeInfo, InvalidStatementOid) {
+  // SEQUENCE { SEQUENCE { SEQUENCE { OBJECT_IDENTIFIER { 1.2.4 } } } }
+  constexpr uint8_t kInvalid[] = {0x30, 0x08, 0x30, 0x06, 0x30,
+                                  0x04, 0x06, 0x02, 0x2a, 0x04};
+  EXPECT_EQ(std::nullopt, ParseQcTypeInfo(bssl::der::Input(kInvalid)));
+}
+
 // A valid QcStatement which has a id-etsi-qcs-QcCompliance statement and a
 // id-etsi-qcs-QcType statement which contains id-etsi-qct-web. Is a
 // QwacQcStatement.

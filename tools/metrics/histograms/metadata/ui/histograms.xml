@@ -70,6 +70,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".ReadingList"/>
   <variant name=".ShoppingInsightsSidePanel"/>
   <variant name=".TabSearch"/>
+  <variant name=".UserEducation"/>
   <variant name=".UserNotesSidePanel"/>
 </variants>
 
@@ -97,6 +98,12 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/others/histograms.xml:WebUIHostnameForCodeCache) -->
+
+<variants name="WebUITabStripTabCount">
+  <variant name=".01_05" summary="1 to 5 tabs"/>
+  <variant name=".06_20" summary="6 to 20 tabs"/>
+  <variant name=".21_" summary="21 or more tabs"/>
+</variants>
 
 <histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
     expires_after="2025-07-13">
@@ -163,7 +170,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="ContextMenu.SelectedOptionDesktop"
+<histogram name="ContextMenu.SelectedOptionDesktop{ContextMenuTypeDesktop}"
     enum="ContextMenuOptionDesktop" expires_after="2025-07-13">
   <owner>avi@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -172,8 +179,22 @@ chromium-metrics-reviews@google.com.
     logged on desktop only; check out ContextMenu.SelectedOptionIOS for iOS, and
     ContextMenu.SelectedOptionAndroid for Android. Note that if a menu is
     invoked on mixed content, only one of the submetrics receives the log; read
-    the code to determine which one.
+    the code to determine which one. {ContextMenuTypeDesktop}
   </summary>
+  <token key="ContextMenuTypeDesktop">
+    <variant name=".Image"
+        summary="The context menu was shown for a (non-link) image"/>
+    <variant name=".ImageLink"
+        summary="The context menu was shown for an image which is also a link"/>
+    <variant name=".MisspelledWord"
+        summary="The context menu was shown for a misspelt word"/>
+    <variant name=".Other"
+        summary="The context menu was shown in a context other than those
+                 explicitly enumerated"/>
+    <variant name=".SelectedText"
+        summary="The context menu was shown for a text selection"/>
+    <variant name=".Video" summary="The context menu was shown for a video"/>
+  </token>
 </histogram>
 
 <histogram name="ContextMenu.Shown{Type}" enum="BooleanPresent"
@@ -721,21 +742,23 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="WebUITabStrip.TabCreation" units="ms"
+<histogram name="WebUITabStrip.TabCreation{WebUITabStripTabCount}" units="ms"
     expires_after="2025-11-12">
   <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
     WebUI Tabstrip: Time needed to create all of the tab elements at launch.
+    {WebUITabStripTabCount}
   </summary>
 </histogram>
 
-<histogram name="WebUITabStrip.TabDataReceived" units="ms"
-    expires_after="2025-11-12">
+<histogram name="WebUITabStrip.TabDataReceived{WebUITabStripTabCount}"
+    units="ms" expires_after="2025-11-12">
   <owner>robliao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
     WebUI Tabstrip: Time from requesting the tab data to receiving the data.
+    {WebUITabStripTabCount}
   </summary>
 </histogram>
 

@@ -67,8 +67,8 @@ base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
   NOTREACHED();
 }
 
-base::FilePath GetInkTestDataFilePath(std::string_view filename) {
-  return base::FilePath(FILE_PATH_LITERAL("ink")).AppendASCII(filename);
+base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename) {
+  return base::FilePath(FILE_PATH_LITERAL("ink")).Append(filename);
 }
 
 }  // namespace chrome_pdf

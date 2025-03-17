@@ -760,7 +760,7 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=4"
+          "--jobs=2"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

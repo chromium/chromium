@@ -1,8 +1,9 @@
-afakhry@chromium.org
 hidehiko@chromium.org
 jamescook@chromium.org
 oshima@chromium.org
 xiyuan@chromium.org
+
+afakhry@chromium.org  #{LAST_RESORT_SUGGESTION}
 
 per-file cast_config_controller*=file://chrome/browser/media/router/OWNERS
 per-file chrome_keyboard_ui*=yhanada@chromium.org

@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_
 #define CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_
 
-#include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_ordering_storage.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
+#include "chrome/browser/bookmarks/bookmark_parent_folder.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -22,68 +23,14 @@
 class PermanentFolderOrderingTracker;
 class Browser;
 
+namespace base {
+class FilePath;
+}  // namespace base
+
 namespace bookmarks {
 class BookmarkModel;
 class ManagedBookmarkService;
 }  // namespace bookmarks
-
-// Holds a `PermanentFolderType` or a non-permanent node folder `BookmarkNode`.
-// `PermanentFolderType/ const BookmarkNode*` should be passed by value.
-struct BookmarkParentFolder {
-  // Represents a combined view of account and local bookmark permanent nodes.
-  // Note: Managed node is an exception as it has only local data.
-  enum class PermanentFolderType {
-    kBookmarkBarNode,
-    kOtherNode,
-    kMobileNode,
-    kManagedNode
-  };
-
-  static BookmarkParentFolder BookmarkBarFolder();
-  static BookmarkParentFolder OtherFolder();
-  static BookmarkParentFolder MobileFolder();
-  static BookmarkParentFolder ManagedFolder();
-
-  // `node` must be not null, not root node and it must be a folder.
-  static BookmarkParentFolder FromFolderNode(
-      const bookmarks::BookmarkNode* node);
-
-  ~BookmarkParentFolder();
-
-  BookmarkParentFolder(const BookmarkParentFolder& other);
-  BookmarkParentFolder& operator=(const BookmarkParentFolder& other);
-
-  friend bool operator==(const BookmarkParentFolder&,
-                         const BookmarkParentFolder&) = default;
-
-  friend auto operator<=>(const BookmarkParentFolder&,
-                          const BookmarkParentFolder&) = default;
-
-  // Returns `true` if `this` hols a non-permanent folder.
-  bool HoldsNonPermanentFolder() const;
-
-  // Returns null if `this` is not a permanent folder.
-  std::optional<PermanentFolderType> as_permanent_folder() const;
-
-  // Returns null if `this` is a permanent folder.
-  const bookmarks::BookmarkNode* as_non_permanent_folder() const;
-
-  // Returns true if `node` is a direct child of `this`.
-  // `node` must not be null.
-  bool HasDirectChildNode(const bookmarks::BookmarkNode* node) const;
-
-  // Returns true if this == ancestor, or one of this folder's parents is
-  // ancestor.
-  bool HasAncestor(const BookmarkParentFolder& ancestor) const;
-
- private:
-  explicit BookmarkParentFolder(
-      std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
-          parent);
-
-  std::variant<PermanentFolderType, raw_ptr<const bookmarks::BookmarkNode>>
-      bookmark_;
-};
 
 // Used in UI surfaces that combines local and account bookmarks in a merged
 // view.
@@ -103,6 +50,11 @@ class BookmarkMergedSurfaceService : public KeyedService,
   BookmarkMergedSurfaceService(const BookmarkMergedSurfaceService&) = delete;
   BookmarkMergedSurfaceService& operator=(const BookmarkMergedSurfaceService&) =
       delete;
+
+  // Must be called.
+  // Triggers the loading of bookmarks ordering, which is an asynchronous
+  // operation with most heavy-lifting taking place in a background sequence.
+  void Load(const base::FilePath& profile_path);
 
   // Returns underlying nodes in `folder`. This is either:
   // - a single bookmark folder node or
@@ -180,6 +132,12 @@ class BookmarkMergedSurfaceService : public KeyedService,
 
   bookmarks::BookmarkModel* bookmark_model() { return model_; }
 
+  // Must be called for trackers to be initialized.
+  // `BookmarkModel` also must complete loading for this to complete loading.
+  // Resets any ongoing load operation.
+  void LoadForTesting(
+      BookmarkMergedSurfaceOrderingStorage::Loader::LoadResult result);
+
   using ShowMoveStorageDialogCallback =
       base::RepeatingCallback<void(Browser* browser,
                                    const bookmarks::BookmarkNode* node,
@@ -217,6 +175,12 @@ class BookmarkMergedSurfaceService : public KeyedService,
                                    const base::Location& location) override;
 
  private:
+  class BookmarkModelLoadedObserver;
+
+  void OnLoadOrderingComplete(
+      BookmarkMergedSurfaceOrderingStorage::Loader::LoadResult result);
+  void NotifyLoaded();
+
   const bookmarks::BookmarkNode* managed_permanent_node() const;
 
   const PermanentFolderOrderingTracker& GetPermanentFolderOrderingTracker(
@@ -244,6 +208,14 @@ class BookmarkMergedSurfaceService : public KeyedService,
 
   // Used in `GetChildren()` to return empty when managed node is null.
   const bookmarks::BookmarkNode dummy_empty_node_;
+
+  bool load_ordering_completed_ = false;
+  // Not null during load.
+  std::unique_ptr<BookmarkMergedSurfaceOrderingStorage::Loader> loader_;
+  // Needed while loading ordering from disk has not completed to catch if
+  // `ids_reassigned`. The full observer must be added after permanent folder
+  // trackers are initialized.
+  std::unique_ptr<BookmarkModelLoadedObserver> model_loaded_observer_;
 
   ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing_;
 

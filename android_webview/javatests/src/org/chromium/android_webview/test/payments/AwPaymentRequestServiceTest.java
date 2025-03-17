@@ -70,6 +70,8 @@ public class AwPaymentRequestServiceTest extends AwParameterizedTest {
 
         mMerchantServer = TestWebServer.start();
         mPageContents = new PaymentRequestTestWebPageContents();
+
+        mAwContents.getSettings().setPaymentRequestEnabled(true);
     }
 
     @After

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -20,6 +20,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.content_public.browser.LifecycleState;
@@ -65,18 +66,21 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
     private View.OnClickListener mOnClickListener;
 
     public PrivacySandboxDialogNoticeROW(
-            Context context,
+            Activity activity,
             PrivacySandboxBridge privacySandboxBridge,
             @SurfaceType int surfaceType,
             Profile profile,
             ActivityWindowAndroid activityWindowAndroid) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        super(
+                activity,
+                R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mPrivacySandboxBridge = privacySandboxBridge;
         mSurfaceType = surfaceType;
         mProfile = profile;
         mActivityWindowAndroid = activityWindowAndroid;
         mContentView =
-                LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice_row, null);
+                LayoutInflater.from(activity).inflate(R.layout.privacy_sandbox_notice_row, null);
         setContentView(mContentView);
         mOnClickListener = getOnClickListener();
 
@@ -94,7 +98,7 @@ public class PrivacySandboxDialogNoticeROW extends ChromeDialog
         mDropdownElement.setOnClickListener(mOnClickListener);
         mDropdownContainer = mContentView.findViewById(R.id.dropdown_container);
         mExpandArrowView = mContentView.findViewById(R.id.expand_arrow);
-        mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(context));
+        mExpandArrowView.setImageDrawable(PrivacySandboxDialogUtils.createExpandDrawable(activity));
         mExpandArrowView.setChecked(isDropdownExpanded());
 
         mNoticeViewContainer = mContentView.findViewById(R.id.privacy_sandbox_notice_row_view);

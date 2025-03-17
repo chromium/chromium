@@ -229,6 +229,11 @@ bool CSSPrimitiveValue::IsComputationallyIndependent() const {
   return To<CSSMathFunctionValue>(this)->IsComputationallyIndependent();
 }
 
+bool CSSPrimitiveValue::IsElementDependent() const {
+  return IsMathFunctionValue() &&
+         To<CSSMathFunctionValue>(this)->IsElementDependent();
+}
+
 bool CSSPrimitiveValue::HasContainerRelativeUnits() const {
   CSSPrimitiveValue::LengthTypeFlags units;
   AccumulateLengthUnitTypes(units);

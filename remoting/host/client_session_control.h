@@ -30,7 +30,9 @@ class ClientSessionControl {
 
   // Disconnects the client session, tears down transport resources and stops
   // scheduler components.
-  virtual void DisconnectSession(protocol::ErrorCode error) = 0;
+  virtual void DisconnectSession(ErrorCode error,
+                                 std::string_view error_details,
+                                 const base::Location& error_location) = 0;
 
   // Called when local mouse or touch movement is detected.
   virtual void OnLocalPointerMoved(const webrtc::DesktopVector& position,

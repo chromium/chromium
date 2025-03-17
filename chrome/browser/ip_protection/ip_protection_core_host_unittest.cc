@@ -679,7 +679,7 @@ TEST_F(IpProtectionCoreHostTest, NoCapabilityButDogfooder) {
 // TryGetAuthTokens() fails because IP Protection is disabled by user settings.
 TEST_F(IpProtectionCoreHostTest, TryGetAuthTokens_IpProtectionDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionUx);
 
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
 
@@ -1005,7 +1005,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyConfigFailure) {
 
 TEST_F(IpProtectionCoreHostTest, GetProxyConfig_IpProtectionDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
+  scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionUx);
 
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
 

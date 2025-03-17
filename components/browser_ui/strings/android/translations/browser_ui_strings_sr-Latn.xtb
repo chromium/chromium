@@ -45,6 +45,7 @@
 <translation id="1652197001188145583">Kada je uključeno, sajtovi mogu da traže da koriste NFC uređaje. Kada je isključeno, sajtovi ne mogu da koriste NFC uređaje.</translation>
 <translation id="1660204651932907780">Dozvoli sajtovima da puštaju zvuk (preporučeno)</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci o sajtovima se koriste da biste bili zapamćeni, na primer, radi prijavljivanja ili personalizovanja oglasa. Da biste upravljali kolačićima za sve sajtove, pogledajte <ph name="BEGIN_LINK" />Podešavanja<ph name="END_LINK" />.</translation>
+<translation id="1679305402657584804">Sajtovi mogu da traže da koriste NFC uređaje</translation>
 <translation id="1686785653877010442">Sajtovi obično šalju obaveštenja da bi vas obavestili o udarnim vestima ili porukama ćaskanja.</translation>
 <translation id="169515064810179024">Ne dozvoljavaj sajtovima da pristupaju senzorima za pokret</translation>
 <translation id="1703666494654169921">Ne dozvoljavaj sajtovima da koriste uređaje i podatke virtuelne realnosti</translation>
@@ -84,6 +85,7 @@
 <translation id="2185965788978862351">Ovim brišete <ph name="DATASIZE" /> podataka i kolačića koje čuvaju sajtovi ili aplikacije na početnom ekranu.</translation>
 <translation id="2194856509914051091">Šta treba imati u vidu</translation>
 <translation id="2215727959747642672">Menjanje datoteka</translation>
+<translation id="2218389616572918761">Sajtovi mogu da traže da koriste mikrofon</translation>
 <translation id="2228071138934252756">Da biste dozvolili da <ph name="APP_NAME" /> pristupa kameri, uključite kameru i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2238944249568001759">Predložene pretrage na osnovu vaše poslednje kartice</translation>
@@ -132,8 +134,10 @@
 <translation id="2726059656860238749">Pokrenite Chrome sa fokusom na omniboksu, čime se smanjuje vreme pokretanja na uređajima nižih performansi.</translation>
 <translation id="2750481671343847896">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet.</translation>
 <translation id="2787357173144933081">Pokreni omniboks</translation>
+<translation id="2789132527330338807">Sajtovi mogu da traže da prave 3D mapu okruženja ili da prate položaj kamere</translation>
 <translation id="2790501146643349491">Kada je uključeno, nedavno zatvoreni sajtovi mogu da završe slanje i prijem podataka. Kada je isključeno, nedavno zatvoreni sajtovi ne mogu da završe slanje niti prijem podataka.</translation>
 <translation id="2795716239552913152">Sajtovi obično koriste vašu lokaciju za relevantne funkcije ili informacije, poput lokalnih vesti ili prodavnica u blizini</translation>
+<translation id="2802908157808345702">Ne dozvoljavaj sajtovima da šalju iskačuće prozore i koriste preusmeravanja</translation>
 <translation id="2814830417943086299">Chrome sada prikazuje nedavne kartice na listi aplikacija i u rezultatima pretrage uređaja. To možete da isključite u svakom trenutku u Chrome podešavanjima.</translation>
 <translation id="2822354292072154809">Želite li stvarno da resetujete sve dozvole za sajt za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtevaj prikaz za mobilne uređaje</translation>
@@ -274,6 +278,7 @@
 <translation id="4598549027014564149">Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na svim sajtovima, čak i na srodnim sajtovima. Aktivnosti pregledanja se ne koriste za stvari kao što je personalizovanje oglasa. Funkcije na nekim sajtovima mogu da ne rade.</translation>
 <translation id="461356340001513807">Omogućava vam da se prijavljujete na veb-sajtove pomoću naloga koji imate u usluzi za identitet</translation>
 <translation id="4619615317237390068">Kartice sa drugih uređaja</translation>
+<translation id="4635969503923889910">Ne dozvoljavaj sajtovima da koriste NFC uređaje</translation>
 <translation id="4644713492825682049">Izbriši i resetuj</translation>
 <translation id="4645575059429386691">Ovim upravlja tvoj roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
@@ -372,6 +377,7 @@
 <translation id="5877248419911025165">Skupi sve zahteve</translation>
 <translation id="5884085660368669834">Podešavanje sajta</translation>
 <translation id="5887687176710214216">Poslednja poseta: juče</translation>
+<translation id="5908617755156109052">Ne dozvoljavaj sajtovima da prave 3D mapu okruženja ni da prate položaj kamere</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5922853908706496913">Deli se ekran</translation>
 <translation id="5922967540311291836">Blokirajte kolačiće trećih strana:</translation>
@@ -582,6 +588,7 @@
 <translation id="8676374126336081632">Obriši unos</translation>
 <translation id="8681886425883659911">Oglasi su blokirani na sajtovima za koje je poznato da prikazuju oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
 <translation id="868929229000858085">Pretražite kontakte</translation>
+<translation id="8707904142362025782">Sajt može da traži da koristi kameru</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="8715862698998036666">Prevucite od vrha i prevucite od leve ili desne ivice da biste izašli iz režima celog ekrana.</translation>
 <translation id="8719283222052720129">Uključite dozvolu za aplikaciju <ph name="APP_NAME" /> u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>

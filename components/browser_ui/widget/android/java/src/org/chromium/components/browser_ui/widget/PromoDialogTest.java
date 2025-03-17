@@ -54,7 +54,10 @@ public class PromoDialogTest {
 
         private final DialogParams mDialogParams;
 
-        PromoDialogWrapper(final Activity activity, final DialogParams dialogParams)
+        PromoDialogWrapper(
+                final Activity activity,
+                final DialogParams dialogParams,
+                boolean shouldPadForWindowInsets)
                 throws Exception {
             mDialogParams = dialogParams;
             dialog =
@@ -63,7 +66,7 @@ public class PromoDialogTest {
                                 @Override
                                 public PromoDialog call() {
                                     PromoDialog dialog =
-                                            new PromoDialog(activity) {
+                                            new PromoDialog(activity, shouldPadForWindowInsets) {
                                                 @Override
                                                 public DialogParams getDialogParams() {
                                                     return mDialogParams;
@@ -145,7 +148,9 @@ public class PromoDialogTest {
 
     /** Confirm that PromoDialogs are constructed with all the elements expected. */
     private void checkDialogControlVisibility(final DialogParams dialogParams) throws Exception {
-        PromoDialogWrapper wrapper = new PromoDialogWrapper(sActivity, dialogParams);
+        PromoDialogWrapper wrapper =
+                new PromoDialogWrapper(
+                        sActivity, dialogParams, /* shouldPadForWindowInsets= */ true);
         PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
 
         View illustration = promoDialogLayout.findViewById(R.id.illustration);
@@ -176,47 +181,13 @@ public class PromoDialogTest {
     @Test
     @SmallTest
     public void testBasic_CharSequenceSummary() throws Exception {
-        final String subheaderCharSequenceTestValue = "Promo dialog CharSequence sub-header";
+        doTestBasic_CharSequenceSummary(/* shouldPadForWindowInsets= */ true);
+    }
 
-        // Create basic dialog with subheaderCharSequence.
-        // Check that subHeader is visible.
-        DialogParams dialogParams = new DialogParams();
-        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
-        dialogParams.subheaderCharSequence = subheaderCharSequenceTestValue;
-        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
-
-        PromoDialogWrapper wrapper = new PromoDialogWrapper(sActivity, dialogParams);
-        PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
-        TextView subheader = (TextView) promoDialogLayout.findViewById(R.id.subheader);
-        checkControlVisibility(subheader, true);
-
-        // Create basic dialog with both subheaderCharSequence and subheaderStringResource.
-        // Check that subheaderCharSequence takes precedence.
-        dialogParams = new DialogParams();
-        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
-        dialogParams.subheaderCharSequence = subheaderCharSequenceTestValue;
-        dialogParams.subheaderStringResource = R.string.promo_dialog_test_subheader;
-        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
-
-        wrapper = new PromoDialogWrapper(sActivity, dialogParams);
-        promoDialogLayout = wrapper.dialogLayout;
-        subheader = promoDialogLayout.findViewById(R.id.subheader);
-        Assert.assertEquals(subheaderCharSequenceTestValue, subheader.getText());
-
-        // Without setting subHeaderIsLink the sub-header should have the default movement method.
-        Assert.assertFalse(subheader.getMovementMethod() instanceof LinkMovementMethod);
-
-        // Create dialog with sub-header as link
-        dialogParams = new DialogParams();
-        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
-        dialogParams.subheaderCharSequence = subheaderCharSequenceTestValue;
-        dialogParams.subheaderIsLink = true;
-        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
-
-        wrapper = new PromoDialogWrapper(sActivity, dialogParams);
-        promoDialogLayout = wrapper.dialogLayout;
-        subheader = promoDialogLayout.findViewById(R.id.subheader);
-        Assert.assertTrue(subheader.getMovementMethod() instanceof LinkMovementMethod);
+    @Test
+    @SmallTest
+    public void testBasic_CharSequenceSummary_ShouldNotPadForWindowInsets() throws Exception {
+        doTestBasic_CharSequenceSummary(/* shouldPadForWindowInsets= */ false);
     }
 
     @Test
@@ -230,7 +201,9 @@ public class PromoDialogTest {
         dialogParams.secondaryButtonStringResource = R.string.promo_dialog_test_secondary_button;
         dialogParams.footerStringResource = R.string.promo_dialog_test_footer;
 
-        PromoDialogWrapper wrapper = new PromoDialogWrapper(sActivity, dialogParams);
+        PromoDialogWrapper wrapper =
+                new PromoDialogWrapper(
+                        sActivity, dialogParams, /* shouldPadForWindowInsets= */ true);
         final PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
         LinearLayout flippableLayout =
                 (LinearLayout) promoDialogLayout.findViewById(R.id.full_promo_content);
@@ -262,7 +235,9 @@ public class PromoDialogTest {
         dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
         dialogParams.secondaryButtonStringResource = R.string.promo_dialog_test_secondary_button;
 
-        PromoDialogWrapper wrapper = new PromoDialogWrapper(sActivity, dialogParams);
+        PromoDialogWrapper wrapper =
+                new PromoDialogWrapper(
+                        sActivity, dialogParams, /* shouldPadForWindowInsets= */ true);
         final PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
 
         // Nothing should have been clicked yet.
@@ -289,20 +264,14 @@ public class PromoDialogTest {
     @Test
     @SmallTest
     public void testBasic_HeaderBehavior_WithIllustration() throws Exception {
-        // With an illustration, the header View is part of the scrollable content.
-        DialogParams dialogParams = new DialogParams();
-        dialogParams.drawableResource = R.drawable.promo_dialog_test_drawable;
-        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
-        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
+        doTestBasicHeaderBehavior_WithIllustration(/* shouldPadForWindowInsets= */ true);
+    }
 
-        PromoDialogWrapper wrapper = new PromoDialogWrapper(sActivity, dialogParams);
-        PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
-        ViewGroup scrollableLayout =
-                (ViewGroup) promoDialogLayout.findViewById(R.id.scrollable_promo_content);
-
-        View header = promoDialogLayout.findViewById(R.id.header);
-        Assert.assertEquals(scrollableLayout.getChildAt(0), header);
-        assertHasStartAndEndPadding(header, false);
+    @Test
+    @SmallTest
+    public void testBasic_HeaderBehavior_WithIllustration_ShouldNotPadForWindowInsets()
+            throws Exception {
+        doTestBasicHeaderBehavior_WithIllustration(/* shouldPadForWindowInsets= */ false);
     }
 
     @Test
@@ -314,7 +283,9 @@ public class PromoDialogTest {
         dialogParams.headerStringResource = R.string.promo_dialog_test_header;
         dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
 
-        PromoDialogWrapper wrapper = new PromoDialogWrapper(sActivity, dialogParams);
+        PromoDialogWrapper wrapper =
+                new PromoDialogWrapper(
+                        sActivity, dialogParams, /* shouldPadForWindowInsets= */ true);
         PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
         ViewGroup scrollableLayout =
                 (ViewGroup) promoDialogLayout.findViewById(R.id.scrollable_promo_content);
@@ -327,13 +298,91 @@ public class PromoDialogTest {
     @Test
     @SmallTest
     public void testBasic_HeaderBehavior_NoIllustration() throws Exception {
+        doTestBasic_HeaderBehaviour_NoIllustration(/* shouldPadForWindowInsets= */ true);
+    }
+
+    @Test
+    @SmallTest
+    public void testBasic_HeaderBehavior_NoIllustration_ShouldNotPadForWindowInsets()
+            throws Exception {
+        doTestBasic_HeaderBehaviour_NoIllustration(/* shouldPadForWindowInsets= */ false);
+    }
+
+    private void doTestBasic_CharSequenceSummary(boolean shouldPadForWindowInsets)
+            throws Exception {
+        final String subheaderCharSequenceTestValue = "Promo dialog CharSequence sub-header";
+
+        // Create basic dialog with subheaderCharSequence.
+        // Check that subHeader is visible.
+        DialogParams dialogParams = new DialogParams();
+        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
+        dialogParams.subheaderCharSequence = subheaderCharSequenceTestValue;
+        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
+
+        PromoDialogWrapper wrapper =
+                new PromoDialogWrapper(sActivity, dialogParams, shouldPadForWindowInsets);
+        PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
+        TextView subheader = (TextView) promoDialogLayout.findViewById(R.id.subheader);
+        checkControlVisibility(subheader, true);
+
+        // Create basic dialog with both subheaderCharSequence and subheaderStringResource.
+        // Check that subheaderCharSequence takes precedence.
+        dialogParams = new DialogParams();
+        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
+        dialogParams.subheaderCharSequence = subheaderCharSequenceTestValue;
+        dialogParams.subheaderStringResource = R.string.promo_dialog_test_subheader;
+        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
+
+        wrapper = new PromoDialogWrapper(sActivity, dialogParams, shouldPadForWindowInsets);
+        promoDialogLayout = wrapper.dialogLayout;
+        subheader = promoDialogLayout.findViewById(R.id.subheader);
+        Assert.assertEquals(subheaderCharSequenceTestValue, subheader.getText());
+
+        // Without setting subHeaderIsLink the sub-header should have the default movement method.
+        Assert.assertFalse(subheader.getMovementMethod() instanceof LinkMovementMethod);
+
+        // Create dialog with sub-header as link
+        dialogParams = new DialogParams();
+        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
+        dialogParams.subheaderCharSequence = subheaderCharSequenceTestValue;
+        dialogParams.subheaderIsLink = true;
+        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
+
+        wrapper = new PromoDialogWrapper(sActivity, dialogParams, shouldPadForWindowInsets);
+        promoDialogLayout = wrapper.dialogLayout;
+        subheader = promoDialogLayout.findViewById(R.id.subheader);
+        Assert.assertTrue(subheader.getMovementMethod() instanceof LinkMovementMethod);
+    }
+
+    private void doTestBasicHeaderBehavior_WithIllustration(boolean shouldPadForWindowInsets)
+            throws Exception {
+        // With an illustration, the header View is part of the scrollable content.
+        DialogParams dialogParams = new DialogParams();
+        dialogParams.drawableResource = R.drawable.promo_dialog_test_drawable;
+        dialogParams.headerStringResource = R.string.promo_dialog_test_header;
+        dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
+
+        PromoDialogWrapper wrapper =
+                new PromoDialogWrapper(sActivity, dialogParams, shouldPadForWindowInsets);
+        PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
+        ViewGroup scrollableLayout =
+                (ViewGroup) promoDialogLayout.findViewById(R.id.scrollable_promo_content);
+
+        View header = promoDialogLayout.findViewById(R.id.header);
+        Assert.assertEquals(scrollableLayout.getChildAt(0), header);
+        assertHasStartAndEndPadding(header, false);
+    }
+
+    private void doTestBasic_HeaderBehaviour_NoIllustration(boolean shouldPadForWindowInsets)
+            throws Exception {
         // Without an illustration, the header View becomes locked to the top of the layout if
         // there is enough height.
         DialogParams dialogParams = new DialogParams();
         dialogParams.headerStringResource = R.string.promo_dialog_test_header;
         dialogParams.primaryButtonStringResource = R.string.promo_dialog_test_primary_button;
 
-        PromoDialogWrapper wrapper = new PromoDialogWrapper(sActivity, dialogParams);
+        PromoDialogWrapper wrapper =
+                new PromoDialogWrapper(sActivity, dialogParams, shouldPadForWindowInsets);
         PromoDialogLayout promoDialogLayout = wrapper.dialogLayout;
 
         // Add a dummy control view to ensure the scrolling container has some content.

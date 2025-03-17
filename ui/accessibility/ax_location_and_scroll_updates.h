@@ -14,15 +14,14 @@ namespace ui {
 struct AX_BASE_EXPORT AXLocationChange {
  public:
   AXLocationChange() = default;
-  AXLocationChange(int id, AXRelativeBounds& bounds);
+  AXLocationChange(int id, AXRelativeBounds bounds)
+      : id(id), new_location(std::move(bounds)) {}
 
   AXLocationChange(const AXLocationChange& other);
   AXLocationChange& operator=(const AXLocationChange& other);
 
-  AXLocationChange(AXLocationChange&& other);
-  AXLocationChange& operator=(AXLocationChange&& other);
-
-  ~AXLocationChange();
+  AXLocationChange(AXLocationChange&& other) noexcept = default;
+  AXLocationChange& operator=(AXLocationChange&& other) noexcept = default;
 
   int id;
   AXRelativeBounds new_location;

@@ -1,3 +1,5 @@
+// META: script=resources/utils.js
+
 promise_test(async () => {
   assert_true(!!ai);
   assert_true(!!ai.rewriter);
@@ -114,3 +116,9 @@ promise_test(async (t) => {
   rewriter.destroy();
   assert_throws_dom('InvalidStateError', () => rewriter.rewriteStreaming('hello'));
 }, 'AIRewriter.rewriteStreaming() fails after destroyed');
+
+promise_test(async () => {
+  const rewriter = await ai.rewriter.create();
+  const result = await rewriter.measureInputUsage(kTestPrompt);
+  assert_greater_than(result, 0);
+}, 'AIRewriter.measureInputUsage() returns non-empty result');

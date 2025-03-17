@@ -88,6 +88,7 @@ class PLATFORM_EXPORT PendingLayer {
   // Returns whether the merge is successful.
   bool Merge(const PendingLayer& guest,
              LCDTextPreference lcd_text_preference,
+             float device_pixel_ratio,
              IsCompositedScrollFunction);
 
   // Returns true if `guest` that could be upcasted with decomposited blend
@@ -187,6 +188,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   bool CanMerge(const PendingLayer& guest,
                 LCDTextPreference lcd_text_preference,
+                float device_pixel_ratio,
                 IsCompositedScrollFunction,
                 gfx::RectF& merged_bounds,
                 PropertyTreeState& merged_state,

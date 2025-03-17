@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom-blink.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache_base.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_lifecycle.h"
 #include "third_party/blink/renderer/modules/accessibility/blink_ax_tree_source.h"
@@ -277,8 +279,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   void TextChanged(const LayoutObject*) override;
   void TextChangedWithCleanLayout(Node* optional_node, AXObject*);
 
-  // Called when fragments in the LayoutBlockFlow changed.
-  void ClearBlockFlowCachedData(const LayoutBlockFlow* block_flow) override;
+  // Called when fragments in the LayoutBlockFlow associated with
+  // `object`changed.
+  void ClearBlockFlowCachedData(const LayoutObject* object) override;
 
   void DocumentTitleChanged() override;
 
@@ -385,8 +388,12 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   AXObject* GetOrCreate(const Node*, AXObject* parent) override;
   AXObject* GetOrCreate(Node*, AXObject* parent);
   AXObject* GetOrCreate(AbstractInlineTextBox*, AXObject* parent);
+  AXObject* GetOrCreate(AXBlockFlowIterator::FragmentIndex index,
+                        AXObject* parent);
 
   AXObject* Get(AbstractInlineTextBox*) const;
+  AXObject* Get(const LayoutObject* object,
+                AXBlockFlowIterator::FragmentIndex index) const;
 
   // Get an AXObject* backed by the passed-in DOM node.
   AXObject* Get(const Node*) const override;
@@ -834,6 +841,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   AXObject* CreateFromRenderer(LayoutObject*);
   AXObject* CreateFromNode(Node*);
   AXObject* CreateFromInlineTextBox(AbstractInlineTextBox*);
+  AXObject* CreateFromBlockFlowIterator(
+      AXBlockFlowIterator::FragmentIndex index);
 
   // Removes AXObject backed by passed-in object, if there is one.
   // It will also notify the parent that its children have changed, so that the
@@ -841,6 +850,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // |notify_parent| is passed in as false.
   void Remove(LayoutObject*, bool notify_parent);
   void Remove(AbstractInlineTextBox*, bool notify_parent);
+  void Remove(const LayoutObject* object,
+              AXBlockFlowIterator::FragmentIndex index,
+              bool notify_parent);
 
   // Helper to remove the object from the cache.
   // Most callers should be using Remove(AXObject) instead.
@@ -947,6 +959,37 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   HeapHashMap<Member<const LayoutObject>, AXID> layout_object_mapping_;
   HeapHashMap<Member<AbstractInlineTextBox>, AXID>
       inline_text_box_object_mapping_;
+
+  // A LayoutObject may be connected to one or more AXInlineTextBoxes.
+  struct AXInlineTextBoxFragmentMapping {
+    // The index of the first AXInlineTextBox associated with a LayoutObject.
+    AXBlockFlowIterator::FragmentIndex starting_index;
+    // A compact representation of the AXIds of the AXInlineTextBoxes of a
+    // LayoutObject. Because fragment indexes are sequential,
+    // normally one per object, this Vector stores them as follows:
+    // ids[fragment_index - starting_index] = <the AXId>.
+    //
+    // Example: If starting_index is 10, and fragment indexes 10, 11, and 12
+    // have AXIds -100, -101 and -102 respectively, then:
+    //   ids[0] (10 - 10) = -100
+    //   ids[1] (11 - 10) = -101
+    //   ids[2] (12 - 10) = -102
+    //
+    // Significant gaps in fragment indexes would reduce the efficiency of this
+    // approach, however gaps are expected to be rare since the fragments are
+    // associated with the same text layout object.
+    Vector<AXID> ids;
+    // Number of AXInlineTextBoxes that have AXIds set. Note that this can be
+    // different from `ids.size()` as the vector may contain gaps if the
+    // fragment indices are not consecutive.  Gaps may be introduced during
+    // the course of layout updates, particularly as AXInlineTextBoxes are
+    // removed. When size is reduced to zero, the entry can be removed from the
+    // map for inline text boxes.
+    wtf_size_t size;
+  };
+  HeapHashMap<Member<const LayoutObject>, AXInlineTextBoxFragmentMapping>
+      layout_object_to_inline_text_boxes_;
+
 #if AX_FAIL_FAST_BUILD()
   size_t included_node_count_ = 0;
   size_t plugin_included_node_count_ = 0;

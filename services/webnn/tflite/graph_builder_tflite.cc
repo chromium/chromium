@@ -570,8 +570,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*gemm_a=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
        /*gemm_c=*/{DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(2)},
-       /*gru_input=*/DataTypeConstraint::kFloat16To32,
-       /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
+       /*gru_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*gru_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        // Polyfilled with ADD and MUL.
        /*hard_sigmoid_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
@@ -591,8 +597,14 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(8)},
        // Linear is emulated by mul and add.
        /*linear_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(6)},
-       /*lstm_input=*/DataTypeConstraint::kFloat16To32,
-       /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
+       /*lstm_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*lstm_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/batch_matmul.h
        /*matmul_input=*/{kFloat16To32AndInt8, SupportedRanks::UpTo(5)},
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/internal/reference/pad.h
@@ -3332,8 +3344,11 @@ GraphBuilderTflite::GruCellOperation::~GruCellOperation() = default;
 
 auto GraphBuilderTflite::SerializeGruCell(const mojom::GruCell& gru_cell)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.gru_cell_input.Has(
-      GetOperand(gru_cell.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.gru_cell_input.SupportsAll(
+      {GetOperand(gru_cell.input_operand_id).descriptor,
+       GetOperand(gru_cell.weight_operand_id).descriptor,
+       GetOperand(gru_cell.recurrent_weight_operand_id).descriptor,
+       GetOperand(gru_cell.hidden_state_operand_id).descriptor}));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(gru_cell.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& weight_tensor_info,
@@ -3345,12 +3360,16 @@ auto GraphBuilderTflite::SerializeGruCell(const mojom::GruCell& gru_cell)
                    SerializeInputTensorInfo(gru_cell.hidden_state_operand_id));
   std::optional<int32_t> bias_tensor_index;
   if (gru_cell.bias_operand_id) {
+    CHECK(context_properties_.data_type_limits.gru_cell_bias.Supports(
+        GetOperand(gru_cell.bias_operand_id.value()).descriptor));
     ASSIGN_OR_RETURN(const TensorInfo& bias_tensor_info,
                      SerializeInputTensorInfo(*gru_cell.bias_operand_id));
     bias_tensor_index = bias_tensor_info.index;
   }
   std::optional<int32_t> recurrent_bias_tensor_index;
   if (gru_cell.recurrent_bias_operand_id) {
+    CHECK(context_properties_.data_type_limits.gru_cell_bias.Supports(
+        GetOperand(gru_cell.recurrent_bias_operand_id.value()).descriptor));
     ASSIGN_OR_RETURN(
         const TensorInfo& recurrent_bias_tensor_info,
         SerializeInputTensorInfo(*gru_cell.recurrent_bias_operand_id));
@@ -3359,7 +3378,6 @@ auto GraphBuilderTflite::SerializeGruCell(const mojom::GruCell& gru_cell)
   ASSIGN_OR_RETURN(const TensorInfo& output_tensor_info,
                    SerializeOutputTensorInfo(gru_cell.output_operand_id));
 
-  CHECK_EQ(input_tensor_info.dimensions.size(), 2u);
   const auto checked_hidden_size =
       base::MakeCheckedNum<int32_t>(gru_cell.hidden_size);
   if (!checked_hidden_size.IsValid()) {
@@ -3701,18 +3719,23 @@ template <typename RecurrentNetworkType>
 auto GraphBuilderTflite::SerializeRecurrentNetwork(
     const RecurrentNetworkType& recurrent_network)
     -> base::expected<OperatorOffset, std::string> {
-  const OperandDataType input_data_type =
-      GetOperand(recurrent_network.input_operand_id).descriptor.data_type();
   if constexpr (std::is_same_v<RecurrentNetworkType, mojom::Lstm>) {
-    CHECK(context_properties_.data_type_limits.lstm_input.Has(input_data_type));
+    CHECK(context_properties_.data_type_limits.lstm_input.SupportsAll(
+        {GetOperand(recurrent_network.input_operand_id).descriptor,
+         GetOperand(recurrent_network.weight_operand_id).descriptor,
+         GetOperand(recurrent_network.recurrent_weight_operand_id)
+             .descriptor}));
   } else /* `RecurrentNetworkType` is  `mojom::Gru` */ {
-    CHECK(context_properties_.data_type_limits.gru_input.Has(input_data_type));
+    CHECK(context_properties_.data_type_limits.gru_input.SupportsAll(
+        {GetOperand(recurrent_network.input_operand_id).descriptor,
+         GetOperand(recurrent_network.weight_operand_id).descriptor,
+         GetOperand(recurrent_network.recurrent_weight_operand_id)
+             .descriptor}));
   }
 
   ASSIGN_OR_RETURN(
       const TensorInfo& input_tensor_info,
       SerializeInputTensorInfo(recurrent_network.input_operand_id));
-  CHECK_EQ(input_tensor_info.dimensions.size(), 3u);
   const ::tflite::TensorType input_tensor_type = input_tensor_info.data_type;
   const auto checked_hidden_size =
       base::MakeCheckedNum<int32_t>(recurrent_network.hidden_size);
@@ -3763,11 +3786,27 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
       SerializeInputTensorInfo(recurrent_network.recurrent_weight_operand_id));
   std::optional<TensorInfo> bias_tensor_info;
   if (recurrent_network.bias_operand_id) {
+    if constexpr (std::is_same_v<RecurrentNetworkType, mojom::Lstm>) {
+      CHECK(context_properties_.data_type_limits.lstm_bias.Supports(
+          GetOperand(recurrent_network.bias_operand_id.value()).descriptor));
+    } else /* `RecurrentNetworkType` is `mojom::Gru` */ {
+      CHECK(context_properties_.data_type_limits.gru_bias.Supports(
+          GetOperand(recurrent_network.bias_operand_id.value()).descriptor));
+    }
     ASSIGN_OR_RETURN(bias_tensor_info, SerializeInputTensorInfo(
                                            *recurrent_network.bias_operand_id));
   }
   std::optional<TensorInfo> recurrent_bias_tensor_info;
   if (recurrent_network.recurrent_bias_operand_id) {
+    if constexpr (std::is_same_v<RecurrentNetworkType, mojom::Lstm>) {
+      CHECK(context_properties_.data_type_limits.lstm_bias.Supports(
+          GetOperand(recurrent_network.recurrent_bias_operand_id.value())
+              .descriptor));
+    } else /* `RecurrentNetworkType` is `mojom::Gru` */ {
+      CHECK(context_properties_.data_type_limits.gru_bias.Supports(
+          GetOperand(recurrent_network.recurrent_bias_operand_id.value())
+              .descriptor));
+    }
     ASSIGN_OR_RETURN(
         recurrent_bias_tensor_info,
         SerializeInputTensorInfo(*recurrent_network.recurrent_bias_operand_id));
@@ -3777,6 +3816,9 @@ auto GraphBuilderTflite::SerializeRecurrentNetwork(
   std::vector<int32_t> lstm_cell_peephole_weight_tensor_indices;
   if constexpr (std::is_same<RecurrentNetworkType, mojom::Lstm>::value) {
     if (recurrent_network.peephole_weight_operand_id) {
+      CHECK(context_properties_.data_type_limits.lstm_bias.Supports(
+          GetOperand(recurrent_network.peephole_weight_operand_id.value())
+              .descriptor));
       ASSIGN_OR_RETURN(lstm_peephole_weight_tensor_info,
                        SerializeInputTensorInfo(
                            *recurrent_network.peephole_weight_operand_id));
@@ -4353,8 +4395,12 @@ auto GraphBuilderTflite::SerializeLogicalNot(
 
 auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
     -> base::expected<OperatorOffset, std::string> {
-  CHECK(context_properties_.data_type_limits.lstm_cell_input.Has(
-      GetOperand(lstm_cell.input_operand_id).descriptor.data_type()));
+  CHECK(context_properties_.data_type_limits.lstm_cell_input.SupportsAll(
+      {GetOperand(lstm_cell.input_operand_id).descriptor,
+       GetOperand(lstm_cell.weight_operand_id).descriptor,
+       GetOperand(lstm_cell.recurrent_weight_operand_id).descriptor,
+       GetOperand(lstm_cell.hidden_state_operand_id).descriptor,
+       GetOperand(lstm_cell.cell_state_operand_id).descriptor}));
   ASSIGN_OR_RETURN(const TensorInfo& input_tensor_info,
                    SerializeInputTensorInfo(lstm_cell.input_operand_id));
   ASSIGN_OR_RETURN(const TensorInfo& weight_tensor_info,
@@ -4368,12 +4414,16 @@ auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
                    SerializeInputTensorInfo(lstm_cell.cell_state_operand_id));
   std::optional<int32_t> bias_tensor_index;
   if (lstm_cell.bias_operand_id) {
+    CHECK(context_properties_.data_type_limits.lstm_cell_bias.Supports(
+        GetOperand(lstm_cell.bias_operand_id.value()).descriptor));
     ASSIGN_OR_RETURN(const TensorInfo& bias_tensor_info,
                      SerializeInputTensorInfo(*lstm_cell.bias_operand_id));
     bias_tensor_index = bias_tensor_info.index;
   }
   std::optional<int32_t> recurrent_bias_tensor_index;
   if (lstm_cell.recurrent_bias_operand_id) {
+    CHECK(context_properties_.data_type_limits.lstm_cell_bias.Supports(
+        GetOperand(lstm_cell.recurrent_bias_operand_id.value()).descriptor));
     ASSIGN_OR_RETURN(
         const TensorInfo& recurrent_bias_tensor_info,
         SerializeInputTensorInfo(*lstm_cell.recurrent_bias_operand_id));
@@ -4381,6 +4431,8 @@ auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
   }
   std::optional<int32_t> peephole_weight_tensor_index;
   if (lstm_cell.peephole_weight_operand_id) {
+    CHECK(context_properties_.data_type_limits.lstm_cell_bias.Supports(
+        GetOperand(lstm_cell.peephole_weight_operand_id.value()).descriptor));
     ASSIGN_OR_RETURN(
         const TensorInfo& peephole_weight_tensor_info,
         SerializeInputTensorInfo(*lstm_cell.peephole_weight_operand_id));
@@ -4395,7 +4447,6 @@ auto GraphBuilderTflite::SerializeLstmCell(const mojom::LstmCell& lstm_cell)
     output_tensor_indices[i] = output_tensor_info.index;
   }
 
-  CHECK_EQ(input_tensor_info.dimensions.size(), 2u);
   const auto checked_hidden_size =
       base::MakeCheckedNum<int32_t>(lstm_cell.hidden_size);
   if (!checked_hidden_size.IsValid()) {

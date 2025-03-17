@@ -22,8 +22,8 @@ class ExtensionIconVariants {
   ExtensionIconVariants();
   ~ExtensionIconVariants();
   ExtensionIconVariants(ExtensionIconVariants&& other);
+  ExtensionIconVariants(const ExtensionIconVariants& other);
   ExtensionIconVariants& operator=(ExtensionIconVariants&& other) = default;
-  ExtensionIconVariants(const ExtensionIconVariants& other) = delete;
   ExtensionIconVariants& operator=(const ExtensionIconVariants& other) = delete;
 
   // Parse the provided list from manifest.json and set `list_` with the result.

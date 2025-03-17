@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Element should have attribute 'data-expectedlabel'. Element: <img title="title" data-expectedlabel="" alt="" data-testname="img with tooltip label with empty alt" class="ex" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
+[FAIL] img with tooltip label with empty alt
+  assert_equals: <img title="title" data-expectedlabel="" alt="" data-testname="img with tooltip label with empty alt" class="ex" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="> expected "" but got "title"
 Harness: the test ran to completion.
 

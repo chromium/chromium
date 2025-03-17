@@ -21,6 +21,7 @@
 namespace ash {
 
 class ActionButtonView;
+enum class ScannerEntryPoint;
 
 // An interface for different kinds of capture mode sessions. This class is a
 // LayerOwner and will transfer ownership of its texture layer to a recording
@@ -193,8 +194,8 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // This should only be called when the active behavior is `DefaultBehavior`.
   virtual void AddSmartActionsButton() = 0;
 
-  // Checks if the controller needs to show the scanner disclaimer and shows if
-  // necessary.
+  // Checks if the Scanner disclaimer should be shown for a given entry-point
+  // and shows if necessary.
   // `accept_callback` is run if disclaimer is accepted or if already accepted
   // previously.
   // `decline_callback` is run if the disclaimer's decline button is
@@ -204,6 +205,7 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // dismissed, allowing the user to click on it again and trigger the callback
   // again.
   virtual void MaybeShowScannerDisclaimer(
+      ScannerEntryPoint entry_point,
       base::RepeatingClosure accept_callback,
       base::RepeatingClosure decline_callback) = 0;
 

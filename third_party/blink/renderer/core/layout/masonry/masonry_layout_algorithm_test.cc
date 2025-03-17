@@ -13,6 +13,12 @@
 
 namespace blink {
 
+namespace {
+
+using MaxPositionSpan = MasonryRunningPositions::MaxPositionSpan;
+
+}  // namespace
+
 class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
  protected:
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
@@ -66,6 +72,23 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   const Vector<LayoutUnit>& GetRunningPositions(
       const MasonryRunningPositions& running_positions) {
     return running_positions.running_positions_;
+  }
+
+  Vector<LayoutUnit> GetMaxPositionsForAllTracks(
+      const MasonryRunningPositions& running_positions,
+      wtf_size_t span_size) {
+    return running_positions.GetMaxPositionsForAllTracks(span_size);
+  }
+
+  MasonryRunningPositions InitializeMasonryRunningPositions(
+      const Vector<LayoutUnit>& running_positions,
+      LayoutUnit tie_threshold) {
+    return MasonryRunningPositions(running_positions, tie_threshold);
+  }
+
+  void SetAutoPlacementCursor(wtf_size_t cursor,
+                              MasonryRunningPositions& running_positions) {
+    running_positions.SetAutoPlacementCursorForTesting(cursor);
   }
 
  private:
@@ -367,7 +390,8 @@ TEST_F(MasonryLayoutAlgorithmTest, MaximizeAndStretchAutoTracks) {
 }
 
 TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
-  MasonryRunningPositions running_positions(4);
+  MasonryRunningPositions running_positions(/*size=*/4,
+                                            /*tie_threshold=*/LayoutUnit());
 
   Vector<LayoutUnit> expected_running_positions = {
       LayoutUnit(0), LayoutUnit(3), LayoutUnit(3), LayoutUnit(0)};
@@ -386,6 +410,49 @@ TEST_F(MasonryLayoutAlgorithmTest, UpdateRunningPositionsForSpan) {
   running_positions.UpdateRunningPositionsForSpan(
       GridSpan::TranslatedDefiniteGridSpan(2, 4), LayoutUnit(5));
   EXPECT_EQ(expected_running_positions, GetRunningPositions(running_positions));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, GetFirstEligibleLine) {
+  auto running_positions = InitializeMasonryRunningPositions(
+      {LayoutUnit(2.0), LayoutUnit(3.0), LayoutUnit(3.5), LayoutUnit(2.5)},
+      /*tie_threshold=*/LayoutUnit(0.5));
+
+  SetAutoPlacementCursor(1, running_positions);
+  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
+            MaxPositionSpan(/*start_line=*/1, /*max_pos=*/LayoutUnit(3.5)));
+
+  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/1),
+            MaxPositionSpan(/*start_line=*/3, /*max_pos=*/LayoutUnit(2.5)));
+
+  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/4),
+            MaxPositionSpan(/*start_line=*/0, /*max_pos=*/LayoutUnit(3.5)));
+
+  SetAutoPlacementCursor(2, running_positions);
+  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
+            MaxPositionSpan(/*start_line=*/2, /*max_pos=*/LayoutUnit(3.5)));
+
+  SetAutoPlacementCursor(3, running_positions);
+  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
+            MaxPositionSpan(/*start_line=*/0, /*max_pos=*/LayoutUnit(3)));
+
+  SetAutoPlacementCursor(4, running_positions);
+  EXPECT_EQ(running_positions.GetFirstEligibleLine(/*span_size=*/2),
+            MaxPositionSpan(/*start_line=*/0, /*max_pos=*/LayoutUnit(3)));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, GetMaxPositionsForAllTracks) {
+  auto running_positions = InitializeMasonryRunningPositions(
+      {LayoutUnit(2.0), LayoutUnit(3.0), LayoutUnit(3.5), LayoutUnit(2.5)},
+      /*tie_threshold=*/LayoutUnit());
+
+  EXPECT_EQ(
+      GetMaxPositionsForAllTracks(running_positions, /*span_size=*/2),
+      Vector<LayoutUnit>({LayoutUnit(3), LayoutUnit(3.5), LayoutUnit(3.5)}));
+  EXPECT_EQ(GetMaxPositionsForAllTracks(running_positions, /*span_size=*/4),
+            Vector<LayoutUnit>({LayoutUnit(3.5)}));
+  EXPECT_EQ(GetMaxPositionsForAllTracks(running_positions, /*span_size=*/1),
+            Vector<LayoutUnit>({LayoutUnit(2.0), LayoutUnit(3.0),
+                                LayoutUnit(3.5), LayoutUnit(2.5)}));
 }
 
 }  // namespace blink

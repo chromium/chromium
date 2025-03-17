@@ -54,8 +54,8 @@ namespace views {
 using test::TestInkDrop;
 
 namespace {
-
 constexpr gfx::Size kContentSize = gfx::Size(200, 200);
+}
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
@@ -140,6 +140,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
 BEGIN_METADATA(TestBubbleDialogDelegateView)
 END_METADATA
+
+namespace {
 
 class TestAlertBubbleDialogDelegateView : public TestBubbleDialogDelegateView {
   METADATA_HEADER(TestAlertBubbleDialogDelegateView,
@@ -1027,7 +1029,8 @@ TEST_F(BubbleDialogDelegateViewTest, WithClientLayerTest) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
-      nullptr, BubbleBorder::TOP_LEFT);
+      BubbleDialogDelegateView::CreatePassKey(), nullptr,
+      BubbleBorder::TOP_LEFT);
   bubble_delegate->SetPaintClientToLayer(true);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
 
@@ -1043,7 +1046,8 @@ TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
-      nullptr, BubbleBorder::TOP_LEFT);
+      BubbleDialogDelegateView::CreatePassKey(), nullptr,
+      BubbleBorder::TOP_LEFT);
   bubble_delegate->SetPaintClientToLayer(false);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
 
@@ -1077,8 +1081,6 @@ TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
 }
 
 // Anchoring Tests -------------------------------------------------------------
-
-namespace {
 
 class AnchorTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
@@ -1165,8 +1167,6 @@ class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
  private:
   WidgetAutoclosePtr dummy_widget_;
 };
-
-}  // namespace
 
 TEST_F(BubbleDialogDelegateViewAnchorTest,
        AnchoredToWidgetShouldPaintAsActive) {

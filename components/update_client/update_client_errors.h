@@ -144,6 +144,9 @@ enum class ProtocolError : int {
   NO_HASH = -10011,
   UNSUPPORTED_PROTOCOL = -10012,
   INTERNAL = -10013,
+  UNSUPPORTED_OPERATION = -10014,
+  INEXPRESSIBLE = -10015,
+  UNKNOWN_ERROR = -10016,
 };
 
 struct CategorizedError {

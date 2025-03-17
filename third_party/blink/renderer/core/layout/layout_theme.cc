@@ -751,6 +751,13 @@ Color LayoutTheme::SystemColorFromColorProvider(
     case CSSValueID::kWindowframe:
       system_theme_color = color_provider->GetColor(ui::kColorCssSystemBtnText);
       break;
+    case CSSValueID::kField:
+      system_theme_color = color_provider->GetColor(ui::kColorCssSystemField);
+      break;
+    case CSSValueID::kFieldtext:
+      system_theme_color =
+          color_provider->GetColor(ui::kColorCssSystemFieldText);
+      break;
     case CSSValueID::kGraytext:
       system_theme_color =
           color_provider->GetColor(ui::kColorCssSystemGrayText);
@@ -762,7 +769,6 @@ Color LayoutTheme::SystemColorFromColorProvider(
           color_provider->GetColor(ui::kColorCssSystemHighlightText);
       break;
     case CSSValueID::kCanvas:
-    case CSSValueID::kField:
     // Deprecated colors, see DefaultSystemColor().
     case CSSValueID::kAppworkspace:
     case CSSValueID::kBackground:
@@ -774,7 +780,6 @@ Color LayoutTheme::SystemColorFromColorProvider(
       system_theme_color = color_provider->GetColor(ui::kColorCssSystemWindow);
       break;
     case CSSValueID::kCanvastext:
-    case CSSValueID::kFieldtext:
     // Deprecated colors, see DefaultSystemColor().
     case CSSValueID::kActivecaption:
     case CSSValueID::kCaptiontext:

@@ -204,6 +204,7 @@ def main():
         'android.content.ContentProvider.attachInfo',
         'android.content.ContentProvider.onCreate',
         'android.content.ContextWrapper.attachBaseContext',
+        'androidx.preference.PreferenceFragmentCompat.onCreatePreferences',
     ]
     errorprone_flags += [
         '-XepOpt:NullAway:KnownInitializers=' + ','.join(init_methods)

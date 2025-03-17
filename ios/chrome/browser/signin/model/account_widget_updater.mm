@@ -47,13 +47,6 @@ void AccountWidgetUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
   [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
 }
 
-void AccountWidgetUpdater::OnIdentityRefreshTokenUpdated(
-    id<SystemIdentity> identity) {}
-
-void AccountWidgetUpdater::OnIdentityAccessTokenRefreshFailed(
-    id<SystemIdentity> identity,
-    id<RefreshAccessTokenError> error) {}
-
 SystemIdentityManager::IteratorResult
 AccountWidgetUpdater::StoreIdentityDataInDict(NSMutableDictionary* dictionary,
                                               id<SystemIdentity> identity) {

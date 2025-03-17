@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_codecs.h"
@@ -30,7 +31,7 @@ class FakeVP9Accelerator : public media::VP9Decoder::VP9Accelerator {
 
   // media::VP9Decoder::VP9Accelerator
   scoped_refptr<media::VP9Picture> CreateVP9Picture() override {
-    return new media::VP9Picture();
+    return base::MakeRefCounted<media::VP9Picture>();
   }
   Status SubmitDecode(
       scoped_refptr<media::VP9Picture> pic,

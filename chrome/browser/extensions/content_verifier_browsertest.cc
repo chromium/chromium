@@ -141,7 +141,7 @@ class ContentVerifierTest : public ExtensionBrowserTest {
                              UpdateFoundCallback update_found_callback,
                              base::OnceClosure callback) {
     scoped_refptr<CrxInstaller> installer(
-        CrxInstaller::CreateSilent(extension_service()));
+        CrxInstaller::CreateSilent(profile()));
     installer->set_install_source(ManifestLocation::kExternalPolicyDownload);
     installer->set_install_immediately(true);
     installer->set_allow_silent_install(true);
@@ -803,7 +803,7 @@ class UserInstalledContentVerifierTest : public ContentVerifierTest {
                      UpdateFoundCallback update_found_callback,
                      base::OnceClosure callback) override {
     scoped_refptr<CrxInstaller> installer(
-        CrxInstaller::CreateSilent(extension_service()));
+        CrxInstaller::CreateSilent(profile()));
     installer->set_install_source(ManifestLocation::kInternal);
     installer->set_install_immediately(true);
     installer->set_allow_silent_install(true);

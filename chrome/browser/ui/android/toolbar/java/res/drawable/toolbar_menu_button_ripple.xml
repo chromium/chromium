@@ -10,6 +10,12 @@ found in the LICENSE file.
     android:paddingStart="@dimen/button_end_padding">
   <item
       android:id="@android:id/content"
-      android:drawable="@drawable/toolbar_button_highlight_layer_list">
+      android:width="@dimen/toolbar_button_highlight_size"
+      android:height="@dimen/toolbar_button_highlight_size"
+      android:gravity="center">
+
+    <shape android:shape="oval">
+      <solid android:color="@color/toolbar_button_highlight_color" />
+    </shape>
   </item>
 </ripple>

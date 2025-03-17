@@ -1003,19 +1003,27 @@ select:-internal-list-box optgroup {
     line-height: initial !important;
 }
 
-/* option selected, list-box focused */
-/* TODO(crbug.com/1244986): We should be able to remove !important here, but
-   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked,
+select:-internal-list-box:focus option:checked:disabled,
 select:-internal-list-box:focus option:checked:hover {
-    background-color: SelectedItem !important;
-    color: SelectedItemText !important;
+    background-color: SelectedItem;
+    color: SelectedItemText;
 }
 
-/* TODO(crbug.com/1244986): We should be able to remove !important here, but
-   it breaks some WebUI menus. */
 select:-internal-list-box:focus option:checked:disabled {
-    background-color: -internal-inactive-list-box-selection !important;
+    background-color: -internal-inactive-list-box-selection;
+}
+
+@supports not blink-feature(SelectColorsRemoveImportant) {
+    select:-internal-list-box:focus option:checked,
+    select:-internal-list-box:focus option:checked:hover {
+        background-color: SelectedItem !important;
+        color: SelectedItemText !important;
+    }
+
+    select:-internal-list-box:focus option:checked:disabled {
+        background-color: -internal-inactive-list-box-selection !important;
+    }
 }
 
 /* option selected, list-box not focused */

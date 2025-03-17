@@ -119,15 +119,15 @@ ImageData* ImageData::ValidateAndCreate(
                                       exception_state)) {
       return nullptr;
     }
-    if (settings->hasStorageFormat()) {
-      switch (settings->storageFormat().AsEnum()) {
-        case V8ImageDataStorageFormat::Enum::kUint8:
+    if (settings->hasPixelFormat()) {
+      switch (settings->pixelFormat().AsEnum()) {
+        case V8ImageDataPixelFormat::Enum::kRgbaUnorm8:
           color_type = kRGBA_8888_SkColorType;
           break;
-        case V8ImageDataStorageFormat::Enum::kUint16:
-          color_type = kR16G16B16A16_unorm_SkColorType;
+        case V8ImageDataPixelFormat::Enum::kRgbaFloat16:
+          color_type = kRGBA_F16_SkColorType;
           break;
-        case V8ImageDataStorageFormat::Enum::kFloat32:
+        case V8ImageDataPixelFormat::Enum::kRgbaFloat32:
           color_type = kRGBA_F32_SkColorType;
           break;
       }
@@ -143,7 +143,7 @@ ImageData* ImageData::ValidateAndCreate(
         color_type = kRGBA_8888_SkColorType;
         break;
       case DOMArrayBufferView::ViewType::kTypeUint16:
-        color_type = kR16G16B16A16_unorm_SkColorType;
+        color_type = kRGBA_F16_SkColorType;
         break;
       case DOMArrayBufferView::ViewType::kTypeFloat32:
         color_type = kRGBA_F32_SkColorType;
@@ -232,7 +232,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
               ? DOMUint8ClampedArray::CreateOrNull(length)
               : DOMUint8ClampedArray::CreateUninitializedOrNull(length));
       break;
-    case kR16G16B16A16_unorm_SkColorType:
+    case kRGBA_F16_SkColorType:
       data_array = NotShared<DOMArrayBufferView>(
           zero_initialize ? DOMUint16Array::CreateOrNull(length)
                           : DOMUint16Array::CreateUninitializedOrNull(length));
@@ -306,14 +306,14 @@ V8PredefinedColorSpace ImageData::colorSpace() const {
   return PredefinedColorSpaceToV8(color_space_);
 }
 
-V8ImageDataStorageFormat ImageData::storageFormat() const {
+V8ImageDataPixelFormat ImageData::pixelFormat() const {
   switch (color_type_) {
     case kRGBA_8888_SkColorType:
-      return V8ImageDataStorageFormat(V8ImageDataStorageFormat::Enum::kUint8);
-    case kR16G16B16A16_unorm_SkColorType:
-      return V8ImageDataStorageFormat(V8ImageDataStorageFormat::Enum::kUint16);
+      return V8ImageDataPixelFormat(V8ImageDataPixelFormat::Enum::kRgbaUnorm8);
+    case kRGBA_F16_SkColorType:
+      return V8ImageDataPixelFormat(V8ImageDataPixelFormat::Enum::kRgbaFloat16);
     case kRGBA_F32_SkColorType:
-      return V8ImageDataStorageFormat(V8ImageDataStorageFormat::Enum::kFloat32);
+      return V8ImageDataPixelFormat(V8ImageDataPixelFormat::Enum::kRgbaFloat32);
     default:
       NOTREACHED();
   }
@@ -409,7 +409,7 @@ ImageData::ImageData(const gfx::Size& size,
 
   if (settings_) {
     settings_->setColorSpace(colorSpace());
-    settings_->setStorageFormat(storageFormat());
+    settings_->setPixelFormat(pixelFormat());
   }
 
   switch (color_type) {
@@ -424,7 +424,7 @@ ImageData::ImageData(const gfx::Size& size,
       data_ = MakeGarbageCollected<V8ImageDataArray>(data_u8_);
       break;
 
-    case kR16G16B16A16_unorm_SkColorType:
+    case kRGBA_F16_SkColorType:
       DCHECK_EQ(data->GetType(), DOMArrayBufferView::ViewType::kTypeUint16);
       data_u16_ = data;
       DCHECK(data_u16_);

@@ -38,5 +38,39 @@
         }
       }
     ]
+  },
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users via GenAiDefaultSettings",
+        "policies": {},
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users via GenAiDefaultSettings",
+        "policies": {},
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
   }
 ]

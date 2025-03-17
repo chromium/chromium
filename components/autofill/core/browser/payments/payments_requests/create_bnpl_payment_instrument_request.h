@@ -21,7 +21,7 @@ class CreateBnplPaymentInstrumentRequest : public PaymentsRequest {
       CreateBnplPaymentInstrumentRequestDetails request_details,
       bool full_sync_enabled,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                              std::u16string instrument_id)> callback);
+                              std::string instrument_id)> callback);
   CreateBnplPaymentInstrumentRequest(
       const CreateBnplPaymentInstrumentRequest&) = delete;
   CreateBnplPaymentInstrumentRequest& operator=(
@@ -42,9 +42,9 @@ class CreateBnplPaymentInstrumentRequest : public PaymentsRequest {
 
   CreateBnplPaymentInstrumentRequestDetails request_details_;
   bool full_sync_enabled_;
-  std::u16string instrument_id_;
+  std::string instrument_id_;
   base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                          std::u16string instrument_id)>
+                          std::string instrument_id)>
       callback_;
 };
 

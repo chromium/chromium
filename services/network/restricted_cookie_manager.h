@@ -12,23 +12,17 @@
 
 #include "base/component_export.h"
 #include "base/containers/linked_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/rand_util.h"
-#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_change_dispatcher.h"
-#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/cookies/cookie_setting_override.h"
-#include "net/cookies/cookie_store.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
@@ -37,6 +31,8 @@
 #include "url/origin.h"
 
 namespace net {
+class CanonicalCookie;
+class CookieInclusionStatus;
 class CookieStore;
 class SiteForCookies;
 }  // namespace net

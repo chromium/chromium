@@ -87,13 +87,13 @@ AISummarizer::ToProtoOptions(
 
 // static
 std::string AISummarizer::CombineContexts(const std::string& shared_context,
-                                          const std::string& context) {
+                                          const std::string& input_context) {
   std::string final_context = shared_context;
-  if (!context.empty()) {
+  if (!input_context.empty()) {
     if (!final_context.empty()) {
-      final_context = final_context + " " + context;
+      final_context = final_context + " " + input_context;
     } else {
-      final_context = context;
+      final_context = input_context;
     }
   }
   if (!final_context.empty()) {
@@ -117,19 +117,15 @@ void AISummarizer::Summarize(
 
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
-  optimization_guide::proto::SummarizeRequest request;
-  request.set_article(input);
-  request.set_allocated_options(ToProtoOptions(options_).release());
-  request.set_context(
-      CombineContexts(options_->shared_context.value_or(""), context));
+  auto request = BuildRequest(input, context);
 
   session_->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
-      base::BindOnce(&AISummarizer::DidGetExecutionInputSize,
+      base::BindOnce(&AISummarizer::DidGetExecutionInputSizeForSummarize,
                      weak_ptr_factory_.GetWeakPtr(), responder_id, request));
 }
 
-void AISummarizer::DidGetExecutionInputSize(
+void AISummarizer::DidGetExecutionInputSizeForSummarize(
     mojo::RemoteSetElementId responder_id,
     optimization_guide::proto::SummarizeRequest request,
     std::optional<uint32_t> result) {
@@ -190,4 +186,41 @@ void AISummarizer::ModelExecutionCallback(
   if (result.response->is_complete) {
     responder->OnCompletion(/*context_info=*/nullptr);
   }
+}
+
+void AISummarizer::MeasureUsage(const std::string& input,
+                                const std::string& context,
+                                MeasureUsageCallback callback) {
+  if (!session_) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  auto request = BuildRequest(input, context);
+  session_->GetExecutionInputSizeInTokens(
+      optimization_guide::MultimodalMessageReadView(request),
+      base::BindOnce(&AISummarizer::DidGetExecutionInputSizeInTokensForMeasure,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AISummarizer::DidGetExecutionInputSizeInTokensForMeasure(
+    MeasureUsageCallback callback,
+    std::optional<uint32_t> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(result.value());
+}
+
+optimization_guide::proto::SummarizeRequest AISummarizer::BuildRequest(
+    const std::string& input,
+    const std::string& context) {
+  optimization_guide::proto::SummarizeRequest request;
+  request.set_article(input);
+  request.set_allocated_options(
+      AISummarizer::ToProtoOptions(options_).release());
+  request.set_context(AISummarizer::CombineContexts(
+      options_->shared_context.value_or(""), context));
+  return request;
 }

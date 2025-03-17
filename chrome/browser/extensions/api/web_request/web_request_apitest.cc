@@ -39,8 +39,8 @@
 #include "chrome/browser/devtools/url_constants.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/error_console/error_console_test_observer.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -381,11 +381,11 @@ void WaitForExtraHeadersListener(base::WaitableEvent* event,
 
 }  // namespace
 
-class ExtensionWebRequestApiTest : public ExtensionPlatformApiTest {
+class ExtensionWebRequestApiTest : public ExtensionApiTest {
  public:
   explicit ExtensionWebRequestApiTest(
       ContextType context_type = ContextType::kFromManifest)
-      : ExtensionPlatformApiTest(context_type) {
+      : ExtensionApiTest(context_type) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
@@ -399,14 +399,14 @@ class ExtensionWebRequestApiTest : public ExtensionPlatformApiTest {
   ~ExtensionWebRequestApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionPlatformApiTest::SetUpOnMainThread();
+    ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     navigation_handler_ =
         std::make_unique<NavigateTabMessageHandler>(profile());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionPlatformApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kGaiaUrl, "http://gaia.com");
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
                                     kOriginTrialPublicKeyForTesting);

@@ -5,7 +5,7 @@
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
 
 #include "base/test/bind.h"
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
@@ -75,13 +75,13 @@ std::unique_ptr<OffscreenDocumentLifetimeEnforcer> CreateTestLifetimeEnforcer(
 
 }  // namespace
 
-class OffscreenDocumentManagerBrowserTest : public ExtensionPlatformApiTest {
+class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
  public:
   OffscreenDocumentManagerBrowserTest() = default;
   ~OffscreenDocumentManagerBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionPlatformApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTest::SetUpCommandLine(command_line);
     // Add the kOffscreenDocumentTesting switch to allow the use of the
     // `TESTING` reason in offscreen document creation.
     command_line->AppendSwitch(switches::kOffscreenDocumentTesting);

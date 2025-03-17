@@ -313,6 +313,18 @@ ProcessSnapshotIOSIntermediateDump::ExtraMemory() const {
   return extra_memory;
 }
 
+std::vector<const MemorySnapshot*>
+ProcessSnapshotIOSIntermediateDump::IntermediateDumpExtraMemory() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  std::vector<const MemorySnapshot*> intermediate_dump_extra_memory;
+  for (const auto& module : modules_) {
+    for (const auto& memory : module->IntermediateDumpExtraMemory()) {
+      intermediate_dump_extra_memory.push_back(memory);
+    }
+  }
+  return intermediate_dump_extra_memory;
+}
+
 const ProcessMemory* ProcessSnapshotIOSIntermediateDump::Memory() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return nullptr;

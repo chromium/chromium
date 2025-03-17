@@ -13,8 +13,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "net/base/net_export.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -28,11 +26,18 @@ class GURL;
 
 namespace net {
 
-class IsolationInfo;
-class SchemefulSite;
+class CanonicalCookie;
 class CookieAccessDelegate;
 class CookieInclusionStatus;
+class IsolationInfo;
 class ParsedCookie;
+class SchemefulSite;
+
+struct CookieAccessResult;
+struct CookieWithAccessResult;
+
+using CookieList = std::vector<CanonicalCookie>;
+using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 
 namespace cookie_util {
 

@@ -91,6 +91,7 @@ include_rules = [
   "+chromeos/ash/components/editor_menu",
   "+chromeos/ash/components/emoji",
   "+chromeos/ash/components/feature_usage",
+  "+chromeos/ash/components/geolocation",
   "+chromeos/ash/components/human_presence",
   "+chromeos/ash/components/local_search_service",
   "+chromeos/ash/components/login/auth",

@@ -77,7 +77,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."byteorder:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."bytes:1.10.0"]
+[policy."bytes:1.10.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."calendrical_calculations:0.1.3"]
@@ -89,10 +89,10 @@ criteria = []
 [policy."cfg-if:1.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."clap:4.5.31"]
+[policy."clap:4.5.32"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."clap_builder:4.5.31"]
+[policy."clap_builder:4.5.32"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."clap_lex:0.7.4"]
@@ -107,16 +107,16 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."crc32fast:1.4.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxx:1.0.143"]
+[policy."cxx:1.0.146"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-cmd:1.0.143"]
+[policy."cxxbridge-cmd:1.0.146"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."cxxbridge-flags:1.0.143"]
+[policy."cxxbridge-flags:1.0.146"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."cxxbridge-macro:1.0.143"]
+[policy."cxxbridge-macro:1.0.146"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."diplomat-runtime:0.10.0"]
@@ -131,7 +131,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."displaydoc:0.2.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."either:1.14.0"]
+[policy."either:1.15.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."equivalent:1.0.2"]
@@ -183,25 +183,25 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_casemap:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_casemap_data:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_collator:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_collator_data:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_collections:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_datetime:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_datetime_data:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_decimal:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -261,10 +261,10 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."icu_segmenter:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_segmenter_data:2.0.0-beta2"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."icu_time:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -272,7 +272,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."icu_time_data:2.0.0-beta2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."indexmap:2.7.1"]
+[policy."indexmap:2.8.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."itertools:0.11.0"]
@@ -287,7 +287,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."lazy_static:1.5.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."libc:0.2.170"]
+[policy."libc:0.2.171"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."libm:0.2.11"]
@@ -332,7 +332,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."potential_utf:0.1.2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."ppv-lite86:0.2.20"]
+[policy."ppv-lite86:0.2.21"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."proc-macro2:1.0.94"]
@@ -347,7 +347,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."qr_code:2.0.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."quote:1.0.39"]
+[policy."quote:1.0.40"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."rand:0.8.5"]
@@ -407,10 +407,10 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."semver:1.0.26"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."serde:1.0.218"]
+[policy."serde:1.0.219"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."serde_derive:1.0.218"]
+[policy."serde_derive:1.0.219"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."serde_json:1.0.140"]
@@ -455,7 +455,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."strum_macros:0.25.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."syn:2.0.99"]
+[policy."syn:2.0.100"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."synstructure:0.13.1"]
@@ -464,14 +464,14 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."termcolor:1.4.1"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."tinystr:0.8.0"]
+[policy."tinystr:0.8.1"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."tinyvec:1.9.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-bidi:0.3.18"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."unicode-ident:1.0.18"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -483,7 +483,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."utf16_iter:1.0.5"]
-criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+criteria = []
 
 [policy."utf8_iter:1.0.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -536,8 +536,14 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."zerocopy-derive:0.7.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
+[policy."zerocopy-derive:0.8.23"]
+criteria = []
+
 [policy."zerocopy:0.7.35"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
+
+[policy."zerocopy:0.8.23"]
+criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."zerofrom-derive:0.1.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -568,7 +574,7 @@ https://crbug.com/366411886
 """
 
 [[exemptions.cxx]]
-version = "1.0.143"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -592,10 +598,11 @@ Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
 Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
 """
 
 [[exemptions.cxxbridge-macro]]
-version = "1.0.143"
+version = "1.0.146"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -619,6 +626,7 @@ Exemption updated to 1.0.137 in January 2025.
 Exemption updated to 1.0.140 in February 2025.
 Exemption updated to 1.0.141 in February 2025.
 Exemption updated to 1.0.143 in February 2025.
+Exemption updated to 1.0.146 in March 2025.
 """
 
 [[exemptions.icu_experimental]]
@@ -722,7 +730,7 @@ This feature is banned in gnrt_config.toml.
 """
 
 [[exemptions.syn]]
-version = "2.0.99"
+version = "2.0.100"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -757,10 +765,11 @@ Exemption updated to 2.0.95 when updating the crate in January 2025.
 Exemption updated to 2.0.96 when updating the crate in January 2025.
 Exemption updated to 2.0.98 when updating the crate in February 2025.
 Exemption updated to 2.0.99 when updating the crate in February 2025.
+Exemption updated to 2.0.100 when updating the crate in March 2025.
 """
 
 [[exemptions.tinystr]]
-version = "0.8.0"
+version = "0.8.1"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Unsafe code is either authored or reviewed by a
@@ -769,19 +778,6 @@ crabal member, but a formal audit is yet to be performed.
 Part of Google-co-maintained ICU4X project.
 
 https://crbug.com/393810918
-"""
-
-[[exemptions.utf16_iter]]
-version = "1.0.5"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Requires unsafe review audit. Sufficiently reviewed to ensure no unsoundness, but needs comments.
-
-Is not needed by the actual packages enabled in the ICU4X import.
-
-Sister crate of Google-co-maintained ICU4X project, maintained by Mozillian ICU4X team members.
-
-https://crbug.com/366411886
 """
 
 [[exemptions.utf8_iter]]
@@ -799,6 +795,15 @@ https://crbug.com/366411886
 
 [[exemptions.zerocopy]]
 version = "0.7.35"
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
+notes = """
+Requires unsafe review audit. Authored in Google and audit should come from there as well.
+
+https://crbug.com/366411886
+"""
+
+[[exemptions.zerocopy]]
+version = "0.8.23"
 criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Requires unsafe review audit. Authored in Google and audit should come from there as well.

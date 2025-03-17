@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/password_manager/core/browser/credential_manager_interface.h"
+#include "components/credential_management/credential_manager_interface.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,7 +26,8 @@ struct CredentialInfo;
 class ContentCredentialManager : public blink::mojom::CredentialManager {
  public:
   explicit ContentCredentialManager(
-      std::unique_ptr<CredentialManagerInterface> credential_manager);
+      std::unique_ptr<credential_management::CredentialManagerInterface>
+          credential_manager);
 
   ContentCredentialManager(const ContentCredentialManager&) = delete;
   ContentCredentialManager& operator=(const ContentCredentialManager&) = delete;
@@ -47,7 +48,8 @@ class ContentCredentialManager : public blink::mojom::CredentialManager {
            GetCallback callback) override;
 
  private:
-  std::unique_ptr<CredentialManagerInterface> credential_manager_;
+  std::unique_ptr<credential_management::CredentialManagerInterface>
+      credential_manager_;
 
   mojo::Receiver<blink::mojom::CredentialManager> receiver_{this};
 };

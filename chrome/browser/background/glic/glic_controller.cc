@@ -13,15 +13,16 @@ namespace glic {
 GlicController::GlicController() = default;
 GlicController::~GlicController() = default;
 
-void GlicController::Toggle(InvocationSource source) {
+void GlicController::Toggle(mojom::InvocationSource source) {
   ToggleUI(/*prevent_close=*/false, source);
 }
 
-void GlicController::Show(InvocationSource source) {
+void GlicController::Show(mojom::InvocationSource source) {
   ToggleUI(/*prevent_close=*/true, source);
 }
 
-void GlicController::ToggleUI(bool prevent_close, InvocationSource source) {
+void GlicController::ToggleUI(bool prevent_close,
+                              mojom::InvocationSource source) {
   Profile* profile =
       glic::GlicProfileManager::GetInstance()->GetProfileForLaunch();
   if (!profile) {

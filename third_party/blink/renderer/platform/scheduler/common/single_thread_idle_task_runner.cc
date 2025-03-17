@@ -99,15 +99,6 @@ void SingleThreadIdleTaskRunner::PostDelayedIdleTaskOnAssociatedThread(
                          weak_scheduler_ptr_, std::move(idle_task))));
 }
 
-void SingleThreadIdleTaskRunner::PostNonNestableIdleTask(
-    const base::Location& from_here,
-    IdleTask idle_task) {
-  delegate_->OnIdleTaskPosted();
-  idle_priority_task_runner_->PostNonNestableTask(
-      from_here, base::BindOnce(&SingleThreadIdleTaskRunner::RunTask,
-                                weak_scheduler_ptr_, std::move(idle_task)));
-}
-
 void SingleThreadIdleTaskRunner::EnqueueReadyDelayedIdleTasks() {
   if (delayed_idle_tasks_.empty())
     return;

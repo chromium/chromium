@@ -400,6 +400,10 @@ std::optional<std::u16string> PermissionRequest::GetAllowAlwaysText() const {
   return std::nullopt;
 }
 
+std::optional<std::u16string> PermissionRequest::GetBlockText() const {
+  return std::nullopt;
+}
+
 bool PermissionRequest::ShouldUseTwoOriginPrompt() const {
   return request_type() == RequestType::kStorageAccess;
 }

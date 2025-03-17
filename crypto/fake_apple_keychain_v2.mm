@@ -316,6 +316,7 @@ FakeAppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+#if !BUILDFLAG(IS_IOS_TVOS)
 BOOL FakeAppleKeychainV2::LAContextCanEvaluatePolicy(
     LAPolicy policy,
     NSError* __autoreleasing* error) {
@@ -333,5 +334,6 @@ BOOL FakeAppleKeychainV2::LAContextCanEvaluatePolicy(
       return false;
   }
 }
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
 }  // namespace crypto

@@ -662,14 +662,28 @@ TEST(PdfInkTransformTest,
 
 TEST(PdfInkTransformTest, GetCanonicalToPdfTransform) {
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/0);
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/0, /*translate=*/gfx::Vector2dF());
     EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
     EXPECT_EQ(gfx::Vector2dF(0, 0), tr.translation());
   }
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/712);
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/712, /*translate=*/gfx::Vector2dF());
     EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
     EXPECT_EQ(gfx::Vector2dF(0, 712), tr.translation());
+  }
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/0, /*translate=*/gfx::Vector2dF(50, 60));
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(50, 60), tr.translation());
+  }
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
+        /*page_height=*/1008, /*translate=*/gfx::Vector2dF(50, 60));
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(50, 1068), tr.translation());
   }
 }
 

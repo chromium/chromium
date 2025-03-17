@@ -4749,6 +4749,13 @@ enum WebFeature {
   kCrossOriginOwnerInterestGroupSubframeCheckFailed = 5363,
   kPreferredAudioOutputDevices = 5364,
   kSharedStorageAPI_SelectURL_Method_CalledWithOneURL = 5365,
+  kV8AIRewriter_MeasureInputUsage_Method = 5366,
+  kV8AIRewriter_InputQuota_AttributeGetter = 5367,
+  kV8AISummarizer_MeasureInputUsage_Method = 5368,
+  kV8AISummarizer_InputQuota_AttributeGetter = 5369,
+  kV8AIWriter_MeasureInputUsage_Method = 5370,
+  kV8AIWriter_InputQuota_AttributeGetter = 5371,
+  kSpeculationRulesTargetHintBlank = 5372,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

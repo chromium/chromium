@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include "base/time/time.h"
+#include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
@@ -707,22 +708,24 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::ContentBuilder::Build(
 
   // Must add page and frame interaction info after the entire tree is built.
   AddPageInteractionInfo(document, *page_content);
-  AddFrameInteractionInfo(frame, *page_content);
 
   auto frame_data = mojom::blink::AIPageContentFrameData::New();
-  AddMetaData(document, frame_data->meta_data);
+  AddFrameData(frame, *frame_data);
   page_content->frame_data = std::move(frame_data);
 
   return page_content;
 }
 
 void AIPageContentAgent::ContentBuilder::AddMetaData(
-    const Document& document,
+    const LocalFrame& frame,
     WTF::Vector<mojom::blink::AIPageContentMetaPtr>& meta_data) const {
   int max = options_->max_meta_elements;
-  int count = 0;
+  if (max == 0) {
+    return;
+  }
 
-  const HTMLHeadElement* head = document.head();
+  int count = 0;
+  const HTMLHeadElement* head = frame.GetDocument()->head();
   if (!head) {
     return;
   }
@@ -734,7 +737,12 @@ void AIPageContentAgent::ContentBuilder::AddMetaData(
     }
     auto meta = mojom::blink::AIPageContentMeta::New();
     meta->name = name;
-    meta->content = meta_element.Content();
+    auto content = meta_element.Content();
+    if (content.empty()) {
+      meta->content = "";
+    } else {
+      meta->content = content;
+    }
     meta_data.push_back(std::move(meta));
     count++;
     if (count >= max) {
@@ -818,18 +826,11 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
     content_node.children_nodes.emplace_back(std::move(child_content_node));
   }
 
-  if (local_frame) {
-    // Must add frame interaction info after the entire frame subtree is built.
-    AddFrameInteractionInfo(*local_frame,
-                            *content_node.content_attributes->iframe_data);
-
+  if (local_frame && local_frame->GetDocument()) {
     auto frame_data = mojom::blink::AIPageContentFrameData::New();
+    AddFrameData(*local_frame, *frame_data);
     content_node.content_attributes->iframe_data->local_frame_data =
         std::move(frame_data);
-
-    AddMetaData(*local_frame->GetDocument(),
-                content_node.content_attributes->iframe_data->local_frame_data
-                    ->meta_data);
   }
 }
 
@@ -1004,24 +1005,14 @@ void AIPageContentAgent::ContentBuilder::AddPageInteractionInfo(
       gfx::ToRoundedPoint(event_handler.LastKnownMousePositionInRootFrame());
 }
 
-void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
+void AIPageContentAgent::ContentBuilder::AddFrameData(
     const LocalFrame& frame,
-    mojom::blink::AIPageContent& page_content) const {
-  page_content.main_frame_interaction_info =
-      mojom::blink::AIPageContentFrameInteractionInfo::New();
-  mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info =
-      *page_content.main_frame_interaction_info;
-  AddFrameInteractionInfo(frame, frame_interaction_info);
-}
+    mojom::blink::AIPageContentFrameData& frame_data) const {
 
-void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
-    const LocalFrame& frame,
-    mojom::blink::AIPageContentIframeData& iframe_data) const {
-  iframe_data.frame_interaction_info =
+  frame_data.frame_interaction_info =
       mojom::blink::AIPageContentFrameInteractionInfo::New();
-  mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info =
-      *iframe_data.frame_interaction_info;
-  AddFrameInteractionInfo(frame, frame_interaction_info);
+  AddFrameInteractionInfo(frame, *frame_data.frame_interaction_info);
+  AddMetaData(frame, frame_data.meta_data);
 }
 
 void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(

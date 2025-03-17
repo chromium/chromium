@@ -68,8 +68,15 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // on a worker thread during the raster work that has now happened.
     backing_->can_access_shared_image_on_compositor_thread = true;
 
-    // If MappableSharedImage allocation failed (https://crbug.com/554541), then
-    // we don't have anything to give to the display compositor, so we report a
+    // Drop the SharedImage if it was not possible to map it.
+    if (failed_to_map_shared_image_) {
+      backing_->shared_image()->UpdateDestructionSyncToken(gpu::SyncToken());
+      backing_->clear_shared_image();
+    }
+
+    // If it was not possible to allocate the SharedImage
+    // (https://crbug.com/554541) or it was not possible to map it, then we
+    // don't have anything to give to the display compositor, so we report a
     // zero mailbox that will result in checkerboarding.
     if (!backing_->shared_image()) {
       return;
@@ -113,8 +120,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
         backing_->shared_image()->Map();
     if (!mapping) {
       LOG(ERROR) << "MapSharedImage Failed.";
-      backing_->shared_image()->UpdateDestructionSyncToken(gpu::SyncToken());
-      backing_->clear_shared_image();
+
+      // NOTE: It is not safe to clear the SharedImage here as it might be being
+      // read on the compositor thread as part of memory dump generation.
+      // Instead, save the fact that mapping failed so that the SharedImage can
+      // be cleared in the destructor of this object.
+      failed_to_map_shared_image_ = true;
       return;
     }
 
@@ -132,6 +143,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
   // These fields are safe to access on both the compositor and worker thread.
   raw_ptr<ResourcePool::Backing> backing_;
   const scoped_refptr<gpu::SharedImageInterface> sii_;
+  bool failed_to_map_shared_image_ = false;
 };
 
 }  // namespace

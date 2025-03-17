@@ -73,8 +73,11 @@ public class EdgeToEdgeLayoutCoordinator extends BaseSystemBarColorHelper
     /**
      * @see Activity#setContentView(View, LayoutParams)
      */
-    public View wrapContentView(View contentView, LayoutParams params) {
+    public View wrapContentView(View contentView, @Nullable LayoutParams params) {
         ensureInitialized();
+        if (params == null) {
+            params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        }
         mView.addView(contentView, params);
         return mView;
     }

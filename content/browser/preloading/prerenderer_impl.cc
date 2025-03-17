@@ -322,6 +322,9 @@ bool PrerendererImpl::MaybePrerender(
       case blink::mojom::SpeculationTargetHint::kBlank: {
         if (base::FeatureList::IsEnabled(
                 blink::features::kPrerender2InNewTab)) {
+          GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+              &rfhi,
+              blink::mojom::WebFeature::kSpeculationRulesTargetHintBlank);
           // For the prerender-in-new-tab, PreloadingAttempt will be managed by
           // a prerender WebContents to be created later.
           return registry_->CreateAndStartHostForNewTab(

@@ -110,10 +110,11 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
         /**
          * Initialize stable id and view associated with this HeaderItem.
+         *
          * @param position Position of this HeaderItem in the header group.
          * @param view View associated with this HeaderItem.
          */
-        public HeaderItem(int position, View view) {
+        protected HeaderItem(int position, View view) {
             mStableId = getTimestamp() - position;
             mView = view;
         }
@@ -135,8 +136,32 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     }
 
     /**
-     * Contains information of a single footer that this adapter uses to manage footers.
-     * Share most of the same funcionality as a Header class.
+     * Contains information of a single non-persistent header. See {@link HeaderItem} and {@link
+     * ItemViewType.STANDARD_HEADER}.
+     */
+    public static class StandardHeaderItem extends HeaderItem {
+
+        /** See {@link HeaderItem(int, View)}. */
+        public StandardHeaderItem(int position, View view) {
+            super(position, view);
+        }
+    }
+
+    /**
+     * Contains information of a single persistent header. See {@link HeaderItem} and {@link
+     * ItemViewType.PERSISTENT_HEADER}.
+     */
+    public static class PersistentHeaderItem extends HeaderItem {
+
+        /** See {@link HeaderItem(int, View)}. */
+        public PersistentHeaderItem(int position, View view) {
+            super(position, view);
+        }
+    }
+
+    /**
+     * Contains information of a single footer that this adapter uses to manage footers. Share most
+     * of the same functionality as a Header class.
      */
     public static class FooterItem extends HeaderItem {
         public FooterItem(int position, View view) {
@@ -211,9 +236,9 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
      */
     public static class ItemGroup {
         private final Date mDate;
-        private final List<TimedItem> mItems = new ArrayList<>();
+        protected final List<TimedItem> mItems = new ArrayList<>();
 
-        /** Index of the header, relative to the full list.  Must be set only once.*/
+        /** Index of the header, relative to the full list. Must be set only once. */
         private int mIndex;
 
         private boolean mIsSorted;
@@ -347,7 +372,9 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
 
         @Override
         public @ItemViewType int getItemViewType(int index) {
-            return ItemViewType.HEADER;
+            return (mItems.get(index) instanceof PersistentHeaderItem)
+                    ? ItemViewType.PERSISTENT_HEADER
+                    : ItemViewType.STANDARD_HEADER;
         }
     }
 
@@ -367,15 +394,28 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     /** Specifies various view types of the list items for the purpose of recycling. */
     @IntDef({
         ItemViewType.FOOTER,
-        ItemViewType.HEADER,
+        ItemViewType.STANDARD_HEADER,
+        ItemViewType.PERSISTENT_HEADER,
         ItemViewType.DATE,
         ItemViewType.NORMAL,
         ItemViewType.SUBSECTION_HEADER
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ItemViewType {
-        int FOOTER = -2;
-        int HEADER = -1;
+        int FOOTER = -3;
+
+        /**
+         * The standard type for headers. These headers are removed if there are no content items or
+         * persistent headers. The list will switch to empty state in this case.
+         */
+        int STANDARD_HEADER = -2;
+
+        /**
+         * The type for headers that should show even when there are no content items. It prevent
+         * the list from being switched to empty state and keep the other available headers shown.
+         */
+        int PERSISTENT_HEADER = -1;
+
         int DATE = 0;
         int NORMAL = 1;
         int SUBSECTION_HEADER = 2;
@@ -596,6 +636,13 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         addGroup(header);
     }
 
+    /** Removes the list header if there are no content items or persistent headers. */
+    public void removeHeaderIfEmpty() {
+        if (hasNonPersistentListHeader() && mGroups.size() == 1) {
+            removeHeader();
+        }
+    }
+
     /** Removes the list header. */
     public void removeHeader() {
         if (!hasListHeader()) return;
@@ -608,6 +655,20 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     /** Whether the adapter has a list header. */
     public boolean hasListHeader() {
         return !mGroups.isEmpty() && mGroups.first().priority() == GroupPriority.HEADER;
+    }
+
+    private boolean hasNonPersistentListHeader() {
+        if (!hasListHeader()) {
+            return false;
+        }
+
+        ItemGroup headerGroup = mGroups.first();
+        for (int i = 0; i < headerGroup.size(); i++) {
+            if (headerGroup.getItemViewType(i) == ItemViewType.PERSISTENT_HEADER) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** Whether the adapter has a list header. */
@@ -677,7 +738,8 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
                 return createDateViewHolder(parent);
             case ItemViewType.NORMAL:
                 return createViewHolder(parent);
-            case ItemViewType.HEADER:
+            case ItemViewType.STANDARD_HEADER:
+            case ItemViewType.PERSISTENT_HEADER:
                 return createHeader(parent);
             case ItemViewType.FOOTER:
                 return createFooter(parent);
@@ -703,7 +765,8 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
             case ItemViewType.NORMAL:
                 bindViewHolderForTimedItem(holder, pair.second);
                 break;
-            case ItemViewType.HEADER:
+            case ItemViewType.STANDARD_HEADER:
+            case ItemViewType.PERSISTENT_HEADER:
                 bindViewHolderForHeaderItem(holder, (HeaderItem) pair.second);
                 break;
             case ItemViewType.FOOTER:
@@ -758,9 +821,8 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
         // Remove the group if only the date header is left.
         if (group.size() == 1) mGroups.remove(group);
 
-        // Remove header if only the header is left.
-        if (hasListHeader() && mGroups.size() == 1) removeHeader();
-
+        // Remove the header if only standard header items are left.
+        removeHeaderIfEmpty();
         setSizeAndGroupPositions();
         notifyDataSetChanged();
     }

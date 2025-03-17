@@ -12,9 +12,11 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
@@ -80,14 +82,16 @@ class HotseatWidgetTest
       public testing::WithParamInterface<
           std::tuple<ShelfAutoHideBehavior,
                      /*is_assistant_enabled*/ bool,
-                     /*navigation_buttons_shown_in_tablet_mode*/ bool>> {
+                     /*navigation_buttons_shown_in_tablet_mode*/ bool,
+                     /*sunfish_or_scanner_enabled=*/bool>> {
  public:
   HotseatWidgetTest()
       : ShelfLayoutManagerTestBase(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         shelf_auto_hide_behavior_(std::get<0>(GetParam())),
         is_assistant_enabled_(std::get<1>(GetParam())),
-        navigation_buttons_shown_in_tablet_mode_(std::get<2>(GetParam())) {
+        navigation_buttons_shown_in_tablet_mode_(std::get<2>(GetParam())),
+        sunfish_or_scanner_enabled_(std::get<3>(GetParam())) {
     if (is_assistant_enabled_)
       assistant_test_api_ = AssistantTestApi::Create();
   }
@@ -109,9 +113,13 @@ class HotseatWidgetTest
   }
 
   virtual void SetupFeatureLists() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()}});
+    scoped_feature_list_.InitWithFeatureStates({
+        {features::kHideShelfControlsInTabletMode,
+         !navigation_buttons_shown_in_tablet_mode()},
+        {features::kSunfishFeature, sunfish_or_scanner_enabled()},
+        {features::kScannerUpdate, sunfish_or_scanner_enabled()},
+        {features::kScannerDogfood, sunfish_or_scanner_enabled()},
+    });
   }
 
   void TearDown() override {
@@ -128,16 +136,24 @@ class HotseatWidgetTest
   bool navigation_buttons_shown_in_tablet_mode() const {
     return navigation_buttons_shown_in_tablet_mode_;
   }
+  bool sunfish_or_scanner_enabled() const {
+    return sunfish_or_scanner_enabled_;
+  }
   AssistantTestApi* assistant_test_api() { return assistant_test_api_.get(); }
 
-  void ShowShelfAndActivateAssistant() {
+  void ShowShelfAndLongPressHome() {
     if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways)
       SwipeUpOnShelf();
 
-    // If the launcher button is not expected to be shown, show the assistant UI
-    // directly; otherwise, simulate the long press on the home button,
+    // If the launcher button is not expected to be shown, start a
+    // Sunfish-session / show the assistant UI directly; otherwise, simulate the
+    // long press on the home button,
     if (!navigation_buttons_shown_in_tablet_mode_ &&
         display::Screen::GetScreen()->InTabletMode()) {
+      if (sunfish_or_scanner_enabled()) {
+        CaptureModeController::Get()->StartSunfishSession();
+        return;
+      }
       AssistantUiController::Get()->ShowUi(
           assistant::AssistantEntryPoint::kLongPressLauncher);
       return;
@@ -221,6 +237,7 @@ class HotseatWidgetTest
   const ShelfAutoHideBehavior shelf_auto_hide_behavior_;
   const bool is_assistant_enabled_;
   const bool navigation_buttons_shown_in_tablet_mode_;
+  const bool sunfish_or_scanner_enabled_;
   std::unique_ptr<AssistantTestApi> assistant_test_api_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -232,21 +249,18 @@ class HotseatWidgetForestTest : public HotseatWidgetTest {
 
   // HotseatWidgetTest:
   void SetupFeatureLists() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()},
-         {features::kForestFeature, true}});
+    scoped_feature_list_.InitWithFeatureStates({
+        {features::kHideShelfControlsInTabletMode,
+         !navigation_buttons_shown_in_tablet_mode()},
+        {features::kSunfishFeature, sunfish_or_scanner_enabled()},
+        {features::kScannerUpdate, sunfish_or_scanner_enabled()},
+        {features::kScannerDogfood, sunfish_or_scanner_enabled()},
+        {features::kForestFeature, true},
+    });
   }
 };
 
-class StackedHotseatWidgetTest : public HotseatWidgetTest {
- public:
-  void SetupFeatureLists() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kHideShelfControlsInTabletMode,
-          !navigation_buttons_shown_in_tablet_mode()}});
-  }
-};
+using StackedHotseatWidgetTest = HotseatWidgetTest;
 
 // Counts the number of times the work area changes.
 class DisplayWorkAreaChangeCounter : public display::DisplayObserver {
@@ -359,7 +373,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
         /*is_assistant_enabled*/ testing::Bool(),
-        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool(),
+        /*sunfish_or_scanner_enabled=*/testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -368,7 +383,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
         /*is_assistant_enabled*/ testing::Bool(),
-        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool(),
+        /*sunfish_or_scanner_enabled=*/testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -377,7 +393,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(ShelfAutoHideBehavior::kNever,
                         ShelfAutoHideBehavior::kAlways),
         /*is_assistant_enabled*/ testing::Bool(),
-        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool(),
+        /*sunfish_or_scanner_enabled=*/testing::Bool()));
 
 // TODO(b:270757104) Set status are widget sizes.
 TEST_P(StackedHotseatWidgetTest, StackedHotseatShownOnSmallScreens) {
@@ -430,14 +447,17 @@ TEST_P(HotseatWidgetTest, LongPressHomeWithoutAppWindow) {
 
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
-  ShowShelfAndActivateAssistant();
-  GetAppListTestHelper()->CheckVisibility(true);
+  ShowShelfAndLongPressHome();
+  GetAppListTestHelper()->CheckVisibility(!sunfish_or_scanner_enabled());
 
+  EXPECT_EQ(CaptureModeController::Get()->IsActive(),
+            sunfish_or_scanner_enabled());
   EXPECT_EQ(
-      is_assistant_enabled(),
-      GetAppListTestHelper()->GetAppListView()->IsShowingEmbeddedAssistantUI());
+      GetAppListTestHelper()->GetAppListView()->IsShowingEmbeddedAssistantUI(),
+      !sunfish_or_scanner_enabled() && is_assistant_enabled());
 
-  // Hotseat should not change when showing Assistant.
+  // Hotseat should not change when starting a Sunfish-session or showing
+  // Assistant.
   watcher.CheckEqual({});
 }
 
@@ -454,22 +474,27 @@ TEST_P(HotseatWidgetTest, LongPressHomeWithAppWindow) {
 
   HotseatStateWatcher watcher(GetShelfLayoutManager());
 
-  ShowShelfAndActivateAssistant();
+  ShowShelfAndLongPressHome();
   GetAppListTestHelper()->CheckVisibility(false);
 
+  EXPECT_EQ(sunfish_or_scanner_enabled(),
+            CaptureModeController::Get()->IsActive());
   EXPECT_EQ(
-      is_assistant_enabled(),
+      !sunfish_or_scanner_enabled() && is_assistant_enabled(),
       GetAppListTestHelper()->GetAppListView()->IsShowingEmbeddedAssistantUI());
 
   std::vector<HotseatState> expected_state;
   if (shelf_auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
-    // |ShowShelfAndActivateAssistant()| will bring up shelf so it will trigger
-    // one hotseat state change.
+    // |ShowShelfAndLongPressHome()| will bring up shelf so it will trigger one
+    // hotseat state change.
     expected_state.push_back(HotseatState::kExtended);
-    // Launching the assistant from a shelf button on an autohidden shelf will
-    // hide the shelf at the end of the operation.
-    if (is_assistant_enabled() && navigation_buttons_shown_in_tablet_mode())
+    // Launching a Sunfish-session, or launching the assistant from a shelf
+    // button on an autohidden shelf will hide the shelf at the end of the
+    // operation.
+    if (sunfish_or_scanner_enabled() ||
+        (is_assistant_enabled() && navigation_buttons_shown_in_tablet_mode())) {
       expected_state.push_back(HotseatState::kHidden);
+    }
   }
   watcher.CheckEqual(expected_state);
 }

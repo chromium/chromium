@@ -31,6 +31,7 @@
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
 <translation id="1497802159252041924">Errore di installazione: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
+<translation id="1547469039832541117">Termina l'attività evidenziata.</translation>
 <translation id="1553461853655228091">Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Questa estensione non è più supportata. Chromium consiglia di rimuoverla.}other{Queste estensioni non sono più supportate. Chromium ti consiglia di rimuoverle.}}</translation>
 <translation id="1574377791422810894">Strumenti per la sicurezza di Chromium</translation>
@@ -223,6 +224,7 @@
 <translation id="4148957013307229264">Installazione...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Accesso rete - Chromium</translation>
 <translation id="421369550622382712">Scopri app, giochi, estensioni e temi straordinari per Chromium.</translation>
+<translation id="4217080900579554343">Accedi a Chromium per trovare questa estensione e altro su tutti i tuoi computer</translation>
 <translation id="4217972271355023382">Per navigare online in modo più sicuro con le scelte del tuo genitore, passa al tuo profilo Chromium dove hai già eseguito l'accesso come <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4222932583846282852">Annullamento…</translation>
 <translation id="4224210481850767180">L'installazione è stata annullata.</translation>

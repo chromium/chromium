@@ -28,6 +28,40 @@ namespace {
 constexpr gfx::Size kPreviewImageSize = gfx::Size(512, 512);
 constexpr gfx::Size kFullImageSize = gfx::Size(1024, 1024);
 constexpr char kLobsterUseQueryRewriterFlag[] = "use_query_rewrite";
+constexpr auto kLobsterTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("chromeos_inline_image_request", R"(
+      semantics {
+        sender: "ChromeOS Inline Image"
+        description:
+          "Requests inline images from Google's servers. Google returns "
+          "suggested images which users may choose to insert into selected "
+          "text field, or download into Downloads folder."
+        trigger:
+          "User right clicks in an editable text field or triggers "
+          "Quick Insert and select Inline Image option."
+        internal {
+          contacts {
+            email: "e14s-eng@google.com"
+          }
+        }
+        user_data {
+          type: USER_CONTENT
+        }
+        data:
+          "A free-form user query. Query metadata includes a flag to indicate "
+          "if user wants to get their query rewritten, and is also sent."
+        destination: GOOGLE_OWNED_SERVICE
+        last_reviewed: "2025-03-14"
+      }
+      policy {
+        cookies_allowed: NO
+        setting:
+          "No setting. Users must take explicit action to trigger the feature."
+        policy_exception_justification:
+          "Not implemented, not considered useful. This request is part of a "
+          "flow which is user-initiated."
+      }
+    )");
 
 manta::proto::Request CreateMantaRequest(std::string_view query,
                                          std::optional<uint32_t> seed,
@@ -168,10 +202,8 @@ void LobsterImageProviderFromSnapper::RequestMultipleCandidates(
   auto request = CreateMantaRequest(/*query=*/query, /*seed=*/std::nullopt,
                                     /*image_size=*/kPreviewImageSize,
                                     /*num_outputs=*/num_candidates);
-  // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   provider_->Call(
-      request, MISSING_TRAFFIC_ANNOTATION,
+      request, kLobsterTrafficAnnotation,
       base::BindOnce(&LobsterImageProviderFromSnapper::OnCandidatesRequested,
                      weak_ptr_factory_.GetWeakPtr(), query,
                      std::move(callback)));
@@ -193,11 +225,8 @@ void LobsterImageProviderFromSnapper::RequestSingleCandidateWithSeed(
   auto request =
       CreateMantaRequest(/*query=*/query, /*seed=*/seed,
                          /*image_size=*/kFullImageSize, /*num_outputs=*/1);
-
-  // TODO(b:354620949): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   provider_->Call(
-      request, MISSING_TRAFFIC_ANNOTATION,
+      request, kLobsterTrafficAnnotation,
       base::BindOnce(&LobsterImageProviderFromSnapper::OnCandidatesRequested,
                      weak_ptr_factory_.GetWeakPtr(), query,
                      std::move(callback)));

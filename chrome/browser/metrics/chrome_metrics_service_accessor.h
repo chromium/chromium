@@ -18,7 +18,7 @@
 #include "ppapi/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_synthetic_trial_manager.h"
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PPAPI)

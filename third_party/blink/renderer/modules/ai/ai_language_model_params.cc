@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/modules/ai/ai_language_model_params.h"
 
-#include "third_party/blink/renderer/modules/ai/ai_capability_availability.h"
-
 namespace blink {
 
 AILanguageModelParams::AILanguageModelParams(uint64_t default_top_k,

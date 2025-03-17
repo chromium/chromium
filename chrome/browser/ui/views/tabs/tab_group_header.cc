@@ -481,8 +481,7 @@ bool SupportsDataSharing() {
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {
   const bool supports_shared_groups = SupportsDataSharing();
-  if (tab_groups::IsTabGroupsSaveV2Enabled() && !supports_shared_groups) {
-    // In V2, the sync icon was removed.
+  if (!supports_shared_groups) {
     return false;
   }
 
@@ -501,8 +500,8 @@ bool TabGroupHeader::ShouldShowHeaderIcon() const {
     return false;
   }
 
-  if (tab_groups::IsTabGroupsSaveV2Enabled() && supports_shared_groups) {
-    // V2 + DataSharing shows a share icon if the group is shared.
+  if (supports_shared_groups) {
+    // DataSharing shows a share icon if the group is shared.
     return saved_group->is_shared_tab_group();
   }
 
@@ -529,8 +528,7 @@ void TabGroupHeader::UpdateTitleView() {
 void TabGroupHeader::UpdateSyncIconView() {
   sync_icon_->SetVisible(should_show_header_icon_);
   if (should_show_header_icon_) {
-    bool use_share_icon =
-        tab_groups::IsTabGroupsSaveV2Enabled() && SupportsDataSharing();
+    bool use_share_icon = SupportsDataSharing();
     sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         use_share_icon ? kPeopleGroupIcon : kTabGroupsSyncIcon,
         color_utils::GetColorWithMaxContrast(color_),
@@ -539,8 +537,7 @@ void TabGroupHeader::UpdateSyncIconView() {
 }
 
 void TabGroupHeader::UpdateAttentionIndicatorView() {
-  const bool supports_attention_indicator =
-      tab_groups::IsTabGroupsSaveV2Enabled() && SupportsDataSharing();
+  const bool supports_attention_indicator = SupportsDataSharing();
   if (!supports_attention_indicator) {
     attention_indicator_->SetVisible(false);
     return;
@@ -691,8 +688,7 @@ bool TabGroupHeader::GetShowingAttentionIndicator() {
 }
 
 void TabGroupHeader::SetTabGroupNeedsAttention(bool needs_attention) {
-  const bool supports_attention_indicator =
-      tab_groups::IsTabGroupsSaveV2Enabled() && SupportsDataSharing();
+  const bool supports_attention_indicator = SupportsDataSharing();
   if (!supports_attention_indicator) {
     return;
   }

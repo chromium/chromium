@@ -21,7 +21,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- rodmartin@google.com
 - seblalancette@chromium.org
 - cbe-device-trust-eng@google.com
 schema:

@@ -752,11 +752,13 @@ void HTMLCanvasElement::PreFinalizeFrame() {
 
   // Low-latency 2d canvases produce their frames after the resource gets single
   // buffered.
-  if (LowLatencyEnabled() && !dirty_rect_.IsEmpty() &&
-      GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)) {
-    // TryEnableSingleBuffering() the first time we FinalizeFrame().  This is
-    // a nop if already single buffered or if single buffering is unsupported.
-    ResourceProvider()->TryEnableSingleBuffering();
+  // TODO(crbug.com/40280152): Analyze whether this call is redundant (i.e.,
+  // whether the CRP is guaranteed to always be present) once
+  // Canvas2DLayerBridge is definitively eliminated and the dust has settled on
+  // all flows via which CanvasResourceProviders are or are nont created coming
+  // into this flow.
+  if (LowLatencyEnabled() && !dirty_rect_.IsEmpty()) {
+    GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU);
   }
 }
 

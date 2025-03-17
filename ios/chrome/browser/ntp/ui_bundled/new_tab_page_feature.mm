@@ -60,6 +60,10 @@ BASE_FEATURE(kIdentityDiscAccountMenu,
              "IdentityDiscAccountMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeedSwipeInProductHelp,
+             "FeedSwipeInProductHelp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #pragma mark - Feature parameters
 
 const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
@@ -85,6 +89,8 @@ const char kDisableAccountMenuEllipsisParam[] =
     "identity-disc-account-menu-without-ellipsis";
 const char kShowSettingsInAccountMenuParam[] =
     "identity-disc-account-menu-with-settings-button";
+
+const char kFeedSwipeInProductHelpArmParam[] = "feed-swipe-in-product-help-arm";
 
 #pragma mark - Helpers
 
@@ -164,4 +170,15 @@ bool IdentityDiscAccountMenuEnabledWithSettings() {
         kIdentityDiscAccountMenu, kShowSettingsInAccountMenuParam, false);
   }
   return false;
+}
+
+FeedSwipeIPHVariation GetFeedSwipeIPHVariation() {
+  if (base::FeatureList::IsEnabled(kFeedSwipeInProductHelp)) {
+    return static_cast<FeedSwipeIPHVariation>(
+        base::GetFieldTrialParamByFeatureAsInt(
+            kFeedSwipeInProductHelp,
+            kFeedSwipeInProductHelpArmParam, /*default_value=*/
+            static_cast<int>(FeedSwipeIPHVariation::kStaticAfterFRE)));
+  }
+  return FeedSwipeIPHVariation::kDisabled;
 }

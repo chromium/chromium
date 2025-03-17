@@ -311,6 +311,8 @@ CapturedSurfaceControlResult FinalizeRequestPermission(
     return CapturedSurfaceControlResult::kDisallowedForSelfCaptureError;
   }
 
+  capturer_wci->DidCapturedSurfaceControl();
+
   return CapturedSurfaceControlResult::kSuccess;
 }
 

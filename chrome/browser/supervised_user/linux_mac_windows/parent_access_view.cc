@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
@@ -71,6 +72,11 @@ void OverrideZoomFactor(content::WebContents* web_contents,
       content::HostZoomMap::GetForWebContents(web_contents);
   zoom_map->SetZoomLevelForHost(pacp_url.host(),
                                 blink::ZoomFactorToZoomLevel(zoom_factor));
+}
+
+bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
+  return event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+         event.windows_key_code == ui::VKEY_ESCAPE;
 }
 
 }  // namespace
@@ -227,6 +233,27 @@ void ParentAccessView::ChildPreferredSizeChanged(View* child) {
   widget->SetSize(widget->non_client_view()->GetPreferredSize());
 }
 
+bool ParentAccessView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  views::Widget* widget = GetWidget();
+  CHECK(widget);
+  if (IsEscapeEvent(event)) {
+    widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+    return true;
+  }
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, GetFocusManager());
+}
+
+void ParentAccessView::ResizeDueToAutoResize(content::WebContents* web_contents,
+                                             const gfx::Size& new_size) {
+  if (!web_view_) {
+    return;
+  }
+  web_view_->ResizeDueToAutoResize(web_contents, new_size);
+}
+
 void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   if (!dialog_result_reset_callback_.is_null()) {
     std::move(dialog_result_reset_callback_).Run();
@@ -339,8 +366,9 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
   // dialog.
   web_view_->LoadInitialURL(pacp_url);
 
-  // Allows dismissing the dialog via the `Escape` button.
-  web_view_->set_allow_accelerators(true);
+  // Delegate handles accelerators when the webview is focused. Also handles
+  // resizing events.
+  web_view_->web_contents()->SetDelegate(this);
   web_view_->SetProperty(views::kElementIdentifierKey,
                          kLocalWebParentApprovalDialogId);
 
@@ -352,6 +380,7 @@ void ParentAccessView::Initialize(const GURL& pacp_url, int corner_radius) {
 
   corner_radius_ = corner_radius;
   is_initialized_ = true;
+
   OverrideZoomFactor(GetWebViewContents(), pacp_url);
 }
 

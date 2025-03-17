@@ -2239,7 +2239,6 @@
 <translation id="2530166226437958497">Решавање проблема</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Дошло је до грешке и инсталирање система <ph name="DEVICE_OS" /> није успело.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Додатну помоћ потражите на: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Погледајте додатне информације</translation>
 <translation id="2532144599248877204">Продужава трајање батерије јер одржава ниво напуњености батерије око 80%. Батерија ће се напунити до краја пре него што га уобичајено искључите из напајања.</translation>
 <translation id="2532146950330687938">Уређај се припрема...</translation>
 <translation id="2532198298278778531">Управљајте безбедним DNS-ом у Chrome OS Flex подешавањима</translation>
@@ -2795,7 +2794,6 @@
 <translation id="2921081876747860777">Направите лозинку да бисте заштитили локалне податке.</translation>
 <translation id="2923006468155067296"><ph name="DEVICE_TYPE" /> ће се сада закључати.
 <ph name="DOMAIN" /> захтева да паметна картица остане уметнута.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}one{<ph name="TASK_ROW" />. Други задаци (<ph name="OTHER_TASK_NUM" />) у истој групи задатака: <ph name="OTHER_TASKS" />}few{<ph name="TASK_ROW" />. Други задаци (<ph name="OTHER_TASK_NUM" />) у истој групи задатака: <ph name="OTHER_TASKS" />}other{<ph name="TASK_ROW" />. Други задаци (<ph name="OTHER_TASK_NUM" />) у истој групи задатака: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Уклони овај налог</translation>
 <translation id="2923644930701689793">Приступајте садржају са телефона</translation>
 <translation id="292371311537977079">Подешавања Chrome-а</translation>
@@ -6900,6 +6898,7 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> ће се ускоро паузирати</translation>
 <translation id="586567932979200359">Покрећете <ph name="PRODUCT_NAME" /> са диска. Инсталација на рачунар омогућава покретање без диска и редовно ажурирање.</translation>
 <translation id="5865733239029070421">Аутоматски шаље Google-у статистику коришћења и извештаје о отказивању</translation>
+<translation id="5866363217037791319">Заврши задатак</translation>
 <translation id="5868434909835797817">Микрофон је искључен на уређају</translation>
 <translation id="5868479397518301468">Време за пријављивање је истекло</translation>
 <translation id="5868822853313956582">Прати боје уређаја</translation>
@@ -10630,7 +10629,6 @@
 <translation id="8524841856047224176">Персонализујте позадине камере за видео позиве и друго</translation>
 <translation id="8525306231823319788">Цео екран</translation>
 <translation id="8525461909394569609">Ова апликација обухвата веб-садржај из</translation>
-<translation id="8526313996927074827">Умећите линкове, емоџије и друго. Можете да добијете и помоћ при писању уз Google вештачку интелигенцију.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527257351549797148">Организација можда захтева регистрацију да бисте могли да приступате апликацијама, додацима и другом. То омогућава организацији и да управља стварима попут безбедности и подешавања уређаја.</translation>
@@ -11088,6 +11086,7 @@
 <translation id="883924185304953854">Претрага према слици</translation>
 <translation id="8841786407272321022">Лозинка је сачувана само на овом уређају. Да бисте сачували нове лозинке на Google налогу, ажурирајте Google Play услуге.</translation>
 <translation id="8841843049738266382">Читање и мењање корисника на листи дозвољених</translation>
+<translation id="8841884135319684422">Заврши задатак</translation>
 <translation id="8842594465773264717">Избриши овај дигитални отисак</translation>
 <translation id="8845001906332463065">Затражите помоћ</translation>
 <translation id="8846132060409673887">Прочитајте произвођача и модел овог рачунара</translation>

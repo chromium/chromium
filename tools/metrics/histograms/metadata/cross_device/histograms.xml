@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="SmartLockStatusTypes">
+  <variant name=".Other" summary=""/>
+  <variant name=".Unlockable" summary=""/>
+</variants>
+
 <histogram name="AndroidSms.EffectivePWAInstallationSuccess"
     enum="BooleanSuccess" expires_after="2025-05-05">
   <owner>jonmann@chromium.org</owner>
@@ -2298,10 +2303,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatusDuration.Unlock"
+    name="SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatusDuration.Unlock{SmartLockStatusTypes}"
     units="ms" expires_after="2025-09-07">
-<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
-
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2316,15 +2319,16 @@ chromium-metrics-reviews@google.com.
     particular remote status type.
 
     See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
-    remote status from the host.
+    remote status from the host. {SmartLockStatusTypes}
   </summary>
+  <token key="SmartLockStatusTypes" variants="SmartLockStatusTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
-    name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock"
+    name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock{SmartLockStatusTypes}"
     units="ms" expires_after="2025-09-07">
-<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
-
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2339,15 +2343,16 @@ chromium-metrics-reviews@google.com.
     status type.
 
     See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
-    remote status from the host.
+    remote status from the host. {SmartLockStatusTypes}
   </summary>
+  <token key="SmartLockStatusTypes" variants="SmartLockStatusTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
-    name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"
+    name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock{SmartLockStatusTypes}"
     units="ms" expires_after="2025-09-07">
-<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
-
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -2368,8 +2373,11 @@ chromium-metrics-reviews@google.com.
     for breakdowns of this metric.
 
     See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
-    remote status from the host.
+    remote status from the host. {SmartLockStatusTypes}
   </summary>
+  <token key="SmartLockStatusTypes" variants="SmartLockStatusTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="SmartLock.Toggle" enum="SmartLockToggle"

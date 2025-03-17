@@ -7,7 +7,6 @@
 #include <dwmapi.h>
 
 #include "base/command_line.h"
-#include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -20,44 +19,47 @@ namespace views {
 
 namespace {
 
-void CalculateWindowStylesFromInitParams(
+struct WindowStyles {
+  DWORD style;
+  DWORD ex_style;
+  DWORD class_style;
+};
+
+WindowStyles CalculateWindowStylesFromInitParams(
     const Widget::InitParams& params,
     WidgetDelegate* widget_delegate,
     internal::NativeWidgetDelegate* native_widget_delegate,
-    bool is_translucent,
-    DWORD* style,
-    DWORD* ex_style,
-    DWORD* class_style) {
-  *style = WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-  *ex_style = 0;
-  *class_style = CS_DBLCLKS;
+    bool is_translucent) {
+  WindowStyles styles = {.style = WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+                         .ex_style = 0,
+                         .class_style = CS_DBLCLKS};
 
   if (features::ShouldRemoveRedirectionBitmap()) {
-    *ex_style |= WS_EX_NOREDIRECTIONBITMAP;
+    styles.ex_style |= WS_EX_NOREDIRECTIONBITMAP;
   }
 
   // Set type-independent style attributes.
   if (params.child) {
-    *style |= WS_CHILD;
+    styles.style |= WS_CHILD;
   }
   if (params.show_state == ui::mojom::WindowShowState::kMaximized) {
-    *style |= WS_MAXIMIZE;
+    styles.style |= WS_MAXIMIZE;
   }
   if (params.show_state == ui::mojom::WindowShowState::kMinimized) {
-    *style |= WS_MINIMIZE;
+    styles.style |= WS_MINIMIZE;
   }
   if (!params.accept_events) {
-    *ex_style |= WS_EX_TRANSPARENT;
+    styles.ex_style |= WS_EX_TRANSPARENT;
   }
   DCHECK_NE(Widget::InitParams::Activatable::kDefault, params.activatable);
   if (params.activatable == Widget::InitParams::Activatable::kNo) {
-    *ex_style |= WS_EX_NOACTIVATE;
+    styles.ex_style |= WS_EX_NOACTIVATE;
   }
   if (params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal) {
-    *ex_style |= WS_EX_TOPMOST;
+    styles.ex_style |= WS_EX_TOPMOST;
   }
   if (params.shadow_type == Widget::InitParams::ShadowType::kDrop) {
-    *class_style |= CS_DROPSHADOW;
+    styles.class_style |= CS_DROPSHADOW;
   }
 
   // Set type-dependent style attributes.
@@ -66,22 +68,22 @@ void CalculateWindowStylesFromInitParams(
       // WS_OVERLAPPEDWINDOW is equivalent to:
       //   WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU |
       //   WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX
-      *style |= WS_OVERLAPPEDWINDOW;
+      styles.style |= WS_OVERLAPPEDWINDOW;
       if (!widget_delegate->CanMaximize()) {
-        *style &= static_cast<DWORD>(~WS_MAXIMIZEBOX);
+        styles.style &= static_cast<DWORD>(~WS_MAXIMIZEBOX);
       }
       if (!widget_delegate->CanMinimize()) {
-        *style &= static_cast<DWORD>(~WS_MINIMIZEBOX);
+        styles.style &= static_cast<DWORD>(~WS_MINIMIZEBOX);
       }
       if (!widget_delegate->CanResize()) {
-        *style &= static_cast<DWORD>(~(WS_THICKFRAME | WS_MAXIMIZEBOX));
+        styles.style &= static_cast<DWORD>(~(WS_THICKFRAME | WS_MAXIMIZEBOX));
       }
       if (params.remove_standard_frame) {
-        *style &= static_cast<DWORD>(~(WS_MINIMIZEBOX | WS_MAXIMIZEBOX));
+        styles.style &= static_cast<DWORD>(~(WS_MINIMIZEBOX | WS_MAXIMIZEBOX));
       }
 
       if (native_widget_delegate->IsDialogBox()) {
-        *style |= DS_MODALFRAME;
+        styles.style |= DS_MODALFRAME;
         // NOTE: Turning this off means we lose the close button, which is bad.
         // Turning it on though means the user can maximize or size the window
         // from the system menu, which is worse. We may need to provide our own
@@ -91,59 +93,58 @@ void CalculateWindowStylesFromInitParams(
         // Set the WS_POPUP style for modal dialogs. This ensures that the owner
         // window is activated on destruction. This style should not be set for
         // non-modal non-top-level dialogs like constrained windows.
-        *style |= native_widget_delegate->IsModal() ? WS_POPUP : 0;
+        styles.style |= native_widget_delegate->IsModal() ? WS_POPUP : 0;
       }
-      *ex_style |=
+      styles.ex_style |=
           native_widget_delegate->IsDialogBox() ? WS_EX_DLGMODALFRAME : 0;
 
       // See layered window comment below.
       if (is_translucent) {
-        *style &= static_cast<DWORD>(~(WS_THICKFRAME | WS_CAPTION));
+        styles.style &= static_cast<DWORD>(~(WS_THICKFRAME | WS_CAPTION));
       }
       break;
     }
     case Widget::InitParams::TYPE_CONTROL:
-      *style |= WS_VISIBLE;
+      styles.style |= WS_VISIBLE;
       break;
     case Widget::InitParams::TYPE_BUBBLE:
-      *style |= WS_POPUP;
-      *style |= WS_CLIPCHILDREN;
+      styles.style |= WS_POPUP;
+      styles.style |= WS_CLIPCHILDREN;
       if (!params.force_show_in_taskbar) {
-        *ex_style |= WS_EX_TOOLWINDOW;
+        styles.ex_style |= WS_EX_TOOLWINDOW;
       }
       break;
     case Widget::InitParams::TYPE_POPUP:
-      *style |= WS_POPUP;
+      styles.style |= WS_POPUP;
       if (!params.force_show_in_taskbar) {
-        *ex_style |= WS_EX_TOOLWINDOW;
+        styles.ex_style |= WS_EX_TOOLWINDOW;
       }
       break;
     case Widget::InitParams::TYPE_MENU:
-      *style |= WS_POPUP;
+      styles.style |= WS_POPUP;
       if (params.remove_standard_frame) {
-        *style |= WS_THICKFRAME;
+        styles.style |= WS_THICKFRAME;
       }
       if (!params.force_show_in_taskbar) {
-        *ex_style |= WS_EX_TOOLWINDOW;
+        styles.ex_style |= WS_EX_TOOLWINDOW;
       }
       break;
     case Widget::InitParams::TYPE_DRAG:
     case Widget::InitParams::TYPE_TOOLTIP:
     case Widget::InitParams::TYPE_WINDOW_FRAMELESS:
-      *style |= WS_POPUP;
-#if BUILDFLAG(IS_WIN)
+      styles.style |= WS_POPUP;
       if (params.dont_show_in_taskbar) {
-        *ex_style |= WS_EX_TOOLWINDOW;
+        styles.ex_style |= WS_EX_TOOLWINDOW;
       }
       if (params.force_system_menu_for_frameless &&
           params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS) {
-        *style |= WS_SYSMENU;
+        styles.style |= WS_SYSMENU;
       }
-#endif  // BUILDFLAG(IS_WIN)
       break;
     default:
       NOTREACHED();
   }
+  return styles;
 }
 
 }  // namespace
@@ -164,10 +165,6 @@ void ConfigureWindowStyles(
     const Widget::InitParams& params,
     WidgetDelegate* widget_delegate,
     internal::NativeWidgetDelegate* native_widget_delegate) {
-  // Configure the HWNDMessageHandler with the appropriate
-  DWORD style = 0;
-  DWORD ex_style = 0;
-  DWORD class_style = 0;
   // Layered windows do not work with Direct3D, so a different mechanism needs
   // to be used to allow for transparent borderless windows.
   //
@@ -186,13 +183,12 @@ void ConfigureWindowStyles(
   bool is_translucent =
       (params.opacity == Widget::InitParams::WindowOpacity::kTranslucent);
 
-  CalculateWindowStylesFromInitParams(params, widget_delegate,
-                                      native_widget_delegate, is_translucent,
-                                      &style, &ex_style, &class_style);
+  WindowStyles styles = CalculateWindowStylesFromInitParams(
+      params, widget_delegate, native_widget_delegate, is_translucent);
   handler->set_is_translucent(is_translucent);
-  handler->set_initial_class_style(class_style);
-  handler->set_window_style(handler->window_style() | style);
-  handler->set_window_ex_style(handler->window_ex_style() | ex_style);
+  handler->set_initial_class_style(styles.class_style);
+  handler->set_window_style(handler->window_style() | styles.style);
+  handler->set_window_ex_style(handler->window_ex_style() | styles.ex_style);
 }
 
 }  // namespace views

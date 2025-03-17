@@ -258,10 +258,6 @@ class CookieManager {
   // need to clear them later.
   void ClearClientHintsCachedPerOriginMapIfNeeded();
 
-  // We want to detect if there are any apps requesting cookies that may not
-  // get all the cookies for a particular URL back due to CHIPS being enabled.
-  void RecordExcludedPartitionedCookies(const GURL& host);
-
   // Returns the AwBrowserContext associated with the same profile as this
   // CookieManager. For the default profile, the AwBrowserContext is not
   // guaranteed to be initialized, so it may be null.

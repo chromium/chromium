@@ -20,7 +20,8 @@ export function getHtml(this: ExtensionsSectionElement) {
       <cr-icon id="tooltip-icon"
           icon="cr:info-outline"
           tabindex="0"
-          aria-label="$i18n{extensionsSectionTooltipAriaLabel}"
+          role="img"
+          aria-label="${this.tooltip_}"
           aria-describedby="tooltip">
       </cr-icon>
     </div>

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_BACKGROUND_GLIC_GLIC_CONTROLLER_H_
 #define CHROME_BROWSER_BACKGROUND_GLIC_GLIC_CONTROLLER_H_
 
-#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic.mojom.h"
 
 namespace glic {
 
@@ -20,14 +20,14 @@ class GlicController {
   GlicController& operator=(const GlicController&) = delete;
 
   // Toggles the glic UI.
-  virtual void Toggle(InvocationSource source);
+  virtual void Toggle(mojom::InvocationSource source);
 
   // Shows the glic UI.
-  virtual void Show(InvocationSource source);
+  virtual void Show(mojom::InvocationSource source);
 
  private:
   // Helper that implements both Toggle and Show.
-  void ToggleUI(bool prevent_close, InvocationSource source);
+  void ToggleUI(bool prevent_close, mojom::InvocationSource source);
 };
 
 }  // namespace glic

@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
-#include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_interceptor.h"
 
 namespace content::test {
@@ -50,7 +49,7 @@ class TestPrefetchWatcherImpl {
 };
 
 TestPrefetchWatcherImpl::TestPrefetchWatcherImpl() {
-  PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
+  PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       base::BindRepeating(&TestPrefetchWatcherImpl::OnPrefetchResponseCompleted,
                           base::Unretained(this)));
   PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
@@ -62,7 +61,7 @@ TestPrefetchWatcherImpl::TestPrefetchWatcherImpl() {
 TestPrefetchWatcherImpl::~TestPrefetchWatcherImpl() {
   PrefetchURLLoaderInterceptor::SetPrefetchCompleteCallbackForTesting(
       base::DoNothing());
-  PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
+  PrefetchContainer::SetPrefetchResponseCompletedCallbackForTesting(
       base::DoNothing());
 }
 

@@ -96,6 +96,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
                    on_device_model::mojom::LoadModelParamsPtr params,
                    base::OnceClosure on_complete);
 
+  static on_device_model::Capabilities GetCapabilities(
+      const ChromeML& chrome_ml,
+      on_device_model::ModelAssets assets);
+
   std::unique_ptr<SessionImpl> CreateSession(
       const ScopedAdaptation* adaptation,
       on_device_model::mojom::SessionParamsPtr params);

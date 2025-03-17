@@ -274,7 +274,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             clear(true);
             mClearOnNextQueryComplete = false;
         }
-        if ((!mAreHeadersInitialized && items.size() > 0 && !mIsSearching)
+        boolean isEmpty = items.size() > 0 || mHistorySyncPromoVisible;
+        if ((!mAreHeadersInitialized && isEmpty && !mIsSearching)
                 || (mIsSearching && mShowAppFilter)) {
             setHeaders();
             mAreHeadersInitialized = true;
@@ -369,23 +370,25 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         ViewGroup clearBrowsingDataButtonContainer = getClearBrowsingDataButtonContainer(null);
 
-        mAppFilterHeaderItem = new HeaderItem(0, historyAppFilterContainer);
-        mPrivacyDisclaimerHeaderItem = new HeaderItem(0, privacyDisclaimerContainer);
+        mAppFilterHeaderItem = new StandardHeaderItem(0, historyAppFilterContainer);
+        mPrivacyDisclaimerHeaderItem = new StandardHeaderItem(0, privacyDisclaimerContainer);
         mPrivacyDisclaimerBottomSpace =
                 privacyDisclaimerContainer.findViewById(R.id.privacy_disclaimer_bottom_space);
-        mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, clearBrowsingDataButtonContainer);
+        mClearBrowsingDataButtonHeaderItem =
+                new StandardHeaderItem(1, clearBrowsingDataButtonContainer);
         mClearBrowsingDataButton =
                 clearBrowsingDataButtonContainer.findViewById(R.id.clear_browsing_data_button);
 
         if (mManager.launchedForApp()) {
             ViewGroup historyOpenInChromeButtonContainer = getCctOpenInChromeButtonContainer(null);
 
-            mHistoryOpenInChromeHeaderItem = new HeaderItem(1, historyOpenInChromeButtonContainer);
+            mHistoryOpenInChromeHeaderItem =
+                    new StandardHeaderItem(1, historyOpenInChromeButtonContainer);
         }
         if (mHistorySyncPromoCoordinator != null) {
             View historySyncPromoView = getHistorySyncPromoView();
 
-            mHistorySyncPromoHeaderItem = new HeaderItem(2, historySyncPromoView);
+            mHistorySyncPromoHeaderItem = new PersistentHeaderItem(2, historySyncPromoView);
         }
 
         updateClearBrowsingDataButtonVisibility();
@@ -603,7 +606,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         }
 
         mHistorySyncPromoVisible = shouldHistorySyncPromoBeVisible;
-        if (mAreHeadersInitialized) setHeaders();
+        if (!mAreHeadersInitialized) {
+            return;
+        }
+
+        setHeaders();
+        if (!shouldHistorySyncPromoBeVisible) {
+            // When removing the history sync promo, other headers should be removed when there's
+            // no history record.
+            removeHeaderIfEmpty();
+        }
     }
 
     ItemGroup getFirstGroupForTests() {
@@ -627,11 +639,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     void generateHeaderItemsForTest() {
-        mPrivacyDisclaimerHeaderItem = new HeaderItem(0, null);
-        mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, null);
+        mPrivacyDisclaimerHeaderItem = new StandardHeaderItem(0, null);
+        mClearBrowsingDataButtonHeaderItem = new StandardHeaderItem(1, null);
         mClearBrowsingDataButtonVisible = true;
-        mAppFilterHeaderItem = new HeaderItem(0, null);
-        mHistorySyncPromoHeaderItem = new HeaderItem(2, null);
+        mAppFilterHeaderItem = new StandardHeaderItem(0, null);
+        mHistorySyncPromoHeaderItem = new PersistentHeaderItem(2, null);
     }
 
     void generateFooterItemsForTest(MoreProgressButton mockButton) {

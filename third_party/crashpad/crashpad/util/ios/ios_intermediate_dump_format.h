@@ -59,6 +59,9 @@ namespace internal {
     TD(kModuleExtraMemoryRegions, 3019) \
     TD(kModuleExtraMemoryRegionAddress, 3020) \
     TD(kModuleExtraMemoryRegionData, 3021) \
+    TD(kModuleIntermediateDumpExtraMemoryRegions, 3022) \
+    TD(kModuleIntermediateDumpExtraMemoryRegionAddress, 3023) \
+    TD(kModuleIntermediateDumpExtraMemoryRegionData, 3024) \
   TD(kProcessInfo, 4000) \
     TD(kParentPID, 4001) \
     TD(kPID, 4002) \

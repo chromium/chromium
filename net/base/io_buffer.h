@@ -106,6 +106,12 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
     return base::as_byte_span(span_);
   }
 
+  // Convenience methods for accessing the buffer as a span.
+  base::span<uint8_t> first(size_t count) { return span().first(count); }
+  base::span<const uint8_t> first(size_t count) const {
+    return span().first(count);
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<IOBuffer>;
 

@@ -83,7 +83,7 @@ void BuildFlatbuffer(
               VLOG(1) << "Masked Domain List was empty";
               return std::nullopt;
             }
-            ip_protection::Telemetry().MdlSize(mdl->ByteSizeLong() / 1024);
+            ip_protection::Telemetry().MdlSize(mdl->ByteSizeLong());
             const base::Time start_time = base::Time::Now();
             if (!ip_protection::MaskedDomainList::BuildFromProto(
                     *mdl, default_mdl_file_path,

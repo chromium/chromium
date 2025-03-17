@@ -2254,7 +2254,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2530166226437958497">Troubleshooting</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />Something went wrong and <ph name="DEVICE_OS" /> couldn’t be installed.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />For more help, visit: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">Get more info</translation>
 <translation id="2532144599248877204">Extends battery life by keeping your battery around 80%. Battery will fully charge before you typically disconnect from power.</translation>
 <translation id="2532146950330687938">Getting the device ready…</translation>
 <translation id="2532198298278778531">Manage Secure DNS in Chrome OS Flex settings</translation>
@@ -2810,7 +2809,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2921081876747860777">Please create a password to protect your local data.</translation>
 <translation id="2923006468155067296">Your <ph name="DEVICE_TYPE" /> will be locked now.
 <ph name="DOMAIN" /> requires you to keep your smart card inserted.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. Other <ph name="OTHER_TASK_NUM" /> tasks in the same task group: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">Remove this account</translation>
 <translation id="2923644930701689793">Access your phone's camera roll</translation>
 <translation id="292371311537977079">Chrome settings</translation>
@@ -6916,6 +6914,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> will pause soon</translation>
 <translation id="586567932979200359">You're running <ph name="PRODUCT_NAME" /> from its disk image. Installing it on your computer lets you run it without the disk image and ensures that it will be kept up to date.</translation>
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
+<translation id="5866363217037791319">End task</translation>
 <translation id="5868434909835797817">Microphone is off on your device</translation>
 <translation id="5868479397518301468">Sign in timed out</translation>
 <translation id="5868822853313956582">Follow device colours</translation>
@@ -7353,7 +7352,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6185151644843671709">Passkey saved and PIN created</translation>
 <translation id="6186177419203903310">This will enable notifications for all new USB peripherals across the system. Are you sure that you want to continue?</translation>
 <translation id="6190953336330058278">Phone Hub apps</translation>
-<translation id="6192333916571137726">Download File</translation>
+<translation id="6192333916571137726">Download file</translation>
 <translation id="6192413564913825901">Move to All bookmarks</translation>
 <translation id="6194333736420234626">Payment methods</translation>
 <translation id="6195005504600220730">Read information about your browser, OS and device</translation>
@@ -10642,7 +10641,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8524841856047224176">Personalise your camera backgrounds for video calls and more</translation>
 <translation id="8525306231823319788">Full screen</translation>
 <translation id="8525461909394569609">This app contains web content from</translation>
-<translation id="8526313996927074827">Insert links, emojis and more. You can also get help writing with Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527257351549797148">Your organisation may require enrolment so you can access apps, extensions, and more. This also allows your organisation to manage things like security and device settings.</translation>
@@ -11098,6 +11096,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="883924185304953854">Search by image</translation>
 <translation id="8841786407272321022">Password saved on this device only. To save new passwords in your Google Account, update Google Play services.</translation>
 <translation id="8841843049738266382">Read and change the allowlist users</translation>
+<translation id="8841884135319684422">End task</translation>
 <translation id="8842594465773264717">Delete this fingerprint</translation>
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8846132060409673887">Read the manufacturer and model of this computer</translation>

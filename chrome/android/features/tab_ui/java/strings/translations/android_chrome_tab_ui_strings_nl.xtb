@@ -194,6 +194,7 @@ Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>
 <translation id="8205266828577616993">Tabblad omhoog verplaatsen</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> minuut geleden geüpdatet}other{<ph name="NUM_MINS_MANY" /> minuten geleden geüpdatet}}</translation>
+<translation id="8236097722223016103">Toevoegen aan bookmarks</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8338427544764842461">Je tabbladgroepen worden hier opgeslagen en worden geüpdatet op al je ingelogde apparaten</translation>
 <translation id="8344020191144794051">{NUMBER_OF_TABS,plural, =1{Gedeelde tabbladgroep met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen, kleur <ph name="COLOR_NAME" />.}other{Gedeelde tabbladgroep met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen, kleur <ph name="COLOR_NAME" />.}}</translation>

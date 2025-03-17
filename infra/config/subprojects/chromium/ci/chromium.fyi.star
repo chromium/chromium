@@ -728,7 +728,6 @@ ci.builder(
             "strip_debug_info",
             "android_fastbuild",
             "webview_trichrome",
-            "no_secondary_abi",
             "webview_shell",
         ],
     ),
@@ -1252,6 +1251,11 @@ ci.builder(
                 experiment_percentage = 100,
                 swarming = targets.swarming(
                     shards = 7,
+                ),
+            ),
+            "unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
                 ),
             ),
         },

@@ -11,7 +11,6 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_test_utils.h"
-#import "ios/chrome/browser/download/model/auto_deletion/scheduled_file_queue.h"
 #import "ios/chrome/browser/download/model/auto_deletion/scheduler.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -165,6 +164,21 @@ TEST_F(AutoDeletionServiceTest, DeleteAllFilesScheduledForDeletion) {
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 10u);
 
   run_loop.Run();
+
+  EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 0u);
+}
+
+// Tests that the auto deletion service untracks the scheduled file.
+TEST_F(AutoDeletionServiceTest, UntrackScheduledFileWhenServiceIsDisabled) {
+  // Create web::DownloadTask & schedule download for auto deletion.
+  std::unique_ptr<web::DownloadTask> task = CreateTask(directory());
+  web::DownloadTask* task_ptr = task.get();
+  service()->ScheduleFileForDeletion(std::move(task_ptr));
+  // Check that the pref has one value.
+  ASSERT_EQ(GetNumberOfFilesScheduledForDeletion(), 1u);
+
+  // This function is invoked when the Auto-deletion feature is disabled.
+  service()->Clear();
 
   EXPECT_EQ(GetNumberOfFilesScheduledForDeletion(), 0u);
 }

@@ -532,9 +532,6 @@ Widget* BubbleDialogDelegateView::CreateBubble(
   return CreateBubble(base::WrapUnique(delegate_view), ownership);
 }
 
-BubbleDialogDelegateView::BubbleDialogDelegateView()
-    : BubbleDialogDelegateView(nullptr, BubbleBorder::TOP_LEFT) {}
-
 BubbleDialogDelegateView::BubbleDialogDelegateView(View* anchor_view,
                                                    BubbleBorder::Arrow arrow,
                                                    BubbleBorder::Shadow shadow,

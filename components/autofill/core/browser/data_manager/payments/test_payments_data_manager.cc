@@ -295,6 +295,11 @@ void TestPaymentsDataManager::AddBnplIssuer(const BnplIssuer& bnpl_issuer) {
   NotifyObservers();
 }
 
+void TestPaymentsDataManager::ClearBnplIssuers() {
+  linked_bnpl_issuers_.clear();
+  unlinked_bnpl_issuers_.clear();
+}
+
 void TestPaymentsDataManager::AddAutofillOfferData(
     const AutofillOfferData& offer_data) {
   std::unique_ptr<AutofillOfferData> data =

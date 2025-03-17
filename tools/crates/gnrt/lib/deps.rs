@@ -21,7 +21,6 @@ use guppy::{
         PackageMetadata, PackageQuery, PackageSet,
     },
     platform::PlatformStatus,
-    PackageId,
 };
 use itertools::Itertools;
 pub use semver::Version;
@@ -72,6 +71,30 @@ pub struct Package {
 impl Package {
     pub fn crate_id(&self) -> crates::VendoredCrate {
         crates::VendoredCrate { name: self.package_name.clone(), version: self.version.clone() }
+    }
+}
+
+#[derive(Debug, Eq, Hash, Ord, PartialOrd, PartialEq)]
+pub struct PackageId {
+    name: String,
+    version: Version,
+}
+
+impl From<&Package> for PackageId {
+    fn from(p: &Package) -> Self {
+        Self { name: p.package_name.clone(), version: p.version.clone() }
+    }
+}
+
+impl<'g> From<&PackageMetadata<'g>> for PackageId {
+    fn from(p: &PackageMetadata<'g>) -> Self {
+        Self { name: p.name().to_string(), version: p.version().clone() }
+    }
+}
+
+impl From<&cargo_metadata::Package> for PackageId {
+    fn from(p: &cargo_metadata::Package) -> Self {
+        Self { name: p.name.clone(), version: p.version.clone() }
     }
 }
 
@@ -130,31 +153,13 @@ pub struct BinTarget {
 pub enum LibType {
     /// A normal Rust rlib library.
     Rlib,
-    /// A Rust dynamic library. See
-    /// https://doc.rust-lang.org/reference/linkage.html for details and the
-    /// distinction between dylib and cdylib.
-    Dylib,
-    /// A C-compatible dynamic library. See
-    /// https://doc.rust-lang.org/reference/linkage.html for details and the
-    /// distinction between dylib and cdylib.
-    Cdylib,
     /// A procedural macro.
     ProcMacro,
 }
 
 impl LibType {
     fn from_crate_types(crate_types: &[String]) -> Result<Self> {
-        // TODO(lukasza): Consider deleting `cdylib` support in
-        // `//build/rust/cargo_crate.gni` and instead returning `Rlib` *here*
-        // (i.e. deleting `CDYLIB_CRATE_TYPE`, adding `"cdylib"` to
-        // `RLIB_CRATE_TYPES`, copying the comment from `cargo_crate.gni` and
-        // referencing https://crbug.com/40273653).
-        const CDYLIB_CRATE_TYPE: &str = "cdylib";
-        if crate_types.iter().any(|x| *x == CDYLIB_CRATE_TYPE) {
-            return Ok(LibType::Cdylib);
-        }
-
-        const RLIB_CRATE_TYPES: [&str; 2] = [
+        const RLIB_CRATE_TYPES: [&str; 3] = [
             // Naturally "rlib" maps to `LibType::Rlib`.
             "rlib",
             // https://doc.rust-lang.org/nightly/reference/linkage.html#r-link.lib
@@ -165,6 +170,16 @@ impl LibType {
             //
             // For Chromium this means `Rlib`.
             "lib",
+            // Crates are rarely cdylibs. The example encountered so far aims to expose a C API to
+            // other code. In a Chromium context, we don't want to build that as a dylib for a
+            // couple of reasons:
+            // * rust_shared_library does not work on Mac. rustc does not know how to export the
+            //   __llvm_profile_raw_version symbol.
+            // * even if it did work, this might require us to distribute extra binaries
+            //   (.so/.dylib etc.)
+            // For the only case we've had so far, it makes more sense to build the code as a
+            // static^H^H^Hrlib library which we can then link into downstream binaries.
+            "cdylib",
         ];
         for rlib_crate_type in RLIB_CRATE_TYPES.iter() {
             if crate_types.iter().any(|x| *x == *rlib_crate_type) {
@@ -192,8 +207,6 @@ impl std::fmt::Display for LibType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match *self {
             Self::Rlib => f.write_str("rlib"),
-            Self::Dylib => f.write_str("dylib"),
-            Self::Cdylib => f.write_str("cdylib"),
             Self::ProcMacro => f.write_str("proc-macro"),
         }
     }
@@ -319,7 +332,9 @@ struct PackageResolver<'a> {
 
 /// Gets the key to use in `cargo_set_links` `HashSet`.
 fn get_link_key(link: &PackageLink) -> (PackageId, PackageId) {
-    (link.from().id().clone(), link.to().id().clone())
+    let from = &link.from();
+    let to = &link.to();
+    (from.into(), to.into())
 }
 
 fn get_link_condition(link: &PackageLink, dep_kind: guppy::DependencyKind) -> Condition {

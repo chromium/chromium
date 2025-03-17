@@ -85,6 +85,9 @@ public class WebViewChromiumAwInit {
 
     private static final String HTTP_AUTH_DATABASE_FILE = "http_auth.db";
 
+    private static final String ASSET_PATH_WORKAROUND_HISTOGRAM_NAME =
+            "Android.WebView.AssetPathWorkaroundUsed.StartChromiumLocked";
+
     public static class WebViewStartUpDiagnostics {
         private final Object mLock = new Object();
 
@@ -336,7 +339,9 @@ public class WebViewChromiumAwInit {
             // mechanism might not help.
             try {
                 DeviceFormFactor.isTablet();
+                RecordHistogram.recordBooleanHistogram(ASSET_PATH_WORKAROUND_HISTOGRAM_NAME, false);
             } catch (Resources.NotFoundException e) {
+                RecordHistogram.recordBooleanHistogram(ASSET_PATH_WORKAROUND_HISTOGRAM_NAME, true);
                 mFactory.addWebViewAssetPath(context);
             }
 

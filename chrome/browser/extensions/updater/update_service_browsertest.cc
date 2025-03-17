@@ -95,7 +95,7 @@ class UpdateServiceTest : public ExtensionUpdateClientBaseTest {
 
   base::Value::Dict GetApp(const base::Value::Dict& root, size_t index) {
     const base::Value::List* app_list =
-        root.FindDict("request")->FindList("app");
+        root.FindDict("request")->FindList("apps");
     EXPECT_GT(app_list->size(), index);
     return CHECK_DEREF(app_list)[index].Clone().TakeDict();
   }
@@ -529,7 +529,7 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
 
   base::Value::Dict GetApp(const base::Value::Dict& root, size_t index) {
     const base::Value::List* app_list =
-        root.FindDict("request")->FindList("app");
+        root.FindDict("request")->FindList("apps");
     EXPECT_GT(app_list->size(), index);
     return CHECK_DEREF(app_list)[index].Clone().TakeDict();
   }

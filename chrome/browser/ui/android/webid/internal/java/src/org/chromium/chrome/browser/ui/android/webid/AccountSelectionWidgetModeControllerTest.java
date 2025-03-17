@@ -94,7 +94,7 @@ public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJU
     public void testShowAccountsWithoutBrandIcons() {
         mMediator.showAccounts(
                 mTestEtldPlusOne,
-                Arrays.asList(mAnaAccount),
+                Arrays.asList(mAnaAccountWithoutBrandIcons),
                 Arrays.asList(mIdpDataWithoutIcons),
                 /* isAutoReauthn= */ false,
                 /* newAccounts= */ Collections.EMPTY_LIST);

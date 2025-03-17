@@ -140,7 +140,7 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private boolean shouldShowIconsOnly(AppWidgetManager appWidgetManager, int appWidgetId) {
+    public static boolean shouldShowIconsOnly(AppWidgetManager appWidgetManager, int appWidgetId) {
         int widthDp =
                 appWidgetManager
                         .getAppWidgetOptions(appWidgetId)

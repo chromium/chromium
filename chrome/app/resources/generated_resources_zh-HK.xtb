@@ -2254,7 +2254,6 @@
 <translation id="2530166226437958497">解決疑難</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />發生問題，系統無法安裝 <ph name="DEVICE_OS" />。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請瀏覽：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">取得更多資訊</translation>
 <translation id="2532144599248877204">將電池電量保持在 80% 左右，以延長電池壽命。電池通常會在您拔除電源前完全充滿。</translation>
 <translation id="2532146950330687938">正在準備裝置…</translation>
 <translation id="2532198298278778531">在 ChromeOS Flex 設定中管理安全 DNS</translation>
@@ -2809,7 +2808,6 @@
 <translation id="2921081876747860777">請建立密碼以保護您的本機資料。</translation>
 <translation id="2923006468155067296">系統會立即鎖定 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 需要您繼續插入智能卡。</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />。同一工作群組有另外 <ph name="OTHER_TASK_NUM" /> 項工作：<ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">移除此帳戶</translation>
 <translation id="2923644930701689793">存取手機的相機膠卷</translation>
 <translation id="292371311537977079">Chrome 設定</translation>
@@ -6902,6 +6900,7 @@
 <translation id="5865508026715185451">「<ph name="APP_NAME" />」即將暫停</translation>
 <translation id="586567932979200359">您正在透過磁碟映像執行 <ph name="PRODUCT_NAME" />。如直接在電腦上安裝程式，以後無需透過磁碟映像即可直接執行，並且能隨時使用最新的版本。</translation>
 <translation id="5865733239029070421">自動將使用情況統計和當機報告傳送給 Google</translation>
+<translation id="5866363217037791319">結束工作</translation>
 <translation id="5868434909835797817">你部裝置嘅咪閂咗</translation>
 <translation id="5868479397518301468">登入逾時</translation>
 <translation id="5868822853313956582">按照裝置色彩配置</translation>
@@ -10626,7 +10625,6 @@
 <translation id="8524841856047224176">為視像電話等場合個人化攝錄機背景</translation>
 <translation id="8525306231823319788">全螢幕</translation>
 <translation id="8525461909394569609">此應用程式包含以下來源的網絡內容</translation>
-<translation id="8526313996927074827">插入連結、Emoji 等內容。你亦可透過 Google AI 寫作。</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">喇叭</translation>
 <translation id="8527257351549797148">機構可能會要求你註冊，才能存取應用程式、擴充程式和其他內容。這亦允許機構管理安全性和裝置設定等項目。</translation>
@@ -11080,6 +11078,7 @@
 <translation id="883924185304953854">以圖搜尋</translation>
 <translation id="8841786407272321022">密碼只會儲存在此裝置上。如要將新密碼儲存至 Google 帳戶，請更新 Google Play 服務。</translation>
 <translation id="8841843049738266382">讀取及變更許可名單上的使用者</translation>
+<translation id="8841884135319684422">結束工作</translation>
 <translation id="8842594465773264717">刪除此指紋</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8846132060409673887">閱讀此電腦的生產商和型號資訊</translation>

@@ -1300,6 +1300,7 @@
 <translation id="7040230719604914234">Símafyrirtæki</translation>
 <translation id="7040729769968826896">Leyfa að bera kennsl á mælendur</translation>
 <translation id="7041549558901442110">Tækið er ekki tengt.</translation>
+<translation id="704183341263526038">Júpíter</translation>
 <translation id="7046522406494308071">Endurstilla alla flýtilykla á sjálfgildi?</translation>
 <translation id="7049916119678019302">Sækja líkan textauppskriftar í stillingar</translation>
 <translation id="7058278511608979688">Ljúka og vista</translation>
@@ -1394,6 +1395,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7388345524791662148">Fleiri valkostir fyrir <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Innbyggður snertiflötur</translation>
 <translation id="7397270852490618635">Slökkva á ljósu þema</translation>
+<translation id="7400166052988585408">Kennarinn þinn mun læsa skjánum þínum eftir <ph name="NUM_SECONDS" /> sekúndur</translation>
 <translation id="7401543881546089382">Eyða flýtileið</translation>
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> er tilbúið í uppfærslu</translation>
 <translation id="741244894080940828">umreikningur</translation>

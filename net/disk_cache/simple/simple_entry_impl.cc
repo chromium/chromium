@@ -487,8 +487,7 @@ int SimpleEntryImpl::WriteData(int stream_index,
     if (buf) {
       op_buf = base::MakeRefCounted<net::IOBufferWithSize>(buf_len);
       // Note: buf_len >= 0 per check at function entry.
-      op_buf->span().copy_from(
-          buf->span().first(static_cast<unsigned>(buf_len)));
+      op_buf->span().copy_from(buf->first(static_cast<unsigned>(buf_len)));
     }
     op_callback = CompletionOnceCallback();
     ret_value = buf_len;
@@ -1705,7 +1704,7 @@ void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   if (offset == 0 && truncate) {
     stream_0_data_->SetCapacity(buf_len);
     stream_0_data_->span().copy_from(
-        buf->span().first(base::checked_cast<size_t>(buf_len)));
+        buf->first(base::checked_cast<size_t>(buf_len)));
     data_size_[0] = buf_len;
   } else {
     const int buffer_size =
@@ -1723,8 +1722,7 @@ void SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
     if (buf) {
       stream_0_data_->span()
           .subspan(base::checked_cast<size_t>(offset))
-          .copy_prefix_from(
-              buf->span().first(base::checked_cast<size_t>(buf_len)));
+          .copy_prefix_from(buf->first(base::checked_cast<size_t>(buf_len)));
     }
     data_size_[0] = buffer_size;
   }

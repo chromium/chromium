@@ -117,7 +117,7 @@ TEST_P(TextFragmentPainterTest, WheelEventListenerOnInlineElement) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(
     <style>body {margin: 0}</style>
-    <div id="parent" style="width: 100px; height: 100px; position: absolute">
+    <div id="parent" style="width: 100px; height: 100px; will-change: opacity">
       <span id="child" style="font: 50px Ahem">ABC</span>
     </div>
   )HTML");

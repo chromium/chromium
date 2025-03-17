@@ -308,18 +308,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2025-08-10">
-<!-- Name completed by histogram_suffixes SharingChannelType,
-    SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
-
+<histogram name="Sharing.SendMessageResult{SharingDevicePlatform}"
+    enum="SharingSendMessageResult" expires_after="2025-08-10">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
     Result of sending a SharingMessage by the Sharing service. Logged after the
     send message callback is run. Not logged for sending ack messages. All
-    platforms.
+    platforms. {SharingDevicePlatform}
   </summary>
+  <token key="SharingDevicePlatform">
+    <variant name=""/>
+    <variant name=".Android" summary="Android OS"/>
+    <variant name=".ChromeOS" summary="Chrome OS"/>
+    <variant name=".iOS" summary="iOS"/>
+    <variant name=".Linux" summary="Linux OS"/>
+    <variant name=".Mac" summary="Mac OS"/>
+    <variant name=".Server" summary="Server"/>
+    <variant name=".Unknown" summary="Device type unknown"/>
+    <variant name=".Windows" summary="Windows OS"/>
+  </token>
 </histogram>
 
 <histogram name="Sharing.SendMessageUsingSync" enum="Boolean"

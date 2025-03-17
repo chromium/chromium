@@ -626,29 +626,13 @@ TEST_F(AudioRendererMixerManagerTest, LatencyMixing) {
   EXPECT_EQ(mixer3, mixer4);
   EXPECT_EQ(2u, mixer_count());  // Same latency => same mixer.
 
-  AudioRendererMixer* mixer5 = GetMixer(
-      kLocalFrameToken, kFrameToken, params, AudioLatency::Type::kInteractive,
-      kDefaultDeviceId, SinkUseState::kNewSink);
-  ASSERT_TRUE(mixer5);
-  EXPECT_EQ(3u, mixer_count());  // Another latency => another mixer.
-
-  AudioRendererMixer* mixer6 = GetMixer(
-      kLocalFrameToken, kFrameToken, params, AudioLatency::Type::kInteractive,
-      kDefaultDeviceId, SinkUseState::kExistingSink);
-  EXPECT_EQ(mixer5, mixer6);
-  EXPECT_EQ(3u, mixer_count());  // Same latency => same mixer.
-
   ReturnMixer(mixer1);
-  EXPECT_EQ(3u, mixer_count());
+  EXPECT_EQ(2u, mixer_count());
   ReturnMixer(mixer2);
-  EXPECT_EQ(2u, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer3);
-  EXPECT_EQ(2u, mixer_count());
+  EXPECT_EQ(1u, mixer_count());
   ReturnMixer(mixer4);
-  EXPECT_EQ(1u, mixer_count());
-  ReturnMixer(mixer5);
-  EXPECT_EQ(1u, mixer_count());
-  ReturnMixer(mixer6);
   EXPECT_EQ(0u, mixer_count());
 }
 
@@ -913,42 +897,6 @@ TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyRtcFakeAudio) {
   // 10 ms at 32000 is 320 frames per buffer. Expect it on all the platforms for
   // fake audio output.
   EXPECT_EQ(320, mixer->get_output_params_for_testing().frames_per_buffer());
-
-  ReturnMixer(mixer);
-}
-
-// Verify output bufer size of the mixer is correctly adjusted for Interactive
-// latency.
-TEST_F(AudioRendererMixerManagerTest, MixerParamsLatencyInteractive) {
-  mock_sink_ = CreateNormalSink();
-
-  // Expecting hardware buffer size of 128 frames
-  EXPECT_EQ(44100,
-            mock_sink_->GetOutputDeviceInfo().output_params().sample_rate());
-  // Expecting hardware buffer size of 128 frames
-  EXPECT_EQ(
-      128,
-      mock_sink_->GetOutputDeviceInfo().output_params().frames_per_buffer());
-
-  media::AudioParameters params(
-      AudioParameters::AUDIO_PCM_LINEAR,
-      media::ChannelLayoutConfig::FromLayout<kChannelLayout>(), 32000, 512);
-  params.set_latency_tag(AudioLatency::Type::kInteractive);
-
-  AudioRendererMixer* mixer =
-      GetMixer(kLocalFrameToken, kFrameToken, params, params.latency_tag(),
-               kDefaultDeviceId, SinkUseState::kNewSink);
-
-  if (AudioLatency::IsResamplingPassthroughSupported(params.latency_tag())) {
-    // Expecting input sample rate.
-    EXPECT_EQ(32000, mixer->get_output_params_for_testing().sample_rate());
-  } else {
-    // Expecting hardware sample rate.
-    EXPECT_EQ(44100, mixer->get_output_params_for_testing().sample_rate());
-  }
-
-  // Expect hardware buffer size.
-  EXPECT_EQ(128, mixer->get_output_params_for_testing().frames_per_buffer());
 
   ReturnMixer(mixer);
 }

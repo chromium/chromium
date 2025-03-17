@@ -44,21 +44,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduling.BeginImplFrameLatency2" units="microseconds"
-    expires_after="M85">
-  <owner>stanisc@chromium.org</owner>
-  <summary>
-    The time from v-sync to when the main side actually starts the
-    BeginImplFrame.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram name="Scheduling.DBusSchedQoS.PidReusedOnSetProcessState"
     enum="PidReuseResult" expires_after="2025-08-24">
   <owner>kawasin@google.com</owner>
@@ -387,6 +372,27 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Length" variants="Length"/>
   <token key="NamedThread" variants="NamedThread"/>
+</histogram>
+
+<histogram
+    name="Scheduling.{CompositorTimingHistoryProcess}BeginImplFrameLatency2"
+    units="microseconds" expires_after="M85">
+  <owner>stanisc@chromium.org</owner>
+  <summary>
+    The time from v-sync to when the main side actually starts the
+    BeginImplFrame.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution. {CompositorTimingHistoryProcess}
+  </summary>
+  <token key="CompositorTimingHistoryProcess">
+    <variant name=""/>
+    <variant name="Browser." summary=""/>
+    <variant name="Renderer." summary=""/>
+  </token>
 </histogram>
 
 <histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"

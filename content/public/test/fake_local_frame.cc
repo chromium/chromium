@@ -242,4 +242,8 @@ void FakeLocalFrame::UpdatePrerenderURL(const ::GURL& matched_url,
   std::move(callback).Run();
 }
 
+void FakeLocalFrame::GetScrollPosition(GetScrollPositionCallback callback) {
+  std::move(callback).Run(gfx::Point(0, 0));
+}
+
 }  // namespace content

@@ -21,7 +21,7 @@ found in the LICENSE file.
        android:orientation="vertical">
 
        <org.chromium.components.browser_ui.widget.BoundedLinearLayout
-           android:id="@+id/privacy_sandbox_consent_eea_view"
+           android:id="@+id/privacy_sandbox_dialog_view"
            android:layout_width="match_parent"
            android:layout_height="match_parent"
            android:orientation="vertical"
@@ -257,14 +257,14 @@ found in the LICENSE file.
                            style="@style/HorizontalDivider" />
 
                    <LinearLayout
-                       android:id="@+id/ad_measurement_dropdown_element"
+                       android:id="@+id/dropdown_element"
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
                        android:layout_gravity="center"
                        android:orientation="horizontal">
 
                        <TextView
-                           android:id="@+id/ad_measurement_dropdown_title"
+                           android:id="@+id/dropdown_title"
                            android:layout_weight="1"
                            android:layout_width="0dp"
                            android:layout_height="wrap_content"
@@ -274,13 +274,13 @@ found in the LICENSE file.
                            style="@style/TextAppearance.TextMedium.Secondary" />
 
                        <org.chromium.ui.widget.CheckableImageView
-                           android:id="@+id/ad_measurement_expand_arrow"
+                           android:id="@+id/dropdown_element_expand_arrow"
                            android:layout_width="20dp"
                            android:layout_height="@dimen/privacy_sandbox_consent_dropdown_button_height_v3"/>
                    </LinearLayout>
 
                    <LinearLayout
-                        android:id="@+id/ad_measurement_dropdown_container"
+                        android:id="@+id/dropdown_container"
                         android:orientation="vertical"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

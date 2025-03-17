@@ -222,10 +222,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}2"
-    enum="KeyboardShortcutsSemanticMeaning" expires_after="2025-08-30">
+<!-- LINT.IfChange(KeyboardShortcutsSemanticMeaning) -->
+
+<histogram name="Accessibility.Android.KeyboardShortcut.{ScreenReaderState}3"
+    enum="KeyboardShortcutsSemanticMeaning" expires_after="2026-03-12">
   <owner>mschillaci@google.com</owner>
   <owner>katie@chromium.org</owner>
+  <owner>jhimawan@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     When a keyboard shortcut is used on Android, tracks the action of the
@@ -237,6 +240,8 @@ chromium-metrics-reviews@google.com.
         summary="User is using a screen reader"/>
   </token>
 </histogram>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning) -->
 
 <histogram name="Accessibility.Android.OnDemand.EventsDropped" units="count"
     expires_after="2025-09-07">
@@ -3474,6 +3479,7 @@ even if they fit the naming pattern. -->
                  such as Accessibility.WinJAWS/WinNVDA, or
                  Accessibility.ModeFlag"/>
     <variant name="WinSupernova" summary="Windows, specifically Supernova."/>
+    <variant name="WinZDSR" summary="Windows, specifically ZDSR (Zhengdu)"/>
   </token>
   <token key="ReportDelay" variants="ReportDelay"/>
 </histogram>

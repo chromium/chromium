@@ -13,39 +13,36 @@ import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomShee
 import static org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetProperties.PRICE_TRACKING_TITLE;
 
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
-import androidx.core.widget.TextViewCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ButtonCompat;
 
 /** ViewBinder for the price tracking bottom sheet content. */
 public class PriceTrackingBottomSheetContentViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        ButtonCompat priceTrackingButton =
-                (ButtonCompat) view.findViewById(R.id.price_tracking_button);
+        View priceTrackingButton = view.findViewById(R.id.price_tracking_button);
+        TextView priceTrackingButtonText =
+                (TextView) priceTrackingButton.findViewById(R.id.price_tracking_button_text);
+        ImageView priceTrackingButtonIcon =
+                (ImageView) priceTrackingButton.findViewById(R.id.price_tracking_button_icon);
         if (PRICE_TRACKING_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_tracking_title))
                     .setText(model.get(PRICE_TRACKING_TITLE));
         } else if (PRICE_TRACKING_BUTTON_TEXT == propertyKey) {
-            priceTrackingButton.setText(model.get(PRICE_TRACKING_BUTTON_TEXT));
+            priceTrackingButtonText.setText(model.get(PRICE_TRACKING_BUTTON_TEXT));
         } else if (PRICE_TRACKING_BUTTON_ICON == propertyKey) {
-            // Set price tracking button icon at the start position of the button.
-            priceTrackingButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                    /* start= */ model.get(PRICE_TRACKING_BUTTON_ICON),
-                    /* top= */ Resources.ID_NULL,
-                    /* end= */ Resources.ID_NULL,
-                    /* bottom= */ Resources.ID_NULL);
+            priceTrackingButtonIcon.setImageResource(model.get(PRICE_TRACKING_BUTTON_ICON));
         } else if (PRICE_TRACKING_BUTTON_FOREGROUND_COLOR == propertyKey) {
-            priceTrackingButton.setTextColor(model.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
-            TextViewCompat.setCompoundDrawableTintList(
-                    priceTrackingButton,
+            priceTrackingButtonText.setTextColor(model.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR));
+            ImageViewCompat.setImageTintList(
+                    priceTrackingButtonIcon,
                     ColorStateList.valueOf(model.get(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR)));
         } else if (PRICE_TRACKING_BUTTON_BACKGROUND_COLOR == propertyKey) {
             ViewCompat.setBackgroundTintList(

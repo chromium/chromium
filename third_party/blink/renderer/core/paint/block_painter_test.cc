@@ -73,8 +73,8 @@ TEST_P(BlockPainterTest, BlockingWheelEventRectSubsequenceCaching) {
     <style>
       body { margin: 0; }
       #stacking-context {
-        position: absolute;
-        z-index: 1;
+        will-change: transform;
+        width: 100px;
       }
       #wheelhandler {
         width: 100px;
@@ -179,7 +179,7 @@ TEST_P(BlockPainterTest, BlockingWheelRectOverflowingContents) {
         width: 100px;
         height: 100px;
         background-color: blue;
-        position: absolute;
+        will-change: transform;
       }
       #child {
         width: 10px;
@@ -346,7 +346,7 @@ TEST_P(BlockPainterTest, TouchActionRectSubsequenceCaching) {
       body { margin: 0; }
       #stacking-context {
         position: absolute;
-        z-index: 1;
+        will-change: transform;
       }
       #touchaction {
         width: 100px;

@@ -248,11 +248,13 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (void)notifyHandlerShowPromo {
-  // The count of past non-modal promo interactions is cached because multiple
-  // interactions may be logged for the current non-modal promo impression. This
-  // makes sure we don't over-increment the interactions count value.
-  _userInteractionWithNonModalPromoCount =
-      UserInteractionWithNonModalPromoCount();
+  if (!IsNonModalPromoMigrationEnabled()) {
+    // The count of past non-modal promo interactions is cached because multiple
+    // interactions may be logged for the current non-modal promo impression.
+    // This makes sure we don't over-increment the interactions count value.
+    _userInteractionWithNonModalPromoCount =
+        UserInteractionWithNonModalPromoCount();
+  }
 
   if (!IsNonModalPromoMigrationEnabled() && IsNonModalPromoMigrationDone() &&
       self.tracker) {
@@ -275,7 +277,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
       !promoIsShowing) {
     LogNonModalPromoAction(NonModalPromoAction::kBackgroundCancel,
                            MetricTypeForPromoReason(currentPromoReason),
-                           [self nonModalPromoInteractionCount]);
+                           _userInteractionWithNonModalPromoCount);
   }
   [self cancelShowPromoTimer];
   [self dismissPromoAnimated:NO];
@@ -284,7 +286,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 - (void)logPromoAppear:(NonModalDefaultBrowserPromoReason)currentPromoReason {
   LogNonModalPromoAction(NonModalPromoAction::kAppear,
                          MetricTypeForPromoReason(currentPromoReason),
-                         [self nonModalPromoInteractionCount]);
+                         _userInteractionWithNonModalPromoCount);
 }
 
 - (void)logPromoAction:(NonModalDefaultBrowserPromoReason)currentPromoReason
@@ -293,7 +295,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
       IOSDefaultBrowserPromoAction::kActionButton);
   LogNonModalPromoAction(NonModalPromoAction::kAccepted,
                          MetricTypeForPromoReason(currentPromoReason),
-                         [self nonModalPromoInteractionCount]);
+                         _userInteractionWithNonModalPromoCount);
   LogNonModalTimeOnScreen(promoShownTime);
   LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 
@@ -309,7 +311,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   LogNonModalPromoAction(NonModalPromoAction::kDismiss,
                          MetricTypeForPromoReason(currentPromoReason),
-                         [self nonModalPromoInteractionCount]);
+                         _userInteractionWithNonModalPromoCount);
   LogNonModalTimeOnScreen(promoShownTime);
   LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 }
@@ -318,7 +320,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
          promoShownTime:(base::TimeTicks)promoShownTime {
   LogNonModalPromoAction(NonModalPromoAction::kTimeout,
                          MetricTypeForPromoReason(currentPromoReason),
-                         [self nonModalPromoInteractionCount]);
+                         _userInteractionWithNonModalPromoCount);
   LogNonModalTimeOnScreen(promoShownTime);
   LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 }
@@ -370,8 +372,6 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (feature_engagement::Tracker*)tracker {
-  // TODO(crbug.com/401306954): Browser seems to become null in some cases when
-  // the app backgrounds.
   if (!_browser) {
     return nullptr;
   }
@@ -535,14 +535,29 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (void)showPromoTimerFinished {
+  // If the promo cannot be displayed or is already active, it will be canceled
+  // either by the user, after the timeout, when the app goes into the
+  // background, or when a new overlay appears. In any of these cases, the state
+  // will be cleared, making it safe to return early.
   if (![self promoCanBeDisplayed] || self.promoIsShowing) {
     return;
   }
 
-  if (IsNonModalPromoMigrationEnabled() && self.tracker &&
-      !self.tracker->ShouldTriggerHelpUI(
-          GetFeatureForPromoReason(self.currentPromoReason))) {
-    return;
+  if (IsNonModalPromoMigrationEnabled()) {
+    // If the tracker is null, the promo cannot be shown.
+    if (!self.tracker) {
+      return;
+    }
+
+    // Record the impression before calling ShouldTriggerHelpUI, as it will
+    // increase the impression count.
+    _userInteractionWithNonModalPromoCount =
+        [self nonModalPromoInteractionCount];
+
+    if (!self.tracker->ShouldTriggerHelpUI(
+            GetFeatureForPromoReason(self.currentPromoReason))) {
+      return;
+    }
   }
 
   _showPromoTimer = nullptr;
@@ -579,17 +594,8 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 }
 
 - (int)nonModalPromoInteractionCount {
-  if (!IsNonModalPromoMigrationEnabled()) {
-    return _userInteractionWithNonModalPromoCount;
-  }
-
-  // This is temporary fix to unblock crbug.com/399429580.
-  // TODO(crbug.com/401306954): Find a better solution, as the browser can
-  // become null in some cases when the app backgrounds and the impressions from
-  // the FET cannot be retrieved.
-  if (!self.tracker) {
-    return -1;
-  }
+  // This method can only be called if the tracker is not null.
+  CHECK(self.tracker);
 
   unsigned int interactions = 0;
   std::vector<std::pair<feature_engagement::EventConfig, int>> events =

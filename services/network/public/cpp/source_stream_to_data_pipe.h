@@ -49,7 +49,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SourceStreamToDataPipe {
   int DoBeginWriteComplete(int result);
   int DoReadData();
   int DoReadDataComplete(int result);
-  int DoCleanup(int result);
 
   void DidRead(int result);
   void OnDataPipeWritable(MojoResult result);

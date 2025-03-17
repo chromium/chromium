@@ -113,7 +113,7 @@ bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
 
 bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
   return pref_service_->GetBoolean(prefs::kIpProtectionEnabled) &&
-         base::FeatureList::IsEnabled(kIpProtectionV1);
+         base::FeatureList::IsEnabled(kIpProtectionUx);
 }
 
 bool TrackingProtectionSettings::IsFpProtectionEnabled() const {

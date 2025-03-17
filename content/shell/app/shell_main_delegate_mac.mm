@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/shell/app/shell_main_delegate_mac.h"
 
 #include <unistd.h>
@@ -15,6 +10,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/public/common/content_switches.h"
@@ -54,9 +50,9 @@ void EnsureCorrectResolutionSettings() {
       base::CommandLine::ForCurrentProcess()->argv();
   char** argv = new char*[original_argv.size() + 1];
   for (unsigned i = 0; i < original_argv.size(); ++i) {
-    argv[i] = const_cast<char*>(original_argv.at(i).c_str());
+    UNSAFE_TODO(argv[i]) = const_cast<char*>(original_argv.at(i).c_str());
   }
-  argv[original_argv.size()] = nullptr;
+  UNSAFE_TODO(argv[original_argv.size()]) = nullptr;
 
   CHECK(execvp(argv[0], argv));
 }

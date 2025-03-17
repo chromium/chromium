@@ -15,7 +15,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/guest_util.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #endif
 
 namespace extensions {

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -220,7 +221,9 @@ import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -291,7 +294,9 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1500,7 +1505,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
 
             super.onNewIntentWithNative(intent);
             if (!IntentHandler.shouldIgnoreIntent(intent, this, /* isCustomTab= */ false)) {
-                maybeHandleUrlIntent(intent);
+                @Nullable
+                TabGroupMetadata tabGroupMetadata = IntentHandler.getTabGroupMetadata(intent);
+                if (tabGroupMetadata != null) {
+                    maybeHandleGroupUrlsIntent(intent, tabGroupMetadata);
+                } else {
+                    maybeHandleUrlIntent(intent);
+                }
             }
 
             if (IntentUtils.isMainIntentFromLauncher(intent)) {
@@ -1549,6 +1560,69 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
                 tabIdToBringToFront,
                 intent);
+        return true;
+    }
+
+    /**
+     * @param intent The received intent.
+     * @param tabGroupMetadata The metadata of the tab group being processed.
+     * @return Whether the Intent was successfully handled.
+     */
+    private boolean maybeHandleGroupUrlsIntent(Intent intent, TabGroupMetadata tabGroupMetadata) {
+        final LinkedHashMap<Integer, String> tabIdsToUrls = tabGroupMetadata.tabIdsToUrls;
+        @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
+
+        // This should not be set for group URL intents.
+        int tabIdToBringToFront = IntentHandler.getBringTabToFrontId(intent);
+        assert tabIdToBringToFront == Tab.INVALID_TAB_ID;
+
+        ArrayList<Tab> tabs = new ArrayList();
+        for (Map.Entry<Integer, String> entry : tabIdsToUrls.entrySet()) {
+            int tabId = entry.getKey();
+            String url = entry.getValue();
+            assert tabId != Tab.INVALID_TAB_ID : "Invalid tab ID";
+            assert url != null : "URL is null";
+            assert !url.isEmpty() : "URL is empty";
+
+            // 1. Set intent tabId and url for each iteration.
+            IntentHandler.setTabId(intent, tabId);
+            intent.setData(Uri.parse(url));
+
+            // 2. Create LoadUrlParams for the given URL.
+            LoadUrlParams loadUrlParams =
+                    IntentHandler.createLoadUrlParamsForIntent(url, intent, mIntentHandlingTimeMs);
+
+            // 3. Handle MHTML files or special content intents if necessary.
+            // TODO(crbug.com/403293319) Properly handle MHTML intents to ensure they are handled
+            // synchronously with other tabs.
+            if (IntentHandler.isIntentForMhtmlFileOrContent(intent)
+                    && tabOpenType == TabOpenType.OPEN_NEW_TAB
+                    && loadUrlParams.getReferrer() == null
+                    && loadUrlParams.getVerbatimHeaders() == null) {
+                getProfileProviderSupplier()
+                        .runSyncOrOnAvailable(
+                                (profileProvider) -> {
+                                    handleMhtmlFileOrContentIntent(
+                                            profileProvider.getOriginalProfile(), url, intent);
+                                });
+                continue;
+            }
+
+            // 4. Process the intent and open a new tab for the URL.
+            Tab tab =
+                    processUrlViewIntent(
+                            loadUrlParams,
+                            tabOpenType,
+                            IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID),
+                            tabIdToBringToFront,
+                            intent);
+            tabs.add(tab);
+        }
+        TabGroupModelFilter tabGroupModelFilter =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(tabGroupMetadata.isIncognito);
+        TabGroupUtils.regroupTabs(tabGroupModelFilter, tabs, tabGroupMetadata);
         return true;
     }
 
@@ -1957,14 +2031,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
     }
 
     /** Processes a url view intent. */
-    private void processUrlViewIntent(
+    private @Nullable Tab processUrlViewIntent(
             LoadUrlParams loadUrlParams,
             @TabOpenType int tabOpenType,
             String externalAppId,
             int tabIdToBringToFront,
             Intent intent) {
         if (isActivityFinishingOrDestroyed()) {
-            return;
+            return null;
         }
         if (isProbablyFromChrome(intent, externalAppId)) {
             RecordUserAction.record("MobileTabbedModeViewIntentFromChrome");
@@ -1985,6 +2059,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
         boolean focus = false;
 
         TabModel tabModel = getCurrentTabModel();
+        final Tab resultTab;
         switch (tabOpenType) {
             case TabOpenType.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB:
                 mTabModelOrchestrator.tryToRestoreTabStateForUrl(url);
@@ -1993,8 +2068,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 if (tabToBeClobbered != null) {
                     TabModelUtils.setIndex(tabModel, tabToBeClobberedIndex);
                     tabToBeClobbered.reload();
+                    resultTab = tabToBeClobbered;
                 } else {
-                    launchIntent(loadUrlParams, externalAppId, true, intent);
+                    resultTab = launchIntent(loadUrlParams, externalAppId, true, intent);
                 }
                 int shortcutSource =
                         intent.getIntExtra(WebappConstants.EXTRA_SOURCE, ShortcutSource.UNKNOWN);
@@ -2036,12 +2112,14 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     if (tabIndex != TabModel.INVALID_TAB_INDEX) {
                         getTabModelSelector().selectModel(otherModel.isIncognito());
                         TabModelUtils.setIndex(otherModel, tabIndex);
+                        resultTab = otherModel.getTabAt(tabIndex);
                     } else {
                         Log.e(TAG, "Failed to bring tab to front because it doesn't exist.");
-                        return;
+                        return null;
                     }
                 } else {
                     TabModelUtils.setIndex(tabModel, tabIndex);
+                    resultTab = tabModel.getTabAt(tabIndex);
                 }
 
                 LayoutManagerChrome layoutManager = getLayoutManager();
@@ -2059,12 +2137,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 if (currentTab != null) {
                     RedirectHandlerTabHelper.updateIntentInTab(currentTab, intent);
                     currentTab.loadUrl(loadUrlParams);
+                    resultTab = currentTab;
                 } else {
-                    launchIntent(loadUrlParams, externalAppId, true, intent);
+                    resultTab = launchIntent(loadUrlParams, externalAppId, true, intent);
                 }
                 break;
             case TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB:
-                launchIntent(loadUrlParams, externalAppId, false, intent);
+                resultTab = launchIntent(loadUrlParams, externalAppId, false, intent);
                 break;
             case TabOpenType.REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB:
                 int tabId =
@@ -2075,7 +2154,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                 if (tabId != Tab.INVALID_TAB_ID) {
                     mTabModelOrchestrator.tryToRestoreTabStateForId(tabId);
                     int matchingTabIndex = TabModelUtils.getTabIndexById(tabModel, tabId);
-                    boolean loaded = false;
                     if (matchingTabIndex != TabModel.INVALID_TAB_INDEX) {
                         Tab tab = tabModel.getTabAt(matchingTabIndex);
                         String spec = tab.getUrl().getSpec();
@@ -2086,12 +2164,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                                                 TabOpenType.REUSE_TAB_ORIGINAL_URL_STRING))) {
                             tabModel.setIndex(matchingTabIndex, TabSelectionType.FROM_USER);
                             tab.loadUrl(loadUrlParams);
-                            loaded = true;
+                            resultTab = tab;
+                        } else {
+                            resultTab = launchIntent(loadUrlParams, externalAppId, false, intent);
                         }
+                    } else {
+                        resultTab = launchIntent(loadUrlParams, externalAppId, false, intent);
                     }
-                    if (!loaded) {
-                        launchIntent(loadUrlParams, externalAppId, false, intent);
-                    }
+                } else {
+                    resultTab = null;
                 }
                 break;
             case TabOpenType.OPEN_NEW_TAB:
@@ -2100,13 +2181,13 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     reportNewTabShortcutUsed(false);
                 }
 
-                launchIntent(loadUrlParams, externalAppId, true, intent);
+                resultTab = launchIntent(loadUrlParams, externalAppId, true, intent);
                 break;
             case TabOpenType.OPEN_NEW_INCOGNITO_TAB:
                 if (!TextUtils.equals(externalAppId, getPackageName())) {
                     assert false : "Only Chrome is allowed to open incognito tabs";
                     Log.e(TAG, "Only Chrome is allowed to open incognito tabs");
-                    return;
+                    return null;
                 }
 
                 if (!IncognitoUtils.isIncognitoModeEnabled(
@@ -2131,22 +2212,27 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                         Log.e(TAG, "Tried to open incognito tab while incognito disabled");
                     }
 
-                    return;
+                    return null;
                 }
 
                 if (url == null || url.equals(UrlConstants.NTP_URL)) {
                     if (fromLauncherShortcut) {
-                        getTabCreator(true)
-                                .launchUrl(
-                                        UrlConstants.NTP_URL, TabLaunchType.FROM_LAUNCHER_SHORTCUT);
+                        resultTab =
+                                getTabCreator(true)
+                                        .launchUrl(
+                                                UrlConstants.NTP_URL,
+                                                TabLaunchType.FROM_LAUNCHER_SHORTCUT);
                         recordLauncherShortcutAction(true);
                         reportNewTabShortcutUsed(true);
                     } else if (fromAppWidget) {
                         RecordUserAction.record("QuickActionSearchWidget.StartIncognito");
-                        getTabCreator(true)
-                                .launchUrl(UrlConstants.NTP_URL, TabLaunchType.FROM_APP_WIDGET);
+                        resultTab =
+                                getTabCreator(true)
+                                        .launchUrl(
+                                                UrlConstants.NTP_URL,
+                                                TabLaunchType.FROM_APP_WIDGET);
                     } else if (IncognitoTabLauncher.didCreateIntent(intent)) {
-                        Tab tab =
+                        resultTab =
                                 getTabCreator(true)
                                         .launchUrl(
                                                 UrlConstants.NTP_URL,
@@ -2157,7 +2243,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                             // View hierarchy, setting the URL bar's focus here won't clear the
                             // Tab's focus. When the Tab is added to the hierarchy, we want the
                             // URL bar to retain focus, so we clear the Tab's focus here.
-                            tab.getView().clearFocus();
+                            resultTab.getView().clearFocus();
                             focus = true;
                         }
 
@@ -2165,19 +2251,21 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
                     } else {
                         // Used by the Account management screen to open a new incognito tab.
                         // Account management screen collects its metrics separately.
-                        getTabCreator(true)
-                                .launchUrl(
-                                        UrlConstants.NTP_URL,
-                                        TabLaunchType.FROM_CHROME_UI,
-                                        intent,
-                                        mIntentHandlingTimeMs);
+                        resultTab =
+                                getTabCreator(true)
+                                        .launchUrl(
+                                                UrlConstants.NTP_URL,
+                                                TabLaunchType.FROM_CHROME_UI,
+                                                intent,
+                                                mIntentHandlingTimeMs);
                     }
                 } else {
-                    launchIntent(loadUrlParams, externalAppId, true, intent);
+                    resultTab = launchIntent(loadUrlParams, externalAppId, true, intent);
                 }
                 break;
             default:
                 assert false : "Unknown TabOpenType: " + tabOpenType;
+                resultTab = null;
                 break;
         }
 
@@ -2192,6 +2280,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements MismatchedIn
             // Hides the overview page to ensure proper layout change signals are sent.
             hideOverview();
         }
+        return resultTab;
     }
 
     private boolean isProbablyFromChrome(Intent intent, String externalAppId) {

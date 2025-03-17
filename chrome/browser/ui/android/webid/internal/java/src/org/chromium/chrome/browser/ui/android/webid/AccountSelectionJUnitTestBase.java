@@ -146,6 +146,7 @@ public class AccountSelectionJUnitTestBase {
     GURL mTestEmptyErrorUrl;
     Account mAnaAccount;
     Account mAnaAccountWithUseDifferentAccount;
+    Account mAnaAccountWithoutBrandIcons;
     Account mBobAccount;
     Account mCarlAccount;
     Account mNewUserAccount;
@@ -259,6 +260,8 @@ public class AccountSelectionJUnitTestBase {
                         "Ana",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
+                                100, 100, Bitmap.Config.ARGB_4444),
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
@@ -271,10 +274,26 @@ public class AccountSelectionJUnitTestBase {
                         "Ana",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
+                                100, 100, Bitmap.Config.ARGB_4444),
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
                         mIdpDataWithUseDifferentAccount);
+        mAnaAccountWithoutBrandIcons =
+                new Account(
+                        "Ana",
+                        "ana@email.example",
+                        "Ana Doe",
+                        "Ana",
+                        /* secondaryDescription= */ null,
+                        /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
+                                100, 100, Bitmap.Config.ARGB_4444),
+                        /* isSignIn= */ true,
+                        /* isBrowserTrustedSignIn= */ true,
+                        /* isFilteredOut= */ false,
+                        mIdpDataWithoutIcons);
         mBobAccount =
                 new Account(
                         "Bob",
@@ -283,6 +302,7 @@ public class AccountSelectionJUnitTestBase {
                         "",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
@@ -295,6 +315,7 @@ public class AccountSelectionJUnitTestBase {
                         ":)",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
@@ -307,6 +328,8 @@ public class AccountSelectionJUnitTestBase {
                         "Sam",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ Bitmap.createBitmap(
+                                100, 100, Bitmap.Config.ARGB_4444),
                         /* isSignIn= */ false,
                         /* isBrowserTrustedSignIn= */ false,
                         /* isFilteredOut= */ false,
@@ -319,6 +342,7 @@ public class AccountSelectionJUnitTestBase {
                         "",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,
@@ -331,6 +355,7 @@ public class AccountSelectionJUnitTestBase {
                         "Nicolas",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ true,
@@ -343,6 +368,7 @@ public class AccountSelectionJUnitTestBase {
                         "Nicolas",
                         /* secondaryDescription= */ null,
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ true,
@@ -355,6 +381,7 @@ public class AccountSelectionJUnitTestBase {
                         "Nicolas",
                         "email.com",
                         /* pictureBitmap= */ null,
+                        /* circledBadgedPictureBitmap= */ null,
                         /* isSignIn= */ true,
                         /* isBrowserTrustedSignIn= */ true,
                         /* isFilteredOut= */ false,

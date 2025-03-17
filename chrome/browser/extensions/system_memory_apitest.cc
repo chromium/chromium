@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/system_memory/memory_info_provider.h"
 
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(SystemMemoryApiTest, Memory) {
 }
 #endif
 
-class SystemMemoryApiMV3Test : public ExtensionPlatformApiTest {
+class SystemMemoryApiMV3Test : public ExtensionApiTest {
  public:
   SystemMemoryApiMV3Test() = default;
   ~SystemMemoryApiMV3Test() override = default;

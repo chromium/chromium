@@ -220,6 +220,7 @@ crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipe
 crbug.com/371949935 [ graphite-enabled no-clang-coverage qualcomm-0x41333430 release target-cpu-64 win11 ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ angle-opengl debug display-server-x linux no-clang-coverage nvidia-0x2184 nvidia_lt_535.183.01 renderer-skia-gl ] TraceTest_ViewTransitionsCapture [ Failure ]
 crbug.com/371949935 [ angle-metal graphite-enabled intel-0x3e9b mac-x86_64 no-asan release sonoma ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ win angle-d3d11 graphite-disabled qualcomm-0x41333430 ] TraceTest_ViewTransitionsCapture [ Slow ]
 
 # TODO(crbug.com/398784712): Remove these once culprit is reverted.
 crbug.com/398784712 [ win intel-0x9bc5 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
@@ -238,6 +239,9 @@ crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineDi
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineMainThread [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineWorkerAsync [ Failure ]
+
+# DirectionComposition seems to flakily fail
+crbug.com/403536258 [ win angle-d3d11 intel-0x4680 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

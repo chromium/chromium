@@ -24,10 +24,15 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/test/unit_test_util.h"
+#include "chrome/updater/updater_branding.h"
+#include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -214,5 +219,36 @@ TEST(Util, ToSignedIntegral) {
   EXPECT_EQ(ToSignedIntegral(uint64_t{0x7FFFFFFFFFFFFFFF}), 0x7FFFFFFFFFFFFFFF);
   EXPECT_EQ(ToSignedIntegral(uint64_t{0x8000000000000000}), -1);
 }
+
+#if BUILDFLAG(IS_WIN)
+class UtilTaskNameTest : public ::testing::TestWithParam<std::string> {
+ protected:
+  base::Version version() const { return base::Version(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(UtilTaskNameTestCases,
+                         UtilTaskNameTest,
+                         ::testing::Values(kUpdaterVersion,
+                                           "1.2.3.4",
+                                           "199.28537.11717"));
+
+TEST_P(UtilTaskNameTest, GetTaskNamePrefix) {
+  EXPECT_EQ(
+      GetTaskNamePrefix(GetUpdaterScopeForTesting(), version()),
+      base::StrCat(
+          {base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L"Task",
+           IsSystemInstall(GetUpdaterScopeForTesting()) ? L"System" : L"User",
+           base::UTF8ToWide(version().GetString())}));
+}
+
+TEST_P(UtilTaskNameTest, GetTaskDisplayName) {
+  EXPECT_EQ(
+      GetTaskDisplayName(GetUpdaterScopeForTesting(), version()),
+      base::StrCat(
+          {base::UTF8ToWide(PRODUCT_FULLNAME_STRING), L" Task ",
+           IsSystemInstall(GetUpdaterScopeForTesting()) ? L"System " : L"User ",
+           base::UTF8ToWide(version().GetString())}));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace updater

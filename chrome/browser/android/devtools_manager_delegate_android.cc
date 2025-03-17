@@ -276,7 +276,8 @@ DevToolsAgentHost::List DevToolsManagerDelegateAndroid::RemoteDebuggingTargets(
 scoped_refptr<DevToolsAgentHost>
 DevToolsManagerDelegateAndroid::CreateNewTarget(
     const GURL& url,
-    DevToolsManagerDelegate::TargetType target_type) {
+    DevToolsManagerDelegate::TargetType target_type,
+    bool new_window) {
   if (TabModelList::models().empty())
     return nullptr;
 
@@ -284,9 +285,11 @@ DevToolsManagerDelegateAndroid::CreateNewTarget(
   if (!tab_model)
     return nullptr;
 
-  WebContents* web_contents = tab_model->CreateNewTabForDevTools(url);
-  if (!web_contents)
+  WebContents* web_contents =
+      tab_model->CreateNewTabForDevTools(url, new_window);
+  if (!web_contents) {
     return nullptr;
+  }
 
   MarkCreatedByDevTools(*web_contents);
   return target_type == DevToolsManagerDelegate::kTab

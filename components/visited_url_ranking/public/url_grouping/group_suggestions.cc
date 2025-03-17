@@ -9,7 +9,13 @@ namespace visited_url_ranking {
 GroupSuggestion::GroupSuggestion() = default;
 GroupSuggestion::~GroupSuggestion() = default;
 
+GroupSuggestion::GroupSuggestion(GroupSuggestion&&) = default;
+GroupSuggestion& GroupSuggestion::operator=(GroupSuggestion&&) = default;
+
 GroupSuggestions::GroupSuggestions() = default;
 GroupSuggestions::~GroupSuggestions() = default;
+
+GroupSuggestions::GroupSuggestions(GroupSuggestions&&) = default;
+GroupSuggestions& GroupSuggestions::operator=(GroupSuggestions&&) = default;
 
 }  // namespace visited_url_ranking

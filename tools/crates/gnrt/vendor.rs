@@ -4,6 +4,7 @@
 
 use crate::config;
 use crate::crates::Epoch;
+use crate::deps;
 use crate::inherit::{
     find_inherited_privilege_group, find_inherited_security_critical_flag,
     find_inherited_shipped_flag,
@@ -12,8 +13,8 @@ use crate::metadata_util::{metadata_nodes, metadata_packages};
 use crate::paths;
 use crate::readme;
 use crate::util::{
-    create_dirs_if_needed, init_handlebars, remove_checksums_from_lock, run_cargo_metadata,
-    run_command, without_cargo_config_toml,
+    create_dirs_if_needed, get_guppy_package_graph, init_handlebars, remove_checksums_from_lock,
+    run_cargo_metadata, run_command, without_cargo_config_toml,
 };
 use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
@@ -49,6 +50,13 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
     let packages: HashMap<_, _> = metadata_packages(&metadata)?;
     let nodes: HashMap<_, _> = metadata_nodes(&metadata);
     let root = metadata.resolve.as_ref().unwrap().root.as_ref().unwrap();
+
+    let guppy_resolved_package_ids = get_guppy_resolved_package_ids(&config, paths)?;
+    let is_removed = |cargo_package_id: &cargo_metadata::PackageId| -> bool {
+        let p = packages[cargo_package_id];
+        config.resolve.remove_crates.contains(&p.name)
+            || !guppy_resolved_package_ids.contains(&p.into())
+    };
 
     // Running cargo commands against actual crates.io will put checksum into
     // the Cargo.lock file, but we don't generate checksums when we download
@@ -86,23 +94,23 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         .collect();
     for p in packages.values() {
         let crate_dir = format!("{}-{}", p.name, p.version);
-        if config.resolve.remove_crates.contains(&p.name) {
-            println!("Generating placeholder for removed crate {}-{}", p.name, p.version);
-            placeholder_crate(p, &nodes, paths, &config)?;
+        if is_removed(&p.id) {
+            println!("Generating placeholder for removed crate {}", &crate_dir);
+            generate_placeholder_crate(p, &packages, &nodes, paths, &config)?;
         } else if !dirs.contains(&crate_dir) {
-            println!("Downloading {}-{}", p.name, p.version);
+            println!("Downloading {}", &crate_dir);
             download_crate(&p.name, &p.version, paths)?;
             let skip_patches = match &args.no_patches {
                 Some(v) => v.is_empty() || v.contains(&p.name),
                 None => false,
             };
             if skip_patches {
-                log::warn!("Skipped applying patches for {}-{}", p.name, p.version);
+                log::warn!("Skipped applying patches for {}", &crate_dir);
             } else {
                 apply_patches(&p.name, &p.version, paths)?
             }
         }
-        dirs.remove(&format!("{}-{}", p.name, p.version));
+        dirs.remove(&crate_dir);
     }
     for d in &dirs {
         println!("Deleting {}", d);
@@ -119,8 +127,8 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
         readme::readme_files_from_packages(
             packages
                 .values()
-                // Don't generate README files for packages skipped by `remove_crates`.
-                .filter(|p| config.resolve.remove_crates.iter().all(|r| *r != p.name))
+                // Don't generate README files for removed packages.
+                .filter(|p| !is_removed(&p.id))
                 .copied(),
             paths,
             &config,
@@ -149,16 +157,16 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
 
             let metadata = epoch_dir.metadata()?;
             if metadata.is_dir() && is_epoch_name(&epoch_dir.file_name().to_string_lossy()) {
-                log::warn!(
-                    "No vendored sources for '{}', it should be removed.",
-                    epoch_dir.path().display()
-                );
+                let path = epoch_dir.path();
+                println!("Deleting {}", path.display());
+                std::fs::remove_dir_all(&path)
+                    .with_context(|| format!("removing {}", path.display()))?
             }
         }
     }
 
     let vet_config_toml =
-        create_vet_config(packages.values().copied(), &config, find_group, find_shipped)?;
+        create_vet_config(packages.values().copied(), is_removed, find_group, find_shipped)?;
 
     for dir in all_readme_files.keys() {
         create_dirs_if_needed(dir).context(format!("dir: {}", dir.display()))?;
@@ -208,6 +216,25 @@ fn vendor_impl(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<
             .with_context(|| format!("{}", file_path.to_string_lossy()))?;
     }
     Ok(())
+}
+
+fn get_guppy_resolved_package_ids(
+    config: &config::BuildConfig,
+    paths: &paths::ChromiumPaths,
+) -> Result<HashSet<deps::PackageId>> {
+    // `gnrt vendor` (unlike `gnrt gen`) doesn't need to pass `--offline` nor
+    // `--locked` to `cargo`.
+    let cargo_extra_options = vec![];
+    let dependencies = deps::collect_dependencies(
+        &get_guppy_package_graph(
+            paths.third_party_cargo_root.into(),
+            cargo_extra_options,
+            HashMap::new(),
+        )?,
+        &config.resolve.root,
+        config,
+    )?;
+    Ok(dependencies.iter().map(|p| p.into()).collect())
 }
 
 fn download_crate(
@@ -280,16 +307,29 @@ fn apply_patches(
     }
 
     for (path, contents) in patches_contents {
+        let args = vec![
+            "apply".to_string(),
+            // We need to rebase from the old versioned directory to the new one.
+            format!("-p{}", crate_dir.ancestors().count()),
+            format!("--directory={}", crate_dir.display()),
+        ];
         let mut c = std::process::Command::new("git");
-        c.arg("apply");
-
-        // We need to rebase from the old versioned directory to the new one.
-        c.arg(format!("-p{}", crate_dir.ancestors().count()));
-        c.arg(format!("--directory={}", crate_dir.display()));
+        c.args(args.clone());
 
         println!("Applying patch {}", path.to_string_lossy());
         if let Err(e) = run_command(c, "patch", Some(&contents)) {
-            log::error!("Applying patches failed! Removing the {} directory.", crate_dir.display());
+            log::error!(
+                "Applying patches failed - retrying with verbose output to help diagnose..."
+            );
+            let mut c = std::process::Command::new("git");
+            c.args(args);
+            c.arg("-v");
+            let _ignoring_error = run_command(c, "patch", Some(&contents));
+
+            log::error!(
+                "Applying patches failed - cleaning up: Removing the {} directory.",
+                crate_dir.display(),
+            );
             if let Err(rm_err) = std::fs::remove_dir_all(&crate_dir) {
                 Err(rm_err).context(e)?
             } else {
@@ -301,8 +341,84 @@ fn apply_patches(
     Ok(())
 }
 
-fn placeholder_crate(
+#[derive(serde::Serialize)]
+struct PlaceholderCrate<'a> {
+    name: &'a str,
+    version: &'a semver::Version,
+    dependencies: Vec<PlaceholderDependency<'a>>,
+    features: Vec<String>,
+}
+#[derive(Debug, serde::Serialize)]
+struct PlaceholderDependency<'a> {
+    name: &'a str,
+    version: String,
+    default_features: bool,
+    features: Vec<&'a str>,
+}
+
+fn get_placeholder_crate_metadata<'a>(
+    package_id: &'a cargo_metadata::PackageId,
+    packages: &'a HashMap<&cargo_metadata::PackageId, &cargo_metadata::Package>,
+    nodes: &HashMap<&'a cargo_metadata::PackageId, &'a cargo_metadata::Node>,
+) -> PlaceholderCrate<'a> {
+    let node = nodes[package_id];
+    let package = packages[package_id];
+
+    // We need to collect all dependencies of the crate so they can be
+    // reproduced in the placeholder Cargo.toml file. Otherwise the
+    // Cargo.lock may be considered out of date and cargo will try
+    // to rewrite it to remove the missing dependencies.
+    //
+    // However we don't just want all dependencies that are listed in
+    // the Cargo.toml since they may be optional and not enabled by a
+    // feature in our build. In that case, cargo would want to add the
+    // new dependencies to the Cargo.lock.
+    //
+    // So we use the [`cargo_metadata::Node`] to find the resolved set
+    // of dependencies that are actually in use (in build or in prod).
+    //
+    // Since features (at this time) can not be changed per-platform,
+    // the resolved [`cargo_metadata::Node`] does not have feature
+    // information about dependencies. We grab that verbatim from the
+    // Cargo.toml through the [`cargo_metadata::Dependency`] type which
+    // we call `feature_dep_info`.
+    let dependencies = node
+        .deps
+        .iter()
+        .filter(|d| {
+            d.dep_kinds.iter().any(|k| {
+                k.kind == cargo_metadata::DependencyKind::Build
+                    || k.kind == cargo_metadata::DependencyKind::Normal
+            })
+        })
+        .map(|d| {
+            // Translate `proc_macro2` (dependency name) into `proc-macro2` (package name).
+            let dep_name = &packages[&d.pkg].name;
+            let feature_dep_info =
+                package.dependencies.iter().find(|f| f.name == *dep_name).unwrap_or_else(|| {
+                    panic!(
+                        "`{}` (`{}`) is not listed as a dependency of `{}-{}`",
+                        dep_name, d.pkg, package.name, package.version,
+                    )
+                });
+            PlaceholderDependency {
+                name: dep_name,
+                version: feature_dep_info.req.to_string(),
+                default_features: feature_dep_info.uses_default_features,
+                features: feature_dep_info.features.iter().map(String::as_str).collect(),
+            }
+        })
+        .collect();
+
+    let mut features = package.features.keys().cloned().collect::<Vec<String>>();
+    features.sort_unstable();
+
+    PlaceholderCrate { name: &package.name, version: &package.version, dependencies, features }
+}
+
+fn generate_placeholder_crate(
     package: &cargo_metadata::Package,
+    packages: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Package>,
     nodes: &HashMap<&cargo_metadata::PackageId, &cargo_metadata::Node>,
     paths: &paths::ChromiumPaths,
     config: &config::BuildConfig,
@@ -337,70 +453,7 @@ fn placeholder_crate(
         }
     }
 
-    #[derive(serde::Serialize)]
-    struct PlaceholderCrate<'a> {
-        name: &'a str,
-        version: &'a semver::Version,
-        dependencies: Vec<PlaceholderDependency<'a>>,
-        features: Vec<String>,
-    }
-    #[derive(serde::Serialize)]
-    struct PlaceholderDependency<'a> {
-        name: &'a str,
-        version: &'a str,
-        default_features: bool,
-        features: Vec<&'a str>,
-    }
-
-    let node = nodes[&package.id];
-
-    // We need to collect all dependencies of the crate so they can be
-    // reproduced in the placeholder Cargo.toml file. Otherwise the
-    // Cargo.lock may be considered out of date and cargo will try
-    // to rewrite it to remove the missing dependencies.
-    //
-    // However we don't just want all dependencies that are listed in
-    // the Cargo.toml since they may be optional and not enabled by a
-    // feature in our build. In that case, cargo would want to add the
-    // new dependencies to the Cargo.lock.
-    //
-    // So we use the [`cargo_metadata::Node`] to find the resolved set
-    // of dependencies that are actually in use (in build or in prod).
-    //
-    // Since features (at this time) can not be changed per-platform,
-    // the resolved [`cargo_metadata::Node`] does not have feature
-    // information about dependencies. We grab that verbatim from the
-    // Cargo.toml through the [`cargo_metadata::Dependency`] type which
-    // we call `feature_dep_info`.
-    let dependencies = node
-        .deps
-        .iter()
-        .filter(|d| {
-            d.dep_kinds.iter().any(|k| {
-                k.kind == cargo_metadata::DependencyKind::Build
-                    || k.kind == cargo_metadata::DependencyKind::Normal
-            })
-        })
-        .map(|d| {
-            let feature_dep_info = package
-                .dependencies
-                .iter()
-                .find(|f| f.name == d.name)
-                .expect("dependency not in list");
-            PlaceholderDependency {
-                name: &d.name,
-                version: "*",
-                default_features: feature_dep_info.uses_default_features,
-                features: feature_dep_info.features.iter().map(String::as_str).collect(),
-            }
-        })
-        .collect();
-
-    let mut features = package.features.keys().cloned().collect::<Vec<String>>();
-    features.sort_unstable();
-
-    let placeholder_crate =
-        PlaceholderCrate { name: &package.name, version: &package.version, dependencies, features };
+    let placeholder_crate = get_placeholder_crate_metadata(&package.id, packages, nodes);
 
     {
         let rendered = removed_cargo_template.render("template", &placeholder_crate)?;
@@ -429,4 +482,54 @@ fn placeholder_crate(
         .with_context(|| format!("writing .cargo-checksum.json for crate {}", package.name))?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_get_placeholder_crate_metadata_with_proc_macro2_dependency() {
+        let metadata: cargo_metadata::Metadata =
+            serde_json::from_str(SAMPLE_CARGO_METADATA2).unwrap();
+        let packages: HashMap<_, _> = metadata_packages(&metadata).unwrap();
+        let nodes: HashMap<_, _> = metadata_nodes(&metadata);
+        let zerocopy_derive = packages.values().find(|p| p.name == "yoke-derive").unwrap();
+        let placeholder = get_placeholder_crate_metadata(&zerocopy_derive.id, &packages, &nodes);
+        assert_eq!(placeholder.name, "yoke-derive");
+        assert_eq!(placeholder.version.to_string(), "0.8.0");
+        assert!(placeholder.features.is_empty());
+
+        let mut i = 0;
+        assert_eq!(placeholder.dependencies[i].name, "proc-macro2");
+        assert_eq!(placeholder.dependencies[i].version, "^1.0.61");
+        assert!(placeholder.dependencies[i].default_features);
+        assert!(placeholder.dependencies[i].features.is_empty());
+
+        i += 1;
+        assert_eq!(placeholder.dependencies[i].name, "quote");
+        assert_eq!(placeholder.dependencies[i].version, "^1.0.28");
+        assert!(placeholder.dependencies[i].default_features);
+        assert!(placeholder.dependencies[i].features.is_empty());
+
+        i += 1;
+        assert_eq!(placeholder.dependencies[i].name, "syn");
+        assert_eq!(placeholder.dependencies[i].version, "^2.0.21");
+        assert!(placeholder.dependencies[i].default_features);
+        assert_eq!(placeholder.dependencies[i].features, &["fold"]);
+
+        i += 1;
+        assert_eq!(placeholder.dependencies[i].name, "synstructure");
+        assert_eq!(placeholder.dependencies[i].version, "^0.13.0");
+        assert!(placeholder.dependencies[i].default_features);
+        assert!(placeholder.dependencies[i].features.is_empty());
+
+        i += 1;
+        assert_eq!(placeholder.dependencies.len(), i);
+    }
+
+    // `test_metadata2.json` contains the output of `cargo metadata` run in
+    // `gnrt/sample_package2` directory.  See the `Cargo.toml` for more
+    // information.
+    static SAMPLE_CARGO_METADATA2: &str = include_str!("lib/test_metadata2.json");
 }

@@ -10,13 +10,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/updater/extension_downloader.h"
@@ -366,9 +365,7 @@ void ReportDetailedFailureReasons(
     base::UmaHistogramBoolean(
         "Extensions."
         "ForceInstalledFailureStuckInInitialCreationStageAreExtensionsEnabled",
-        ExtensionSystem::Get(profile)
-            ->extension_service()
-            ->extensions_enabled());
+        ExtensionRegistrar::Get(profile)->extensions_enabled());
   }
 }
 

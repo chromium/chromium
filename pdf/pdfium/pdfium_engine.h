@@ -373,7 +373,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   virtual uint32_t GetLoadedByteSize();
 
-  virtual bool ReadLoadedBytes(uint32_t length, void* buffer);
+  // Copies data from `doc_loader_` into `buffer`.
+  // - `buffer` is completely filled, so its size should be less than or equal
+  //   to GetLoadedByteSize().
+  //
+  // Returns true on success and writes into `buffer. Returns false on failure.
+  virtual bool ReadLoadedBytes(base::span<uint8_t> buffer);
 
   // Requests rendering the page at `page_index` as a thumbnail at a given
   // `device_pixel_ratio`. Runs `send_callback` with the rendered thumbnail.

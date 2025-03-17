@@ -141,6 +141,7 @@ public class InstantMessageDelegateImplUnitTest {
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID)).thenReturn(TAB_ID);
+        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
@@ -187,8 +188,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testDisplayInstantaneousMessage_NotInTabModel() {
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(TAB_GROUP_ID))
-                .thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabGroupModelFilter.tabGroupExists(any())).thenReturn(false);
         mDelegate.displayInstantaneousMessage(
                 Arrays.asList(newInstantMessage(CollaborationEvent.TAB_REMOVED)), mSuccessCallback);
         verify(mManagedMessageDispatcher, never()).enqueueWindowScopedMessage(any(), anyBoolean());
@@ -334,9 +334,7 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationMemberAdded_FallbackTitle() {
-        when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt()))
-                .thenReturn(TAB_COUNT_IN_GROUP);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
         message.attribution.tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);
@@ -377,7 +375,7 @@ public class InstantMessageDelegateImplUnitTest {
         // Remove the group from the sync service, since it's being deleted. This will make fetching
         // the title difficult.
         reset(mTabGroupSyncService);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt())).thenReturn(1);
+        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(1);
 
         InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
         message.attribution.tabGroupMetadata.lastKnownTitle = null;
@@ -398,8 +396,7 @@ public class InstantMessageDelegateImplUnitTest {
     @Test
     public void testCollaborationRemoved_FallbackTitle() {
         when(mTabGroupModelFilter.getRootIdFromTabGroupId(any())).thenReturn(TAB_ID);
-        when(mTabGroupModelFilter.getRelatedTabCountForRootId(anyInt()))
-                .thenReturn(TAB_COUNT_IN_GROUP);
+        when(mTabGroupModelFilter.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(TAB_COUNT_IN_GROUP);
         InstantMessage message = newInstantMessage(CollaborationEvent.TAB_GROUP_REMOVED);
         message.attribution.tabGroupMetadata.lastKnownTitle = "";
         mDelegate.displayInstantaneousMessage(Arrays.asList(message), mSuccessCallback);

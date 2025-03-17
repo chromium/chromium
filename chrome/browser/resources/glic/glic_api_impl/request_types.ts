@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ActInFocusedTabParams, ActInFocusedTabResult, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabCandidate, FocusedTabData, InvalidCandidateError, NoCandidateTabError, OpenPanelInfo, PanelOpeningData, PanelState, PdfDocumentData, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -68,6 +68,14 @@ export declare interface HostRequestTypes {
       tabContextResult: TabContextResultPrivate,
     },
   };
+  glicBrowserActInFocusedTab: {
+    request: {
+      actInFocusedTabParams: ActInFocusedTabParams,
+    },
+    response: {
+      actInFocusedTabResult: ActInFocusedTabResultPrivate,
+    },
+  };
   glicBrowserCaptureScreenshot: {
     response: {
       screenshot: Screenshot,
@@ -87,6 +95,14 @@ export declare interface HostRequestTypes {
   glicBrowserSetWindowDraggableAreas: {
     request: {
       areas: DraggableArea[],
+    },
+  };
+  glicBrowserSetMinimumWidgetSize: {
+    request: {
+      size: {
+        width: number,
+        height: number,
+      },
     },
   };
   glicBrowserSetMicrophonePermissionState: {
@@ -148,13 +164,14 @@ export declare interface HostRequestTypes {
       groupName: string,
     },
   };
+  glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}};
 }
 
 // Types of requests to the GlicWebClient.
 export declare interface WebClientRequestTypes {
   glicWebClientNotifyPanelWillOpen: {
     request: {
-      panelState: PanelState,
+      panelOpeningData: PanelOpeningData,
     },
     response: {
       openPanelInfo?: OpenPanelInfo,
@@ -226,9 +243,11 @@ type HostRequestEnumNamesType = {
     ClosePanel: 0,
     ShowProfilePicker: 0,
     GetContextFromFocusedTab: 0,
+    ActInFocusedTab: 0,
     CaptureScreenshot: 0,
     ResizeWindow: 0,
     SetWindowDraggableAreas: 0,
+    SetMinimumWidgetSize: 0,
     SetMicrophonePermissionState: 0,
     SetLocationPermissionState: 0,
     SetTabContextPermissionState: 0,
@@ -245,6 +264,7 @@ type HostRequestEnumNamesType = {
     OnResponseRated: 0,
     ScrollTo: 0,
     SetSyntheticExperimentState: 0,
+    OpenOsPermissionSettingsMenu: 0,
   };
   return apiRequestTypes;
   // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType)
@@ -324,6 +344,7 @@ export type WebClientInitialStatePrivate =
       chromeVersion: ChromeVersion,
       focusedTabData: FocusedTabDataPrivate,
       scrollToEnabled: boolean,
+      actInFocusedTabEnabled: boolean,
       loggingEnabled: boolean,
     }>;
 
@@ -374,6 +395,11 @@ export declare interface TabContextResultPrivate extends
   tabData: TabDataPrivate;
   pdfDocumentData?: PdfDocumentDataPrivate;
   annotatedPageData?: AnnotatedPageDataPrivate;
+}
+
+export declare interface ActInFocusedTabResultPrivate extends
+    Omit<ActInFocusedTabResult, 'tabContextResult'> {
+  tabContextResult: TabContextResultPrivate;
 }
 
 export declare interface UserProfileInfoPrivate extends

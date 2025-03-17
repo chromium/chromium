@@ -34,6 +34,7 @@
 <translation id="1478370723027452770">Chrome for Testing-മായി ബന്ധപ്പെട്ട സഹായം നേടൂ</translation>
 <translation id="1497802159252041924">ഇൻസ്‌റ്റാൾ ചെയ്യലിൽ പിശക്: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1524282610922162960">ഒരു Chromium ടാബ് പങ്കിടുക</translation>
+<translation id="1547469039832541117">ഹൈലൈറ്റ് ചെയ്ത ടാസ്‌ക് അവസാനിപ്പിക്കുന്നു.</translation>
 <translation id="1553461853655228091">നിങ്ങളുടെ ചുറ്റുപാടിന്റെ 3D മാപ്പ് സൃഷ്ടിക്കുന്നതിന് നിങ്ങളുടെ ക്യാമറ ആക്സസ് ചെയ്യാൻ Chromium-ന് നിങ്ങളുടെ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{ഈ വിപുലീകരണത്തിന് ഇനി പിന്തുണയില്ല. നിങ്ങൾ അത് നീക്കം ചെയ്യണമെന്ന് Chromium നിർദ്ദേശിക്കുന്നു.}other{ഈ വിപുലീകരണങ്ങൾക്ക് ഇനി പിന്തുണയില്ല. നിങ്ങൾ അവ നീക്കം ചെയ്യാൻ Chromium നിർദ്ദേശിക്കുന്നു.}}</translation>
 <translation id="1574377791422810894">Chromium-ന്റെ സുരക്ഷാ ടൂളുകൾ</translation>
@@ -226,6 +227,7 @@
 <translation id="4148957013307229264">ഇന്‍സ്റ്റാളുചെയ്യുന്നു...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - നെറ്റ്‌വർക്ക് സൈൻ ഇൻ - Chromium</translation>
 <translation id="421369550622382712">Chromium-നായി മികച്ച അപ്ലിക്കേഷനുകളും വിപുലീകരണങ്ങളും തീമുകളും കണ്ടെത്തുക.</translation>
+<translation id="4217080900579554343">ഈ വിപുലീകരണവും മറ്റും നിങ്ങളുടെ എല്ലാ കമ്പ്യൂട്ടറുകളിലും ലഭിക്കാൻ, Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="4217972271355023382">നിങ്ങളുടെ രക്ഷിതാക്കളുടെ ചോയ്‌സുകൾ ഉപയോഗിച്ച് ഓൺലൈനിൽ സുരക്ഷിതരായിരിക്കാൻ, <ph name="USER_EMAIL_ADDRESS" /> ആയി ഇതിനകം സൈൻ ഇൻ ചെയ്ത നിങ്ങളുടെ Chromium പ്രൊഫൈലിലേക്ക് മാറുക</translation>
 <translation id="4222932583846282852">റദ്ദാക്കുന്നു...</translation>
 <translation id="4224210481850767180">ഇൻസ്റ്റാൾ ചെയ്യുന്നത് റദ്ദാക്കി.</translation>

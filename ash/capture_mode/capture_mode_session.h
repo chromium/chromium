@@ -54,6 +54,7 @@ class CursorSetter;
 class PillButton;
 class RecordingTypeMenuView;
 class ScannerActionViewModel;
+enum class ScannerEntryPoint;
 class UserNudgeController;
 class WindowDimmer;
 
@@ -194,6 +195,7 @@ class ASH_EXPORT CaptureModeSession
                                     ActionButtonViewID id) override;
   void AddSmartActionsButton() override;
   void MaybeShowScannerDisclaimer(
+      ScannerEntryPoint entry_point,
       base::RepeatingClosure accept_callback,
       base::RepeatingClosure decline_callback) override;
   void OnScannerActionsFetched(
@@ -448,10 +450,14 @@ class ASH_EXPORT CaptureModeSession
   [[nodiscard]] bool ShowDefaultActionButtonsOrPerformSearch();
 
   // Called by the consent disclaimer on accept.
-  void OnDisclaimerAccepted(base::RepeatingClosure callback);
+  void OnDisclaimerAccepted(ScannerEntryPoint entry_point,
+                            base::RepeatingClosure callback);
 
   // Called by the consent disclaimer on decline.
   void OnDisclaimerDeclined(base::RepeatingClosure callback);
+
+  // Called by the consent disclaimer when a user clicks a link.
+  void OnDisclaimerLinkPressed(const char* url);
 
   // Called back when the smart actions button is pressed.
   void OnSmartActionsButtonPressed();
@@ -460,6 +466,10 @@ class ASH_EXPORT CaptureModeSession
   // was successful. This will trigger a request to fetch and show Scanner
   // actions.
   void OnSmartActionsButtonDisclaimerCheckSuccess();
+
+  // Called back when the smart actions button is pressed and disclaimer was
+  // declined. This will remove the smart actions button.
+  void OnSmartActionsButtonDisclaimerDeclined();
 
   // Called back when a Scanner action button is pressed.
   void OnScannerActionButtonPressed(

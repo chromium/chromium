@@ -8,11 +8,11 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_focused_tab_manager.h"
-#include "chrome/browser/glic/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_window_controller.h"
+#include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -27,7 +27,7 @@ namespace {
 
 ResponseSegmentation GetResponseSegmentation(bool attached,
                                              mojom::WebClientMode mode,
-                                             InvocationSource source) {
+                                             mojom::InvocationSource source) {
   if (mode == mojom::WebClientMode::kUnknown) {
     return ResponseSegmentation::kUnknown;
   }
@@ -42,28 +42,31 @@ ResponseSegmentation GetResponseSegmentation(bool attached,
     entry += 2;
   }
   switch (source) {
-    case InvocationSource::kOsButton:
+    case mojom::InvocationSource::kOsButton:
       break;
-    case InvocationSource::kOsButtonMenu:
+    case mojom::InvocationSource::kOsButtonMenu:
       entry += 4;
       break;
-    case InvocationSource::kOsHotkey:
+    case mojom::InvocationSource::kOsHotkey:
       entry += 8;
       break;
-    case InvocationSource::kTopChromeButton:
+    case mojom::InvocationSource::kTopChromeButton:
       entry += 12;
       break;
-    case InvocationSource::kFre:
+    case mojom::InvocationSource::kFre:
       entry += 16;
       break;
-    case InvocationSource::kProfilePicker:
+    case mojom::InvocationSource::kProfilePicker:
       entry += 20;
       break;
-    case InvocationSource::kNudge:
+    case mojom::InvocationSource::kNudge:
       entry += 24;
       break;
-    case InvocationSource::kChroMenu:
+    case mojom::InvocationSource::kThreeDotsMenu:
       entry += 28;
+      break;
+    case mojom::InvocationSource::kUnsupported:
+      entry += 32;
       break;
   }
   return static_cast<ResponseSegmentation>(entry);
@@ -103,6 +106,7 @@ void GlicMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
   base::RecordAction(base::UserMetricsAction("GlicResponseInputSubmit"));
   input_submitted_time_ = base::TimeTicks::Now();
   input_mode_ = mode;
+  inputs_modes_used_.insert(mode);
 }
 
 void GlicMetrics::OnResponseStarted() {
@@ -199,7 +203,8 @@ void GlicMetrics::OnResponseRated(bool positive) {
   base::UmaHistogramBoolean("Glic.Response.Rated", positive);
 }
 
-void GlicMetrics::OnGlicWindowOpen(bool attached, InvocationSource source) {
+void GlicMetrics::OnGlicWindowOpen(bool attached,
+                                   mojom::InvocationSource source) {
   base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
   session_start_time_ = base::TimeTicks::Now();
   invocation_source_ = source;
@@ -227,6 +232,19 @@ void GlicMetrics::OnGlicWindowClose() {
   }
   session_responses_ = 0;
   session_start_time_ = base::TimeTicks();
+
+  InputModesUsed modes_used = InputModesUsed::kNone;
+  if (!inputs_modes_used_.empty()) {
+    if (inputs_modes_used_.size() == 2) {
+      modes_used = InputModesUsed::kTextAndAudio;
+    } else {
+      modes_used = inputs_modes_used_.contains(mojom::WebClientMode::kAudio)
+                       ? InputModesUsed::kOnlyAudio
+                       : InputModesUsed::kOnlyText;
+    }
+  }
+  inputs_modes_used_.clear();
+  base::UmaHistogramEnumeration("Glic.Session.InputModesUsed", modes_used);
 }
 
 void GlicMetrics::SetControllers(GlicWindowController* window_controller,

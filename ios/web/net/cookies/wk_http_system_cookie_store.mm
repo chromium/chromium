@@ -22,6 +22,7 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/cookies/canonical_cookie.h"
+#import "net/cookies/cookie_access_params.h"
 #import "net/cookies/cookie_constants.h"
 #import "url/gurl.h"
 

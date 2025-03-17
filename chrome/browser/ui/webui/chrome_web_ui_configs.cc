@@ -189,8 +189,8 @@
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_fre_ui.h"
-#include "chrome/browser/glic/glic_ui.h"
+#include "chrome/browser/glic/fre/glic_fre_ui.h"
+#include "chrome/browser/glic/host/glic_ui.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

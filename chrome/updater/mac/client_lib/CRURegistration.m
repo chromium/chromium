@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "CRURegistration requires ARC support. Compile with `-fobjc-arc.`"
+#endif
+
 #import "CRURegistration.h"
 
 #import <Foundation/Foundation.h>

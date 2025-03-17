@@ -11,8 +11,8 @@
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_test_util.h"
-#include "chrome/browser/glic/glic_window_controller.h"
 #include "chrome/browser/glic/interactive_glic_test.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -474,7 +474,8 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, CloseOpenGlicWindowWhenDisabled) {
                                     ->controller()
                                     ->GetBrowserWindowInterface();
   GlicKeyedServiceFactory::GetGlicKeyedService(profile_1_)
-      ->ToggleUI(bwi, /*prevent_close=*/false, InvocationSource::kOsButton);
+      ->ToggleUI(bwi, /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
 
   ASSERT_TRUE(service->window_controller().IsShowing());
 

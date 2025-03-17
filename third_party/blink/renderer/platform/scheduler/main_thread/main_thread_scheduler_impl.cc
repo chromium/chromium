@@ -464,7 +464,10 @@ MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings()
           base::FeatureList::IsEnabled(features::kDeferRendererTasksAfterInput)
               ? std::optional<features::TaskDeferralPolicy>(
                     features::kTaskDeferralPolicyParam.Get())
-              : std::nullopt) {}
+              : std::nullopt),
+      input_scenario_priority_boost_enabled(
+          base::FeatureList::IsEnabled(features::kInputScenarioPriorityBoost)) {
+}
 
 MainThreadSchedulerImpl::AnyThread::~AnyThread() = default;
 
@@ -1944,10 +1947,6 @@ void MainThreadSchedulerImpl::SetRendererProcessType(
   main_thread_only().process_type = type;
 }
 
-void MainThreadSchedulerImpl::EnableInputScenarioPriorityBoost() {
-  input_scenario_priority_boost_enabled_ = true;
-}
-
 Vector<WebInputEventAttribution>
 MainThreadSchedulerImpl::GetPendingUserInputInfo(
     bool include_continuous) const {
@@ -1969,12 +1968,6 @@ void MainThreadSchedulerImpl::PostDelayedIdleTask(
     base::TimeDelta delay,
     Thread::IdleTask task) {
   IdleTaskRunner()->PostDelayedIdleTask(location, delay, std::move(task));
-}
-
-void MainThreadSchedulerImpl::PostNonNestableIdleTask(
-    const base::Location& location,
-    Thread::IdleTask task) {
-  IdleTaskRunner()->PostNonNestableIdleTask(location, std::move(task));
 }
 
 void MainThreadSchedulerImpl::RemoveCancelledIdleTasks() {
@@ -2263,7 +2256,7 @@ void MainThreadSchedulerImpl::OnTaskStarted(
       queue ? std::optional<TaskPriority>(queue->GetQueuePriority())
             : std::nullopt;
 
-  if (input_scenario_priority_boost_enabled_) {
+  if (scheduling_settings().input_scenario_priority_boost_enabled) {
     // Check if the input scenario has changed and update the main thread
     // priority boost accordingly.
     performance_scenarios::InputScenario input_scenario =
@@ -2272,13 +2265,13 @@ void MainThreadSchedulerImpl::OnTaskStarted(
 
     switch (input_scenario) {
       case performance_scenarios::InputScenario::kNoInput:
-        if (main_thread_priority_boost_.has_value()) {
-          main_thread_priority_boost_.reset();
+        if (main_thread_only().main_thread_priority_boost.has_value()) {
+          main_thread_only().main_thread_priority_boost.reset();
         }
         break;
       case performance_scenarios::InputScenario::kTyping:
-        if (!main_thread_priority_boost_.has_value()) {
-          main_thread_priority_boost_.emplace(
+        if (!main_thread_only().main_thread_priority_boost.has_value()) {
+          main_thread_only().main_thread_priority_boost.emplace(
               base::ThreadType::kDisplayCritical);
         }
         break;

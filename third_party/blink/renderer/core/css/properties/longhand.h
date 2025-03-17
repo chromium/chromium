@@ -62,6 +62,11 @@ class Longhand : public CSSProperty {
     return CSSInitialValue::Create();
   }
 
+  [[nodiscard]] virtual bool IsAffectedByCurrentColor(
+      const ComputedStyle& style) const {
+    NOTREACHED();
+  }
+
  protected:
   constexpr Longhand(CSSPropertyID id, Flags flags, char repetition_separator)
       : CSSProperty(id, flags | kLonghand, repetition_separator) {}

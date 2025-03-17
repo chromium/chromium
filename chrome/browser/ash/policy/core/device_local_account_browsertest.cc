@@ -1569,8 +1569,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
 
   // Install and a platform app.
   scoped_refptr<extensions::CrxInstaller> installer =
-      extensions::CrxInstaller::CreateSilent(
-          extension_system->extension_service());
+      extensions::CrxInstaller::CreateSilent(profile);
   installer->set_allow_silent_install(true);
   installer->set_install_cause(extension_misc::INSTALL_CAUSE_USER_DOWNLOAD);
   installer->set_creation_flags(extensions::Extension::FROM_WEBSTORE);

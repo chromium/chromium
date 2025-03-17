@@ -295,7 +295,7 @@ public class PageInfoViewTest {
         PageInfoController controller = PageInfoController.getLastPageInfoController();
         assertNotNull(controller);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ACT_USER_BYPASS_UX)
-                && (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_V1)
+                && (ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
                         || ChromeFeatureList.isEnabled(
                                 ChromeFeatureList.FINGERPRINTING_PROTECTION_UX))) {
             var tpController = controller.getTrackingProtectionLaunchController();
@@ -1240,7 +1240,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.ACT_USER_BYPASS_UX,
-        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.IP_PROTECTION_UX,
         ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
     @Feature({"RenderTest"})
@@ -1284,7 +1284,7 @@ public class PageInfoViewTest {
         ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
         ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
-    @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
+    @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtectionLaunchFpp() throws IOException {
         setBlockAll3pc(false);
@@ -1323,7 +1323,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.ACT_USER_BYPASS_UX,
-        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.IP_PROTECTION_UX,
         ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
         ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
@@ -1505,7 +1505,7 @@ public class PageInfoViewTest {
     @Test
     @Features.EnableFeatures({
         ChromeFeatureList.ACT_USER_BYPASS_UX,
-        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.IP_PROTECTION_UX,
         ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
         ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
@@ -1605,7 +1605,7 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures({
         ChromeFeatureList.ACT_USER_BYPASS_UX,
-        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.IP_PROTECTION_UX,
         ChromeFeatureList.TRACKING_PROTECTION_CONTENT_SETTING_UB_CONTROL
     })
     public void a11yLiveRegionInUserBypassLauchUi() throws Exception {

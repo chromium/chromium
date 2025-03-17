@@ -2256,7 +2256,6 @@
 <translation id="2530166226437958497">문제 해결</translation>
 <translation id="2531530485656743109"><ph name="BEGIN_PARAGRAPH1" />문제가 발생하여 <ph name="DEVICE_OS" /> 운영체제를 설치할 수 없습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />도움이 필요하면 다음 페이지를 참고하세요. g.co/flex/InstallErrors<ph name="END_PARAGRAPH2" /></translation>
-<translation id="2532117279786409580">자세히 알아보기</translation>
 <translation id="2532144599248877204">배터리 잔량을 80% 수준으로 유지하여 배터리 수명을 늘립니다. 평소에 전원을 분리하는 시점까지 배터리가 완전히 충전됩니다.</translation>
 <translation id="2532146950330687938">기기 준비 중…</translation>
 <translation id="2532198298278778531">ChromeOS Flex 설정에서 보안 DNS 관리</translation>
@@ -2812,7 +2811,6 @@
 <translation id="2921081876747860777">비밀번호를 만들어 로컬 데이터 보호</translation>
 <translation id="2923006468155067296">지금 <ph name="DEVICE_TYPE" /> 기기가 잠깁니다.
 <ph name="DOMAIN" />에서 스마트 카드를 삽입해 둔 상태로 둘 것을 요청합니다.</translation>
-<translation id="2923122530864139191">{NUM_TASKS,plural, =1{<ph name="TASK_ROW" />}other{<ph name="TASK_ROW" />. 동일한 태스크 그룹의 다른 <ph name="OTHER_TASK_NUM" />개 태스크: <ph name="OTHER_TASKS" />}}</translation>
 <translation id="2923234477033317484">계정 삭제</translation>
 <translation id="2923644930701689793">휴대전화 카메라 롤에 액세스합니다.</translation>
 <translation id="292371311537977079">Chrome 설정</translation>
@@ -6917,6 +6915,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5865508026715185451"><ph name="APP_NAME" /> 앱이 곧 일시중지됨</translation>
 <translation id="586567932979200359">디스크 이미지에서 <ph name="PRODUCT_NAME" />을(를) 실행 중입니다. 컴퓨터에 설치하면 디스크 이미지가 없어도 실행이 가능하며 최신 상태로 유지됩니다.</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
+<translation id="5866363217037791319">작업 종료</translation>
 <translation id="5868434909835797817">기기의 마이크가 꺼져 있습니다.</translation>
 <translation id="5868479397518301468">로그인 타임아웃</translation>
 <translation id="5868822853313956582">기기 색상 따르기</translation>
@@ -10643,7 +10642,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8524841856047224176">영상 통화 등을 위한 카메라 배경을 맞춤설정하세요.</translation>
 <translation id="8525306231823319788">전체화면</translation>
 <translation id="8525461909394569609">이 앱에는 출처가 다음과 같은 웹 콘텐츠가 포함되어 있습니다</translation>
-<translation id="8526313996927074827">링크 및 이모티콘 등 다양한 콘텐츠를 삽입하세요. Google AI의 도움을 받아 글을 작성할 수도 있습니다.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">스피커</translation>
 <translation id="8527257351549797148">앱, 확장 프로그램 등에 액세스하려면 조직에서 등록을 요구할 수도 있습니다. 이를 통해 조직에서 보안 및 기기 설정 등을 관리할 수 있습니다.</translation>
@@ -11099,6 +11097,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="883924185304953854">이미지로 검색</translation>
 <translation id="8841786407272321022">비밀번호가 이 기기에만 저장되었습니다. Google 계정에 새 비밀번호를 저장하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="8841843049738266382">허용 목록에 있는 사용자를 읽고 변경하기</translation>
+<translation id="8841884135319684422">작업 종료</translation>
 <translation id="8842594465773264717">이 지문 삭제</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8846132060409673887">이 컴퓨터의 제조업체 및 모델을 읽습니다.</translation>

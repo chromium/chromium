@@ -447,6 +447,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2829172210806130158">Søg på skærmen</translation>
 <translation id="2834399722155632105">3. Tryk på Valgmuligheder for adgangskoder</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
+<translation id="2841013758207633010">Tid</translation>
 <translation id="284581348330507117">Opret unikke adgangskoder</translation>
 <translation id="2856883624744451946">Navnegruppe</translation>
 <translation id="2858204748079866344">Af hensyn til beskyttelsen af dine personlige oplysninger autofylder Chrome ikke din adgangskode i dette felt.</translation>
@@ -649,7 +650,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3868495844258915202">Vis hele webadressen</translation>
 <translation id="3875783148670536197">Vis mig hvordan</translation>
-<translation id="3876833929577368454">Spørg mig hver gang</translation>
 <translation id="3885587018298784481">Bliv medlem af en familiegruppe</translation>
 <translation id="3888863481921783344">Dette bruges til at vise dig mulige gæster til din begivenhed.</translation>
 <translation id="3891414008432200754">Pris</translation>
@@ -904,6 +904,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4896467949657706481">Fanerne er blevet lukket: Du er blevet logget ud</translation>
 <translation id="4913626501929406101">Du kan på sikker vis dele en kopi af din adgangskode med en anden i din familiegruppe. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4918086044614829423">Accepter</translation>
+<translation id="4932733599132424254">Dato</translation>
 <translation id="4936354130727646074">Flyt aldrig</translation>
 <translation id="4937410517508563815">Gem adgangskoder på kontoen</translation>
 <translation id="4938338714234463591">Dette giver dig mulighed for at bruge stemmestyring til bestemte funktioner på websites.</translation>
@@ -1470,7 +1471,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent er downloadet</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
-<translation id="7359341089141286329">Spor automatisk alle registrerede pakker</translation>
 <translation id="7363349185727752629">En guide til dine privatlivsindstillinger</translation>
 <translation id="736564850024123010">Flyt din adresselinje for at få en tilpasset oplevelse.</translation>
 <translation id="7366909168761621528">Browserdata</translation>
@@ -1718,6 +1718,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8299417921174340354">Før du kan bruge adgangskoder, skal du angive en adgangskode på din enhed.</translation>
 <translation id="8307481894409578819">Denne fil kunne ikke uploades</translation>
 <translation id="8319076807703933069">Ny søgning</translation>
+<translation id="8320212361750431956">Seneste aktivitet</translation>
 <translation id="833647236762414178">Opret, gem og administrer dine adgangskoder og adgangsnøgler, så du nemt kan logge ind på websites og i apps. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhedskopiér dit indhold, og få adgang til det på enhver enhed.</translation>
 <translation id="8349305172487531364">Bogmærkelinje</translation>
@@ -1747,7 +1748,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8438566539970814960">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8439758443371991593">Skjul Føj til læseliste</translation>
 <translation id="8449869326050867919">Adgangskoden er delt</translation>
-<translation id="8453847087068411809">Registrer aldrig pakker automatisk</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8474378002946546633">Tillad notifikationer</translation>
 <translation id="8477178913400731244">Slet data</translation>

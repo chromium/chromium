@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_ASH_WEBUI_TEST_SUITE_H_
 #define ASH_WEBUI_ASH_WEBUI_TEST_SUITE_H_
 
+#include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"
 
 class AshWebUITestSuite : public base::TestSuite {
@@ -20,6 +21,9 @@ class AshWebUITestSuite : public base::TestSuite {
   // base::TestSuite:
   void Initialize() override;
   void Shutdown() override;
+
+ private:
+  base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };
 
 #endif  // ASH_WEBUI_ASH_WEBUI_TEST_SUITE_H_

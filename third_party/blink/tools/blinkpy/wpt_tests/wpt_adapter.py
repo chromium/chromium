@@ -13,6 +13,7 @@ import signal
 import subprocess
 import sys
 import textwrap
+import tempfile
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -32,7 +33,6 @@ from blinkpy.wpt_tests.wpt_results_processor import WPTResultsProcessor
 
 path_finder.bootstrap_wpt_imports()
 import mozlog
-from tools import localpaths
 from tools.wpt import run
 from tools.wpt.virtualenv import Virtualenv
 from wptrunner import wptcommandline, wptlogging
@@ -143,6 +143,8 @@ class WPTAdapter:
         self.finder = path_finder.PathFinder(self.fs)
         self.options = options
         self.paths = paths
+        self.tests_root = self.fs.join(self.port.web_tests_dir(), 'external',
+                                       'wpt')
         self.processor = WPTResultsProcessor(
             self.fs,
             self.port,
@@ -162,6 +164,11 @@ class WPTAdapter:
         # Do not run virtual tests for mobile embedders
         cls._ensure_value(options, 'no_virtual_tests', options.product
                           not in ['headless_shell', 'chrome'])
+        if options.use_upstream_wpt:
+            cls._ensure_value(options, 'layout_tests_directory',
+                              tempfile.gettempdir())
+            options.no_expectations = True
+            options.manifest_update = False
 
         env_shard_index = host.environ.get('GTEST_SHARD_INDEX')
         if env_shard_index is not None:
@@ -181,7 +188,7 @@ class WPTAdapter:
     def set_up_derived_options(self):
         explicit_tests = self.paths or self.options.test_list
         if (not explicit_tests and self.options.smoke is None
-                and not self.using_upstream_wpt):
+                and not self.options.use_upstream_wpt):
             self.options.smoke = self.port.default_smoke_test_only()
         if self.options.smoke:
             if not explicit_tests and self.options.num_retries is None:
@@ -200,6 +207,8 @@ class WPTAdapter:
     def create_config_files(self):
         """Create config files based on its template and change the paths to absolute paths.
         """
+        if self.options.use_upstream_wpt:
+            return
         # create //third_party/blink/web_tests/external/wpt/config.json
         src_config_json = self.finder.path_from_wpt_tests('.config.json')
         with self.fs.open_text_file_for_reading(src_config_json) as src:
@@ -254,8 +263,6 @@ class WPTAdapter:
         # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary' and
         # '--symbols-path'.
         runner_options.no_capture_stdio = True
-        runner_options.manifest_download = False
-        runner_options.manifest_update = False
         runner_options.pause_after_test = False
         runner_options.headless = self.options.headless
 
@@ -294,7 +301,7 @@ class WPTAdapter:
                 '--vmodule=chrome_launcher=0,*/chrome/test/chromedriver/*=-1',
             ])
 
-        if self.using_upstream_wpt:
+        if self.options.use_upstream_wpt:
             runner_options.log_wptreport = [
                 mozlog.commandline.log_file(
                     self.fs.join(self.port.results_directory(),
@@ -361,7 +368,7 @@ class WPTAdapter:
         elif self.options.timeout_multiplier:
             runner_options.timeout_multiplier = self.options.timeout_multiplier
 
-        if self.using_upstream_wpt:
+        if self.options.use_upstream_wpt:
             # when running with upstream, the goal is to get wpt report that can
             # be uploaded to wpt.fyi. We do not really care if tests failed or
             # not. Add '--no-fail-on-unexpected' so that the overall result is
@@ -370,6 +377,7 @@ class WPTAdapter:
             # so do not add '--run-by-dir=0'
             runner_options.fail_on_unexpected = False
             runner_options.restart_on_unexpected = False
+            runner_options.retry_unexpected = 0
         else:
             # Unexpected subtest passes in wptrunner are equivalent to baseline
             # mismatches in `run_web_tests.py`, so don't pass
@@ -481,7 +489,9 @@ class WPTAdapter:
         return sorted(include_tests), subsuite_json
 
     def _set_up_runner_tests(self, runner_options, tmp_dir):
-        if not self.using_upstream_wpt:
+        runner_options.manifest_download = False
+        runner_options.manifest_update = False
+        if not self.options.use_upstream_wpt:
             tests_to_run, tests_to_skip = self._collect_tests()
             include_tests, subsuite_json = self._prepare_tests_for_wptrunner([
                 *tests_to_run,
@@ -516,10 +526,14 @@ class WPTAdapter:
                                runner_options.include, tests_to_skip)
         else:
             self._set_up_runner_sharding_options(runner_options)
-            runner_options.retry_unexpected = 0
-            if self.paths or self.options.test_list:
-                logger.warning('`--use-upstream-wpt` will run all tests. '
-                               'Explicitly provided tests are ignored.')
+            # To run tests from command line, prepend the test names with
+            # 'external/wpt/'. Other method e.g. test list or test filter
+            # is not supported.
+            if self.paths:
+                for path in self.paths:
+                    wpt_dir, path_from_root = self.port.split_wpt_dir(path)
+                    if wpt_dir:
+                        runner_options.include.append(path_from_root)
 
     @contextlib.contextmanager
     def test_env(self):
@@ -550,17 +564,12 @@ class WPTAdapter:
                 self.host.environ[name] = value
             self.host.environ['FONTCONFIG_SYSROOT'] = self.port.build_path()
 
-            if self.using_upstream_wpt:
-                tests_root = self.tools_root
-            else:
-                tests_root = self.finder.path_from_wpt_tests()
-            runner_options.tests_root = tests_root
-            runner_options.metadata_root = tests_root
-            logger.debug('Using WPT tests (external) from %s', tests_root)
-            logger.debug('Using WPT tools from %s', self.tools_root)
+            runner_options.tests_root = self.tests_root
+            runner_options.metadata_root = self.tests_root
+            logger.debug(f'Running WPT tests from {self.tests_root}')
 
             runner_options.run_info = tmp_dir
-            self._initialize_run_info(tmp_dir, tests_root)
+            self._initialize_run_info(tmp_dir, self.tests_root)
             if self.options.wrapper:
                 runner_options.debug_test = True
                 runner_options.binary = self._generate_wrapper_script(
@@ -571,24 +580,6 @@ class WPTAdapter:
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
             yield runner_options
-
-    @functools.cached_property
-    def tools_root(self) -> str:
-        """Find the path to the tooling directory under use.
-
-        This is `//third_party/wpt_tools/wpt/` when using Chromium-vended WPT
-        tools.
-        """
-        tools_dir = self.fs.dirname(localpaths.__file__)
-        return self.fs.dirname(tools_dir)
-
-    @functools.cached_property
-    def using_upstream_wpt(self) -> bool:
-        """Dynamically detect whether this test run uses upstream WPT or not."""
-        vended_wpt = self.finder.path_from_chromium_base(
-            'third_party', 'wpt_tools', 'wpt')
-        return self.fs.realpath(
-            self.tools_root) != self.fs.realpath(vended_wpt)
 
     def run_tests(self) -> int:
         exit_code = 0
@@ -621,11 +612,11 @@ class WPTAdapter:
             'port': self.port.version(),
             'debug': self.port.get_option('configuration') == 'Debug',
             'flag_specific': self.port.flag_specific_config_name() or '',
-            'used_upstream': self.using_upstream_wpt,
+            'used_upstream': self.options.use_upstream_wpt,
             'sanitizer_enabled': self.options.enable_sanitizer,
             'virtual_suite': '',  # Needed for non virtual tests
         }
-        if self.using_upstream_wpt:
+        if self.options.use_upstream_wpt:
             # `run_wpt_tests` does not run in the upstream checkout's git
             # context, so wptrunner cannot infer the latest revision. Manually
             # add the revision here.
@@ -676,12 +667,9 @@ class WPTAdapter:
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
-        if self.using_upstream_wpt:
+        with self.processor.stream_results() as events:
+            runner_options.log.add_handler(events.put)
             yield
-        else:
-            with self.processor.stream_results() as events:
-                runner_options.log.add_handler(events.put)
-                yield
         if runner_options.log_wptreport:
             self.processor.process_wpt_report(
                 runner_options.log_wptreport[0].name)
@@ -704,6 +692,21 @@ class WPTAdapter:
         if exit_code != exit_codes.OK_EXIT_STATUS:
             logger.error('Failed to optimize baselines during results reset '
                          f'(exit code: {exit_code})')
+
+    def checkout_upstream_wpt(self) -> str:
+        # This will leave behind a checkout in `/tmp/external/wpt` that can be
+        # `git fetch`ed later instead of checked out from scratch.
+        local_wpt = LocalWPT(self.host, path=self.tests_root)
+        local_wpt.mirror_url = 'https://github.com/web-platform-tests/wpt.git'
+        local_wpt.fetch()
+        wpt_executable = self.host.filesystem.join(local_wpt.path, 'wpt')
+        rev_list_output = self.host.executive.run_command(
+            [wpt_executable, 'rev-list', '--epoch', '3h'])
+        commit = rev_list_output.splitlines()[0]
+        self.host.git(path=local_wpt.path).run(['checkout', commit])
+        # Update wpt manifest immediately after checkout.
+        self.port.wpt_manifest('external/wpt')
+        logger.info('Running against upstream wpt@%s', commit)
 
 
 def _load_entry_point():
@@ -775,35 +778,6 @@ def _install_xcode(xcode_build_version: str):
         logger.warning('Skip the Xcode installation, no xcode_build_version.')
 
 
-def _run_with_upstream_wpt(host: Host, argv: List[str]) -> int:
-    checkout_path = _checkout_upstream_wpt(host)
-    finder = path_finder.PathFinder(host.filesystem)
-    command = [
-        host.executable,
-        finder.path_from_blink_tools('run_wpt_tests.py'),
-    ]
-    for arg in argv:
-        if arg != '--use-upstream-wpt':
-            command.append(arg)
-    env = {**host.environ, 'PYTHONPATH': checkout_path}
-    return host.executive.call(command, env=env)
-
-
-def _checkout_upstream_wpt(host: Host) -> str:
-    # This will leave behind a checkout in `/tmp/wpt` that can be `git fetch`ed
-    # later instead of checked out from scratch.
-    local_wpt = LocalWPT(host)
-    local_wpt.mirror_url = 'https://github.com/web-platform-tests/wpt.git'
-    local_wpt.fetch()
-    wpt_executable = host.filesystem.join(local_wpt.path, 'wpt')
-    rev_list_output = host.executive.run_command(
-        [wpt_executable, 'rev-list', '--epoch', '3h'])
-    commit = rev_list_output.splitlines()[0]
-    host.git(path=local_wpt.path).run(['checkout', commit])
-    logger.info('Running against upstream wpt@%s', commit)
-    return local_wpt.path
-
-
 def main(argv) -> int:
     # Force log output in utf-8 instead of a locale-dependent encoding. On
     # Windows, this can be cp1252. See: crbug.com/1371195.
@@ -828,11 +802,10 @@ def main(argv) -> int:
                 and adapter.options.xcode_build_version):
             _install_xcode(adapter.options.xcode_build_version)
         if adapter.options.use_upstream_wpt:
-            exit_code = _run_with_upstream_wpt(host, argv)
-        else:
-            adapter.set_up_derived_options()
-            adapter.create_config_files()
-            exit_code = adapter.run_tests()
+            adapter.checkout_upstream_wpt()
+        adapter.set_up_derived_options()
+        adapter.create_config_files()
+        exit_code = adapter.run_tests()
     except KeyboardInterrupt:
         # This clause catches interrupts outside `WPTAdapter.run_tests()`.
         exit_code = exit_codes.INTERRUPTED_EXIT_STATUS

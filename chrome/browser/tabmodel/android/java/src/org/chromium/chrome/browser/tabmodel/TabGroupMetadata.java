@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
@@ -106,7 +107,8 @@ public class TabGroupMetadata {
         Token tabGroupIdFromBundle =
                 Token.maybeCreateFromBundle(bundle.getBundle(KEY_TAB_GROUP_ID));
         LinkedHashMap<Integer, String> tabIdsToUrls =
-                (LinkedHashMap<Integer, String>) bundle.getSerializable(KEY_TAB_IDS_TO_URLS);
+                new LinkedHashMap<>(
+                        (HashMap<Integer, String>) bundle.getSerializable(KEY_TAB_IDS_TO_URLS));
         if (tabGroupIdFromBundle == null
                 || tabIdsToUrls == null
                 || tabIdsToUrls.isEmpty()

@@ -7,9 +7,15 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/core/css/css_function_rule.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -51,6 +57,31 @@ class InspectorCSSAgentTest : public PageTestBase {
         AtomicString(name), /*tree_scope=*/&GetDocument());
     auto it = function_rules.find(scoped_name);
     return it != function_rules.end() ? it->value.Get() : nullptr;
+  }
+
+  String GetComputedStyle(Element* element, CSSPropertyID property_id) {
+    const CSSProperty& property = CSSProperty::Get(property_id);
+    const ComputedStyle* computed_style = element->GetComputedStyle();
+    const LayoutObject* layout_object = element->GetLayoutObject();
+    const CSSValue* computed_value =
+        property.CSSProperty::CSSValueFromComputedStyle(
+            *computed_style, layout_object, /* allow_visited_style */ false,
+            CSSValuePhase::kResolvedValue);
+    return computed_value->CssText();
+  }
+
+  String InspectorResolvePercentageValues(Element* element,
+                                          CSSPropertyID property_id,
+                                          String value_str) {
+    const CSSPropertyName property_name =
+        CSSProperty::Get(property_id).GetCSSPropertyName();
+    ScopedNullExecutionContext execution_context;
+    auto* document =
+        Document::CreateForTest(execution_context.GetExecutionContext());
+    const CSSValue* value = css_test_helpers::ParseValue(
+        *document, "<length-percentage>", value_str);
+    return InspectorCSSAgent::ResolvePercentagesValues(element, property_name,
+                                                       value);
   }
 };
 
@@ -308,6 +339,207 @@ TEST_F(InspectorCSSAgentTest, DashedFunctionUnknown) {
   EXPECT_TRUE(FindFunctionRule(function_rules, "--a"));
   // The presence of a reference to a function that does not exist
   // should not cause a crash.
+}
+
+const CSSPropertyID DirectionAwareConverterTestData[] = {
+    // clang-format off
+  CSSPropertyID::kWidth,
+  CSSPropertyID::kHeight,
+  CSSPropertyID::kMarginLeft,
+  CSSPropertyID::kMarginTop,
+  CSSPropertyID::kMarginRight,
+  CSSPropertyID::kMarginBottom,
+  CSSPropertyID::kPaddingLeft,
+  CSSPropertyID::kPaddingTop,
+  CSSPropertyID::kPaddingRight,
+  CSSPropertyID::kPaddingBottom,
+  CSSPropertyID::kLeft,
+  CSSPropertyID::kTop,
+  CSSPropertyID::kRight,
+  CSSPropertyID::kBottom,
+    // clang-format on
+};
+
+class PercentageResolutionTest
+    : public InspectorCSSAgentTest,
+      public testing::WithParamInterface<CSSPropertyID> {};
+
+INSTANTIATE_TEST_SUITE_P(InspectorCSSAgentTest,
+                         PercentageResolutionTest,
+                         testing::ValuesIn(DirectionAwareConverterTestData));
+
+TEST_P(PercentageResolutionTest, ResolvePercentagesSimple) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #outer {
+        width: 100px;
+        height: 300px;
+      }
+    </style>
+    <div id=outer>
+    </div>
+  )HTML");
+
+  String value("calc(1px + 10%)");
+
+  CSSPropertyID property_id = GetParam();
+  AtomicString property_name =
+      CSSProperty::Get(property_id).GetCSSPropertyName().ToAtomicString();
+
+  StringBuilder html_string;
+  html_string.Append("<div id=inner style=\"position: absolute; ");
+  html_string.Append(property_name);
+  html_string.Append(": ");
+  html_string.Append(value);
+  html_string.Append(";\"></div>");
+  GetElementById("outer")->setInnerHTML(html_string.ToString());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetElementById("inner");
+  String expected = GetComputedStyle(element, property_id);
+  String actual = InspectorResolvePercentageValues(element, property_id, value);
+  EXPECT_EQ(actual, expected);
+}
+
+TEST_F(InspectorCSSAgentTest, ResolvePercentagesSizingProperties) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #outer {
+        width: 100px;
+        height: 300px
+      }
+      #inner {
+        width: calc(1px + 10%);
+        height: calc(1px + 10%);
+      }
+    </style>
+    <div id=outer>
+      <div id=inner></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetElementById("inner");
+  String value("calc(1px + 10%)");
+
+  String expected_inline = GetComputedStyle(element, CSSPropertyID::kWidth);
+  String expected_block = GetComputedStyle(element, CSSPropertyID::kHeight);
+
+  EXPECT_EQ(InspectorResolvePercentageValues(element, CSSPropertyID::kMinWidth,
+                                             value),
+            expected_inline);
+  EXPECT_EQ(InspectorResolvePercentageValues(element, CSSPropertyID::kMaxWidth,
+                                             value),
+            expected_inline);
+  EXPECT_EQ(InspectorResolvePercentageValues(element, CSSPropertyID::kMinHeight,
+                                             value),
+            expected_block);
+  EXPECT_EQ(InspectorResolvePercentageValues(element, CSSPropertyID::kMaxHeight,
+                                             value),
+            expected_block);
+}
+
+TEST_F(InspectorCSSAgentTest, ResolvePercentagesAnchorPositioning) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #cb {
+        width: 300px;
+        height: 150px;
+        position: relative;
+      }
+      #anchor {
+        position: absolute;
+        left: 50px;
+        top: 20px;
+        anchor-name: --a;
+        width: 50px;
+        height: 50px;
+      }
+      #anchored {
+        position-anchor: --a;
+        position-area: center right;
+        position: absolute;
+        width: 10%;
+        height: 10%;
+      }
+    </style>
+    <div id=cb>
+      <div id=anchor>
+        Anchor
+      </div>
+      <div id=anchored>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetElementById("anchored");
+  String value("10%");
+
+  String expected_inline = GetComputedStyle(element, CSSPropertyID::kWidth);
+  String expected_block = GetComputedStyle(element, CSSPropertyID::kHeight);
+
+  EXPECT_EQ(
+      InspectorResolvePercentageValues(element, CSSPropertyID::kWidth, value),
+      expected_inline);
+  EXPECT_EQ(
+      InspectorResolvePercentageValues(element, CSSPropertyID::kWidth, value),
+      "20px");
+  EXPECT_EQ(
+      InspectorResolvePercentageValues(element, CSSPropertyID::kHeight, value),
+      expected_block);
+  EXPECT_EQ(
+      InspectorResolvePercentageValues(element, CSSPropertyID::kHeight, value),
+      "5px");
+}
+
+TEST_F(InspectorCSSAgentTest, ResolvePercentagesDisplayTable) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .table {
+        display: table;
+        width: 100px;
+        height: 300px;
+      }
+      #column1 {
+        display: table-column;
+      }
+      #column2 {
+        display: table-column;
+      }
+      .row {
+        display: table-row;
+      }
+      .cell {
+        display: table-cell;
+      }
+    </style>
+
+    <div class="table">
+        <div id="column1"></div>
+        <div id="column2"></div>
+        <div class="row">
+          <div class="cell">row 1, cell 1</div>
+          <div class="cell">row 1, cell 2</div>
+        </div>
+        <div class="row">
+          <div class="cell">row 2, cell 1</div>
+          <div class="cell">row 2, cell 2</div>
+        </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetElementById("column1");
+  String value("10%");
+
+  EXPECT_EQ(
+      InspectorResolvePercentageValues(element, CSSPropertyID::kWidth, value),
+      g_empty_string);
+  EXPECT_EQ(
+      InspectorResolvePercentageValues(element, CSSPropertyID::kHeight, value),
+      g_empty_string);
 }
 
 }  // namespace blink

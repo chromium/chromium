@@ -472,7 +472,7 @@ export class AllSitesElement extends AllSitesElementBase {
         this.filteredList_.length > 0;
   }
 
-  private shouldShowRwsV2Descrption_(): boolean {
+  private hasFilteredRwsSitesV2Ui_(): boolean {
     return this.isRelatedWebsiteSetsV2UiEnabled_ && this.hasFilteredRwsSites_();
   }
 
@@ -637,7 +637,7 @@ export class AllSitesElement extends AllSitesElementBase {
    */
   private getClearStorageDescription_(): string {
     let descriptionId = 'siteSettingsClearAllStorageDescription';
-    if (this.isRwsV2Filtered_()) {
+    if (this.hasFilteredRwsSitesV2Ui_()) {
       descriptionId = 'allSitesRwsFilterViewStorageDescription';
     } else if (this.isFiltered_()) {
       descriptionId = 'siteSettingsClearDisplayedStorageDescription';

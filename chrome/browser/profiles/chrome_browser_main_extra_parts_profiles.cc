@@ -147,7 +147,7 @@
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/privacy/privacy_metrics_service_factory.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_service_factory.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_framework_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_survey_factory.h"
@@ -257,6 +257,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync/base/features.h"
+#include "crypto/crypto_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
 #include "pdf/buildflags.h"
@@ -1136,7 +1137,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   PrivateNetworkDevicePermissionContextFactory::GetInstance();
 #endif
   PrivacyMetricsServiceFactory::GetInstance();
-  PrivacySandboxNoticeServiceFactory::GetInstance();
+  PrivacySandboxNoticeFrameworkFactory::GetInstance();
   PrivacySandboxServiceFactory::GetInstance();
   PrivacySandboxSettingsFactory::GetInstance();
   PrivacySandboxSurveyFactory::GetInstance();

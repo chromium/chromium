@@ -227,7 +227,7 @@ export class AppElement extends AppElementBase {
   protected emptyStateSubheading_ = '';
 
   private previousHighlights_: HTMLElement[] = [];
-  private previousRootId_: number;
+  private previousRootId_?: number;
 
   private isReadAloudEnabled_: boolean;
   protected isDocsLoadMoreButtonVisible_: boolean = false;
@@ -286,7 +286,7 @@ export class AppElement extends AppElementBase {
   // Otherwise, this is undefined.
   protected previewVoicePlaying_?: SpeechSynthesisVoice;
 
-  protected localeToDisplayName_: {[locale: string]: string};
+  protected localeToDisplayName_: {[locale: string]: string} = {};
 
   // Our local representation of the status of voice pack downloads and
   // availability
@@ -308,7 +308,14 @@ export class AppElement extends AppElementBase {
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
   private speech_: SpeechBrowserProxy;
-  protected settingsPrefs_: SettingsPrefs;
+  protected settingsPrefs_: SettingsPrefs = {
+    letterSpacing: 0,
+    lineSpacing: 0,
+    theme: 0,
+    speechRate: 0,
+    font: '',
+    highlightGranularity: 0,
+  };
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
@@ -1288,14 +1295,6 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  private getLangDisplayName(lang?: string): string {
-    if (!lang) {
-      return '';
-    }
-    const langLower = lang.toLowerCase();
-    return this.localeToDisplayName_[langLower] || langLower;
-  }
-
   private populateDisplayNamesForLocaleCodes() {
     this.localeToDisplayName_ = {};
 
@@ -2125,9 +2124,7 @@ export class AppElement extends AppElementBase {
 
   private extractTextOf(axNodeIds: number[]): string {
     let utteranceText: string = '';
-    for (let i = 0; i < axNodeIds.length; i++) {
-      assert(axNodeIds[i], 'trying to get text from an undefined node id');
-      const nodeId = axNodeIds[i];
+    for (const nodeId of axNodeIds) {
       const startIndex = chrome.readingMode.getCurrentTextStartIndex(nodeId);
       const endIndex = chrome.readingMode.getCurrentTextEndIndex(nodeId);
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
@@ -2165,12 +2162,12 @@ export class AppElement extends AppElementBase {
         chrome.readingMode.getHighlightForCurrentSegmentIndex(
             index, highlightPhrases);
     let anyHighlighted: boolean = false;
-    for (let i = 0; i < highlightNodes.length; i++) {
-      const highlightNode = highlightNodes[i].nodeId;
-      const highlightLength: number = highlightNodes[i].length;
-      const highlightStartIndex = highlightNodes[i].start;
+    for (const highlightNode of highlightNodes) {
+      const nodeId = highlightNode.nodeId;
+      const highlightLength: number = highlightNode.length;
+      const highlightStartIndex = highlightNode.start;
       const endIndex = highlightStartIndex + highlightLength;
-      const element = this.domNodeToAxNodeIdMap_.keyFrom(highlightNode);
+      const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId);
       if (!element ||
           isInvalidHighlightForWordHighlighting(
               element.textContent?.substring(highlightStartIndex, endIndex)
@@ -2194,8 +2191,7 @@ export class AppElement extends AppElementBase {
     }
 
     this.resetPreviousHighlight_();
-    for (let i = 0; i < nextTextIds.length; i++) {
-      const nodeId = nextTextIds[i];
+    for (const nodeId of nextTextIds) {
       const element = this.domNodeToAxNodeIdMap_.keyFrom(nodeId) as HTMLElement;
       if (!element) {
         continue;
@@ -2701,8 +2697,10 @@ export class AppElement extends AppElementBase {
     // language. Otherwise switch to a default voice if nothing is selected.
     const availableLang =
         convertLangToAnAvailableLangIfPresent(lang, this.availableLangs_);
+    const speechSynthesisBaseLang = this.speechSynthesisLanguage.split('-')[0];
     if (!availableLang ||
-        !availableLang.startsWith(this.speechSynthesisLanguage.split('-')[0])) {
+        (speechSynthesisBaseLang &&
+         !availableLang.startsWith(speechSynthesisBaseLang))) {
       this.selectPreferredVoice();
       return;
     }

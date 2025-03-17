@@ -30,10 +30,10 @@ namespace {
     EXPECT_EQ(actual_intersections[i].size(),                                  \
               expected_intersections[i].size());                               \
     for (size_t j = 0; j < actual_intersections[i].size(); ++j) {              \
-      EXPECT_EQ(actual_intersections[i][j].column_offset,                      \
-                expected_intersections[i][j].column_offset);                   \
-      EXPECT_EQ(actual_intersections[i][j].row_offset,                         \
-                expected_intersections[i][j].row_offset);                      \
+      EXPECT_EQ(actual_intersections[i][j].inline_offset,                      \
+                expected_intersections[i][j].inline_offset);                   \
+      EXPECT_EQ(actual_intersections[i][j].block_offset,                       \
+                expected_intersections[i][j].block_offset);                    \
       EXPECT_EQ(actual_intersections[i][j].is_blocked_before,                  \
                 expected_intersections[i][j].is_blocked_before);               \
       EXPECT_EQ(actual_intersections[i][j].is_blocked_after,                   \
@@ -57,8 +57,8 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     algorithm.CompleteTrackSizingAlgorithm(grid_sizing_tree, kForRows,
                                            SizingConstraint::kLayout);
 
-    layout_data_ = std::move(grid_sizing_tree.RootLayoutData());
-    for (const auto& grid_item : grid_sizing_tree.RootGridItems()) {
+    layout_data_ = std::move(grid_sizing_tree.LayoutData());
+    for (const auto& grid_item : grid_sizing_tree.GetGridItems()) {
       GridItemCachedData item_data;
 
       item_data.available_row_size =
@@ -74,7 +74,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     }
 
     algorithm.BuildGapIntersectionPoints(layout_data_, gap_geometry);
-    for (const auto& grid_item : grid_sizing_tree.RootGridItems()) {
+    for (const auto& grid_item : grid_sizing_tree.GetGridItems()) {
       algorithm.MarkBlockedStatusForGapIntersections(grid_item, gap_geometry);
     }
 

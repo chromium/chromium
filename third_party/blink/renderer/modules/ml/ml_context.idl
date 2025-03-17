@@ -70,46 +70,46 @@ dictionary MLGemmSupportLimits {
 };
 
 dictionary MLGruSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits weight;
-  MLDataTypeLimits recurrentWeight;
-  MLDataTypeLimits bias;
-  MLDataTypeLimits recurrentBias;
-  MLDataTypeLimits initialHiddenState;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits initialHiddenState;
   MLDataTypeLimits outputs;
 };
 
 dictionary MLGruCellSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits weight;
-  MLDataTypeLimits recurrentWeight;
-  MLDataTypeLimits hiddenState;
-  MLDataTypeLimits bias;
-  MLDataTypeLimits recurrentBias;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits hiddenState;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
   MLDataTypeLimits output;
 };
 
 dictionary MLLstmSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits weight;
-  MLDataTypeLimits recurrentWeight;
-  MLDataTypeLimits bias;
-  MLDataTypeLimits recurrentBias;
-  MLDataTypeLimits peepholeWeight;
-  MLDataTypeLimits initialHiddenState;
-  MLDataTypeLimits initialCellState;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits peepholeWeight;
+  MLTensorLimits initialHiddenState;
+  MLTensorLimits initialCellState;
   MLDataTypeLimits outputs;
 };
 
 dictionary MLLstmCellSupportLimits {
-  MLDataTypeLimits input;
-  MLDataTypeLimits weight;
-  MLDataTypeLimits recurrentWeight;
-  MLDataTypeLimits hiddenState;
-  MLDataTypeLimits cellState;
-  MLDataTypeLimits bias;
-  MLDataTypeLimits recurrentBias;
-  MLDataTypeLimits peepholeWeight;
+  MLTensorLimits input;
+  MLTensorLimits weight;
+  MLTensorLimits recurrentWeight;
+  MLTensorLimits hiddenState;
+  MLTensorLimits cellState;
+  MLTensorLimits bias;
+  MLTensorLimits recurrentBias;
+  MLTensorLimits peepholeWeight;
   MLDataTypeLimits outputs;
 };
 

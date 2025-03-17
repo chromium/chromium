@@ -135,10 +135,6 @@ class ProfileMetrics {
   static void LogProfileAvatarSelection(size_t icon_index);
   static void LogProfileDeleteUser(ProfileDelete metric);
   static void LogProfileLaunch(Profile* profile);
-
-  // Records the count of KeyedService active for the System Profile histogram.
-  // Expects only System Profiles.
-  static void LogSystemProfileKeyedServicesCount(Profile* profile);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_METRICS_H_

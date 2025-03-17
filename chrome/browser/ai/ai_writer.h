@@ -19,6 +19,8 @@
 
 // The implementation of `blink::mojom::AIWriter`, which exposes the single
 // stream-based `Write()` API.
+// TODO(crbug.com/402442890): Refactor Writing Assistance APIs to reduce
+// duplicated code.
 class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
  public:
   AIWriter(
@@ -39,17 +41,28 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
              const std::optional<std::string>& context,
              mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                  pending_responder) override;
+  void MeasureUsage(const std::string& input,
+                    const std::string& context,
+                    MeasureUsageCallback callback) override;
 
  private:
-  void DidGetExecutionInputSize(
+  void DidGetExecutionInputSizeForWrite(
       mojo::RemoteSetElementId responder_id,
       optimization_guide::proto::WritingAssistanceApiRequest request,
+      std::optional<uint32_t> result);
+
+  void DidGetExecutionInputSizeInTokensForMeasure(
+      MeasureUsageCallback callback,
       std::optional<uint32_t> result);
 
   void ModelExecutionCallback(
       mojo::RemoteSetElementId responder_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
+
+  optimization_guide::proto::WritingAssistanceApiRequest BuildRequest(
+      const std::string& input,
+      const std::string& context);
 
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>

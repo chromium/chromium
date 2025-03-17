@@ -872,21 +872,25 @@ class AdvanceFocusWidgetDelegate : public WidgetDelegate {
   raw_ptr<Widget> widget_;
 };
 
-class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
+}  // namespace
+
+class FocusManagerTestBubbleDialogDelegateView
+    : public BubbleDialogDelegateView {
  public:
-  explicit TestBubbleDialogDelegateView(View* anchor)
+  explicit FocusManagerTestBubbleDialogDelegateView(View* anchor)
       : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {
     DialogDelegate::SetButtons(
         static_cast<int>(ui::mojom::DialogButton::kNone));
   }
-  TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
-  TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
-      delete;
-  ~TestBubbleDialogDelegateView() override = default;
+  FocusManagerTestBubbleDialogDelegateView(
+      const FocusManagerTestBubbleDialogDelegateView&) = delete;
+  FocusManagerTestBubbleDialogDelegateView& operator=(
+      const FocusManagerTestBubbleDialogDelegateView&) = delete;
+  ~FocusManagerTestBubbleDialogDelegateView() override = default;
 
-  static TestBubbleDialogDelegateView* CreateAndShowBubble(View* anchor) {
-    TestBubbleDialogDelegateView* bubble =
-        new TestBubbleDialogDelegateView(anchor);
+  static FocusManagerTestBubbleDialogDelegateView* CreateAndShowBubble(
+      View* anchor) {
+    auto* bubble = new FocusManagerTestBubbleDialogDelegateView(anchor);
     Widget* bubble_widget = BubbleDialogDelegateView::CreateBubble(bubble);
     bubble_widget->SetFocusTraversableParent(
         bubble->anchor_widget()->GetFocusTraversable());
@@ -915,8 +919,6 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  private:
   bool use_native_widget_aura_ = false;
 };
-
-}  // namespace
 
 // Verifies focus wrapping happens in the same widget.
 TEST_F(FocusManagerTest, AdvanceFocusStaysInWidget) {
@@ -994,7 +996,7 @@ TEST_F(FocusManagerTest, NavigateIntoAnchoredDialog) {
   parent3->AddChildViewRaw(new View());
 
   BubbleDialogDelegateView* bubble_delegate =
-      TestBubbleDialogDelegateView::CreateAndShowBubble(parent3);
+      FocusManagerTestBubbleDialogDelegateView::CreateAndShowBubble(parent3);
   Widget* bubble_widget = bubble_delegate->GetWidget();
 
   View* child1 = new View();
@@ -1052,7 +1054,7 @@ TEST_F(FocusManagerTest, AnchoredDialogOnContainerView) {
   GetWidget()->GetRootView()->AddChildViewRaw(parent4);
 
   BubbleDialogDelegateView* bubble_delegate =
-      TestBubbleDialogDelegateView::CreateAndShowBubble(parent3);
+      FocusManagerTestBubbleDialogDelegateView::CreateAndShowBubble(parent3);
   Widget* bubble_widget = bubble_delegate->GetWidget();
 
   View* child1 = new View();
@@ -1097,7 +1099,7 @@ TEST_F(FocusManagerTest, AnchoredDialogInPane) {
   anchor->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
   BubbleDialogDelegateView* bubble =
-      TestBubbleDialogDelegateView::CreateAndShowBubble(anchor);
+      FocusManagerTestBubbleDialogDelegateView::CreateAndShowBubble(anchor);
 
   // We need a focusable view inside our bubble to check that focus traverses
   // in.
@@ -1177,8 +1179,8 @@ TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
   widget->GetRootView()->AddChildViewRaw(parent1);
   widget->GetRootView()->AddChildViewRaw(parent2);
 
-  TestBubbleDialogDelegateView* bubble_delegate =
-      TestBubbleDialogDelegateView::CreateAndShowBubble(parent2);
+  FocusManagerTestBubbleDialogDelegateView* bubble_delegate =
+      FocusManagerTestBubbleDialogDelegateView::CreateAndShowBubble(parent2);
   Widget* bubble_widget = bubble_delegate->GetWidget();
   bubble_delegate->UseNativeWidgetAura();
 
@@ -1248,7 +1250,8 @@ class RedirectToParentFocusManagerTest : public FocusManagerTest {
         GetWidget()->GetRootView()->AddChildView(std::make_unique<View>());
     anchor->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 
-    bubble_ = TestBubbleDialogDelegateView::CreateAndShowBubble(anchor);
+    bubble_ =
+        FocusManagerTestBubbleDialogDelegateView::CreateAndShowBubble(anchor);
     Widget* bubble_widget = bubble_->GetWidget();
 
     parent_focus_manager_ = anchor->GetFocusManager();

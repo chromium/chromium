@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/webui/ui_bundled/policy/policy_ui.h"
 
 #import <memory>
+#import <optional>
 #import <string>
 
-#import "base/json/json_string_value_serializer.h"
 #import "base/json/json_writer.h"
 #import "components/grit/policy_resources.h"
 #import "components/grit/policy_resources_map.h"
@@ -178,10 +178,9 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource(ProfileIOS* profile) {
         policy::Schema::Wrap(policy::GetChromeSchemaData());
     base::Value::List policy_names = GetChromePolicyNames(profile);
 
-    std::string schema;
-    JSONStringValueSerializer serializer(&schema);
-    serializer.Serialize(PolicyUI::GetSchema(profile));
-    source->AddString("initialSchema", schema);
+    std::optional<std::string> schema =
+        base::WriteJson(PolicyUI::GetSchema(profile));
+    source->AddString("initialSchema", schema.value_or(std::string()));
 
     // Strings for policy levels, scopes and sources.
     static constexpr webui::LocalizedString kPolicyTestTypes[] = {

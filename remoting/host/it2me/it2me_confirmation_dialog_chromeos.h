@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -20,6 +21,8 @@ namespace remoting {
 class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
  public:
   explicit It2MeConfirmationDialogChromeOS(DialogStyle style);
+  It2MeConfirmationDialogChromeOS(DialogStyle style,
+                                  base::TimeDelta auto_accept_timeout);
 
   It2MeConfirmationDialogChromeOS(const It2MeConfirmationDialogChromeOS&) =
       delete;
@@ -50,6 +53,7 @@ class It2MeConfirmationDialogChromeOS : public It2MeConfirmationDialog {
 
   ResultCallback callback_;
   DialogStyle style_;
+  base::TimeDelta auto_accept_timeout_;
 };
 
 }  // namespace remoting

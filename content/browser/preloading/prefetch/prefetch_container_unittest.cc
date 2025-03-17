@@ -1104,11 +1104,13 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   base::WeakPtr<PrefetchResponseReader> weak_first_response_reader =
       reader.GetCurrentResponseReaderToServeForTesting();
-  PrefetchRequestHandler first_request_handler = reader.CreateRequestHandler();
+  PrefetchRequestHandler first_request_handler =
+      reader.CreateRequestHandler().first;
 
   base::WeakPtr<PrefetchResponseReader> weak_second_response_reader =
       reader.GetCurrentResponseReaderToServeForTesting();
-  PrefetchRequestHandler second_request_handler = reader.CreateRequestHandler();
+  PrefetchRequestHandler second_request_handler =
+      reader.CreateRequestHandler().first;
 
   // `CreateRequestHandler()` itself doesn't make the PrefetchContainer
   // non-servable.
@@ -1403,7 +1405,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
         ASSERT_TRUE(prefetch_container);
         EXPECT_EQ(prefetch_container->GetServableState(base::TimeDelta::Max()),
                   PrefetchContainer::ServableState::kServable);
-        request_handler = reader.CreateRequestHandler();
+        request_handler = reader.CreateRequestHandler().first;
         ASSERT_TRUE(request_handler);
         break;
 
@@ -1457,13 +1459,13 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
         if (!done.count(Event::kPrefetchOnComplete) ||
             body_size == BodySize::kLarge) {
           // Not servable.
-          ASSERT_FALSE(reader2.CreateRequestHandler());
+          ASSERT_FALSE(reader2.CreateRequestHandler().first);
         } else {
           // As the first client is already served, the body pipe producer
           // should be also completed.
           EXPECT_TRUE(producer_completed);
 
-          auto request_handler2 = reader2.CreateRequestHandler();
+          auto request_handler2 = reader2.CreateRequestHandler().first;
           ASSERT_TRUE(request_handler2);
 
           auto serving_url_loader_client2 =

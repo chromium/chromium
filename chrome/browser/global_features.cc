@@ -19,7 +19,7 @@
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"  // nogncheck
 #include "chrome/browser/glic/glic_enabling.h"         // nogncheck
 #include "chrome/browser/glic/glic_profile_manager.h"  // nogncheck
-#include "chrome/browser/glic/glic_synthetic_trial_manager.h"  // nogncheck
+#include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

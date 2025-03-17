@@ -13,6 +13,9 @@ namespace autofill::autofill_metrics {
 // off buy-now-pay-later.
 void LogBnplPrefToggled(bool enabled);
 
+// Logs the number of BNPL issuers synced at startup.
+void LogBnplIssuersSyncedCountAtStartup(int count);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_BNPL_METRICS_H_

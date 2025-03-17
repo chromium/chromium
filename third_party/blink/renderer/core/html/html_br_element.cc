@@ -62,10 +62,10 @@ void HTMLBRElement::CollectStyleForPresentationAttribute(
 }
 
 LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style) {
-  if (style.ContentBehavesAsNormal())
-    return MakeGarbageCollected<LayoutBR>(*this);
-
-  return LayoutObject::CreateObject(this, style);
+  if (ShouldUseContentDataForElement(style.GetContentData())) {
+    return LayoutObject::CreateObject(this, style);
+  }
+  return MakeGarbageCollected<LayoutBR>(*this);
 }
 
 }  // namespace blink

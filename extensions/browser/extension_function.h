@@ -109,6 +109,24 @@ inline bool FunctionValidateInternalReturnParam(bool param) {
     return extensions::functions::histogramvalue;                      \
   }
 
+// Declares/defines an empty extension function. This is useful for APIs that
+// are not yet implemented, but are defined in the IDL/JSON schema.
+#define DECLARE_UNIMPLEMENTED_EXTENSION_FUNCTION(class_name,     \
+                                                 api_name,       \
+                                                 histogramvalue) \
+  class class_name : public ExtensionFunction {                  \
+   public:                                                       \
+    DECLARE_EXTENSION_FUNCTION(api_name, histogramvalue)         \
+   protected:                                                    \
+    ~class_name() override;                                      \
+    ResponseAction Run() override;                               \
+  }
+#define DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(class_name, api_name) \
+  class_name::~class_name() = default;                                \
+  ExtensionFunction::ResponseAction class_name::Run() {               \
+    return RespondNow(Error(api_name " not implemented"));            \
+  }
+
 // Abstract base class for extension functions the ExtensionFunctionDispatcher
 // knows how to dispatch to.
 // NOTE: If you see a crash in an ExtensionFunction implementation and want to

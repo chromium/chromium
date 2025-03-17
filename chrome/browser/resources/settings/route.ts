@@ -166,6 +166,10 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.SITE_SETTINGS_WEB_APP_INSTALLATION =
         r.SITE_SETTINGS.createChild('webApplications');
   }
+  if (loadTimeData.getBoolean('enableLocalNetworkAccessSetting')) {
+    r.SITE_SETTINGS_LOCAL_NETWORK_ACCESS =
+        r.SITE_SETTINGS.createChild('localNetworkAccess');
+  }
 }
 
 /**

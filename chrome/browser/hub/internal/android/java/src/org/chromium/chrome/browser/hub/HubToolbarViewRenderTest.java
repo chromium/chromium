@@ -55,7 +55,7 @@ public class HubToolbarViewRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_HUB)
-                    .setRevision(9)
+                    .setRevision(10)
                     .build();
 
     @Mock private TabSwitcherDrawable.Observer mTabSwitcherDrawableObserver;
@@ -116,12 +116,7 @@ public class HubToolbarViewRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
-                    mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, true);
                 });
-        mRenderTestRule.render(mToolbar, "actionButtonWithText");
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, false));
         mRenderTestRule.render(mToolbar, "actionButtonOnlyImage");
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -138,7 +133,6 @@ public class HubToolbarViewRenderTest {
                 () -> {
                     mPropertyModel.set(HubToolbarProperties.ACTION_BUTTON_DATA, enabledButtonData);
                     mPropertyModel.set(HubToolbarProperties.MENU_BUTTON_VISIBLE, true);
-                    mPropertyModel.set(HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT, true);
                     mPropertyModel.set(
                             HubToolbarProperties.COLOR_SCHEME,
                             new HubColorSchemeUpdate(

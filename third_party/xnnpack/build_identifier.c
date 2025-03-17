@@ -1,3 +1,5 @@
+
+// clang-format off
 // Copyright 2024 Google LLC
 //
 // This source code is licensed under the BSD-style license found in the
@@ -7,8 +9,8 @@
 //   Generator: scripts/generate-build-identifier.py
 //
 // The following inputs were used to generate this file.
-// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-11x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
-// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-1x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
+// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-11x16c2-minmax-asm-amd64-avx512bf16-broadcast.S
+// - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-1x16c2-minmax-asm-amd64-avx512bf16-broadcast.S
 // - external/xnnpack+/src/configs/hardware-config.c
 // - external/xnnpack+/src/enums/allocation-type.c
 // - external/xnnpack+/src/enums/datatype-strings.c
@@ -857,8 +859,8 @@
 // - external/xnnpack+/src/u8-lut32norm/u8-lut32norm-scalar.c
 // - external/xnnpack+/src/u8-maxpool/gen/u8-maxpool-9p-minmax-scalar-u1.c
 // - external/xnnpack+/src/u8-maxpool/gen/u8-maxpool-9p-minmax-sse2-u16.c
-// - external/xnnpack+/src/u8-rmax/u8-rmax-scalar-u2.c
-// - external/xnnpack+/src/u8-rmax/u8-rmax-sse2-u16.c
+// - external/xnnpack+/src/u8-rminmax/gen/u8-rmax-scalar-u2-acc2.c
+// - external/xnnpack+/src/u8-rminmax/gen/u8-rmax-sse2-u16.c
 // - external/xnnpack+/src/u8-vclamp/u8-vclamp-avx2-u128.c
 // - external/xnnpack+/src/u8-vclamp/u8-vclamp-avx512skx-u256.c
 // - external/xnnpack+/src/u8-vclamp/u8-vclamp-scalar-u4.c
@@ -916,10 +918,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-  173, 239,  55,  63, 172, 239, 168, 155,
-   21,   7, 242,  60,  63, 183,  61,  86,
-  189, 156, 139, 104, 254, 137,  89, 212,
-  247, 189, 190, 240,  19, 134, 254,  33
+   73, 252, 106,  81,  56,  21, 120, 220,
+  158,  57,  62, 104,  26, 110, 155, 253,
+  234, 206,  99, 201, 200,  71,  75,  67,
+   82, 195, 163, 246, 155,  58,  24,  84
 };
 
 size_t xnn_experimental_get_build_identifier_size() {

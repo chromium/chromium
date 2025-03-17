@@ -16,7 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/pdf_util.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,6 +26,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler.mojom.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -433,6 +436,24 @@ void PdfViewerStreamManager::DidFinishNavigation(
     if (stream_info->extension_host_frame_tree_node_id() ==
         navigation_handle->GetFrameTreeNodeId()) {
       stream_info->SetDidExtensionFinishNavigation();
+      if (navigation_handle->HasCommitted() &&
+          !navigation_handle->IsErrorPage()) {
+        // Setup zoom level for the PDF extension. Zoom level 0 corresponds
+        // to zoom factor of 1, or 100%. This is done so the PDF viewer UI
+        // does not change if the page zoom does. This is analogous to page
+        // zoom not affecting the browser UI.
+        const GURL pdf_extension_url = stream_info->stream()->handler_url();
+        CHECK_EQ(pdf_extension_url, navigation_handle->GetURL());
+        CHECK_EQ(extensions::kExtensionScheme, pdf_extension_url.scheme());
+        content::HostZoomMap::Get(
+            navigation_handle->GetRenderFrameHost()->GetSiteInstance())
+            ->SetZoomLevelForHostAndScheme(pdf_extension_url.scheme(),
+                                           pdf_extension_url.host(), 0);
+        // Set ZoomController on the extension host.
+        zoom::ZoomController::CreateForWebContentsAndRenderFrameHost(
+            web_contents(),
+            navigation_handle->GetRenderFrameHost()->GetGlobalId());
+      }
     }
     return;
   }

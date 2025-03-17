@@ -5460,13 +5460,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.MaskedDomainList.Size" units="KB"
+<histogram name="NetworkService.MaskedDomainList.Size2" units="KB"
     expires_after="2025-08-10">
   <owner>aakallam@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>
     Record the size of the Masked Domain List proto in KB. Emitted when the raw
-    proto bytes are received from Component Updater and parsed.
+    proto bytes are received from Component Updater and parsed. The previous
+    version of this histogram sometimes recorded the value in MB and was not
+    usable.
   </summary>
 </histogram>
 

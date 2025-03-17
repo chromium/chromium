@@ -724,6 +724,7 @@
     {
       // crbug.com/389726691.
       name: "CanvasTextNg",
+      status: "experimental",
     },
     {
       // Kill switch for https://crbug.com/330506337.
@@ -1440,13 +1441,8 @@
       depends_on: ["CustomizableSelect"],
     },
     {
+      // https://chromestatus.com/feature/5134293578285056
       name: "Database",
-      public: true,
-      status: "experimental",
-      base_feature: "none",
-      origin_trial_feature_name: "WebSQL",
-      origin_trial_allows_third_party: true,
-      origin_trial_type: "deprecation",
     },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
@@ -1581,10 +1577,6 @@
       origin_trial_allows_insecure: true,
       origin_trial_allows_third_party: true,
       base_feature: "none",
-    },
-    {
-      name: "DisableSelectAllForEmptyText",
-      status: "stable",
     },
     // This feature will represent the extension of a deprecation trial that
     // allows first parties to temporarily use unpartitioned storage in embeds
@@ -1975,6 +1967,10 @@
       status: "stable",
     },
     {
+      name: "FewerSubsequences",
+      status: "experimental",
+    },
+    {
       // Also enabled when blink::features::kFileHandlingAPI is overridden
       // on the command line (or via chrome://flags).
       name: "FileHandling",
@@ -2277,6 +2273,10 @@
       },
     },
     {
+      name: "HarfBuzzBufferPool",
+      status: "stable",
+    },
+    {
       name: "HasUAVisualTransition",
       status: "stable",
     },
@@ -2530,16 +2530,6 @@
     {
       name: "IsSecurePaymentConfirmationAvailableAPI",
       status: "experimental",
-    },
-    {
-      name: "JavaScriptCompileHintsMagicAlwaysRuntime",
-      status: "experimental",
-      origin_trial_feature_name: "JavaScriptCompileHintsMagicAlways",
-    },
-    {
-      name: "JavaScriptCompileHintsMagicRuntime",
-      status: "experimental",
-      origin_trial_feature_name: "JavaScriptCompileHintsMagic",
     },
     {
       name: "KeyboardAccessibleTooltip",
@@ -2950,6 +2940,7 @@
         "Win": "test",
         "Mac": "test",
         "Linux": "test",
+        "Android": "test",
         "default": ""
       }
     },
@@ -3928,6 +3919,13 @@
       },
     },
     {
+      // This removes !important from some rules in the UA stylesheet about
+      // select option colors. https://issues.chromium.org/issues/40788356
+      // This is shipping in M136 and can be removed in M138
+      name: "SelectColorsRemoveImportant",
+      status: "stable",
+    },
+    {
       // The selectedcontentelement attribute is for connecting select elements
       // to arbitrary <selectedcontent> elements.
       // https://github.com/openui/open-ui/issues/1063
@@ -4018,8 +4016,8 @@
     },
     {
       name: "Serial",
-      status: {"Android": "", "default": "stable"},
-      base_feature: "none",
+      status: {"Android": "test", "default": "stable"},
+      base_feature: "WebSerialAPI",
     },
     {
       name: "SerializeViewTransitionStateInSPA",

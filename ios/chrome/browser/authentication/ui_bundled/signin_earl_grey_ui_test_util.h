@@ -11,12 +11,6 @@
 
 @class FakeSystemIdentity;
 
-typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
-  SignOutConfirmationChoiceClearData,
-  SignOutConfirmationChoiceKeepData,
-  SignOutConfirmationChoiceNotSyncing
-};
-
 // Test methods that perform sign in actions on Chrome UI.
 @interface SigninEarlGreyUI : NSObject
 
@@ -37,6 +31,9 @@ typedef NS_ENUM(NSInteger, SignOutConfirmationChoice) {
 // Signs the primary account out of Chrome through the accounts list screen.
 // Taps the "Sign Out" button and dismisses the confirmation snackbar.
 + (void)signOut;
+// Same as `signOut`, but if `expectClearDataConfirmation` is true, expects the
+// "Sign out and clear data?" confirmation dialog to show up, and accepts it.
++ (void)signOutWithClearDataConfirmation:(BOOL)expectClearDataConfirmation;
 
 // dismisses the confirmation snackbar on sign-out.
 + (void)dismissSignoutSnackbar;

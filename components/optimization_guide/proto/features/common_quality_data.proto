@@ -515,13 +515,16 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 3
+// Next ID: 4
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1;
 
   // Interaction information for the frame.
   FrameInteractionInfo frame_interaction_info = 2;
+
+  // Identifies the frame.
+  FrameIdentifier frame_identifier = 3;
 }
 
 // The interaction information for the frame. This is for interactions that
@@ -552,6 +555,13 @@ message Selection {
 
   // The selected text.
   string selected_text = 5;
+}
+
+// Directs the action to a specific Frame in Chrome.
+message FrameIdentifier {
+  // TODO: crbug.com/402086380 - Add frame information. We need to decide the right
+  // format for this.
+
 }
 
 message TableRowData {
@@ -682,6 +692,14 @@ message SiteEngagementEntry {
 message SiteEngagement {
   // The site engagement information for the user.
   repeated SiteEngagementEntry entries = 1;
+}
+
+// The coordinates of a point.
+// Next ID: 3
+message Coordinate {
+  int32 x = 1;
+
+  int32 y = 2;
 }
 
 // Selection text affinity, part of the a11y snapshot.

@@ -100,20 +100,19 @@ constexpr std::string_view kAppHasUpdateTemplateJSON =
     "  \"status\": \"ok\","
     "  \"updatecheck\": {"
     "    \"status\": \"ok\","
-    "    \"manifest\": {"
-    "      \"version\": \"$Version\","
-    "      \"packages\": {"
-    "        \"package\": ["
-    "          {"
-    "            \"fp\": \"1.$FP\","
-    "            \"size\": \"$Size\","
-    "            \"hash_sha256\": \"$FP\","
-    "            \"name\": \"\""
-    "          }"
-    "        ]"
-    "      }"
-    "    },"
-    "    \"urls\": { \"url\": [ { \"codebase\": \"$CrxDownloadUrl\"} ] }"
+    "    \"nextversion\": \"$Version\","
+    "    \"pipelines\": ["
+    "      {\"operations\": ["
+    "        {\"type\": \"download\","
+    "         \"urls\":[{\"url\":\"$CrxDownloadUrl\"}],"
+    "         \"size\":$Size,"
+    "         \"out\":{\"sha256\":\"$FP\"}"
+    "        },"
+    "        {\"type\": \"crx3\","
+    "         \"in\":{\"sha256\":\"$FP\"}"
+    "        }"
+    "      ]}"
+    "    ]"
     "  }"
     "}";
 
@@ -121,12 +120,12 @@ constexpr std::string_view kUpdateContentTemplateJSON =
     ")]}'\n"
     "{"
     "  \"response\": {"
-    "    \"protocol\": \"3.1\","
+    "    \"protocol\": \"4.0\","
     "    \"daystart\": {"
     "      \"elapsed_days\": 2569,"
     "      \"elapsed_seconds\": 36478"
     "    },"
-    "    \"app\": ["
+    "    \"apps\": ["
     "      $APPS"
     "    ]"
     "  }"
@@ -164,7 +163,7 @@ bool GetAppIdsFromUpdateUrl(const GURL& update_url,
 //
 //   {
 //      "request": {
-//         "app": [ {
+//         "apps": [ {
 //            "appid": "ilaggnhkinenadmhbbdgbddpaipgfomg",
 //            ...
 //         }, {
@@ -196,7 +195,7 @@ bool GetAppIdsFromRequestBody(const std::string& request_body,
     return false;
   }
 
-  const auto* app_list = request->FindList("app");
+  const auto* app_list = request->FindList("apps");
   if (app_list == nullptr) {
     return false;
   }

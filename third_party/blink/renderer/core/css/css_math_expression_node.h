@@ -181,6 +181,7 @@ class CORE_EXPORT CSSMathExpressionNode
   }
 
   virtual bool IsComputationallyIndependent() const = 0;
+  virtual bool IsElementDependent() const { return false; }
 
   CalculationResultCategory Category() const { return category_; }
 
@@ -680,6 +681,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
   void AccumulateLengthUnitTypes(
       CSSPrimitiveValue::LengthTypeFlags& types) const final;
   bool IsComputationallyIndependent() const final;
+  bool IsElementDependent() const final;
   String CustomCSSText() const final;
   bool operator==(const CSSMathExpressionNode& exp) const final;
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final;
@@ -970,6 +972,7 @@ class CORE_EXPORT CSSMathExpressionSiblingFunction final
     return false;
   }
   bool IsComputationallyIndependent() const final { return false; }
+  bool IsElementDependent() const final { return true; }
   double DoubleValue() const final { NOTREACHED(); }
   double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     NOTREACHED();

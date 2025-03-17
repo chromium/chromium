@@ -160,11 +160,24 @@
     return logAndReturn("stopped");
   }
 
-  // TODO(crbug.com/40276312): Deprecate and replace
-  // with either forwardWheel() or forwardGestures().
-  async function sendWheel(action) {
-    await controller.sendWheel(action);
-    return logAndReturn("send-wheel-resolved");
+  async function forwardWheel(targetId) {
+    // Note that if `targetId === null` then `targetId === null`.
+    const target = document.getElementById(targetId);
+    try {
+      await controller.forwardWheel(target);
+      return logAndReturn("forward-wheel-resolved");
+    } catch (e) {
+      return `${e}`;
+    }
+  }
+
+  async function forwardWheel(action) {
+    try {
+      await controller.forwardWheel(action);
+      return logAndReturn("forward-wheel-resolved");
+    } catch (e) {
+      return `${e}`;
+    }
   }
 
   async function updateZoomLevel(action) {
@@ -215,7 +228,7 @@
     </tr>
     <tr>
       <td>
-        <video id="local-view" autoplay></video>
+        <video id="video" autoplay></video>
       </td>
     </tr>
   </table>
